@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://nuaxpp7us5en"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
+
+[node name="Nexus" type="Node2D"]
+script = ExtResource("1_wr5g5")

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bsij7erbum2aw"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/home.gd" id="1_3c8kg"]
+
+[node name="Home" type="Node2D"]
+script = ExtResource("1_3c8kg")
+
+[node name="SceneLayer" type="Node2D" parent="."]

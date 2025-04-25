@@ -6,3 +6,5 @@
 script = ExtResource("1_3c8kg")
 
 [node name="SceneLayer" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]

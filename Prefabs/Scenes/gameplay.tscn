@@ -1,6 +1,131 @@
-[gd_scene load_steps=2 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=4 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
+[ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
+bg_color = Color(0.0395679, 0.203455, 0.26303, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0.255382, 0.0595813, 0.335234, 1)
+border_blend = true
 
 [node name="Gameplay" type="Node2D"]
 script = ExtResource("1_5y1xe")
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Panel" type="Panel" parent="Background"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = -960.0
+offset_right = 540.0
+offset_bottom = 960.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0s264")
+
+[node name="FieldLines" type="Node2D" parent="."]
+
+[node name="Top" type="ColorRect" parent="FieldLines"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = -120.0
+offset_right = 540.0
+offset_bottom = -110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bottom" type="ColorRect" parent="FieldLines"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = 400.0
+offset_right = 540.0
+offset_bottom = 410.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CardsLayer" type="Node2D" parent="."]
+
+[node name="Timers" type="Node2D" parent="."]
+
+[node name="RoundResultsTimer" type="Timer" parent="Timers"]
+
+[node name="RoundEndTimer" type="Timer" parent="Timers"]
+
+[node name="GameOverTimer" type="Timer" parent="Timers"]
+
+[node name="PointsClickTimer" type="Timer" parent="Timers"]
+
+[node name="Points" type="Node2D" parent="."]
+
+[node name="YourPoints" type="Label" parent="Points"]
+offset_left = 373.0
+offset_top = 763.0
+offset_right = 460.0
+offset_bottom = 920.0
+theme_override_fonts/font = ExtResource("2_0nx3a")
+theme_override_font_sizes/font_size = 128
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OpponentsPoints" type="Label" parent="Points"]
+offset_left = -460.0
+offset_top = -920.0
+offset_right = -373.0
+offset_bottom = -763.0
+theme_override_fonts/font = ExtResource("2_0nx3a")
+theme_override_font_sizes/font_size = 128
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Edges" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Edges"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2160.0
+offset_top = -960.0
+offset_right = -540.0
+offset_bottom = 960.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.00820202, 0.00820202, 0.00820202, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="Edges"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 540.0
+offset_top = -960.0
+offset_right = 2160.0
+offset_bottom = 960.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.00784314, 0.00784314, 0.00784314, 1)
+
+[connection signal="timeout" from="Timers/RoundResultsTimer" to="." method="_on_round_results_timer_timeout"]
+[connection signal="timeout" from="Timers/RoundEndTimer" to="." method="_on_round_end_timer_timeout"]
+[connection signal="timeout" from="Timers/GameOverTimer" to="." method="_on_game_over_timer_timeout"]
+[connection signal="timeout" from="Timers/PointsClickTimer" to="." method="_on_points_click_timer_timeout"]

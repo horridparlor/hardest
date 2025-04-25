@@ -1,1 +1,288 @@
 extends Gameplay
+
+@onready var cards_layer : Node2D = $CardsLayer;
+@onready var field_lines : Node2D = $FieldLines;
+@onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
+@onready var round_end_timer : Timer = $Timers/RoundEndTimer;
+@onready var game_over_timer : Timer = $Timers/GameOverTimer;
+@onready var points_click_timer : Timer = $Timers/PointsClickTimer;
+@onready var your_points : Label = $Points/YourPoints;
+@onready var opponents_points : Label = $Points/OpponentsPoints;
+
+func _ready() -> void:
+	player_one.eat_decklist(1);
+	player_two.eat_decklist(1);
+	init_layers();
+	init_timers();
+	going_first = System.Random.boolean();
+	round_start();
+
+func init_timers() -> void:
+	round_results_timer.wait_time = ROUND_RESULTS_WAIT;
+	round_end_timer.wait_time = ROUND_END_WAIT;
+	game_over_timer.wait_time = GAME_OVER_WAIT;
+	points_click_timer.wait_time = POINTS_CLICK_WAIT;
+
+func round_start() -> void:
+	if player_one.points >= System.Rules.VICTORY_POINTS or player_two.points >= System.Rules.VICTORY_POINTS:
+		start_game_over();
+		return;
+	player_one.draw_hand();
+	player_two.draw_hand();
+	if player_one.hand_empty() or player_two.hand_empty():
+		start_game_over();
+		return;
+	if going_first:
+		your_turn();
+	else:
+		opponents_turn();
+
+func start_game_over() -> void:
+	game_over_timer.start();
+
+func end_game() -> void:
+	emit_signal("game_over");
+
+func your_turn() -> void:
+	show_hand();
+	can_play_card = true;
+
+func init_layers() -> void:
+	field_lines.modulate.a = 0;
+
+func show_hand() -> void:
+	for card in player_one.cards_in_hand:
+		spawn_card(card);
+	reorder_hand();
+
+func reorder_hand() -> void:
+	var card : GameplayCard;
+	var position : Vector2 = HAND_POSITION;
+	player_one.cards_in_hand.sort_custom(sort_by_card_position);
+	position.x -= HAND_MARGIN * ((player_one.count_hand() - 1) / 2.0);
+	for card_data in player_one.cards_in_hand:
+		card = cards[card_data.instance_id];
+		card.goal_position = position;
+		card.is_moving = true;
+		position.x += HAND_MARGIN;
+
+func spawn_card(card_data : CardData, spawn_for_opponent : bool = false) -> GameplayCard:
+	if cards.has(card_data.instance_id):
+		return cards[card_data.instance_id];
+	var card : GameplayCard = System.Instance.load_child(CARD_PATH, cards_layer);
+	card.card_data = card_data;
+	card.init();
+	cards[card.card_data.instance_id] = card;
+	card.position = -CARD_STARTING_POSITION if spawn_for_opponent else CARD_STARTING_POSITION;
+	card.pressed.connect(_on_card_pressed);
+	card.released.connect(_on_card_released);
+	card.despawned.connect(_on_card_despawned);
+	return card;
+
+func _on_card_pressed(card : GameplayCard) -> void:
+	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND:
+		return;
+	active_card = card;
+	card.toggle_follow_mouse();
+	if !can_play_card:
+		return;
+	field_lines_visible = true;
+	fading_field_lines = true;
+	field_lines.modulate.a = min(1, max(0, field_lines.modulate.a));
+
+func _on_card_released(card : GameplayCard) -> void:
+	if !System.Instance.exists(active_card) or card != active_card:
+		return;
+	card.toggle_follow_mouse(false);
+	active_card = null;
+	field_lines_visible = false;
+	fading_field_lines = true;
+	reorder_hand();
+	check_if_played(card);
+
+func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
+	return cards[card_a.instance_id].position.x < cards[card_b.instance_id].position.x;
+
+func _on_card_despawned(card : GameplayCard) -> void:
+	cards.erase(card.card_data.instance_id);
+	card.queue_free();
+
+func check_if_played(card : GameplayCard) -> void:
+	var mouse_position : Vector2 = get_local_mouse_position();
+	var card_margin : int = GameplayCard.SIZE.y;
+	if !(can_play_card and mouse_position.y + card_margin >= FIELD_START_LINE and mouse_position.y - card_margin <= FIELD_END_LINE):
+		return;
+	play_card(player_one, card);
+
+func play_card(player : Player, card : GameplayCard) -> void:
+	player.play_card(card.card_data);
+	card.goal_position = FIELD_POSITION;
+	reorder_hand();
+	can_play_card = false;
+	if going_first:
+		opponents_turn();
+	else:
+		go_to_results();
+
+func opponents_turn() -> void:
+	var card : CardData;
+	player_two.cards_in_hand.sort_custom(best_to_play);
+	card = player_two.cards_in_hand.back();
+	player_two.play_card(card);
+	spawn_card(card, true);
+	show_opponents_field();
+	if going_first:
+		go_to_results();
+	else:
+		your_turn();
+
+func go_to_results() -> void:
+	round_results_timer.start();
+
+func best_to_play(card_a : CardData, card_b : CardData) -> int:
+	var result : int = get_result_for_playing(card_a) < get_result_for_playing(card_b);
+	if result == 0:
+		return most_valuable(card_a, card_b);
+	return result;
+
+func most_valuable(card_a : CardData, card_b : CardData) -> int:
+	return get_card_value(card_a) > get_card_value(card_b);
+
+func get_card_value(card : CardData) -> int:
+	match card.card_type:
+		CardEnums.CardType.ROCK:
+			return 1;
+		CardEnums.CardType.PAPER:
+			return 1;
+		CardEnums.CardType.SCISSORS:
+			return 1;
+		CardEnums.CardType.GUN:
+			return 2;
+	return 0;
+
+func get_result_for_playing(card : CardData) -> int:
+	var winner : GameplayEnums.Controller;
+	if player_one.field_empty():
+		return 0;
+	winner = determine_winner(card, player_one.cards_on_field[0]);
+	match winner:
+		GameplayEnums.Controller.PLAYER_ONE:
+			return 1;
+		GameplayEnums.Controller.PLAYER_TWO:
+			return -1;
+	return 0;
+
+func round_results() -> void:
+	var round_winner : GameplayEnums.Controller = determine_winner(
+		player_one.cards_on_field[0],
+		player_two.cards_on_field[0]
+	);
+	match round_winner:
+		GameplayEnums.Controller.PLAYER_ONE:
+			player_one.gain_point();
+			click_your_points();
+		GameplayEnums.Controller.PLAYER_TWO:
+			player_two.gain_point();
+			click_opponents_points();
+	your_points.text = str(player_one.points);
+	opponents_points.text = str(player_two.points);
+	round_end_timer.start();
+
+func click_your_points() -> void:
+	your_points.add_theme_color_override("font_color", Color.YELLOW);
+	points_click_timer.start();
+
+func click_opponents_points() -> void:
+	opponents_points.add_theme_color_override("font_color", Color.YELLOW);
+	points_click_timer.start();
+
+func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
+	var card_type : CardEnums.CardType = card.card_type;
+	var enemy_type : CardEnums.CardType = enemy.card_type;
+	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
+	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
+	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	match enemy_type:
+		CardEnums.CardType.UNKNOWN:
+			if card_type != CardEnums.CardType.UNKNOWN:
+				return you_win;
+		CardEnums.CardType.GUN:
+			if card_type != CardEnums.CardType.GUN:
+				return opponent_wins;
+	match card_type:
+		CardEnums.CardType.ROCK:
+			match enemy_type:
+				CardEnums.CardType.SCISSORS:
+					return you_win;
+				CardEnums.CardType.PAPER:
+					return opponent_wins;
+		CardEnums.CardType.PAPER:
+			match enemy_type:
+				CardEnums.CardType.ROCK:
+					return you_win;
+				CardEnums.CardType.SCISSORS:
+					return opponent_wins;
+		CardEnums.CardType.SCISSORS:
+			match enemy_type:
+				CardEnums.CardType.PAPER:
+					return you_win;
+				CardEnums.CardType.ROCK:
+					return opponent_wins;
+		CardEnums.CardType.UNKNOWN:
+			if enemy_type != CardEnums.CardType.UNKNOWN:
+				return opponent_wins;
+		CardEnums.CardType.GUN:
+			if enemy_type != CardEnums.CardType.GUN:
+				return you_win;
+	return tie;
+
+func round_end() -> void:
+	clear_field();
+	going_first = !going_first;
+	round_start();
+
+func clear_field() -> void:
+	clear_players_field(player_one);
+	clear_players_field(player_two);
+
+func clear_players_field(player : Player) -> void:
+	var card : CardData;
+	for c in player.cards_on_field:
+		card = c;
+		cards[card.instance_id].despawn();
+	player.clear_field();
+
+func show_opponents_field() -> void:
+	var card : GameplayCard;
+	for card_data in player_two.cards_on_field:
+		card = cards[card_data.instance_id];
+		card.goal_position = ENEMY_FIELD_POSITION;
+		card.is_moving = true;
+
+func _process(delta : float) -> void:
+	if fading_field_lines:
+		fade_field_lines(delta);
+
+func fade_field_lines(delta : float) -> void:
+	var direction : int = 1 if field_lines_visible else -1;
+	field_lines.modulate.a += direction * delta * (FIELD_LINES_FADE_IN_SPEED if field_lines_visible else FIELD_LINES_FADE_OUT_SPEED);
+	if abs(field_lines.modulate.a) >= 1:
+		field_lines.modulate.a = 1 if field_lines_visible else 0;
+		fading_field_lines = false;
+
+func _on_round_results_timer_timeout() -> void:
+	round_results_timer.stop();
+	round_results();
+
+func _on_round_end_timer_timeout() -> void:
+	round_end_timer.stop();
+	round_end();
+
+func _on_game_over_timer_timeout() -> void:
+	game_over_timer.stop();
+	end_game();
+
+func _on_points_click_timer_timeout() -> void:
+	points_click_timer.stop();
+	your_points.add_theme_color_override("font_color", Color.WHITE);
+	opponents_points.add_theme_color_override("font_color", Color.WHITE);

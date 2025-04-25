@@ -5,7 +5,7 @@ enum DataFileType {
 }
 
 static var DataFileExtension = {
-	DataFileType.SAVE: 'save'
+	DataFileType.SAVE: 'json'
 }
 
 static func get_data_file_extension(type: DataFileType) -> String:

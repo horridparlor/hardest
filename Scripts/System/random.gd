@@ -9,3 +9,7 @@ static func key(dictionary : Dictionary) -> Variant:
 
 static func chance(x : int) -> bool:
 	return randf() < (1.0 / x)
+
+static func boolean() -> bool:
+	return item([true, false]);
+	

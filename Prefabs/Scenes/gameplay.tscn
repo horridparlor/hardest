@@ -74,23 +74,23 @@ grow_vertical = 2
 [node name="Points" type="Node2D" parent="."]
 
 [node name="YourPoints" type="Label" parent="Points"]
-offset_left = 373.0
-offset_top = 763.0
-offset_right = 460.0
-offset_bottom = 920.0
+offset_left = -450.0
+offset_top = -920.0
+offset_right = -363.0
+offset_bottom = -763.0
 theme_override_fonts/font = ExtResource("2_0nx3a")
-theme_override_font_sizes/font_size = 128
+theme_override_font_sizes/font_size = 120
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="OpponentsPoints" type="Label" parent="Points"]
-offset_left = -460.0
+offset_left = 363.0
 offset_top = -920.0
-offset_right = -373.0
+offset_right = 450.0
 offset_bottom = -763.0
 theme_override_fonts/font = ExtResource("2_0nx3a")
-theme_override_font_sizes/font_size = 128
+theme_override_font_sizes/font_size = 120
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1

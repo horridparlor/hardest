@@ -14,8 +14,8 @@ func _ready() -> void:
 	player_two.eat_decklist(1);
 	init_layers();
 	init_timers();
-	going_first = System.Random.boolean();
-	round_start();
+	going_first = true;#System.Random.boolean();
+	start_round();
 
 func init_timers() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT;
@@ -23,8 +23,14 @@ func init_timers() -> void:
 	game_over_timer.wait_time = GAME_OVER_WAIT;
 	points_click_timer.wait_time = POINTS_CLICK_WAIT;
 
-func round_start() -> void:
-	if player_one.points >= System.Rules.VICTORY_POINTS or player_two.points >= System.Rules.VICTORY_POINTS:
+func have_you_won() -> bool:
+	return player_one.points >= System.Rules.VICTORY_POINTS;
+
+func has_opponent_won() -> bool:
+	return player_two.points >= System.Rules.VICTORY_POINTS;
+
+func start_round() -> void:
+	if have_you_won() or has_opponent_won():
 		start_game_over();
 		return;
 	player_one.draw_hand();
@@ -127,6 +133,9 @@ func play_card(player : Player, card : GameplayCard) -> void:
 func opponents_turn() -> void:
 	var card : CardData;
 	player_two.cards_in_hand.sort_custom(best_to_play);
+	#for car in player_two.cards_in_hand:
+		#print(car.card_name, " ", get_result_for_playing(car));
+	#print("-----");
 	card = player_two.cards_in_hand.back();
 	player_two.play_card(card);
 	spawn_card(card, true);
@@ -137,18 +146,38 @@ func opponents_turn() -> void:
 		your_turn();
 
 func go_to_results() -> void:
+	transform_mimics(player_one.cards_on_field, player_two.cards_on_field);
+	transform_mimics(player_two.cards_on_field, player_one.cards_on_field);
 	round_results_timer.start();
 
+func transform_mimics(your_cards : Array, enemies : Array) -> void:
+	var card : CardData;
+	for c in your_cards:
+		card = c;
+		if card.card_type == CardEnums.CardType.UNKNOWN:
+			card.card_type = enemies[0].card_type;
+			cards[card.instance_id].update_visuals();
+
 func best_to_play(card_a : CardData, card_b : CardData) -> int:
-	var result : int = get_result_for_playing(card_a) < get_result_for_playing(card_b);
-	if result == 0:
+	var a_value : int = get_result_for_playing(card_a);
+	var b_value : int = get_result_for_playing(card_b);
+	if a_value == b_value:
 		return most_valuable(card_a, card_b);
-	return result;
+	return a_value < b_value;
 
 func most_valuable(card_a : CardData, card_b : CardData) -> int:
-	return get_card_value(card_a) > get_card_value(card_b);
+	return -get_card_value(card_a, -1) < -get_card_value(card_b, -1);
 
-func get_card_value(card : CardData) -> int:
+func get_card_value(card : CardData, direction : int = 1) -> int:
+	var value : int = 10 * get_card_base_value(card);
+	var card_data : CardData;
+	for c in player_two.cards_in_hand:
+		card_data = c;
+		if card_data.card_type == card.card_type:
+			value += direction * 1;
+	return value;
+
+func get_card_base_value(card : CardData) -> int:
 	match card.card_type:
 		CardEnums.CardType.ROCK:
 			return 1;
@@ -163,7 +192,7 @@ func get_card_value(card : CardData) -> int:
 func get_result_for_playing(card : CardData) -> int:
 	var winner : GameplayEnums.Controller;
 	if player_one.field_empty():
-		return 0;
+		return get_value_to_threaten(card);
 	winner = determine_winner(card, player_one.cards_on_field[0]);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
@@ -171,6 +200,12 @@ func get_result_for_playing(card : CardData) -> int:
 		GameplayEnums.Controller.PLAYER_TWO:
 			return -1;
 	return 0;
+
+func get_value_to_threaten(card : CardData) -> int:
+	var value : int = get_card_value(card);
+	if value < 10:
+		value *= 10;
+	return value;
 
 func round_results() -> void:
 	var round_winner : GameplayEnums.Controller = determine_winner(
@@ -186,14 +221,21 @@ func round_results() -> void:
 			click_opponents_points();
 	your_points.text = str(player_one.points);
 	opponents_points.text = str(player_two.points);
+	if round_winner == GameplayEnums.Controller.NULL:
+		end_round();
+		return;
 	round_end_timer.start();
 
 func click_your_points() -> void:
 	your_points.add_theme_color_override("font_color", Color.YELLOW);
+	if have_you_won():
+		return;
 	points_click_timer.start();
 
 func click_opponents_points() -> void:
 	opponents_points.add_theme_color_override("font_color", Color.YELLOW);
+	if has_opponent_won():
+		return;
 	points_click_timer.start();
 
 func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
@@ -236,10 +278,10 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 				return you_win;
 	return tie;
 
-func round_end() -> void:
+func end_round() -> void:
 	clear_field();
 	going_first = !going_first;
-	round_start();
+	start_round();
 
 func clear_field() -> void:
 	clear_players_field(player_one);
@@ -276,7 +318,7 @@ func _on_round_results_timer_timeout() -> void:
 
 func _on_round_end_timer_timeout() -> void:
 	round_end_timer.stop();
-	round_end();
+	end_round();
 
 func _on_game_over_timer_timeout() -> void:
 	game_over_timer.stop();

@@ -4,7 +4,7 @@ const DECKLIST_FOLDER_PATH : String = "Decklists/";
 const DEFAULT_CARD : Dictionary = {
 	"id": 0,
 	"name": "Name",
-	"type": "Unknown"
+	"type": "Mimic"
 }
 
 const DEFAULT_DECKLIST : Dictionary = {

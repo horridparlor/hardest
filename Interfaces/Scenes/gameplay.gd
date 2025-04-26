@@ -17,6 +17,9 @@ const ROUND_RESULTS_WAIT : float = 0.4;
 const ROUND_END_WAIT : float = 0.8;
 const GAME_OVER_WAIT : float = 1.2;
 const POINTS_CLICK_WAIT : float = 0.2;
+const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
+const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";
+const TIE_SOUND_PATH : String = "res://Assets/SFX/Points/tie.wav";
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();

@@ -7,6 +7,7 @@ const Instance : GDScript = preload("res://Scripts/System/instance.gd");
 const Json : GDScript = preload("res://Scripts/System/json.gd");
 const Random : GDScript = preload("res://Scripts/System/random.gd");
 const Rules : GDScript = preload("res://Scripts/System/rules.gd");
+const Scale : GDScript = preload("res://Scripts/System/scale.gd");
 const Vectors : GDScript = preload("res://Scripts/System/vectors.gd");
 const Window_ : Vector2 = Vector2(1080, 1920);
 

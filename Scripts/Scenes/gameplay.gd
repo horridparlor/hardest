@@ -1,6 +1,7 @@
 extends Gameplay
 
 @onready var cards_layer : Node2D = $CardsLayer;
+@onready var cards_layer2 : Node2D = $CardsLayer2;
 @onready var field_lines : Node2D = $FieldLines;
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var round_end_timer : Timer = $Timers/RoundEndTimer;
@@ -8,6 +9,8 @@ extends Gameplay
 @onready var points_click_timer : Timer = $Timers/PointsClickTimer;
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
+@onready var background_music : AudioStreamPlayer2D = $Background/BackgroundMusic;
+@onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
 
 func _ready() -> void:
 	player_one.eat_decklist(1);
@@ -90,21 +93,39 @@ func _on_card_pressed(card : GameplayCard) -> void:
 		return;
 	active_card = card;
 	card.toggle_follow_mouse();
+	put_other_cards_behind(card);
 	if !can_play_card:
 		return;
 	field_lines_visible = true;
 	fading_field_lines = true;
 	field_lines.modulate.a = min(1, max(0, field_lines.modulate.a));
 
+func put_other_cards_behind(card : GameplayCard) -> void:
+	for instance_id in cards:
+		if instance_id == card.card_data.instance_id:
+			continue;
+		cards_layer.remove_child(cards[instance_id]);
+		cards_layer2.add_child(cards[instance_id]);
+
 func _on_card_released(card : GameplayCard) -> void:
 	if !System.Instance.exists(active_card) or card != active_card:
 		return;
 	card.toggle_follow_mouse(false);
+	return_other_cards_front(card);
 	active_card = null;
 	field_lines_visible = false;
 	fading_field_lines = true;
 	reorder_hand();
 	check_if_played(card);
+
+func return_other_cards_front(card : GameplayCard) -> void:
+	for instance_id in cards:
+		if instance_id == card.card_data.instance_id:
+			continue;
+		cards_layer2.remove_child(cards[instance_id]);
+		cards_layer.add_child(cards[instance_id]);
+	cards_layer.remove_child(card);
+	cards_layer.add_child(card);
 
 func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
 	return cards[card_a.instance_id].position.x < cards[card_b.instance_id].position.x;
@@ -154,7 +175,7 @@ func transform_mimics(your_cards : Array, enemies : Array) -> void:
 	var card : CardData;
 	for c in your_cards:
 		card = c;
-		if card.card_type == CardEnums.CardType.UNKNOWN:
+		if card.card_type == CardEnums.CardType.MIMIC:
 			card.card_type = enemies[0].card_type;
 			cards[card.instance_id].update_visuals();
 
@@ -219,6 +240,8 @@ func round_results() -> void:
 		GameplayEnums.Controller.PLAYER_TWO:
 			player_two.gain_point();
 			click_opponents_points();
+		GameplayEnums.Controller.NULL:
+			play_point_sfx(TIE_SOUND_PATH);
 	your_points.text = str(player_one.points);
 	opponents_points.text = str(player_two.points);
 	if round_winner == GameplayEnums.Controller.NULL:
@@ -228,12 +251,19 @@ func round_results() -> void:
 
 func click_your_points() -> void:
 	your_points.add_theme_color_override("font_color", Color.YELLOW);
+	play_point_sfx(YOUR_POINT_SOUND_PATH);
 	if have_you_won():
 		return;
 	points_click_timer.start();
 
+func play_point_sfx(file_path : String) -> void:
+	var sound_file : Resource = load(file_path);
+	point_streamer.stream = sound_file;
+	point_streamer.play();
+
 func click_opponents_points() -> void:
 	opponents_points.add_theme_color_override("font_color", Color.YELLOW);
+	play_point_sfx(OPPONENTS_POINT_SOUND_PATH);
 	if has_opponent_won():
 		return;
 	points_click_timer.start();
@@ -245,8 +275,8 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	match enemy_type:
-		CardEnums.CardType.UNKNOWN:
-			if card_type != CardEnums.CardType.UNKNOWN:
+		CardEnums.CardType.MIMIC:
+			if card_type != CardEnums.CardType.MIMIC:
 				return you_win;
 		CardEnums.CardType.GUN:
 			if card_type != CardEnums.CardType.GUN:
@@ -270,8 +300,8 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 					return you_win;
 				CardEnums.CardType.ROCK:
 					return opponent_wins;
-		CardEnums.CardType.UNKNOWN:
-			if enemy_type != CardEnums.CardType.UNKNOWN:
+		CardEnums.CardType.MIMIC:
+			if enemy_type != CardEnums.CardType.MIMIC:
 				return opponent_wins;
 		CardEnums.CardType.GUN:
 			if enemy_type != CardEnums.CardType.GUN:
@@ -328,3 +358,6 @@ func _on_points_click_timer_timeout() -> void:
 	points_click_timer.stop();
 	your_points.add_theme_color_override("font_color", Color.WHITE);
 	opponents_points.add_theme_color_override("font_color", Color.WHITE);
+
+func _on_background_music_finished() -> void:
+	background_music.play();

@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=5 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
+[ext_resource type="AudioStream" uid="uid://pwrvesx3ndtv" path="res://Assets/Music/Absinthe.wav" id="2_a1xts"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
 bg_color = Color(0.0395679, 0.203455, 0.26303, 1)
@@ -31,6 +32,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0s264")
 
+[node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="Background"]
+stream = ExtResource("2_a1xts")
+autoplay = true
+
+[node name="PointStreamer" type="AudioStreamPlayer2D" parent="Background"]
+
 [node name="FieldLines" type="Node2D" parent="."]
 
 [node name="Top" type="ColorRect" parent="FieldLines"]
@@ -58,6 +65,8 @@ offset_right = 540.0
 offset_bottom = 410.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="CardsLayer2" type="Node2D" parent="."]
 
 [node name="CardsLayer" type="Node2D" parent="."]
 
@@ -125,6 +134,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
+[connection signal="finished" from="Background/BackgroundMusic" to="." method="_on_background_music_finished"]
 [connection signal="timeout" from="Timers/RoundResultsTimer" to="." method="_on_round_results_timer_timeout"]
 [connection signal="timeout" from="Timers/RoundEndTimer" to="." method="_on_round_end_timer_timeout"]
 [connection signal="timeout" from="Timers/GameOverTimer" to="." method="_on_game_over_timer_timeout"]

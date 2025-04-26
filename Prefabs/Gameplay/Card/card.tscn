@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://du74m1788wbjd"]
+[gd_scene load_steps=8 format=3 uid="uid://du74m1788wbjd"]
 
 [ext_resource type="Script" path="res://Scripts/Gameplay/Card/card.gd" id="1_s1wa0"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_jr4xc"]
+[ext_resource type="Texture2D" uid="uid://cdj70jo852fqh" path="res://Assets/Art/CardIcons/scissor_120.png" id="3_i2unq"]
+[ext_resource type="Texture2D" uid="uid://bet6nevfoygve" path="res://Assets/Art/CardArt/1.png" id="4_r6pon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u7vep"]
 bg_color = Color(0.972983, 1, 0.604632, 1)
@@ -17,6 +19,18 @@ corner_radius_bottom_left = 60
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5tqwn"]
 size = Vector2(900, 1400)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hvkrs"]
+bg_color = Color(0.0562916, 0.0562916, 0.0562915, 1)
+border_color = Color(0.0177324, 0.0177324, 0.0177324, 1)
+corner_radius_top_left = 56
+corner_radius_top_right = 56
+corner_radius_bottom_right = 56
+corner_radius_bottom_left = 56
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
 
 [node name="Card" type="Node2D"]
 script = ExtResource("1_s1wa0")
@@ -42,9 +56,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -161.5
-offset_top = -628.0
+offset_top = -619.0
 offset_right = 161.5
-offset_bottom = -500.0
+offset_bottom = -491.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_jr4xc")
@@ -64,11 +78,43 @@ offset_bottom = 628.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_jr4xc")
-theme_override_font_sizes/font_size = 128
+theme_override_font_sizes/font_size = 120
 text = "Name"
+horizontal_alignment = 1
 
 [node name="Button" type="TouchScreenButton" parent="."]
 shape = SubResource("RectangleShape2D_5tqwn")
+
+[node name="TypeIcons" type="Sprite2D" parent="."]
+
+[node name="LeftIcon" type="Sprite2D" parent="TypeIcons"]
+position = Vector2(-340, 565)
+texture = ExtResource("3_i2unq")
+
+[node name="RightIcon" type="Sprite2D" parent="TypeIcons"]
+position = Vector2(340, 565)
+texture = ExtResource("3_i2unq")
+
+[node name="ArtLayer" type="Node2D" parent="."]
+position = Vector2(0, -160)
+
+[node name="Panel" type="Panel" parent="ArtLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -248.25
+offset_right = 350.0
+offset_bottom = 251.75
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hvkrs")
+
+[node name="CardArt" type="Sprite2D" parent="ArtLayer"]
+position = Vector2(0, 2)
+texture = ExtResource("4_r6pon")
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="released" from="Button" to="." method="_on_button_released"]

@@ -70,6 +70,9 @@ func reorder_hand() -> void:
 	player_one.cards_in_hand.sort_custom(sort_by_card_position);
 	position.x -= HAND_MARGIN * ((player_one.count_hand() - 1) / 2.0);
 	for card_data in player_one.cards_in_hand:
+		if System.Instance.exists(active_card) and active_card.card_data.instance_id == card_data.instance_id:
+			position.x += HAND_MARGIN;
+			continue;
 		card = cards[card_data.instance_id];
 		card.goal_position = position;
 		card.is_moving = true;
@@ -334,6 +337,8 @@ func show_opponents_field() -> void:
 func _process(delta : float) -> void:
 	if fading_field_lines:
 		fade_field_lines(delta);
+	if System.Instance.exists(active_card):
+		reorder_hand();
 
 func fade_field_lines(delta : float) -> void:
 	var direction : int = 1 if field_lines_visible else -1;

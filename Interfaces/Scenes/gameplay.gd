@@ -14,12 +14,14 @@ const FIELD_END_LINE : int = 405;
 const FIELD_POSITION : Vector2 = Vector2(0, FIELD_START_LINE + (FIELD_END_LINE - FIELD_START_LINE) / 2);
 const ENEMY_FIELD_POSITION : Vector2 = Vector2(0, 3 * FIELD_START_LINE);
 const ROUND_RESULTS_WAIT : float = 0.4;
+const PRE_RESULTS_WAIT : float = 0.6;
 const ROUND_END_WAIT : float = 0.8;
 const GAME_OVER_WAIT : float = 1.2;
 const POINTS_CLICK_WAIT : float = 0.2;
 const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";
 const TIE_SOUND_PATH : String = "res://Assets/SFX/Points/tie.wav";
+const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();

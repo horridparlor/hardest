@@ -5,8 +5,8 @@ signal pressed(_self)
 signal released(_self)
 signal despawned(_self)
 
-const MIN_SCALE = 0.2;
-const MAX_SCALE = 1.0;
+const MIN_SCALE : float = 0.2;
+const MAX_SCALE :float = 1.0;
 const MIN_SCALE_VECTOR : Vector2 = Vector2(MIN_SCALE, MIN_SCALE);
 const MAX_SCALE_VECTOR : Vector2 = Vector2(MAX_SCALE, MAX_SCALE);
 const SPEED : int = 6;
@@ -18,6 +18,7 @@ const TYPE_FONT_SIZE_BIG : int = 128;
 const TYPE_FONT_SIZE_SMALL : int = 128;
 const CARD_ART_PATH : String = "res://Assets/Art/CardArt/%s.png";
 const ROTATION_SPEED : float = 0.12;
+const FOCUS_WAIT : float = 1.2;
 
 const ROCK_BG_COLOR = "#008242";
 const ROCK_BORDER_COLOR = "#7bffc3";
@@ -39,15 +40,24 @@ const CARD_SCALE : Dictionary = {
 
 var card_data : CardData = CardData.new();
 var is_moving : bool;
+var is_focused : bool;
 var following_mouse : bool;
 var goal_position : Vector2;
 var starting_position : Vector2;
 var is_despawning : bool;
+var is_scaling : bool;
+var focus_timer : Timer = Timer.new();
 
 func init() -> void:
 	rescale(true);
 	update_visuals();
 	activate_animations();
+	initialize_timers();
+
+func initialize_timers() -> void:
+	add_child(focus_timer);
+	focus_timer.wait_time = FOCUS_WAIT;
+	focus_timer.timeout.connect(_on_focus_timer_timeout);
 
 func update_visuals() -> void:
 	pass;
@@ -61,6 +71,7 @@ func _process(delta: float) -> void:
 	if !(is_moving or following_mouse):
 		return;
 	move_card(delta);
+	update_scale(delta);
 
 func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
@@ -86,8 +97,35 @@ func toggle_follow_mouse(value : bool = true) -> void:
 	following_mouse = value;
 	starting_position = get_local_mouse_position();
 	starting_position.y = (starting_position.y + GameplayCard.SIZE.y) / 2;
+	toggle_focus(value);
 	
 func despawn() -> void:
 	is_despawning = true;
 	goal_position = Vector2(System.Window_.x, goal_position.y);
+	toggle_focus(false);
+
+func toggle_focus(value : bool = true) -> void:
+	if value:
+		focus_timer.start();
+	else:
+		focus_timer.stop();
+		is_focused = false;
+	move();
+
+func move() -> void:
 	is_moving = true;
+	is_scaling = true;
+
+func update_scale(delta : float) -> void:
+	var new_scale : float;
+	if !is_scaling:
+		return;
+	new_scale = System.Scale.baseline(scale.x, (MAX_SCALE if is_focused else MIN_SCALE), delta);
+	scale = Vector2(new_scale, new_scale);
+
+func _on_focus_timer_timeout() -> void:
+	focus_timer.stop();
+	is_focused = true;
+
+func bury() -> void:
+	pass;

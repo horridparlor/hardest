@@ -4,7 +4,8 @@ static func safe_get(source : Dictionary, key : String, default = null):
 	else:
 		return default;
 
-static func make_safe(source : Dictionary, default : Dictionary) -> void:
+static func make_safe(source : Dictionary, default : Dictionary) -> Dictionary:
 	for key in default:
 		if !source.has(key):
 			source[key] = default[key];
+	return source;

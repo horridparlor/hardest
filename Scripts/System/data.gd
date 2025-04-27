@@ -4,7 +4,8 @@ const DECKLIST_FOLDER_PATH : String = "Decklists/";
 const DEFAULT_CARD : Dictionary = {
 	"id": 0,
 	"name": "Name",
-	"type": "Mimic"
+	"type": "Mimic",
+	"keywords": []
 }
 
 const DEFAULT_DECKLIST : Dictionary = {
@@ -14,7 +15,9 @@ const DEFAULT_DECKLIST : Dictionary = {
 }
 
 static func read_card(card_id : int) -> Dictionary:
-	return System.Json.read_data(CARDS_FOLDER_PATH + str(card_id));
+	return System.Dictionaries.make_safe(
+		System.Json.read_data(CARDS_FOLDER_PATH + str(card_id)), DEFAULT_CARD
+	);
 
 static func read_decklist(decklist_id : int) -> Dictionary:
 	var data : Dictionary = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id));

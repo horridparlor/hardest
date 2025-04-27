@@ -1,5 +1,8 @@
 {
 	"id": 5,
 	"name": "Lesser Mimic",
-	"type": "Mimic"
+	"type": "Mimic",
+	"keywords": [
+		"buried"
+	]
 }

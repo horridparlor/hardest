@@ -4,6 +4,7 @@ extends Gameplay
 @onready var cards_layer2 : Node2D = $CardsLayer2;
 @onready var field_lines : Node2D = $FieldLines;
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
+@onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
 @onready var round_end_timer : Timer = $Timers/RoundEndTimer;
 @onready var game_over_timer : Timer = $Timers/GameOverTimer;
 @onready var points_click_timer : Timer = $Timers/PointsClickTimer;
@@ -11,6 +12,9 @@ extends Gameplay
 @onready var opponents_points : Label = $Points/OpponentsPoints;
 @onready var background_music : AudioStreamPlayer2D = $Background/BackgroundMusic;
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
+@onready var cards_shadow : Node2D = $CardsShadow;
+@onready var points_layer : Node = $Points;
+@onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;
 
 func _ready() -> void:
 	player_one.eat_decklist(1);
@@ -22,6 +26,7 @@ func _ready() -> void:
 
 func init_timers() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT;
+	pre_results_timer.wait_time = PRE_RESULTS_WAIT;
 	round_end_timer.wait_time = ROUND_END_WAIT;
 	game_over_timer.wait_time = GAME_OVER_WAIT;
 	points_click_timer.wait_time = POINTS_CLICK_WAIT;
@@ -75,7 +80,7 @@ func reorder_hand() -> void:
 			continue;
 		card = cards[card_data.instance_id];
 		card.goal_position = position;
-		card.is_moving = true;
+		card.move();
 		position.x += HAND_MARGIN;
 
 func spawn_card(card_data : CardData, spawn_for_opponent : bool = false) -> GameplayCard:
@@ -96,12 +101,22 @@ func _on_card_pressed(card : GameplayCard) -> void:
 		return;
 	active_card = card;
 	card.toggle_follow_mouse();
+	update_keywords_hints(card);
+	cards_shadow.visible = true;
+	points_layer.visible = false;
 	put_other_cards_behind(card);
 	if !can_play_card:
 		return;
 	field_lines_visible = true;
 	fading_field_lines = true;
 	field_lines.modulate.a = min(1, max(0, field_lines.modulate.a));
+
+func update_keywords_hints(card : GameplayCard) -> void:
+	var hints_text : String;
+	for keyword in card.card_data.keywords:
+		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
+		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword], hint_text];
+	keywords_hints.text = hints_text;
 
 func put_other_cards_behind(card : GameplayCard) -> void:
 	for instance_id in cards:
@@ -116,6 +131,8 @@ func _on_card_released(card : GameplayCard) -> void:
 	card.toggle_follow_mouse(false);
 	return_other_cards_front(card);
 	active_card = null;
+	cards_shadow.visible = false;
+	points_layer.visible = true;
 	field_lines_visible = false;
 	fading_field_lines = true;
 	reorder_hand();
@@ -146,13 +163,17 @@ func check_if_played(card : GameplayCard) -> void:
 
 func play_card(player : Player, card : GameplayCard) -> void:
 	player.play_card(card.card_data);
+	if card.card_data.has_buried():
+		card.bury();
+	if player == player_two:
+		return;
 	card.goal_position = FIELD_POSITION;
 	reorder_hand();
 	can_play_card = false;
 	if going_first:
 		opponents_turn();
 	else:
-		go_to_results();
+		go_to_pre_results();
 
 func opponents_turn() -> void:
 	var card : CardData;
@@ -161,11 +182,10 @@ func opponents_turn() -> void:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
 	card = player_two.cards_in_hand.back();
-	player_two.play_card(card);
-	spawn_card(card, true);
+	play_card(player_two, spawn_card(card, true));
 	show_opponents_field();
 	if going_first:
-		go_to_results();
+		go_to_pre_results();
 	else:
 		your_turn();
 
@@ -174,13 +194,29 @@ func go_to_results() -> void:
 	transform_mimics(player_two.cards_on_field, player_one.cards_on_field);
 	round_results_timer.start();
 
+func go_to_pre_results() -> void:
+	if no_mimics():
+		go_to_results();
+		return;
+	pre_results_timer.start();
+
+func no_mimics() -> bool:
+	var card_data : CardData;
+	for card in cards:
+		card_data = cards[card].card_data;
+		if card_data.card_type == CardEnums.CardType.MIMIC or card_data.is_buried:
+			return false;
+	return true;
+
 func transform_mimics(your_cards : Array, enemies : Array) -> void:
 	var card : CardData;
 	for c in your_cards:
 		card = c;
+		if card.is_buried:
+			card.is_buried = false;
 		if card.card_type == CardEnums.CardType.MIMIC:
 			card.card_type = enemies[0].card_type;
-			cards[card.instance_id].update_visuals();
+		cards[card.instance_id].update_visuals();
 
 func best_to_play(card_a : CardData, card_b : CardData) -> int:
 	var a_value : int = get_result_for_playing(card_a);
@@ -199,6 +235,12 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 		card_data = c;
 		if card_data.card_type == card.card_type:
 			value += direction * 1;
+	for keyword in card.keywords:
+		match keyword:
+			CardEnums.Keyword.BURIED:
+				value += 5;
+			CardEnums.Keyword.RUST:
+				value += 1;
 	return value;
 
 func get_card_base_value(card : CardData) -> int:
@@ -215,15 +257,22 @@ func get_card_base_value(card : CardData) -> int:
 
 func get_result_for_playing(card : CardData) -> int:
 	var winner : GameplayEnums.Controller;
-	if player_one.field_empty():
+	var first_face_up_card : CardData = get_first_face_up_card(player_one.cards_on_field);
+	if !first_face_up_card:
 		return get_value_to_threaten(card);
-	winner = determine_winner(card, player_one.cards_on_field[0]);
+	winner = determine_winner(card, first_face_up_card);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			return 1;
 		GameplayEnums.Controller.PLAYER_TWO:
 			return -1;
 	return 0;
+
+func get_first_face_up_card(source : Array) -> CardData:
+	for card in source:
+		if !card.is_buried:
+			return card;
+	return null;
 
 func get_value_to_threaten(card : CardData) -> int:
 	var value : int = get_card_value(card);
@@ -282,6 +331,8 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 			if card_type != CardEnums.CardType.MIMIC:
 				return you_win;
 		CardEnums.CardType.GUN:
+			if card.has_rust():
+				return you_win;
 			if card_type != CardEnums.CardType.GUN:
 				return opponent_wins;
 	match card_type:
@@ -307,6 +358,8 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 			if enemy_type != CardEnums.CardType.MIMIC:
 				return opponent_wins;
 		CardEnums.CardType.GUN:
+			if enemy.has_rust():
+				return opponent_wins;
 			if enemy_type != CardEnums.CardType.GUN:
 				return you_win;
 	return tie;
@@ -332,7 +385,7 @@ func show_opponents_field() -> void:
 	for card_data in player_two.cards_on_field:
 		card = cards[card_data.instance_id];
 		card.goal_position = ENEMY_FIELD_POSITION;
-		card.is_moving = true;
+		card.move();
 
 func _process(delta : float) -> void:
 	if fading_field_lines:
@@ -366,3 +419,7 @@ func _on_points_click_timer_timeout() -> void:
 
 func _on_background_music_finished() -> void:
 	background_music.play();
+
+func _on_pre_results_timer_timeout() -> void:
+	pre_results_timer.stop();
+	go_to_results();

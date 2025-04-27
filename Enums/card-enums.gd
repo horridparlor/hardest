@@ -30,3 +30,23 @@ enum Zone {
 	FIELD,
 	GRAVE
 }
+
+enum Keyword {
+	BURIED,
+	RUST
+}
+
+const KeywordNames : Dictionary = {
+	Keyword.BURIED : "Buried",
+	Keyword.RUST : "Rust"
+}
+
+const KeywordTranslate : Dictionary = {
+	"buried" : Keyword.BURIED,
+	"rust" : Keyword.RUST
+}
+
+const KeywordHints : Dictionary = {
+	Keyword.BURIED : "This card is played face-down.",
+	Keyword.RUST : "Defeats any gun."
+}

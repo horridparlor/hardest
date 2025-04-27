@@ -67,6 +67,7 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_jr4xc")
 theme_override_font_sizes/font_size = 104
 text = "Name"
+vertical_alignment = 1
 
 [node name="TypeLabel" type="Label" parent="."]
 anchors_preset = 8

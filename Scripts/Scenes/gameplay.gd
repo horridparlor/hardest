@@ -190,8 +190,8 @@ func opponents_turn() -> void:
 		your_turn();
 
 func go_to_results() -> void:
-	transform_mimics(player_one.cards_on_field, player_two.cards_on_field);
-	transform_mimics(player_two.cards_on_field, player_one.cards_on_field);
+	transform_mimics(player_one.cards_on_field, player_two);
+	transform_mimics(player_two.cards_on_field, player_one);
 	round_results_timer.start();
 
 func go_to_pre_results() -> void:
@@ -208,15 +208,22 @@ func no_mimics() -> bool:
 			return false;
 	return true;
 
-func transform_mimics(your_cards : Array, enemies : Array) -> void:
+func transform_mimics(your_cards : Array, opponent : Player) -> void:
 	var card : CardData;
 	for c in your_cards:
 		card = c;
+		if card.has_influencer():
+			influence_opponent(opponent);
 		if card.is_buried:
 			card.is_buried = false;
 		if card.card_type == CardEnums.CardType.MIMIC:
-			card.card_type = enemies[0].card_type;
+			card.card_type = opponent.cards_on_field[0].card_type;
 		cards[card.instance_id].update_visuals();
+
+func influence_opponent(opponent : Player) -> void:
+	if opponent.deck_empty():
+		return;
+	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1] = CardData.eat_json(System.Data.read_card(1));
 
 func best_to_play(card_a : CardData, card_b : CardData) -> int:
 	var a_value : int = get_result_for_playing(card_a);
@@ -239,6 +246,16 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 		match keyword:
 			CardEnums.Keyword.BURIED:
 				value += 5;
+			CardEnums.Keyword.COPYCAT:
+				value += 1;
+			CardEnums.Keyword.GREED:
+				value += 10;
+			CardEnums.Keyword.INFLUENCER:
+				value += 1;
+			CardEnums.Keyword.PAIR:
+				value += 3;
+			CardEnums.Keyword.PAIR_BREAKER:
+				value += 1;
 			CardEnums.Keyword.RUST:
 				value += 1;
 	return value;
@@ -263,8 +280,12 @@ func get_result_for_playing(card : CardData) -> int:
 	winner = determine_winner(card, first_face_up_card);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
+			if first_face_up_card.has_greed() and !player_two.is_close_to_winning():
+				return -2;
 			return 1;
 		GameplayEnums.Controller.PLAYER_TWO:
+			if card.has_greed() and !player_one.is_close_to_winning():
+				return 2;
 			return -1;
 	return 0;
 
@@ -281,17 +302,21 @@ func get_value_to_threaten(card : CardData) -> int:
 	return value;
 
 func round_results() -> void:
+	var card : CardData = player_one.cards_on_field[0];
+	var enemy : CardData = player_two.cards_on_field[0];
 	var round_winner : GameplayEnums.Controller = determine_winner(
-		player_one.cards_on_field[0],
-		player_two.cards_on_field[0]
+		card,
+		enemy
 	);
 	match round_winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			player_one.gain_point();
 			click_your_points();
+			check_lose_effects(enemy, player_two);
 		GameplayEnums.Controller.PLAYER_TWO:
 			player_two.gain_point();
 			click_opponents_points();
+			check_lose_effects(card, player_one);
 		GameplayEnums.Controller.NULL:
 			play_point_sfx(TIE_SOUND_PATH);
 	your_points.text = str(player_one.points);
@@ -300,6 +325,10 @@ func round_results() -> void:
 		end_round();
 		return;
 	round_end_timer.start();
+
+func check_lose_effects(card : CardData, player : Player) -> void:
+	if card.has_greed():
+		player.draw(2);
 
 func click_your_points() -> void:
 	your_points.add_theme_color_override("font_color", Color.YELLOW);
@@ -362,6 +391,16 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 				return opponent_wins;
 			if enemy_type != CardEnums.CardType.GUN:
 				return you_win;
+	if card.has_pair():
+		if enemy.has_pair_breaker():
+			return opponent_wins;
+		if !enemy.has_pair():
+			return you_win;
+	elif enemy.has_pair():
+		if card.has_pair_breaker():
+			return you_win;
+		if !card.has_pair():
+			return opponent_wins;
 	return tie;
 
 func end_round() -> void:

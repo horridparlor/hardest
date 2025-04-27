@@ -33,13 +33,18 @@ func hand_size_reached() -> bool:
 	return cards_in_hand.size() >= System.Rules.HAND_SIZE;
 
 func draw_hand() -> void:
-	var card : CardData;
 	while !deck_empty():
-		card = cards_in_deck.pop_back();
-		cards_in_hand.append(card);
-		card.zone = CardEnums.Zone.HAND;
+		draw();
 		if hand_size_reached():
 			break;
+
+func draw(amount : int = 1) -> void:
+	var card : CardData;
+	if deck_empty() or count_hand() == System.Rules.MAX_HAND_SIZE:
+		return;
+	card = cards_in_deck.pop_back();
+	cards_in_hand.append(card);
+	card.zone = CardEnums.Zone.HAND;
 
 func play_card(card : CardData) -> void:
 	cards_in_hand.erase(card);
@@ -65,3 +70,6 @@ func clear_field() -> void:
 		cards_on_field.erase(card);
 		cards_in_grave.append(card);
 		card.zone = CardEnums.Zone.GRAVE;
+
+func is_close_to_winning() -> bool:
+	return points >= System.Rules.CLOSE_TO_WINNING_POINTS;

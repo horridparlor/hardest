@@ -12,7 +12,7 @@ func update_visuals() -> void:
 	if card_data.is_buried:
 		bury();
 		return;
-	name_label.text = card_data.card_name;
+	update_name_label(card_data.card_name);
 	type_label.text = CardEnums.CardTypeName[card_data.card_type];
 	type_label.add_theme_font_size_override("font_size", TYPE_FONT_SIZE_SMALL if card_data.card_type == CardEnums.CardType.SCISSORS else TYPE_FONT_SIZE_BIG);
 	update_panel(card_data.card_type);
@@ -22,12 +22,16 @@ func update_visuals() -> void:
 
 func bury() -> void:
 	card_data.is_buried = true;
-	name_label.text = "Buried";
+	update_name_label("Buried");
 	type_label.text = "???";
 	update_keywords_text([CardEnums.Keyword.BURIED]);
 	card_art.texture = null;
 	update_panel(CardEnums.CardType.MIMIC);
 	update_type_icons(CardEnums.CardType.MIMIC);
+
+func update_name_label(message : String) -> void:
+	name_label.text = message;
+	name_label.add_theme_font_size_override("font_size", 88 if message.length() > 12 else 104);
 
 func update_panel(card_type : CardEnums.CardType) -> void:
 	var style : StyleBoxFlat = StyleBoxFlat.new();

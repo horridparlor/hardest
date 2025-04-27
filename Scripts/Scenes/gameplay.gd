@@ -355,6 +355,10 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	if card.has_pair() and enemy.has_pair_breaker():
+		return opponent_wins;
+	if enemy.has_pair() and card.has_pair_breaker():
+		return you_win;
 	match enemy_type:
 		CardEnums.CardType.MIMIC:
 			if card_type != CardEnums.CardType.MIMIC:
@@ -392,13 +396,9 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 			if enemy_type != CardEnums.CardType.GUN:
 				return you_win;
 	if card.has_pair():
-		if enemy.has_pair_breaker():
-			return opponent_wins;
 		if !enemy.has_pair():
 			return you_win;
 	elif enemy.has_pair():
-		if card.has_pair_breaker():
-			return you_win;
 		if !card.has_pair():
 			return opponent_wins;
 	return tie;

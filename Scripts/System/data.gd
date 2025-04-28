@@ -1,5 +1,7 @@
 const CARDS_FOLDER_PATH : String = "Cards/";
 const DECKLIST_FOLDER_PATH : String = "Decklists/";
+const LEVEL_FOLDER_PATH : String = "Levels/";
+const SAVE_DATA_PATH : String = "save-data";
 
 const DEFAULT_CARD : Dictionary = {
 	"id": 0,
@@ -13,6 +15,17 @@ const DEFAULT_DECKLIST : Dictionary = {
 	"main": [],
 	"extra": []
 }
+
+const DEFAULT_LEVEL : Dictionary = {
+	"id": 0,
+	"opponent": GameplayEnums.Character.PETE,
+	"deck": 1,
+	"deck2": 1
+}
+
+const DEFAULT_SAVE_DATA : Dictionary = {
+	"levels_unlocked": 1
+};
 
 static func read_card(card_id : int) -> Dictionary:
 	return System.Dictionaries.make_safe(
@@ -29,6 +42,11 @@ static func read_decklist(decklist_id : int) -> Dictionary:
 		"extra": extra_deck
 	};
 
+static func read_level(level_id : int) -> LevelData:
+	return LevelData.eat_json(System.Dictionaries.make_safe(
+		System.Json.read_data(LEVEL_FOLDER_PATH + str(level_id)), DEFAULT_LEVEL
+	));
+
 static func fill_decklist(cards : Array) -> Dictionary:
 	var decklist : Dictionary;
 	for card in cards:
@@ -44,3 +62,9 @@ static func fill_decklist(cards : Array) -> Dictionary:
 				else:
 					decklist[card] += 1;
 	return decklist;
+
+static func read_save_data() -> Dictionary:
+	return System.Dictionaries.make_safe(System.Json.read_save(SAVE_DATA_PATH), DEFAULT_SAVE_DATA);
+
+static func write_save_data(data : Dictionary) -> void:
+	System.Json.write_save(data, SAVE_DATA_PATH);

@@ -11,13 +11,20 @@ func _ready() -> void:
 	System.create_directories();
 	DisplayServer.window_set_current_screen(System.Display);
 	set_process_input(true);
-	open_gameplay();
+	open_nexus();
 	
-func open_gameplay() -> void:
+func open_nexus() -> void:
+	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);
+	nexus.enter_level.connect(open_gameplay);
+	nexus.is_active = true;
+	
+func open_gameplay(level_data : LevelData) -> void:
 	gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
 	gameplay.game_over.connect(_on_game_over);
+	gameplay.init(level_data);
+	nexus.queue_free();
 
 func _on_game_over() -> void:
 	var old_scene : Gameplay = gameplay;
-	open_gameplay();
+	open_nexus();
 	old_scene.queue_free();

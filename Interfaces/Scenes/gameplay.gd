@@ -22,6 +22,8 @@ const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";
 const TIE_SOUND_PATH : String = "res://Assets/SFX/Points/tie.wav";
 const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
+const ACTIVE_CHARACTER_VISIBILITY : float = 1.0;
+const INACTIVE_CHARACTER_VISIBILITY : float = 0.4;
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
@@ -31,3 +33,7 @@ var fading_field_lines : bool;
 var field_lines_visible : bool;
 var can_play_card : bool;
 var going_first : bool;
+var level_data : LevelData;
+
+func init(level_data_ : LevelData) -> void:
+	pass;

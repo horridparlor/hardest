@@ -15,14 +15,25 @@ extends Gameplay
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
 @onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;
+@onready var character_face : Sprite2D = $Points/CharacterFace;
+@onready var your_face : Sprite2D = $Points/YourFace;
 
-func _ready() -> void:
-	player_one.eat_decklist(1);
-	player_two.eat_decklist(1);
+
+func init(level_data_ : LevelData) -> void:
+	level_data = level_data_;
+	player_one.eat_decklist(level_data.deck_id);
+	player_two.eat_decklist(level_data.deck2_id);
 	init_layers();
 	init_timers();
 	going_first = System.Random.boolean();
+	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
+	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	start_round();
+	update_character_face();
+	
+func update_character_face() -> void:
+	var face_texture : Resource = load(LevelButton.CHARACTER_FACE_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);
+	character_face.texture = face_texture;
 
 func init_timers() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT;
@@ -32,7 +43,16 @@ func init_timers() -> void:
 	points_click_timer.wait_time = POINTS_CLICK_WAIT;
 
 func have_you_won() -> bool:
-	return player_one.points >= System.Rules.VICTORY_POINTS;
+	var result : bool = player_one.points >= System.Rules.VICTORY_POINTS;
+	var save_data : Dictionary;
+	if result:
+		save_data = System.Data.read_save_data();
+		if save_data.levels_unlocked == level_data.id:
+			save_data.levels_unlocked += 1;
+			System.Data.write_save_data(save_data);
+		your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
+		character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
+	return result;
 
 func has_opponent_won() -> bool:
 	return player_two.points >= System.Rules.VICTORY_POINTS;
@@ -44,7 +64,7 @@ func start_round() -> void:
 	player_one.draw_hand();
 	player_two.draw_hand();
 	player_two.shuffle_hand();
-	if player_one.hand_empty() or player_two.hand_empty():
+	if (player_one.hand_empty() and player_one.deck_empty()) or (player_two.hand_empty() and player_two.deck_empty()):
 		start_game_over();
 		return;
 	if going_first:
@@ -60,6 +80,8 @@ func end_game() -> void:
 
 func your_turn() -> void:
 	show_hand();
+	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
+	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	can_play_card = true;
 
 func init_layers() -> void:
@@ -177,6 +199,8 @@ func play_card(player : Player, card : GameplayCard) -> void:
 	card.goal_position = FIELD_POSITION;
 	reorder_hand();
 	can_play_card = false;
+	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
+	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 	if going_first:
 		opponents_turn();
 	else:

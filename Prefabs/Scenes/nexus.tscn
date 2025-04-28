@@ -1,6 +1,104 @@
-[gd_scene load_steps=2 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=7 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
+[ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_t27xe"]
+[ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="3_7qjro"]
+[ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="3_cwu78"]
+[ext_resource type="FontFile" uid="uid://ckd00l7rafrhj" path="res://Assets/FontFiles/Montserrat/Montserrat-MediumItalic.ttf" id="4_ueumv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
+bg_color = Color(0.611381, 0.0337919, 0.238643, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0.520201, 0.0166778, 0.0821806, 1)
+border_blend = true
 
 [node name="Nexus" type="Node2D"]
 script = ExtResource("1_wr5g5")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = -960.0
+offset_right = 540.0
+offset_bottom = 960.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fkb73")
+
+[node name="Edges" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Edges"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2160.0
+offset_top = -960.0
+offset_right = -540.0
+offset_bottom = 960.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.00820202, 0.00820202, 0.00820202, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="Edges"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 540.0
+offset_top = -960.0
+offset_right = 2160.0
+offset_bottom = 960.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.00784314, 0.00784314, 0.00784314, 1)
+
+[node name="Label" type="RichTextLabel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -515.0
+offset_top = -880.5
+offset_right = 515.0
+offset_bottom = -563.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("2_t27xe")
+theme_override_fonts/italics_font = ExtResource("3_7qjro")
+theme_override_fonts/bold_italics_font = ExtResource("4_ueumv")
+theme_override_font_sizes/bold_italics_font_size = 80
+theme_override_font_sizes/italics_font_size = 88
+theme_override_font_sizes/normal_font_size = 168
+bbcode_enabled = true
+text = "[center]Hardest
+[i][b]the[/b] Card Game[/i][/center]"
+
+[node name="Label2" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -219.0
+offset_top = 859.5
+offset_right = 219.0
+offset_bottom = 938.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_cwu78")
+theme_override_font_sizes/font_size = 48
+text = "by Eero Laine"
+horizontal_alignment = 1
+
+[node name="LevelButtons" type="Node2D" parent="."]

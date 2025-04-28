@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=10 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
 [ext_resource type="AudioStream" uid="uid://pwrvesx3ndtv" path="res://Assets/Music/Absinthe.wav" id="2_a1xts"]
+[ext_resource type="Texture2D" uid="uid://cthlduqrfhvr3" path="res://Assets/Art/CharacterFace/2.png" id="3_d4hyf"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
+[ext_resource type="Texture2D" uid="uid://dm15bo5qcxwt3" path="res://Assets/Art/CharacterFace/1.png" id="5_10ocq"]
 [ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="5_r3tby"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
 
@@ -106,6 +108,14 @@ theme_override_font_sizes/font_size = 120
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CharacterFace" type="Sprite2D" parent="Points"]
+position = Vector2(180, -780)
+texture = ExtResource("3_d4hyf")
+
+[node name="YourFace" type="Sprite2D" parent="Points"]
+position = Vector2(-180, -780)
+texture = ExtResource("5_10ocq")
 
 [node name="CardsShadow" type="Node2D" parent="."]
 visible = false

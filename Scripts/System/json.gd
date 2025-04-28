@@ -1,6 +1,6 @@
 const SAVE_WRITE_PATH_PREFIX : String = "user://json-data/";
 const DATA_WRITE_PATH_PREFIX : String = "res://Data/";
-const ERROR_KEY : String = 'SYSTEM_RESERVER_KEY_ERROR';
+const ERROR_KEY : String = "SYSTEM_RESERVER_KEY_ERROR";
 const ERROR : Dictionary = {
 	ERROR_KEY: ERROR_KEY
 }

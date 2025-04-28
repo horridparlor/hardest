@@ -21,7 +21,7 @@ func _ready() -> void:
 	player_two.eat_decklist(1);
 	init_layers();
 	init_timers();
-	going_first = true;#System.Random.boolean();
+	going_first = System.Random.boolean();
 	start_round();
 
 func init_timers() -> void:
@@ -43,6 +43,7 @@ func start_round() -> void:
 		return;
 	player_one.draw_hand();
 	player_two.draw_hand();
+	player_two.shuffle_hand();
 	if player_one.hand_empty() or player_two.hand_empty():
 		start_game_over();
 		return;
@@ -77,6 +78,8 @@ func reorder_hand() -> void:
 	for card_data in player_one.cards_in_hand:
 		if System.Instance.exists(active_card) and active_card.card_data.instance_id == card_data.instance_id:
 			position.x += HAND_MARGIN;
+			continue;
+		if !cards.has(card_data.instance_id):
 			continue;
 		card = cards[card_data.instance_id];
 		card.goal_position = position;
@@ -148,7 +151,9 @@ func return_other_cards_front(card : GameplayCard) -> void:
 	cards_layer.add_child(card);
 
 func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
-	return cards[card_a.instance_id].position.x < cards[card_b.instance_id].position.x;
+	var a_x : int = cards[card_a.instance_id].position.x if cards.has(card_a.instance_id) else 0;
+	var b_x : int = cards[card_b.instance_id].position.x if cards.has(card_b.instance_id) else 0;
+	return a_x < b_x;
 
 func _on_card_despawned(card : GameplayCard) -> void:
 	cards.erase(card.card_data.instance_id);
@@ -165,6 +170,8 @@ func play_card(player : Player, card : GameplayCard) -> void:
 	player.play_card(card.card_data);
 	if card.card_data.has_buried():
 		card.bury();
+	if card.card_data.has_celebration():
+		celebrate(player);
 	if player == player_two:
 		return;
 	card.goal_position = FIELD_POSITION;
@@ -174,6 +181,14 @@ func play_card(player : Player, card : GameplayCard) -> void:
 		opponents_turn();
 	else:
 		go_to_pre_results();
+
+func celebrate(player : Player) -> void:
+	var cards_where_in_hand : Array = player.cards_in_hand;
+	player.celebrate();
+	for card in cards_where_in_hand:
+		if cards.has(card.instance_id) and !player.cards_in_hand.has(card):
+			cards[card.instance_id].despawn();
+	show_hand();
 
 func opponents_turn() -> void:
 	var card : CardData;
@@ -190,8 +205,10 @@ func opponents_turn() -> void:
 		your_turn();
 
 func go_to_results() -> void:
-	transform_mimics(player_one.cards_on_field, player_two);
-	transform_mimics(player_two.cards_on_field, player_one);
+	if !player_two.get_field_card().has_high_ground():
+		transform_mimics(player_one.cards_on_field, player_two);
+	if !player_one.get_field_card().has_high_ground():
+		transform_mimics(player_two.cards_on_field, player_one);
 	round_results_timer.start();
 
 func go_to_pre_results() -> void:
@@ -202,6 +219,8 @@ func go_to_pre_results() -> void:
 
 func no_mimics() -> bool:
 	var card_data : CardData;
+	if player_one.get_field_card().has_high_ground() or player_two.get_field_card().has_high_ground():
+		return true;
 	for card in cards:
 		card_data = cards[card].card_data;
 		if card_data.card_type == CardEnums.CardType.MIMIC or card_data.is_buried:
@@ -246,10 +265,16 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 		match keyword:
 			CardEnums.Keyword.BURIED:
 				value += 5;
+			CardEnums.Keyword.CELEBRATION:
+				value += 0;
 			CardEnums.Keyword.COPYCAT:
 				value += 1;
+			CardEnums.Keyword.DIVINE:
+				value += 0;
 			CardEnums.Keyword.GREED:
 				value += 10;
+			CardEnums.Keyword.HIGH_GROUND:
+				value += 2;
 			CardEnums.Keyword.INFLUENCER:
 				value += 1;
 			CardEnums.Keyword.PAIR:
@@ -258,6 +283,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 1;
 			CardEnums.Keyword.RUST:
 				value += 1;
+	if card.has_champion() :
+		value *= 2;
 	return value;
 
 func get_card_base_value(card : CardData) -> int:
@@ -275,18 +302,23 @@ func get_card_base_value(card : CardData) -> int:
 func get_result_for_playing(card : CardData) -> int:
 	var winner : GameplayEnums.Controller;
 	var first_face_up_card : CardData = get_first_face_up_card(player_one.cards_on_field);
+	var value : int = 1;
 	if !first_face_up_card:
 		return get_value_to_threaten(card);
+	if card.has_champion():
+		value *= 2;
+	if first_face_up_card.has_champion():
+		value *= 2;
 	winner = determine_winner(card, first_face_up_card);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			if first_face_up_card.has_greed() and !player_two.is_close_to_winning():
 				return -2;
-			return 1;
+			return value;
 		GameplayEnums.Controller.PLAYER_TWO:
 			if card.has_greed() and !player_one.is_close_to_winning():
 				return 2;
-			return -1;
+			return -value;
 	return 0;
 
 func get_first_face_up_card(source : Array) -> CardData:
@@ -296,9 +328,10 @@ func get_first_face_up_card(source : Array) -> CardData:
 	return null;
 
 func get_value_to_threaten(card : CardData) -> int:
-	var value : int = get_card_value(card);
-	if value < 10:
-		value *= 10;
+	var value : int;
+	if card.has_champion():
+		return 0;
+	value = get_card_value(card);
 	return value;
 
 func round_results() -> void:
@@ -308,13 +341,18 @@ func round_results() -> void:
 		card,
 		enemy
 	);
+	var points : int = 1;
+	if card.has_champion():
+		points *= 2;
+	if enemy.has_champion():
+		points *= 2;
 	match round_winner:
 		GameplayEnums.Controller.PLAYER_ONE:
-			player_one.gain_point();
+			player_one.gain_points(points);
 			click_your_points();
 			check_lose_effects(enemy, player_two);
 		GameplayEnums.Controller.PLAYER_TWO:
-			player_two.gain_point();
+			player_two.gain_points(points);
 			click_opponents_points();
 			check_lose_effects(card, player_one);
 		GameplayEnums.Controller.NULL:
@@ -358,6 +396,10 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 	if card.has_pair() and enemy.has_pair_breaker():
 		return opponent_wins;
 	if enemy.has_pair() and card.has_pair_breaker():
+		return you_win;
+	if card.is_buried and !enemy.is_buried and enemy_type != CardEnums.CardType.MIMIC:
+		return opponent_wins;
+	if enemy.is_buried and !card.is_buried and card_type != CardEnums.CardType.MIMIC:
 		return you_win;
 	match enemy_type:
 		CardEnums.CardType.MIMIC:

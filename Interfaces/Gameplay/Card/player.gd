@@ -46,6 +46,16 @@ func draw(amount : int = 1) -> void:
 	cards_in_hand.append(card);
 	card.zone = CardEnums.Zone.HAND;
 
+func celebrate() -> void:
+	shuffle_hand_to_deck();
+	draw();
+
+func shuffle_hand_to_deck() -> void:
+	for card in cards_in_hand:
+		cards_in_deck.append(card);
+	cards_in_hand = [];
+	cards_in_deck.shuffle();
+
 func play_card(card : CardData) -> void:
 	cards_in_hand.erase(card);
 	cards_on_field.append(card);
@@ -59,9 +69,25 @@ func eat_decklist(decklist_id : int = 0) -> void:
 		for i in range(decklist_data.main[card]):
 			cards_in_deck.append(CardData.eat_json(card_data));
 	cards_in_deck.shuffle();
+	add_always_start_cards();
 
-func gain_point() -> void:
-	points += 1;
+func add_always_start_cards() -> void:
+	var always_cards : Array = [
+		System.Data.read_card(3),
+		System.Data.read_card(2),
+		System.Data.read_card(1)
+	]
+	for card in always_cards:
+		cards_in_deck.append(CardData.eat_json(card));
+
+func shuffle_hand() -> void:
+	cards_in_hand.shuffle();
+
+func get_field_card() -> CardData:
+	return cards_on_field[0] if !field_empty() else null;
+
+func gain_points(amount : int = 1) -> void:
+	points += amount;
 
 func clear_field() -> void:
 	var card : CardData;

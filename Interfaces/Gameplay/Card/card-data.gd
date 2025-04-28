@@ -25,11 +25,23 @@ func has_keyword(keyword : CardEnums.Keyword) -> bool:
 func has_buried() -> bool:
 	return has_keyword(CardEnums.Keyword.BURIED);
 
+func has_celebration() -> bool:
+	return has_keyword(CardEnums.Keyword.CELEBRATION);
+
+func has_champion() -> bool:
+	return has_keyword(CardEnums.Keyword.CHAMPION);
+
 func has_copycat() -> bool:
 	return has_keyword(CardEnums.Keyword.COPYCAT);
+
+func has_divine() -> bool:
+	return has_keyword(CardEnums.Keyword.DIVINE);
 	
 func has_greed() -> bool:
 	return has_keyword(CardEnums.Keyword.GREED);
+
+func has_high_ground() -> bool:
+	return has_keyword(CardEnums.Keyword.HIGH_GROUND);
 
 func has_influencer() -> bool:
 	return has_keyword(CardEnums.Keyword.INFLUENCER);

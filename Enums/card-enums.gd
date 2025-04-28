@@ -79,7 +79,7 @@ const KeywordHints : Dictionary = {
 	Keyword.CHAMPION : "Games with this card give double points.",
 	Keyword.COPYCAT : "Copies opponent's card type.",
 	Keyword.DIVINE : "Defeats any undead.",
-	Keyword.GREED : "If this card loses, draw 2.",
+	Keyword.GREED : "If loses, draw 2.",
 	Keyword.HIGH_GROUND : "Automatically defeats any face-down card.",
 	Keyword.INFLUENCER : "Opponent's top card becomes a Pebble.",
 	Keyword.PAIR : "Wins in a tie.",

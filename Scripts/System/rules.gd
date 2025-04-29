@@ -6,4 +6,4 @@ const HAND_SIZE : int = 3;
 const MAX_HAND_SIZE : int = 5;
 const VICTORY_POINTS : int = 10;
 const CLOSE_TO_WINNING_POINTS : int = VICTORY_POINTS - 2;
-const MAX_LEVELS : int = 4;
+const MAX_LEVELS : int = 5;

@@ -64,7 +64,10 @@ static func fill_decklist(cards : Array) -> Dictionary:
 	return decklist;
 
 static func read_save_data() -> Dictionary:
-	return System.Dictionaries.make_safe(System.Json.read_save(SAVE_DATA_PATH), DEFAULT_SAVE_DATA);
+	var save_data : Dictionary = System.Json.read_save(SAVE_DATA_PATH);
+	if System.Json.is_error(save_data):
+		write_save_data(DEFAULT_SAVE_DATA);
+	return System.Dictionaries.make_safe(save_data, DEFAULT_SAVE_DATA);
 
 static func write_save_data(data : Dictionary) -> void:
 	System.Json.write_save(data, SAVE_DATA_PATH);

@@ -22,6 +22,8 @@ extends Gameplay
 
 func init(level_data_ : LevelData) -> void:
 	level_data = level_data_;
+	player_one.controller = GameplayEnums.Controller.PLAYER_ONE;
+	player_two.controller = GameplayEnums.Controller.PLAYER_TWO;
 	player_one.eat_decklist(level_data.deck_id);
 	player_two.eat_decklist(level_data.deck2_id);
 	init_layers();
@@ -132,7 +134,7 @@ func spawn_card(card_data : CardData, spawn_for_opponent : bool = false) -> Game
 		return cards[card_data.instance_id];
 	var card : GameplayCard = System.Instance.load_child(CARD_PATH, cards_layer);
 	card.card_data = card_data;
-	card.init();
+	card.init(card_data.controller.gained_keyword);
 	cards[card.card_data.instance_id] = card;
 	card.position = -CARD_STARTING_POSITION if spawn_for_opponent else CARD_STARTING_POSITION;
 	card.pressed.connect(_on_card_pressed);
@@ -148,7 +150,7 @@ func update_alterations(card_data : CardData) -> void:
 		else:
 			card_data.card_type = card_data.default_type;
 	if card:
-		card.update_visuals();
+		card.update_visuals(card.card_data.controller.gained_keyword);
 
 func _on_card_pressed(card : GameplayCard) -> void:
 	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND:
@@ -167,7 +169,11 @@ func _on_card_pressed(card : GameplayCard) -> void:
 
 func update_keywords_hints(card : GameplayCard) -> void:
 	var hints_text : String;
-	for keyword in card.card_data.keywords:
+	var keywords : Array = card.card_data.keywords.duplicate();
+	var gained_keyword : CardEnums.Keyword = card.card_data.controller.gained_keyword;
+	if  gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
+		keywords.append(gained_keyword);
+	for keyword in keywords:
 		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
 		hint_text = enrich_hint(hint_text, card);
 		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?", hint_text];
@@ -176,7 +182,7 @@ func update_keywords_hints(card : GameplayCard) -> void:
 func enrich_hint(message : String, card : GameplayCard, ) -> String:
 	message = message \
 		.replace("SAME_TYPES", CardEnums.CardTypeName[card.card_data.default_type].to_lower() + "s") \
-		.replace("SAME_BASIC", CardEnums.BasicNames[card.card_data.default_type]);
+		.replace("SAME_BASIC", "[b]%s[/b]" % CardEnums.BasicNames[card.card_data.default_type]);
 	return message;
 
 func put_other_cards_behind(card : GameplayCard) -> void:
@@ -222,14 +228,15 @@ func check_if_played(card : GameplayCard) -> void:
 	var card_margin : int = GameplayCard.SIZE.y;
 	if !(can_play_card and mouse_position.y + card_margin >= FIELD_START_LINE and mouse_position.y - card_margin <= FIELD_END_LINE):
 		return;
-	play_card(player_one, card);
+	play_card(card, player_one, player_two);
 
-func play_card(player : Player, card : GameplayCard) -> void:
+func play_card(card : GameplayCard, player : Player, opponent : Player) -> void:
 	player.play_card(card.card_data);
 	if card.card_data.has_buried():
 		card.bury();
-	if card.card_data.has_celebration():
-		celebrate(player);
+	else:
+		trigger_play_effects(card.card_data, player, opponent);
+	update_cards_visuals();
 	if player == player_two:
 		return;
 	card.goal_position = FIELD_POSITION;
@@ -241,6 +248,18 @@ func play_card(player : Player, card : GameplayCard) -> void:
 		opponents_turn();
 	else:
 		go_to_pre_results();
+
+func update_cards_visuals() -> void:
+	for instance_id in cards:
+		cards[instance_id].update_visuals(cards[instance_id].card_data.controller.gained_keyword)
+
+func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
+	if card.has_celebration():
+		celebrate(player);
+	if card.has_influencer():
+		influence_opponent(opponent, card.default_type);
+	if card.has_wrapped():
+		player.gained_keyword = CardEnums.Keyword.BURIED;
 
 func celebrate(player : Player) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand;
@@ -257,7 +276,7 @@ func opponents_turn() -> void:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
 	card = player_two.cards_in_hand.back();
-	play_card(player_two, spawn_card(card, true));
+	play_card(spawn_card(card, true), player_two, player_one);
 	show_opponents_field();
 	if going_first:
 		go_to_pre_results();
@@ -265,11 +284,21 @@ func opponents_turn() -> void:
 		your_turn();
 
 func go_to_results() -> void:
-	if !player_two.get_field_card().has_high_ground():
-		transform_mimics(player_one.cards_on_field, player_two);
-	if !player_one.get_field_card().has_high_ground():
-		transform_mimics(player_two.cards_on_field, player_one);
+	if going_first:
+		transform_your_mimics();
+		transform_opponents_mimics();
+	else:
+		transform_opponents_mimics();
+		transform_your_mimics();
 	round_results_timer.start();
+
+func transform_your_mimics() -> void:
+	if !player_two.get_field_card().has_high_ground():
+		transform_mimics(player_one.cards_on_field, player_one, player_two);
+
+func transform_opponents_mimics() -> void:
+	if !player_one.get_field_card().has_high_ground():
+		transform_mimics(player_two.cards_on_field, player_two, player_one);
 
 func go_to_pre_results() -> void:
 	if no_mimics():
@@ -287,17 +316,16 @@ func no_mimics() -> bool:
 			return false;
 	return true;
 
-func transform_mimics(your_cards : Array, opponent : Player) -> void:
+func transform_mimics(your_cards : Array, player : Player, opponent : Player) -> void:
 	var card : CardData;
 	for c in your_cards:
 		card = c;
-		if card.has_influencer():
-			influence_opponent(opponent, card.default_type);
 		if card.is_buried:
 			card.is_buried = false;
+			trigger_play_effects(card, player, opponent);
 		if card.card_type == CardEnums.CardType.MIMIC:
 			card.card_type = opponent.cards_on_field[0].card_type;
-		cards[card.instance_id].update_visuals();
+		cards[card.instance_id].update_visuals(card.controller.gained_keyword);
 
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
 	if opponent.deck_empty():

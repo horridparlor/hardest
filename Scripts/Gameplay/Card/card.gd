@@ -9,7 +9,7 @@ extends GameplayCard
 @onready var keywords_label : Label = $KeywordsLabel;
 @onready var background_pattern : Sprite2D = $Pattern;
 
-func update_visuals() -> void:
+func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	if card_data.is_buried:
 		bury();
 		return;
@@ -19,7 +19,7 @@ func update_visuals() -> void:
 	update_panel(card_data.card_type);
 	update_type_icons(card_data.card_type);
 	update_card_art();
-	update_keywords_text(card_data.keywords);
+	update_keywords_text(card_data.keywords.duplicate(), gained_keyword);
 
 func bury() -> void:
 	card_data.is_buried = true;
@@ -59,8 +59,10 @@ func update_card_art() -> void:
 	var art_texture : Resource = load(CARD_ART_PATH % [card_data.card_id]);
 	card_art.texture = art_texture;
 
-func update_keywords_text(keywords : Array) -> void:
+func update_keywords_text(keywords : Array, gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var keywords_text : Array;
+	if card_data.zone == CardEnums.Zone.HAND and gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
+		keywords.push_back(gained_keyword);
 	for keyword in keywords:
 		keywords_text.append(CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?");
 	keywords_label.text = "\n".join(keywords_text);

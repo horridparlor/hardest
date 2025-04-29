@@ -8,3 +8,4 @@ const VICTORY_POINTS : int = 10;
 const CLOSE_TO_WINNING_POINTS : int = VICTORY_POINTS - 2;
 const MAX_LEVELS : int = 5;
 const UNDEAD_LIMIT : int = 3;
+const MAX_KEYWORDS : int = 3;

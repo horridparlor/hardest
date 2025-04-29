@@ -74,3 +74,6 @@ func has_vampire() -> bool:
 
 func is_vanilla() -> bool:
 	return keywords.is_empty();
+
+func has_wrapped() -> bool:
+	return has_keyword(CardEnums.Keyword.WRAPPED);

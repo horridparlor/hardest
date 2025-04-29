@@ -14,6 +14,8 @@ var grave_type_counts : Dictionary = {
 	CardEnums.CardType.MIMIC: 0,
 	CardEnums.CardType.GUN: 0,
 }
+var controller : GameplayEnums.Controller;
+var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -67,6 +69,10 @@ func play_card(card : CardData) -> void:
 	cards_in_hand.erase(card);
 	cards_on_field.append(card);
 	card.zone = CardEnums.Zone.FIELD;
+	if gained_keyword != CardEnums.Keyword.NULL and card.keywords.size() < System.Rules.MAX_KEYWORDS:
+		card.keywords.append(gained_keyword);
+		print(card.keywords);
+	gained_keyword = CardEnums.Keyword.NULL;
 
 func eat_decklist(decklist_id : int = 0) -> void:
 	var decklist_data : Dictionary = System.Data.read_decklist(decklist_id);

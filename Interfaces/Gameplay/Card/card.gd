@@ -49,9 +49,9 @@ var is_despawning : bool;
 var is_scaling : bool;
 var focus_timer : Timer = Timer.new();
 
-func init() -> void:
+func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
-	update_visuals();
+	update_visuals(gained_keyword);
 	activate_animations();
 	initialize_timers();
 
@@ -60,7 +60,7 @@ func initialize_timers() -> void:
 	focus_timer.wait_time = FOCUS_WAIT;
 	focus_timer.timeout.connect(_on_focus_timer_timeout);
 
-func update_visuals() -> void:
+func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	pass;
 
 func rescale(is_instant : bool = false) -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=11 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://dm15bo5qcxwt3" path="res://Assets/Art/CharacterFace/1.png" id="5_10ocq"]
 [ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="5_r3tby"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
+[ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="9_vl4hw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
 bg_color = Color(0.0395679, 0.203455, 0.26303, 1)
@@ -145,11 +146,13 @@ offset_bottom = -243.0
 theme_override_fonts/normal_font = ExtResource("4_4owwf")
 theme_override_fonts/italics_font = ExtResource("5_r3tby")
 theme_override_fonts/bold_italics_font = ExtResource("6_xsnuj")
+theme_override_fonts/bold_font = ExtResource("9_vl4hw")
 theme_override_font_sizes/bold_italics_font_size = 64
 theme_override_font_sizes/italics_font_size = 64
 theme_override_font_sizes/normal_font_size = 64
+theme_override_font_sizes/bold_font_size = 64
 bbcode_enabled = true
-text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down."
+text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down [b]The Gun[/b]."
 
 [node name="CardsLayer" type="Node2D" parent="."]
 

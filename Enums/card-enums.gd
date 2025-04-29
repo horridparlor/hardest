@@ -20,8 +20,8 @@ const BasicIds : Dictionary = {
 	CardType.ROCK: 1,
 	CardType.PAPER: 2,
 	CardType.SCISSORS: 3,
-	CardType.MIMIC: 4,
-	CardType.GUN: 5
+	CardType.MIMIC: 5,
+	CardType.GUN: 4
 }
 
 const BasicNames : Dictionary = {
@@ -48,6 +48,7 @@ enum Zone {
 }
 
 enum Keyword {
+	NULL,
 	BURIED,
 	CELEBRATION,
 	CHAMPION,
@@ -61,7 +62,8 @@ enum Keyword {
 	PAIR_BREAKER,
 	RUST,
 	UNDEAD,
-	VAMPIRE
+	VAMPIRE,
+	WRAPPED
 }
 
 const KeywordNames : Dictionary = {
@@ -78,7 +80,8 @@ const KeywordNames : Dictionary = {
 	Keyword.PAIR_BREAKER : "Pair-breaker",
 	Keyword.RUST : "Rust",
 	Keyword.UNDEAD : "Undead",
-	Keyword.VAMPIRE : "Vampire"
+	Keyword.VAMPIRE : "Vampire",
+	Keyword.WRAPPED : "Wrapped"
 }
 
 const KeywordTranslate : Dictionary = {
@@ -95,7 +98,8 @@ const KeywordTranslate : Dictionary = {
 	"pair-breaker" : Keyword.PAIR_BREAKER,
 	"rust" : Keyword.RUST,
 	"undead" : Keyword.UNDEAD,
-	"vampire" : Keyword.VAMPIRE
+	"vampire" : Keyword.VAMPIRE,
+	"wrapped" : Keyword.WRAPPED
 }
 
 var KeywordHints : Dictionary = {
@@ -112,5 +116,6 @@ var KeywordHints : Dictionary = {
 	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
 	Keyword.RUST : "Defeats any gun.",
 	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun; if wins, purge the SAME_TYPES." % [System.Rules.UNDEAD_LIMIT],
-	Keyword.VAMPIRE : "If wins, drains the point from opponent."
+	Keyword.VAMPIRE : "If wins, drains the point from opponent.",
+	Keyword.WRAPPED : "Next card you play, gains buried."
 }

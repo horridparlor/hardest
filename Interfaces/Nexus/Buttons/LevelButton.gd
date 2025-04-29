@@ -14,3 +14,6 @@ func init(level_data_ : LevelData) -> void:
 
 func update_visuals() -> void:
 	pass;
+
+func hide_button() -> void:
+	pass;

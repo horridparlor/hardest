@@ -24,6 +24,7 @@ const TIE_SOUND_PATH : String = "res://Assets/SFX/Points/tie.wav";
 const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 const ACTIVE_CHARACTER_VISIBILITY : float = 1.0;
 const INACTIVE_CHARACTER_VISIBILITY : float = 0.4;
+const LEVEL_THEME_PATH : String = "res://Assets/Music/%s.mp3";
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();

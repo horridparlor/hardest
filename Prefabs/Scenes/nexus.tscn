@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=8 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_t27xe"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="3_7qjro"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="3_cwu78"]
 [ext_resource type="FontFile" uid="uid://ckd00l7rafrhj" path="res://Assets/FontFiles/Montserrat/Montserrat-MediumItalic.ttf" id="4_ueumv"]
+[ext_resource type="AudioStream" uid="uid://ddsti6bid467t" path="res://Assets/Music/0.mp3" id="6_xvlj4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
 bg_color = Color(0.611381, 0.0337919, 0.238643, 1)
@@ -102,3 +103,9 @@ text = "by Eero Laine"
 horizontal_alignment = 1
 
 [node name="LevelButtons" type="Node2D" parent="."]
+
+[node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_xvlj4")
+autoplay = true
+
+[connection signal="finished" from="BackgroundMusic" to="." method="_on_background_music_finished"]

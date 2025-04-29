@@ -30,6 +30,12 @@ func init(level_data_ : LevelData) -> void:
 	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	start_round();
 	update_character_face();
+	initialize_background_music();
+
+func initialize_background_music() -> void:
+	var music_file : Resource = load(LEVEL_THEME_PATH % [level_data.id]);
+	background_music.stream = music_file;
+	background_music.play();
 	
 func update_character_face() -> void:
 	var face_texture : Resource = load(LevelButton.CHARACTER_FACE_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);

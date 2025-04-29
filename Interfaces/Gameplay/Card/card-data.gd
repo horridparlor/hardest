@@ -31,6 +31,9 @@ func has_celebration() -> bool:
 func has_champion() -> bool:
 	return has_keyword(CardEnums.Keyword.CHAMPION);
 
+func has_cooties() -> bool:
+	return has_keyword(CardEnums.Keyword.COOTIES);
+
 func has_copycat() -> bool:
 	return has_keyword(CardEnums.Keyword.COPYCAT);
 
@@ -54,3 +57,6 @@ func has_pair_breaker() -> bool:
 
 func has_rust() -> bool:
 	return has_keyword(CardEnums.Keyword.RUST);
+
+func is_vanilla() -> bool:
+	return keywords.is_empty();

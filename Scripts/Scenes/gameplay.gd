@@ -152,7 +152,7 @@ func update_keywords_hints(card : GameplayCard) -> void:
 	var hints_text : String;
 	for keyword in card.card_data.keywords:
 		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
-		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword], hint_text];
+		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?", hint_text];
 	keywords_hints.text = hints_text;
 
 func put_other_cards_behind(card : GameplayCard) -> void:
@@ -303,6 +303,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 5;
 			CardEnums.Keyword.CELEBRATION:
 				value += 0;
+			CardEnums.Keyword.COOTIES:
+				value += 1;
 			CardEnums.Keyword.COPYCAT:
 				value += 1;
 			CardEnums.Keyword.DIVINE:
@@ -429,6 +431,25 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
+	var pre_type_result : GameplayEnums.Controller = check_pre_types_keywords(card, enemy);
+	if pre_type_result != not_determined:
+		return pre_type_result;
+	var type_result : GameplayEnums.Controller = check_type_results(card, enemy);
+	if type_result != not_determined:
+		return type_result;
+	var post_type_result : GameplayEnums.Controller = check_post_types_keywords(card, enemy);
+	if post_type_result != not_determined:
+		return post_type_result;
+	return tie;
+
+func check_pre_types_keywords(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
+	var card_type : CardEnums.CardType = card.card_type;
+	var enemy_type : CardEnums.CardType = enemy.card_type;
+	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
+	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
+	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
 	if card.has_pair() and enemy.has_pair_breaker():
 		return opponent_wins;
 	if enemy.has_pair() and card.has_pair_breaker():
@@ -437,6 +458,19 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 		return opponent_wins;
 	if enemy.is_buried and !card.is_buried and card_type != CardEnums.CardType.MIMIC:
 		return you_win;
+	if card.is_vanilla() and enemy.has_cooties():
+		return opponent_wins;
+	if enemy.is_vanilla() and card.has_cooties():
+		return you_win;
+	return not_determined;
+
+func check_type_results(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
+	var card_type : CardEnums.CardType = card.card_type;
+	var enemy_type : CardEnums.CardType = enemy.card_type;
+	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
+	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
+	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
 	match enemy_type:
 		CardEnums.CardType.MIMIC:
 			if card_type != CardEnums.CardType.MIMIC:
@@ -473,13 +507,23 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 				return opponent_wins;
 			if enemy_type != CardEnums.CardType.GUN:
 				return you_win;
+	return not_determined;
+
+func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
+	var card_type : CardEnums.CardType = card.card_type;
+	var enemy_type : CardEnums.CardType = enemy.card_type;
+	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
+	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
+	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
 	if card.has_pair():
 		if !enemy.has_pair():
 			return you_win;
 	elif enemy.has_pair():
 		if !card.has_pair():
 			return opponent_wins;
-	return tie;
+	return not_determined;
+
 
 func end_round() -> void:
 	clear_field();

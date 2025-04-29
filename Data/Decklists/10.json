@@ -2,76 +2,32 @@
 	"id": 10,
 	"main": [
 		{
+			"id": 1,
+			"count": 12
+		},
+		{
+			"id": 2,
+			"count": 12
+		},
+		{
+			"id": 3,
+			"count": 12
+		},
+		{
 			"id": 4,
 			"count": 3
 		},
 		{
 			"id": 5,
-			"count": 2
-		},
-		{
-			"id": 6,
-			"count": 3
-		},
-		{
-			"id": 7,
-			"count": 3
-		},
-		{
-			"id": 8,
-			"count": 3
-		},
-		{
-			"id": 9,
-			"count": 2
-		},
-		{
-			"id": 10,
-			"count": 3
-		},
-		{
-			"id": 11,
-			"count": 3
-		},
-		{
-			"id": 12,
-			"count": 2
-		},
-		{
-			"id": 13,
 			"count": 1
 		},
 		{
 			"id": 14,
-			"count": 1
+			"count": 20
 		},
 		{
-			"id": 15,
-			"count": 3
-		},
-		{
-			"id": 16,
-			"count": 3
-		},
-		{
-			"id": 17,
-			"count": 3
-		},
-		{
-			"id": 18,
-			"count": 1
-		},
-		{
-			"id": 19,
-			"count": 1
-		},
-		{
-			"id": 20,
-			"count": 2
-		},
-		{
-			"id": 21,
-			"count": 1
+			"id": 22,
+			"count": 20
 		}
 	]
 }

@@ -8,7 +8,8 @@ enum GlowState {
 enum Controller {
 	PLAYER_ONE,
 	PLAYER_TWO,
-	NULL
+	NULL,
+	UNDEFINED
 }
 
 enum Character {

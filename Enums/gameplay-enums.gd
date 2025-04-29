@@ -18,7 +18,8 @@ enum Character {
 	LOTTE,
 	MARK,
 	PEITSE,
-	PETE
+	PETE,
+	RAISEN
 }
 
 const TranslateCharacter : Dictionary = {
@@ -27,7 +28,18 @@ const TranslateCharacter : Dictionary = {
 	"Lotte": Character.LOTTE,
 	"Mark": Character.MARK,
 	"Peitse": Character.PEITSE,
-	"Pete": Character.PETE
+	"Pete": Character.PETE,
+	"Raisen": Character.RAISEN
+}
+
+const CharacterShowcaseName : Dictionary = {
+	Character.ERIKA : "Erika",
+	Character.KORVEK : "Korvek",
+	Character.LOTTE : "Anne-Lotte",
+	Character.MARK : "Mark Mudwater",
+	Character.PEITSE : "Peitse",
+	Character.PETE : "Farty-Pete",
+	Character.RAISEN : "Raisen"
 }
 
 const CharacterToId : Dictionary = {
@@ -36,5 +48,6 @@ const CharacterToId : Dictionary = {
 	Character.PETE: 3,
 	Character.LOTTE: 4,
 	Character.MARK: 5,
-	Character.KORVEK: 6
+	Character.KORVEK: 6,
+	Character.RAISEN: 7
 }

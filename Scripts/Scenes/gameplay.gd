@@ -16,6 +16,7 @@ extends Gameplay
 @onready var points_layer : Node = $Points;
 @onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;
 @onready var character_face : Sprite2D = $Points/CharacterFace;
+@onready var enemy_name : Label = $Points/CharacterFace/EnemyName;
 @onready var your_face : Sprite2D = $Points/YourFace;
 @onready var background_pattern : Sprite2D = $Background/Pattern;
 
@@ -48,6 +49,7 @@ func initialize_background_pattern() -> void:
 func update_character_face() -> void:
 	var face_texture : Resource = load(LevelButton.CHARACTER_FACE_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);
 	character_face.texture = face_texture;
+	enemy_name.text = GameplayEnums.CharacterShowcaseName[level_data.opponent] if GameplayEnums.CharacterShowcaseName.has(level_data.opponent) else "?";
 
 func init_timers() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT;

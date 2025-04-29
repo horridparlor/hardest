@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://b1wbtgu0xgjx5"]
+[gd_scene load_steps=6 format=3 uid="uid://b1wbtgu0xgjx5"]
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Buttons/level_button.gd" id="1_5eg2m"]
+[ext_resource type="Texture2D" uid="uid://cytmdwnsx1g3" path="res://Assets/Art/Patterns/LevelButtonPattern.png" id="2_rgvvm"]
 [ext_resource type="Script" path="res://Scripts/Common/spring_button.gd" id="2_ubrkm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmmwt"]
@@ -35,6 +36,10 @@ offset_bottom = 160.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_qmmwt")
+
+[node name="Pattern" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.6)
+texture = ExtResource("2_rgvvm")
 
 [node name="LevelPressed" type="TouchScreenButton" parent="."]
 shape = SubResource("RectangleShape2D_ptw8n")

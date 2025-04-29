@@ -34,7 +34,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fkb73")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="BackgroundPattern" type="Sprite2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.6)
 texture = ExtResource("2_q58k7")
 

@@ -59,6 +59,9 @@ func has_pair() -> bool:
 func has_pair_breaker() -> bool:
 	return has_keyword(CardEnums.Keyword.PAIR_BREAKER);
 
+func has_pick_up() -> bool:
+	return has_keyword(CardEnums.Keyword.PICK_UP);
+
 func has_rust() -> bool:
 	return has_keyword(CardEnums.Keyword.RUST);
 

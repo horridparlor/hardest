@@ -60,7 +60,7 @@ func celebrate() -> void:
 	draw();
 
 func shuffle_hand_to_deck() -> void:
-	for card in cards_in_hand:
+	for card in cards_in_hand.duplicate():
 		cards_in_deck.append(card);
 	cards_in_hand = [];
 	cards_in_deck.shuffle();
@@ -113,6 +113,16 @@ func clear_field(did_win : bool) -> void:
 		card = c;
 		cards_on_field.erase(card);
 		add_to_grave(card, did_win);
+	clear_pick_ups();
+
+func clear_pick_ups() -> void:
+	var card : CardData;
+	for c in cards_in_hand.duplicate():
+		card = c;
+		if !card.has_pick_up():
+			continue;
+		cards_in_hand.erase(card);
+		add_to_grave(card);
 
 func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	card.zone = CardEnums.Zone.GRAVE;

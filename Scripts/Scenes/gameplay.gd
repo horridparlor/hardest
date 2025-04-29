@@ -120,7 +120,7 @@ func reorder_hand() -> void:
 		if System.Instance.exists(active_card) and active_card.card_data.instance_id == card_data.instance_id:
 			position.x += HAND_MARGIN;
 			continue;
-		if !cards.has(card_data.instance_id):
+		if !get_card(card_data) or get_card(card_data).is_despawning:
 			continue;
 		card = cards[card_data.instance_id];
 		card.goal_position = position;
@@ -371,6 +371,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 3;
 			CardEnums.Keyword.PAIR_BREAKER:
 				value += 1;
+			CardEnums.Keyword.PICK_UP:
+				value += 0;
 			CardEnums.Keyword.RUST:
 				value += 1;
 			CardEnums.Keyword.UNDEAD:
@@ -605,7 +607,13 @@ func clear_players_field(player : Player, did_win : bool) -> void:
 	var card : CardData;
 	for c in player.cards_on_field:
 		card = c;
-		cards[card.instance_id].despawn();
+		get_card(card).despawn();
+	for c in player.cards_in_hand:
+		card = c;
+		if !card.has_pick_up():
+			continue;
+		if get_card(card):
+			get_card(card).despawn();
 	player.clear_field(did_win);
 
 func show_opponents_field() -> void:

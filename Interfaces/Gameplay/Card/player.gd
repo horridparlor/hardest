@@ -96,6 +96,11 @@ func get_field_card() -> CardData:
 func gain_points(amount : int = 1) -> void:
 	points += amount;
 
+func lose_points(amount : int = 1) -> void:
+	points -= amount;
+	if points < 0:
+		points = 0;
+
 func clear_field(did_win : bool) -> void:
 	var card : CardData;
 	for c in cards_on_field:

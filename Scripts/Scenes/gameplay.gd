@@ -347,6 +347,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 1;
 			CardEnums.Keyword.UNDEAD:
 				value -= 1;
+			CardEnums.Keyword.VAMPIRE:
+				value += 5 if player_one.points > 0 else 0;
 	if card.has_champion() :
 		value *= 2;
 	return value;
@@ -415,10 +417,14 @@ func round_results() -> void:
 			player_one.gain_points(points);
 			click_your_points();
 			check_lose_effects(enemy, player_two);
+			if card.has_vampire():
+				player_two.lose_points();
 		GameplayEnums.Controller.PLAYER_TWO:
 			player_two.gain_points(points);
 			click_opponents_points();
 			check_lose_effects(card, player_one);
+			if enemy.has_vampire():
+				player_one.lose_points();
 		GameplayEnums.Controller.NULL:
 			play_point_sfx(TIE_SOUND_PATH);
 	your_points.text = str(player_one.points);

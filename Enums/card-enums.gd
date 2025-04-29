@@ -60,7 +60,8 @@ enum Keyword {
 	PAIR,
 	PAIR_BREAKER,
 	RUST,
-	UNDEAD
+	UNDEAD,
+	VAMPIRE
 }
 
 const KeywordNames : Dictionary = {
@@ -76,7 +77,8 @@ const KeywordNames : Dictionary = {
 	Keyword.PAIR : "Pair",
 	Keyword.PAIR_BREAKER : "Pair-breaker",
 	Keyword.RUST : "Rust",
-	Keyword.UNDEAD : "Undead"
+	Keyword.UNDEAD : "Undead",
+	Keyword.VAMPIRE : "Vampire"
 }
 
 const KeywordTranslate : Dictionary = {
@@ -92,7 +94,8 @@ const KeywordTranslate : Dictionary = {
 	"pair" : Keyword.PAIR,
 	"pair-breaker" : Keyword.PAIR_BREAKER,
 	"rust" : Keyword.RUST,
-	"undead" : Keyword.UNDEAD
+	"undead" : Keyword.UNDEAD,
+	"vampire" : Keyword.VAMPIRE
 }
 
 var KeywordHints : Dictionary = {
@@ -108,5 +111,6 @@ var KeywordHints : Dictionary = {
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
 	Keyword.RUST : "Defeats any gun.",
-	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun; if wins, purge the SAME_TYPES." % [System.Rules.UNDEAD_LIMIT]
+	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun; if wins, purge the SAME_TYPES." % [System.Rules.UNDEAD_LIMIT],
+	Keyword.VAMPIRE : "If wins, drains the point from opponent."
 }

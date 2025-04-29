@@ -69,5 +69,8 @@ func has_undead(needs_to_be_active : bool = false) -> bool:
 		return true;
 	return controller.count_grave_type(default_type) >= System.Rules.UNDEAD_LIMIT;
 
+func has_vampire() -> bool:
+	return has_keyword(CardEnums.Keyword.VAMPIRE);
+
 func is_vanilla() -> bool:
 	return keywords.is_empty();

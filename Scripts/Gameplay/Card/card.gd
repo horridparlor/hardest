@@ -7,6 +7,7 @@ extends GameplayCard
 @onready var right_type_icon : Sprite2D = $TypeIcons/RightIcon;
 @onready var card_art : Sprite2D = $ArtLayer/CardArt;
 @onready var keywords_label : Label = $KeywordsLabel;
+@onready var background_pattern : Sprite2D = $Pattern;
 
 func update_visuals() -> void:
 	if card_data.is_buried:
@@ -35,6 +36,7 @@ func update_name_label(message : String) -> void:
 
 func update_panel(card_type : CardEnums.CardType) -> void:
 	var style : StyleBoxFlat = StyleBoxFlat.new();
+	var pattern : Resource = load(BACKGROUND_PATTERN_PATH % [CardEnums.CardTypeName[card_type]]);
 	style.bg_color = get_panel_bg_color(card_type);
 	style.border_color = get_panel_border_color(card_type);
 	style.border_width_left = BORDER_WIDTH;
@@ -46,6 +48,7 @@ func update_panel(card_type : CardEnums.CardType) -> void:
 	style.corner_radius_bottom_left = BORDER_RADIUS;
 	style.corner_radius_bottom_right = BORDER_RADIUS;
 	panel.add_theme_stylebox_override("panel", style);
+	background_pattern.texture = pattern;
 
 func update_type_icons(card_type : CardEnums.CardType) -> void:
 	var sprite_texture : Resource = load(TYPE_ICON_PATH % [CardEnums.CardTypeName[card_type].to_lower()]);

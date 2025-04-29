@@ -37,6 +37,9 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0s264")
 
+[node name="Pattern" type="Sprite2D" parent="Background"]
+self_modulate = Color(1, 1, 1, 0.6)
+
 [node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="Background"]
 stream = ExtResource("2_1elka")
 

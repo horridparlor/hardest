@@ -17,6 +17,7 @@ extends Gameplay
 @onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;
 @onready var character_face : Sprite2D = $Points/CharacterFace;
 @onready var your_face : Sprite2D = $Points/YourFace;
+@onready var background_pattern : Sprite2D = $Background/Pattern;
 
 
 func init(level_data_ : LevelData) -> void:
@@ -31,11 +32,16 @@ func init(level_data_ : LevelData) -> void:
 	start_round();
 	update_character_face();
 	initialize_background_music();
+	initialize_background_pattern();
 
 func initialize_background_music() -> void:
 	var music_file : Resource = load(LEVEL_THEME_PATH % [level_data.id]);
 	background_music.stream = music_file;
 	background_music.play();
+	
+func initialize_background_pattern() -> void:
+	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.id]);
+	background_pattern.texture = pattern;
 	
 func update_character_face() -> void:
 	var face_texture : Resource = load(LevelButton.CHARACTER_FACE_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);

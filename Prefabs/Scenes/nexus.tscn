@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=9 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
+[ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/Patterns/NexusPattern.png" id="2_q58k7"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_t27xe"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="3_7qjro"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="3_cwu78"]
@@ -32,6 +33,10 @@ offset_bottom = 960.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fkb73")
+
+[node name="Background" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.6)
+texture = ExtResource("2_q58k7")
 
 [node name="Edges" type="Node2D" parent="."]
 

@@ -377,6 +377,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value -= 1;
 			CardEnums.Keyword.VAMPIRE:
 				value += 5 if player_one.points > 0 else 0;
+			CardEnums.Keyword.WRAPPED:
+				value -= 5 if going_first else 0;
 	if card.has_champion() :
 		value *= 2;
 	return value;
@@ -397,12 +399,14 @@ func get_result_for_playing(card : CardData) -> int:
 	var winner : GameplayEnums.Controller;
 	var first_face_up_card : CardData = get_first_face_up_card(player_one.cards_on_field);
 	var value : int = 1;
-	if !first_face_up_card:
-		return get_value_to_threaten(card);
 	if card.has_champion():
 		value *= 2;
-	if first_face_up_card.has_champion():
+	if first_face_up_card and first_face_up_card.has_champion():
 		value *= 2;
+	if going_first == false and player_one.gained_keyword == CardEnums.Keyword.BURIED and card.has_high_ground():
+		return value;
+	if !first_face_up_card:
+		return get_value_to_threaten(card);
 	winner = determine_winner(card, first_face_up_card);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:

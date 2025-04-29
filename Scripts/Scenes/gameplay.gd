@@ -292,17 +292,17 @@ func transform_mimics(your_cards : Array, opponent : Player) -> void:
 	for c in your_cards:
 		card = c;
 		if card.has_influencer():
-			influence_opponent(opponent);
+			influence_opponent(opponent, card.default_type);
 		if card.is_buried:
 			card.is_buried = false;
 		if card.card_type == CardEnums.CardType.MIMIC:
 			card.card_type = opponent.cards_on_field[0].card_type;
 		cards[card.instance_id].update_visuals();
 
-func influence_opponent(opponent : Player) -> void:
+func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
 	if opponent.deck_empty():
 		return;
-	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1] = CardData.eat_json(System.Data.read_card(1));
+	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1] = CardData.eat_json(System.Data.read_card(CardEnums.BasicIds[card_type]));
 
 func best_to_play(card_a : CardData, card_b : CardData) -> int:
 	var a_value : int = get_result_for_playing(card_a);

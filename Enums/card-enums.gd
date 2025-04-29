@@ -16,6 +16,14 @@ const CardTypeName : Dictionary = {
 	CardType.GUN: "Gun"
 }
 
+const BasicIds : Dictionary = {
+	CardType.ROCK: 1,
+	CardType.PAPER: 2,
+	CardType.SCISSORS: 3,
+	CardType.MIMIC: 4,
+	CardType.GUN: 5
+}
+
 const BasicNames : Dictionary = {
 	CardType.ROCK: "a Pebble",
 	CardType.PAPER: "a Scribble Paper",

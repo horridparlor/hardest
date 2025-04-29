@@ -14,6 +14,7 @@ enum Controller {
 
 enum Character {
 	ERIKA,
+	KORVEK,
 	LOTTE,
 	MARK,
 	PEITSE,
@@ -22,6 +23,7 @@ enum Character {
 
 const TranslateCharacter : Dictionary = {
 	"Erika": Character.ERIKA,
+	"Korvek": Character.KORVEK,
 	"Lotte": Character.LOTTE,
 	"Mark": Character.MARK,
 	"Peitse": Character.PEITSE,
@@ -33,5 +35,6 @@ const CharacterToId : Dictionary = {
 	Character.ERIKA: 2,
 	Character.PETE: 3,
 	Character.LOTTE: 4,
-	Character.MARK: 5
+	Character.MARK: 5,
+	Character.KORVEK: 6
 }

@@ -108,5 +108,5 @@ var KeywordHints : Dictionary = {
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
 	Keyword.RUST : "Defeats any gun.",
-	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun. If wins, purge the SAME_TYPES." % [System.Rules.UNDEAD_LIMIT]
+	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun; if wins, purge the SAME_TYPES." % [System.Rules.UNDEAD_LIMIT]
 }

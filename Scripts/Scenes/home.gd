@@ -4,6 +4,9 @@ extends Home
 
 func _process(delta : float) -> void:
 	if Input.is_action_pressed("ui_cancel"):
+		if gameplay != null:
+			_on_game_over();
+			return;
 		get_tree().quit();
 
 func _ready() -> void:

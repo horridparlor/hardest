@@ -16,6 +16,14 @@ const CardTypeName : Dictionary = {
 	CardType.GUN: "Gun"
 }
 
+const BasicNames : Dictionary = {
+	CardType.ROCK: "a Pebble",
+	CardType.PAPER: "a Scribble Paper",
+	CardType.SCISSORS: "Paper Scissors",
+	CardType.MIMIC: "a Lesser Mimic",
+	CardType.GUN: "The Gun"
+}
+
 const TranslateCardType : Dictionary = {
 	CardTypeName[CardType.ROCK]: CardType.ROCK,
 	CardTypeName[CardType.PAPER]: CardType.PAPER,
@@ -43,7 +51,8 @@ enum Keyword {
 	INFLUENCER,
 	PAIR,
 	PAIR_BREAKER,
-	RUST
+	RUST,
+	UNDEAD
 }
 
 const KeywordNames : Dictionary = {
@@ -58,7 +67,8 @@ const KeywordNames : Dictionary = {
 	Keyword.INFLUENCER : "Influencer",
 	Keyword.PAIR : "Pair",
 	Keyword.PAIR_BREAKER : "Pair-breaker",
-	Keyword.RUST : "Rust"
+	Keyword.RUST : "Rust",
+	Keyword.UNDEAD : "Undead"
 }
 
 const KeywordTranslate : Dictionary = {
@@ -73,10 +83,11 @@ const KeywordTranslate : Dictionary = {
 	"influencer" : Keyword.INFLUENCER,
 	"pair" : Keyword.PAIR,
 	"pair-breaker" : Keyword.PAIR_BREAKER,
-	"rust" : Keyword.RUST
+	"rust" : Keyword.RUST,
+	"undead" : Keyword.UNDEAD
 }
 
-const KeywordHints : Dictionary = {
+var KeywordHints : Dictionary = {
 	Keyword.BURIED : "Played face-down.",
 	Keyword.CELEBRATION : "Shuffle your hand into deck, then draw 1.",
 	Keyword.CHAMPION : "Games with this card give double points.",
@@ -85,8 +96,9 @@ const KeywordHints : Dictionary = {
 	Keyword.DIVINE : "Defeats any undead.",
 	Keyword.GREED : "If loses, draw 2.",
 	Keyword.HIGH_GROUND : "Automatically defeats any face-down card.",
-	Keyword.INFLUENCER : "Opponent's top card becomes a Pebble.",
+	Keyword.INFLUENCER : "Opponent's top card becomes SAME_BASIC.",
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
-	Keyword.RUST : "Defeats any gun."
+	Keyword.RUST : "Defeats any gun.",
+	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun. If wins, purge the SAME_TYPES." % [System.Rules.UNDEAD_LIMIT]
 }

@@ -7,6 +7,13 @@ var cards_in_hand : Array;
 var cards_on_field : Array;
 var cards_in_grave : Array;
 var points : int;
+var grave_type_counts : Dictionary = {
+	CardEnums.CardType.ROCK: 0,
+	CardEnums.CardType.PAPER: 0,
+	CardEnums.CardType.SCISSORS: 0,
+	CardEnums.CardType.MIMIC: 0,
+	CardEnums.CardType.GUN: 0,
+}
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -89,13 +96,37 @@ func get_field_card() -> CardData:
 func gain_points(amount : int = 1) -> void:
 	points += amount;
 
-func clear_field() -> void:
+func clear_field(did_win : bool) -> void:
 	var card : CardData;
 	for c in cards_on_field:
 		card = c;
 		cards_on_field.erase(card);
-		cards_in_grave.append(card);
-		card.zone = CardEnums.Zone.GRAVE;
+		add_to_grave(card, did_win);
+
+func add_to_grave(card : CardData, did_win : bool = false) -> void:
+	card.zone = CardEnums.Zone.GRAVE;
+	card.card_type = card.default_type;
+	if did_win and card.has_undead(true):
+		purge_undead_materials(card.default_type);
+	cards_in_grave.append(card);
+	grave_type_counts[card.default_type] += 1;
+
+func purge_undead_materials(card_type : CardEnums.CardType) -> void:
+	var cards_to_purge : int = System.Rules.UNDEAD_LIMIT;
+	for card in cards_in_grave.duplicate():
+		if card.card_type == card_type:
+			purge_from_grave(card);
+			cards_to_purge -= 1;
+			if cards_to_purge == 0:
+				return;
+
+func purge_from_grave(card : CardData) -> void:
+	cards_in_grave.erase(card);
+	grave_type_counts[card.default_type] -= 1;
+	card.queue_free();
 
 func is_close_to_winning() -> bool:
 	return points >= System.Rules.CLOSE_TO_WINNING_POINTS;
+
+func count_grave_type(card_type : CardEnums.CardType) -> int:
+	return grave_type_counts[card_type];

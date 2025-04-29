@@ -1,10 +1,13 @@
 extends Node
 class_name CardData
 
+var default_type : CardEnums.CardType
+
 var card_id : int;
 var card_name : String;
 var card_type : CardEnums.CardType = CardEnums.CardType.ROCK;
 var keywords : Array;
+var controller : Player;
 
 var instance_id : int = System.Random.instance_id();
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
@@ -15,6 +18,7 @@ static func eat_json(card_data : Dictionary) -> CardData:
 	card.card_id = card_data.id;
 	card.card_name = card_data.name;
 	card.card_type = CardEnums.TranslateCardType[card_data.type];
+	card.default_type = card.card_type;
 	for key in card_data.keywords:
 		card.keywords.append(CardEnums.KeywordTranslate[key] if CardEnums.KeywordTranslate.has(key) else "?");
 	return card;
@@ -57,6 +61,13 @@ func has_pair_breaker() -> bool:
 
 func has_rust() -> bool:
 	return has_keyword(CardEnums.Keyword.RUST);
+
+func has_undead(needs_to_be_active : bool = false) -> bool:
+	if !has_keyword(CardEnums.Keyword.UNDEAD):
+		return false;
+	if !needs_to_be_active:
+		return true;
+	return controller.count_grave_type(default_type) >= System.Rules.UNDEAD_LIMIT;
 
 func is_vanilla() -> bool:
 	return keywords.is_empty();

@@ -36,6 +36,7 @@ var field_lines_visible : bool;
 var can_play_card : bool;
 var going_first : bool;
 var level_data : LevelData;
+var round_winner : GameplayEnums.Controller;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

@@ -100,9 +100,14 @@ func init_layers() -> void:
 	field_lines.modulate.a = 0;
 
 func show_hand() -> void:
-	for card in player_one.cards_in_hand:
+	var card : CardData;
+	for c in player_one.cards_in_hand:
+		card = c;
 		spawn_card(card);
 	reorder_hand();
+
+func get_card(card : CardData) -> GameplayCard:
+	return cards[card.instance_id] if cards.has(card.instance_id) else null;
 
 func reorder_hand() -> void:
 	var card : GameplayCard;
@@ -121,6 +126,8 @@ func reorder_hand() -> void:
 		position.x += HAND_MARGIN;
 
 func spawn_card(card_data : CardData, spawn_for_opponent : bool = false) -> GameplayCard:
+	card_data.controller = player_two if spawn_for_opponent else player_one;
+	update_alterations(card_data);
 	if cards.has(card_data.instance_id):
 		return cards[card_data.instance_id];
 	var card : GameplayCard = System.Instance.load_child(CARD_PATH, cards_layer);
@@ -132,6 +139,16 @@ func spawn_card(card_data : CardData, spawn_for_opponent : bool = false) -> Game
 	card.released.connect(_on_card_released);
 	card.despawned.connect(_on_card_despawned);
 	return card;
+
+func update_alterations(card_data : CardData) -> void:
+	var card : GameplayCard = get_card(card_data);
+	if card_data.has_undead():
+		if card_data.has_undead(true):
+			card_data.card_type = CardEnums.CardType.GUN;
+		else:
+			card_data.card_type = card_data.default_type;
+	if card:
+		card.update_visuals();
 
 func _on_card_pressed(card : GameplayCard) -> void:
 	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND:
@@ -152,8 +169,15 @@ func update_keywords_hints(card : GameplayCard) -> void:
 	var hints_text : String;
 	for keyword in card.card_data.keywords:
 		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
+		hint_text = enrich_hint(hint_text, card);
 		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?", hint_text];
 	keywords_hints.text = hints_text;
+
+func enrich_hint(message : String, card : GameplayCard, ) -> String:
+	message = message \
+		.replace("SAME_TYPES", CardEnums.CardTypeName[card.card_data.default_type].to_lower() + "s") \
+		.replace("SAME_BASIC", CardEnums.BasicNames[card.card_data.default_type]);
+	return message;
 
 func put_other_cards_behind(card : GameplayCard) -> void:
 	for instance_id in cards:
@@ -314,13 +338,15 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.HIGH_GROUND:
 				value += 2;
 			CardEnums.Keyword.INFLUENCER:
-				value += 1;
+				value -= 1;
 			CardEnums.Keyword.PAIR:
 				value += 3;
 			CardEnums.Keyword.PAIR_BREAKER:
 				value += 1;
 			CardEnums.Keyword.RUST:
 				value += 1;
+			CardEnums.Keyword.UNDEAD:
+				value -= 1;
 	if card.has_champion() :
 		value *= 2;
 	return value;
@@ -375,7 +401,7 @@ func get_value_to_threaten(card : CardData) -> int:
 func round_results() -> void:
 	var card : CardData = player_one.cards_on_field[0];
 	var enemy : CardData = player_two.cards_on_field[0];
-	var round_winner : GameplayEnums.Controller = determine_winner(
+	round_winner = determine_winner(
 		card,
 		enemy
 	);
@@ -452,15 +478,19 @@ func check_pre_types_keywords(card : CardData, enemy : CardData) -> GameplayEnum
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
 	if card.has_pair() and enemy.has_pair_breaker():
 		return opponent_wins;
-	if enemy.has_pair() and card.has_pair_breaker():
+	elif enemy.has_pair() and card.has_pair_breaker():
 		return you_win;
 	if card.is_buried and !enemy.is_buried and enemy_type != CardEnums.CardType.MIMIC:
 		return opponent_wins;
-	if enemy.is_buried and !card.is_buried and card_type != CardEnums.CardType.MIMIC:
+	elif enemy.is_buried and !card.is_buried and card_type != CardEnums.CardType.MIMIC:
 		return you_win;
 	if card.is_vanilla() and enemy.has_cooties():
 		return opponent_wins;
-	if enemy.is_vanilla() and card.has_cooties():
+	elif enemy.is_vanilla() and card.has_cooties():
+		return you_win;
+	if card.has_undead() and enemy.has_divine():
+		return opponent_wins;
+	elif enemy.has_undead() and card.has_divine():
 		return you_win;
 	return not_determined;
 
@@ -524,22 +554,21 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 			return opponent_wins;
 	return not_determined;
 
-
 func end_round() -> void:
 	clear_field();
 	going_first = !going_first;
 	start_round();
 
 func clear_field() -> void:
-	clear_players_field(player_one);
-	clear_players_field(player_two);
+	clear_players_field(player_one, round_winner == GameplayEnums.Controller.PLAYER_ONE);
+	clear_players_field(player_two, round_winner == GameplayEnums.Controller.PLAYER_TWO);
 
-func clear_players_field(player : Player) -> void:
+func clear_players_field(player : Player, did_win : bool) -> void:
 	var card : CardData;
 	for c in player.cards_on_field:
 		card = c;
 		cards[card.instance_id].despawn();
-	player.clear_field();
+	player.clear_field(did_win);
 
 func show_opponents_field() -> void:
 	var card : GameplayCard;

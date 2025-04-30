@@ -47,13 +47,19 @@ func draw_hand() -> void:
 		if hand_size_reached():
 			break;
 
-func draw(amount : int = 1) -> void:
+func draw_cards(amount : int = 1) -> void:
+	for i in range(amount):
+		if !draw():
+			return;
+
+func draw() -> bool:
 	var card : CardData;
-	if deck_empty() or count_hand() == System.Rules.MAX_HAND_SIZE:
-		return;
+	if deck_empty():
+		return false;
 	card = cards_in_deck.pop_back();
 	cards_in_hand.append(card);
 	card.zone = CardEnums.Zone.HAND;
+	return true;
 
 func celebrate() -> void:
 	shuffle_hand_to_deck();
@@ -75,11 +81,11 @@ func play_card(card : CardData) -> void:
 
 func eat_decklist(decklist_id : int = 0) -> void:
 	var decklist_data : Dictionary = System.Data.read_decklist(decklist_id);
-	var card_data : CardData;
+	var card_data : Dictionary;
 	for card in decklist_data.main:
 		card_data = System.Data.read_card(card);
 		for i in range(decklist_data.main[card]):
-			cards_in_deck.append(card_data);
+			cards_in_deck.append(CardData.from_json(card_data));
 	cards_in_deck.shuffle();
 	add_always_start_cards();
 

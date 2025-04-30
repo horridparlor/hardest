@@ -3,11 +3,14 @@ extends Gameplay
 @onready var cards_layer : Node2D = $CardsLayer;
 @onready var cards_layer2 : Node2D = $CardsLayer2;
 @onready var field_lines : Node2D = $FieldLines;
+
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
 @onready var round_end_timer : Timer = $Timers/RoundEndTimer;
 @onready var game_over_timer : Timer = $Timers/GameOverTimer;
 @onready var points_click_timer : Timer = $Timers/PointsClickTimer;
+@onready var card_focus_timer : Timer = $Timers/CardFocusTimer;
+
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
 @onready var background_music : AudioStreamPlayer2D = $Background/BackgroundMusic;
@@ -35,6 +38,7 @@ func init(level_data_ : LevelData) -> void:
 	update_character_face();
 	initialize_background_music();
 	initialize_background_pattern();
+	cards_shadow.modulate.a = 0;
 
 func init_player(player : Player, controller : GameplayEnums.Controller, deck_id : int) -> void:
 	var card : CardData;
@@ -64,6 +68,7 @@ func init_timers() -> void:
 	round_end_timer.wait_time = ROUND_END_WAIT;
 	game_over_timer.wait_time = GAME_OVER_WAIT;
 	points_click_timer.wait_time = POINTS_CLICK_WAIT;
+	card_focus_timer.wait_time = CARD_FOCUS_WAIT;
 
 func have_you_won() -> bool:
 	var result : bool = player_one.points >= System.Rules.VICTORY_POINTS;
@@ -152,7 +157,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	update_alterations_for_card(card_data);
 	if cards.has(card_data.instance_id):
 		return cards[card_data.instance_id];
-	var card : GameplayCard = System.Instance.load_child(CARD_PATH, cards_layer);
+	var card : GameplayCard = System.Instance.load_child(CARD_PATH, cards_layer if active_card == null else cards_layer2);
 	card.card_data = card_data;
 	card.instance_id = card_data.instance_id;
 	card.init(card_data.controller.gained_keyword);
@@ -183,14 +188,13 @@ func _on_card_pressed(card : GameplayCard) -> void:
 	active_card = card;
 	card.toggle_follow_mouse();
 	update_keywords_hints(card);
-	cards_shadow.visible = true;
-	points_layer.visible = false;
+	card_focus_timer.start();
 	put_other_cards_behind(card);
-	if !can_play_card:
-		return;
-	field_lines_visible = true;
-	fading_field_lines = true;
-	field_lines.modulate.a = min(1, max(0, field_lines.modulate.a));
+
+func toggle_points_visibility(value : bool = true) -> void:
+	points_goal_visibility = 1 if value else 0;
+	shadow_goal_visibility = 0 if value else 1;
+	is_updating_points_visibility = true;
 
 func update_keywords_hints(card : GameplayCard) -> void:
 	var hints_text : String;
@@ -223,8 +227,8 @@ func _on_card_released(card : GameplayCard) -> void:
 	card.toggle_follow_mouse(false);
 	return_other_cards_front(card);
 	active_card = null;
-	cards_shadow.visible = false;
-	points_layer.visible = true;
+	card_focus_timer.stop();
+	toggle_points_visibility();
 	field_lines_visible = false;
 	fading_field_lines = true;
 	reorder_hand();
@@ -394,7 +398,7 @@ func play_digitals(player : Player, opponent : Player) -> bool:
 	var enemy : CardData;
 	var digital_to_play : CardData;
 	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
-	if winner == GameplayEnums.Controller.PLAYER_ONE:
+	if player.get_field_card().has_cursed() or winner == GameplayEnums.Controller.PLAYER_ONE:
 		return false;
 	cards = player.cards_in_hand.filter(func(card : CardData): return card.has_digital());
 	enemy = opponent.get_field_card();
@@ -457,9 +461,6 @@ func determine_winning_player(player : Player, opponent : Player) -> GameplayEnu
 
 func go_to_pre_results() -> void:
 	results_phase = 0;
-	if no_mimics():
-		go_to_results();
-		return;
 	results_wait();
 
 func results_wait() -> void:
@@ -492,7 +493,7 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
 	if opponent.deck_empty():
 		return;
-	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1] = System.Data.read_card(CardEnums.BasicIds[card_type], opponent);
+	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1].eat_json(System.Data.read_card(CardEnums.BasicIds[card_type]));
 
 func best_to_play(card_a : CardData, card_b : CardData) -> int:
 	var a_value : int = get_result_for_playing(card_a);
@@ -520,6 +521,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.COOTIES:
 				value += 1;
 			CardEnums.Keyword.COPYCAT:
+				value += 1;
+			CardEnums.Keyword.CURSED:
 				value += 1;
 			CardEnums.Keyword.DIGITAL:
 				value += 5;
@@ -642,7 +645,7 @@ func round_results() -> void:
 
 func check_lose_effects(card : CardData, player : Player) -> void:
 	if card.has_greed():
-		player.draw(2);
+		player.draw_cards(2);
 
 func click_your_points() -> void:
 	your_points.add_theme_color_override("font_color", Color.YELLOW);
@@ -800,6 +803,24 @@ func _process(delta : float) -> void:
 		fade_field_lines(delta);
 	if System.Instance.exists(active_card):
 		reorder_hand();
+	if is_updating_points_visibility:
+		update_points_visibility(delta);
+
+func update_points_visibility(delta : float) -> void:
+	points_layer.modulate.a = System.Scale.baseline(
+		points_layer.modulate.a,
+		points_goal_visibility,
+		(POINTS_FADE_IN_SPEED if points_goal_visibility == 1 else POINTS_FADE_OUT_SPEED) * delta
+	);
+	cards_shadow.modulate.a = System.Scale.baseline(
+		cards_shadow.modulate.a,
+		shadow_goal_visibility,
+		(SHADOW_FADE_IN_SPEED if shadow_goal_visibility == 1 else SHADOW_FADE_OUT_SPEED) * delta
+	);
+	if System.Scale.equal(points_layer.modulate.a, points_goal_visibility):
+		points_layer.modulate.a = points_goal_visibility;
+		cards_shadow.modulate.a = shadow_goal_visibility;
+		is_updating_points_visibility = false;
 
 func fade_field_lines(delta : float) -> void:
 	var direction : int = 1 if field_lines_visible else -1;
@@ -831,3 +852,12 @@ func _on_background_music_finished() -> void:
 func _on_pre_results_timer_timeout() -> void:
 	pre_results_timer.stop();
 	go_to_results();
+
+func _on_card_focus_timer_timeout() -> void:
+	card_focus_timer.stop();
+	toggle_points_visibility(false);
+	if !can_play_card:
+		return;
+	field_lines_visible = true;
+	fading_field_lines = true;
+	field_lines.modulate.a = min(1, max(0, field_lines.modulate.a));

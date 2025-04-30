@@ -18,7 +18,7 @@ const TYPE_FONT_SIZE_BIG : int = 128;
 const TYPE_FONT_SIZE_SMALL : int = 128;
 const CARD_ART_PATH : String = "res://Assets/Art/CardArt/%s.png";
 const ROTATION_SPEED : float = 0.12;
-const FOCUS_WAIT : float = 1.2;
+const FOCUS_WAIT : float = 1.8;
 const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
 
 const ROCK_BG_COLOR = "#008242";

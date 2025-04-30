@@ -88,6 +88,8 @@ grow_vertical = 2
 
 [node name="PointsClickTimer" type="Timer" parent="Timers"]
 
+[node name="CardFocusTimer" type="Timer" parent="Timers"]
+
 [node name="Points" type="Node2D" parent="."]
 
 [node name="YourPoints" type="Label" parent="Points"]
@@ -157,10 +159,9 @@ text = "Peitse"
 horizontal_alignment = 1
 
 [node name="CardsShadow" type="Node2D" parent="."]
-visible = false
 
 [node name="ColorRect" type="ColorRect" parent="CardsShadow"]
-self_modulate = Color(1, 1, 1, 0.6)
+self_modulate = Color(1, 1, 1, 0.305882)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -228,3 +229,4 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 [connection signal="timeout" from="Timers/RoundEndTimer" to="." method="_on_round_end_timer_timeout"]
 [connection signal="timeout" from="Timers/GameOverTimer" to="." method="_on_game_over_timer_timeout"]
 [connection signal="timeout" from="Timers/PointsClickTimer" to="." method="_on_points_click_timer_timeout"]
+[connection signal="timeout" from="Timers/CardFocusTimer" to="." method="_on_card_focus_timer_timeout"]

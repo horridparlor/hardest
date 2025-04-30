@@ -13,15 +13,19 @@ var instance_id : int = System.Random.instance_id();
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
 
-static func from_json(card_data : Dictionary) -> CardData:
+static func from_json(data : Dictionary) -> CardData:
 	var card : CardData = CardData.new();
-	card.card_id = card_data.id;
-	card.card_name = card_data.name;
-	card.card_type = CardEnums.TranslateCardType[card_data.type];
-	card.default_type = card.card_type;
-	for key in card_data.keywords:
-		card.keywords.append(CardEnums.KeywordTranslate[key] if CardEnums.KeywordTranslate.has(key) else "?");
+	card.eat_json(data);
 	return card;
+
+func eat_json(data : Dictionary) -> void:
+	card_id = data.id;
+	card_name = data.name;
+	card_type = CardEnums.TranslateCardType[data.type];
+	default_type = card_type;
+	keywords = [];
+	for key in data.keywords:
+		keywords.append(CardEnums.KeywordTranslate[key] if CardEnums.KeywordTranslate.has(key) else "?");
 
 func has_keyword(keyword : CardEnums.Keyword) -> bool:
 	return keywords.has(keyword);
@@ -40,6 +44,9 @@ func has_cooties() -> bool:
 
 func has_copycat() -> bool:
 	return has_keyword(CardEnums.Keyword.COPYCAT);
+
+func has_cursed() -> bool:
+	return has_keyword(CardEnums.Keyword.CURSED);
 
 func has_digital() -> bool:
 	return has_keyword(CardEnums.Keyword.DIGITAL);

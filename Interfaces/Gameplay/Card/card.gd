@@ -39,6 +39,7 @@ const CARD_SCALE : Dictionary = {
 	CardEnums.Zone.GRAVE: MIN_SCALE_VECTOR
 }
 
+var instance_id : int;
 var card_data : CardData = CardData.new();
 var is_moving : bool;
 var is_focused : bool;

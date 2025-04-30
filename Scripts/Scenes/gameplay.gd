@@ -18,15 +18,14 @@ extends Gameplay
 @onready var character_face : Sprite2D = $Points/CharacterFace;
 @onready var enemy_name : Label = $Points/CharacterFace/EnemyName;
 @onready var your_face : Sprite2D = $Points/YourFace;
+@onready var your_name : Label = $Points/YourFace/YourName;
 @onready var background_pattern : Sprite2D = $Background/Pattern;
 
 
 func init(level_data_ : LevelData) -> void:
 	level_data = level_data_;
-	player_one.controller = GameplayEnums.Controller.PLAYER_ONE;
-	player_two.controller = GameplayEnums.Controller.PLAYER_TWO;
-	player_one.eat_decklist(level_data.deck_id);
-	player_two.eat_decklist(level_data.deck2_id);
+	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck_id);
+	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck2_id);
 	init_layers();
 	init_timers();
 	going_first = System.Random.boolean();
@@ -36,6 +35,14 @@ func init(level_data_ : LevelData) -> void:
 	update_character_face();
 	initialize_background_music();
 	initialize_background_pattern();
+
+func init_player(player : Player, controller : GameplayEnums.Controller, deck_id : int) -> void:
+	var card : CardData;
+	player.controller = controller;
+	player.eat_decklist(deck_id);
+	for c in player.cards_in_deck:
+		card = c;
+		card.controller = player;
 
 func initialize_background_music() -> void:
 	var music_file : Resource = load(LEVEL_THEME_PATH % [level_data.id]);
@@ -60,15 +67,18 @@ func init_timers() -> void:
 
 func have_you_won() -> bool:
 	var result : bool = player_one.points >= System.Rules.VICTORY_POINTS;
-	var save_data : Dictionary;
 	if result:
-		save_data = System.Data.read_save_data();
-		if save_data.levels_unlocked == level_data.id:
-			save_data.levels_unlocked += 1;
-			System.Data.write_save_data(save_data);
-		your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
-		character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
+		_on_you_won();
 	return result;
+
+func _on_you_won() -> void:
+	var save_data : Dictionary;
+	save_data = System.Data.read_save_data();
+	if save_data.levels_unlocked == level_data.id:
+		save_data.levels_unlocked += 1;
+		System.Data.write_save_data(save_data);
+	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
+	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 
 func has_opponent_won() -> bool:
 	return player_two.points >= System.Rules.VICTORY_POINTS;
@@ -81,14 +91,23 @@ func start_round() -> void:
 	player_two.draw_hand();
 	player_two.shuffle_hand();
 	if (player_one.hand_empty() and player_one.deck_empty()) or (player_two.hand_empty() and player_two.deck_empty()):
-		start_game_over();
+		start_game_over(true);
 		return;
 	if going_first:
 		your_turn();
 	else:
 		opponents_turn();
 
-func start_game_over() -> void:
+func start_game_over(extend_wait : bool = false) -> void:
+	if extend_wait:
+		game_over_timer.wait_time *= 3;
+		if player_one.hand_empty() and player_one.deck_empty():
+			your_name.text = "DECK OUT";
+			your_name.add_theme_font_size_override("font_size", 64);
+		elif player_two.hand_empty() and player_two.deck_empty():
+			enemy_name.text = "DECK OUT";
+			enemy_name.add_theme_font_size_override("font_size", 64);
+			_on_you_won();
 	game_over_timer.start();
 
 func end_game() -> void:
@@ -129,22 +148,26 @@ func reorder_hand() -> void:
 		card.move();
 		position.x += HAND_MARGIN;
 
-func spawn_card(card_data : CardData, spawn_for_opponent : bool = false) -> GameplayCard:
-	card_data.controller = player_two if spawn_for_opponent else player_one;
-	update_alterations(card_data);
+func spawn_card(card_data : CardData) -> GameplayCard:
+	update_alterations_for_card(card_data);
 	if cards.has(card_data.instance_id):
 		return cards[card_data.instance_id];
 	var card : GameplayCard = System.Instance.load_child(CARD_PATH, cards_layer);
 	card.card_data = card_data;
+	card.instance_id = card_data.instance_id;
 	card.init(card_data.controller.gained_keyword);
 	cards[card.card_data.instance_id] = card;
-	card.position = -CARD_STARTING_POSITION if spawn_for_opponent else CARD_STARTING_POSITION;
+	card.position = CARD_STARTING_POSITION if card_data.controller == player_one else -CARD_STARTING_POSITION;
 	card.pressed.connect(_on_card_pressed);
 	card.released.connect(_on_card_released);
 	card.despawned.connect(_on_card_despawned);
 	return card;
 
-func update_alterations(card_data : CardData) -> void:
+func update_card_alterations() -> void:
+	for card in player_one.get_active_cards() + player_two.get_active_cards():
+		update_alterations_for_card(card);
+
+func update_alterations_for_card(card_data : CardData) -> void:
 	var card : GameplayCard = get_card(card_data);
 	if card_data.has_undead():
 		if card_data.has_undead(true):
@@ -222,7 +245,7 @@ func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
 	return a_x < b_x;
 
 func _on_card_despawned(card : GameplayCard) -> void:
-	cards.erase(card.card_data.instance_id);
+	cards.erase(card.instance_id);
 	card.queue_free();
 
 func check_if_played(card : GameplayCard) -> void:
@@ -232,17 +255,29 @@ func check_if_played(card : GameplayCard) -> void:
 		return;
 	play_card(card, player_one, player_two);
 
-func play_card(card : GameplayCard, player : Player, opponent : Player) -> void:
+func replace_played_card(card : CardData) -> void:
+	var player : Player = card.controller;
+	var opponent : Player = get_opponent(card);
+	get_card(player.get_field_card()).despawn();
+	player.clear_field();
+	play_card(spawn_card(card), player, opponent, true);
+
+func play_card(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> void:
 	player.play_card(card.card_data);
 	if card.card_data.has_buried():
-		card.bury();
+		if !is_digital_speed:
+			card.bury();
 	else:
 		trigger_play_effects(card.card_data, player, opponent);
-	update_cards_visuals();
+	update_card_alterations();
 	if player == player_two:
+		show_opponents_field();
 		return;
 	card.goal_position = FIELD_POSITION;
+	card.is_moving = true;
 	reorder_hand();
+	if is_digital_speed:
+		return;
 	can_play_card = false;
 	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
@@ -250,10 +285,6 @@ func play_card(card : GameplayCard, player : Player, opponent : Player) -> void:
 		opponents_turn();
 	else:
 		go_to_pre_results();
-
-func update_cards_visuals() -> void:
-	for instance_id in cards:
-		cards[instance_id].update_visuals(cards[instance_id].card_data.controller.gained_keyword)
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
 	if card.has_celebration():
@@ -278,34 +309,160 @@ func opponents_turn() -> void:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
 	card = player_two.cards_in_hand.back();
-	play_card(spawn_card(card, true), player_two, player_one);
-	show_opponents_field();
+	play_card(spawn_card(card), player_two, player_one);
 	if going_first:
 		go_to_pre_results();
 	else:
 		your_turn();
 
 func go_to_results() -> void:
-	if going_first:
-		transform_your_mimics();
-		transform_opponents_mimics();
-	else:
-		transform_opponents_mimics();
-		transform_your_mimics();
+	#This structure waits and comes back everytime some action is done
+	#So that player has time to see animation and react mentally.
+	#Better structure to use enum for the phase and make it not crawl
+	#The whole structure like this. Fix, if this ever gets longer than
+	#Let's say 100 lines :D
+	if results_phase < 2:
+		if mimics_phase():
+			return results_wait();
+	if results_phase < 4:
+		if digitals_phase():
+			return results_wait();
 	round_results_timer.start();
 
-func transform_your_mimics() -> void:
-	if !player_two.get_field_card().has_high_ground():
-		transform_mimics(player_one.cards_on_field, player_one, player_two);
+func mimics_phase() -> bool:
+	if going_first:
+		if results_phase < 1:
+			results_phase = 1;
+			if transform_your_mimics():
+				return true;
+		if results_phase < 2:
+			results_phase = 2;
+			if transform_opponents_mimics():
+				return true;
+	else:
+		if results_phase < 1:
+			results_phase = 1;
+			if transform_opponents_mimics():
+				return true;
+		if results_phase < 2:
+			results_phase = 2;
+			if transform_your_mimics():
+				return true;
+	return false;
 
-func transform_opponents_mimics() -> void:
-	if !player_one.get_field_card().has_high_ground():
-		transform_mimics(player_two.cards_on_field, player_two, player_one);
+func digitals_phase() -> bool:
+	if going_first:
+		if results_phase < 3:
+			results_phase = 3;
+			if play_your_digitals():
+				return true;
+		if results_phase < 4:
+			results_phase = 4;
+			if play_opponents_digitals():
+				results_phase = 2;
+				return true;
+	else:
+		if results_phase < 3:
+			results_phase = 3;
+			if play_opponents_digitals():
+				return true;
+		if results_phase < 4:
+			results_phase = 4;
+			if play_your_digitals():
+				results_phase = 2;
+				return true;
+	return false;
+
+func transform_your_mimics() -> bool:
+	if player_two.get_field_card().has_high_ground():
+		return false;
+	return transform_mimics(player_one.cards_on_field, player_one, player_two);
+
+func transform_opponents_mimics() -> bool:
+	if player_one.get_field_card().has_high_ground():
+		return false;
+	return transform_mimics(player_two.cards_on_field, player_two, player_one);
+
+func play_your_digitals() -> bool:
+	return play_digitals(player_one, player_two);
+
+func play_opponents_digitals() -> bool:
+	return play_digitals(player_two, player_one);
+
+func play_digitals(player : Player, opponent : Player) -> bool:
+	var cards : Array;
+	var enemy : CardData;
+	var digital_to_play : CardData;
+	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
+	if winner == GameplayEnums.Controller.PLAYER_ONE:
+		return false;
+	cards = player.cards_in_hand.filter(func(card : CardData): return card.has_digital());
+	enemy = opponent.get_field_card();
+	if cards.size() == 0:
+		return false;
+	cards.sort_custom(
+		func(card_a : CardData, card_b : CardData):
+			return determine_points_result(card_a, enemy) < determine_points_result(card_b, enemy);
+	);
+	digital_to_play = cards.back();
+	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(determine_winner(digital_to_play, enemy)):
+		return false;
+	replace_played_card(digital_to_play);
+	return true;
+
+func get_opponent(card : CardData) -> Player:
+	if card.controller == player_one:
+		return player_two;
+	return player_one;
+
+func determine_points_result(card : CardData, enemy : CardData) -> int:
+	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
+	var win_points : int = get_win_points(card, enemy);
+	var lose_points : int = get_lose_points(card, enemy);
+	match winner:
+		GameplayEnums.Controller.PLAYER_ONE:
+			return win_points;
+		GameplayEnums.Controller.PLAYER_TWO:
+			return lose_points;
+	return 0;
+
+func get_win_points(card : CardData, enemy : CardData) -> int:
+	var points : int = calculate_base_points(card, enemy);
+	var points_to_steal : int = calculate_points_to_steal(card, enemy);
+	return points + points_to_steal;
+
+func get_lose_points(card : CardData, enemy : CardData) -> int:
+	var points : int = calculate_base_points(card, enemy);
+	var points_to_lose : int = calculate_points_to_steal(enemy, card);
+	return -(points + points_to_lose);
+
+func calculate_base_points(card : CardData, enemy : CardData) -> int:
+	var points : int = 1;
+	if card.has_champion():
+		points *= 2;
+	if enemy.has_champion():
+		points *= 2;
+	return points;
+
+func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
+	var points : int;
+	if card.has_vampire():
+		points += 1;
+	if enemy.has_salty():
+		points += 1;
+	return min(points, enemy.controller.points);
+
+func determine_winning_player(player : Player, opponent : Player) -> GameplayEnums.Controller:
+	return determine_winner(player.get_field_card(), opponent.get_field_card());
 
 func go_to_pre_results() -> void:
+	results_phase = 0;
 	if no_mimics():
 		go_to_results();
 		return;
+	results_wait();
+
+func results_wait() -> void:
 	pre_results_timer.start();
 
 func no_mimics() -> bool:
@@ -318,21 +475,24 @@ func no_mimics() -> bool:
 			return false;
 	return true;
 
-func transform_mimics(your_cards : Array, player : Player, opponent : Player) -> void:
+func transform_mimics(your_cards : Array, player : Player, opponent : Player) -> bool:
 	var card : CardData;
+	var transformed_any : bool;
 	for c in your_cards:
 		card = c;
 		if card.is_buried:
 			card.is_buried = false;
 			trigger_play_effects(card, player, opponent);
+			transformed_any = true;
 		if card.card_type == CardEnums.CardType.MIMIC:
 			card.card_type = opponent.cards_on_field[0].card_type;
 		cards[card.instance_id].update_visuals(card.controller.gained_keyword);
+	return transformed_any;
 
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
 	if opponent.deck_empty():
 		return;
-	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1] = CardData.eat_json(System.Data.read_card(CardEnums.BasicIds[card_type]));
+	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1] = System.Data.read_card(CardEnums.BasicIds[card_type], opponent);
 
 func best_to_play(card_a : CardData, card_b : CardData) -> int:
 	var a_value : int = get_result_for_playing(card_a);
@@ -361,12 +521,16 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 1;
 			CardEnums.Keyword.COPYCAT:
 				value += 1;
+			CardEnums.Keyword.DIGITAL:
+				value += 5;
 			CardEnums.Keyword.DIVINE:
 				value += 0;
 			CardEnums.Keyword.GREED:
 				value += 10;
 			CardEnums.Keyword.HIGH_GROUND:
 				value += 2;
+			CardEnums.Keyword.HORSE_GEAR:
+				value += 0;
 			CardEnums.Keyword.INFLUENCER:
 				value -= 1;
 			CardEnums.Keyword.PAIR:
@@ -377,6 +541,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 0;
 			CardEnums.Keyword.RUST:
 				value += 1;
+			CardEnums.Keyword.SALTY:
+				value += 5 if player_two.points == 0 else 1;
 			CardEnums.Keyword.UNDEAD:
 				value -= 1;
 			CardEnums.Keyword.VAMPIRE:
@@ -455,11 +621,15 @@ func round_results() -> void:
 			check_lose_effects(enemy, player_two);
 			if card.has_vampire():
 				player_two.lose_points();
+			if enemy.has_salty():
+				player_two.lose_points();
 		GameplayEnums.Controller.PLAYER_TWO:
 			player_two.gain_points(points);
 			click_opponents_points();
 			check_lose_effects(card, player_one);
 			if enemy.has_vampire():
+				player_one.lose_points();
+			if card.has_salty():
 				player_one.lose_points();
 		GameplayEnums.Controller.NULL:
 			play_point_sfx(TIE_SOUND_PATH);
@@ -616,7 +786,7 @@ func clear_players_field(player : Player, did_win : bool) -> void:
 			continue;
 		if get_card(card):
 			get_card(card).despawn();
-	player.clear_field(did_win);
+	player.end_of_turn_clear(did_win);
 
 func show_opponents_field() -> void:
 	var card : GameplayCard;

@@ -13,7 +13,7 @@ var instance_id : int = System.Random.instance_id();
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
 
-static func eat_json(card_data : Dictionary) -> CardData:
+static func from_json(card_data : Dictionary) -> CardData:
 	var card : CardData = CardData.new();
 	card.card_id = card_data.id;
 	card.card_name = card_data.name;
@@ -41,11 +41,17 @@ func has_cooties() -> bool:
 func has_copycat() -> bool:
 	return has_keyword(CardEnums.Keyword.COPYCAT);
 
+func has_digital() -> bool:
+	return has_keyword(CardEnums.Keyword.DIGITAL);
+
 func has_divine() -> bool:
 	return has_keyword(CardEnums.Keyword.DIVINE);
 	
 func has_greed() -> bool:
 	return has_keyword(CardEnums.Keyword.GREED);
+
+func has_horse_gear() -> bool:
+	return has_keyword(CardEnums.Keyword.HORSE_GEAR);
 
 func has_high_ground() -> bool:
 	return has_keyword(CardEnums.Keyword.HIGH_GROUND);
@@ -65,12 +71,15 @@ func has_pick_up() -> bool:
 func has_rust() -> bool:
 	return has_keyword(CardEnums.Keyword.RUST);
 
+func has_salty() -> bool:
+	return has_keyword(CardEnums.Keyword.SALTY);
+
 func has_undead(needs_to_be_active : bool = false) -> bool:
 	if !has_keyword(CardEnums.Keyword.UNDEAD):
 		return false;
 	if !needs_to_be_active:
 		return true;
-	return controller.count_grave_type(default_type) >= System.Rules.UNDEAD_LIMIT;
+	return controller.count_grave_type(default_type, instance_id) >= System.Rules.UNDEAD_LIMIT;
 
 func has_vampire() -> bool:
 	return has_keyword(CardEnums.Keyword.VAMPIRE);

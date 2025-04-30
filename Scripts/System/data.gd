@@ -27,10 +27,15 @@ const DEFAULT_SAVE_DATA : Dictionary = {
 	"levels_unlocked": 1
 };
 
-static func read_card(card_id : int) -> Dictionary:
-	return System.Dictionaries.make_safe(
+static func read_card(card_id : int, player : Player = null) -> CardData:
+	var card : CardData = CardData.from_json(System.Dictionaries.make_safe(
 		System.Json.read_data(CARDS_FOLDER_PATH + str(card_id)), DEFAULT_CARD
-	);
+	));
+	card.controller = player;
+	return card;
+
+static func get_basic_card(card_type : CardEnums.CardType, player : Player = null) -> CardData:
+	return read_card(CardEnums.BasicIds[card_type], player);
 
 static func read_decklist(decklist_id : int) -> Dictionary:
 	var data : Dictionary = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id));

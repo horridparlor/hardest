@@ -26,7 +26,7 @@ func eat_json(data : Dictionary) -> void:
 	default_type = card_type_;
 	keywords = [];
 	for key in data.keywords:
-		keywords.append(CardEnums.KeywordTranslate[key] if CardEnums.KeywordTranslate.has(key) else "?");
+		keywords.append(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else "?");
 
 func has_keyword(keyword : CardEnums.Keyword) -> bool:
 	return keywords.has(keyword);

@@ -111,7 +111,7 @@ const KeywordNames : Dictionary = {
 	Keyword.WRAPPED : "Wrapped"
 }
 
-const KeywordTranslate : Dictionary = {
+const TranslateKeyword : Dictionary = {
 	"buried" : Keyword.BURIED,
 	"celebration" : Keyword.CELEBRATION,
 	"champion" : Keyword.CHAMPION,

@@ -74,10 +74,12 @@ func shuffle_hand_to_deck() -> void:
 	cards_in_hand = [];
 	cards_in_deck.shuffle();
 
-func play_card(card : CardData) -> void:
+func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	cards_in_hand.erase(card);
 	cards_on_field.append(card);
 	card.zone = CardEnums.Zone.FIELD;
+	if is_digital_speed:
+		return;
 	if gained_keyword != CardEnums.Keyword.NULL and card.keywords.size() < System.Rules.MAX_KEYWORDS:
 		card.keywords.append(gained_keyword);
 	gained_keyword = CardEnums.Keyword.NULL;
@@ -210,3 +212,12 @@ func get_rainbowed() -> void:
 	for c in cards_in_hand:
 		card = c;
 		card.eat_json(System.Data.read_card(System.Random.item(random_cards[card.default_type])));
+
+func build_hydra(card : CardData) -> void:
+	var keywords : Array = random_keywords.duplicate();
+	var keyword : CardEnums.Keyword;
+	card.keywords = [];
+	for i in range(System.Rules.HYDRA_KEYWORDS):
+		keyword = System.Random.item(keywords);
+		keywords.erase(keyword);
+		card.keywords.append(keyword);

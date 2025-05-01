@@ -9,3 +9,4 @@ const CLOSE_TO_WINNING_POINTS : int = VICTORY_POINTS - 2;
 const MAX_LEVELS : int = 7;
 const UNDEAD_LIMIT : int = 3;
 const MAX_KEYWORDS : int = 3;
+const HYDRA_KEYWORDS : int = 3;

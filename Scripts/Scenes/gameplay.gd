@@ -267,7 +267,9 @@ func replace_played_card(card : CardData) -> void:
 	play_card(spawn_card(card), player, opponent, true);
 
 func play_card(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> void:
-	player.play_card(card.card_data);
+	player.play_card(card.card_data, is_digital_speed);
+	if card.card_data.has_hydra() and !card.card_data.has_buried():
+		player.build_hydra(card.card_data);
 	if card.card_data.has_buried():
 		if !is_digital_speed:
 			card.bury();
@@ -490,6 +492,8 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 		card = c;
 		if card.is_buried:
 			card.is_buried = false;
+			if card.has_hydra():
+				player.build_hydra(card);
 			trigger_play_effects(card, player, opponent);
 			transformed_any = true;
 		if card.has_copycat():

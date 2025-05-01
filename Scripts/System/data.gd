@@ -59,7 +59,7 @@ static func read_decklist(decklist_id : int) -> Dictionary:
 	System.Dictionaries.make_safe(data, DEFAULT_DECKLIST);
 	var main_deck : Dictionary = fill_decklist(data.main);
 	var extra_deck : Dictionary = fill_decklist(data.extra);
-	var random_keywords : Array = data.random_keywords;
+	var random_keywords : Array = read_random_keywords(data.random_keywords);
 	var random_cards : Dictionary = read_random_cards(data.random_cards);
 	return {
 		"main": main_deck,
@@ -67,6 +67,12 @@ static func read_decklist(decklist_id : int) -> Dictionary:
 		"random_keywords": random_keywords,
 		"random_cards": random_cards
 	};
+
+static func read_random_keywords(source : Array) -> Array:
+	var random_keywords : Array;
+	for keyword_name in source:
+		random_keywords.append(CardEnums.TranslateKeyword[keyword_name]);
+	return random_keywords;
 
 static func read_random_cards(source : Dictionary) -> Dictionary:
 	var random_cards : Dictionary;

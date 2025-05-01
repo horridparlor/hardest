@@ -690,6 +690,20 @@ func click_opponents_points() -> void:
 	points_click_timer.start();
 
 func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
+	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
+	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
+	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	var winner_a : GameplayEnums.Controller = check_winner_from_side(card, enemy);
+	var winner_b : GameplayEnums.Controller = check_winner_from_side(card, enemy);
+	if winner_a == winner_b:
+		return winner_a;
+	elif winner_a == tie:
+		return winner_b;
+	elif winner_b == tie:
+		return winner_a;
+	return tie;
+
+func check_winner_from_side(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
 	var card_type : CardEnums.CardType = card.card_type;
 	var enemy_type : CardEnums.CardType = enemy.card_type;
 	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;

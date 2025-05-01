@@ -694,7 +694,7 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var winner_a : GameplayEnums.Controller = check_winner_from_side(card, enemy);
-	var winner_b : GameplayEnums.Controller = check_winner_from_side(card, enemy);
+	var winner_b : GameplayEnums.Controller = GameplayEnums.flip_player(check_winner_from_side(enemy, card));
 	if winner_a == winner_b:
 		return winner_a;
 	elif winner_a == tie:

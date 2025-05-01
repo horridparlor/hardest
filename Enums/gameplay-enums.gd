@@ -12,6 +12,14 @@ enum Controller {
 	UNDEFINED
 }
 
+func flip_player(controller : Controller) -> Controller:
+	match controller:
+		Controller.PLAYER_ONE:
+			return Controller.PLAYER_TWO;
+		Controller.PLAYER_TWO:
+			return Controller.PLAYER_ONE;
+	return controller;
+
 enum Character {
 	ERIKA,
 	KORVEK,

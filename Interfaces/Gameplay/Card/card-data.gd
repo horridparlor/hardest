@@ -48,6 +48,9 @@ func has_copycat() -> bool:
 func has_cursed() -> bool:
 	return has_keyword(CardEnums.Keyword.CURSED);
 
+func has_devour() -> bool:
+	return has_keyword(CardEnums.Keyword.DEVOUR);
+
 func has_digital() -> bool:
 	return has_keyword(CardEnums.Keyword.DIGITAL);
 
@@ -63,6 +66,9 @@ func has_horse_gear() -> bool:
 func has_high_ground() -> bool:
 	return has_keyword(CardEnums.Keyword.HIGH_GROUND);
 
+func has_hydra() -> bool:
+	return has_keyword(CardEnums.Keyword.HYDRA);
+
 func has_influencer() -> bool:
 	return has_keyword(CardEnums.Keyword.INFLUENCER);
 
@@ -75,11 +81,23 @@ func has_pair_breaker() -> bool:
 func has_pick_up() -> bool:
 	return has_keyword(CardEnums.Keyword.PICK_UP);
 
+func has_rainbow() -> bool:
+	return has_keyword(CardEnums.Keyword.RAINBOW);
+
+func has_reload() -> bool:
+	return has_keyword(CardEnums.Keyword.RELOAD);
+
 func has_rust() -> bool:
 	return has_keyword(CardEnums.Keyword.RUST);
 
 func has_salty() -> bool:
 	return has_keyword(CardEnums.Keyword.SALTY);
+
+func has_silver() -> bool:
+	return has_keyword(CardEnums.Keyword.SILVER);
+
+func has_soul_hunter() -> bool:
+	return has_keyword(CardEnums.Keyword.SOUL_HUNTER);
 
 func has_undead(needs_to_be_active : bool = false) -> bool:
 	if !has_keyword(CardEnums.Keyword.UNDEAD):

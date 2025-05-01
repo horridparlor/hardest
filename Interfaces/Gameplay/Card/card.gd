@@ -27,10 +27,12 @@ const PAPER_BG_COLOR = "#3683cf";
 const PAPER_BORDER_COLOR = "#92cffd";
 const SCISSORS_BG_COLOR = "#f9662d";
 const SCISSORS_BORDER_COLOR = "#ffbf8d";
-const MIMIC_BG_COLOR = "#b420b6";
-const MIMIC_BORDER_COLOR = "#fbcafb";
 const GUN_BG_COLOR = "#a2a037";
 const GUN_BORDER_COLOR = "#fbe100";
+const MIMIC_BG_COLOR = "#b420b6";
+const MIMIC_BORDER_COLOR = "#fbcafb";
+const GOD_BG_COLOR = "847033";
+const GOD_BORDER_COLOR = "e9d392";
 
 const CARD_SCALE : Dictionary = {
 	CardEnums.Zone.DECK: MIN_SCALE_VECTOR,

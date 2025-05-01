@@ -11,11 +11,14 @@ var grave_type_counts : Dictionary = {
 	CardEnums.CardType.ROCK: 0,
 	CardEnums.CardType.PAPER: 0,
 	CardEnums.CardType.SCISSORS: 0,
-	CardEnums.CardType.MIMIC: 0,
 	CardEnums.CardType.GUN: 0,
+	CardEnums.CardType.MIMIC: 0,
+	CardEnums.CardType.GOD: 0
 }
 var controller : GameplayEnums.Controller;
 var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL;
+var random_keywords : Array;
+var random_cards : Dictionary;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -87,6 +90,8 @@ func eat_decklist(decklist_id : int = 0) -> void:
 		for i in range(decklist_data.main[card]):
 			cards_in_deck.append(CardData.from_json(card_data));
 	cards_in_deck.shuffle();
+	random_keywords = decklist_data.random_keywords;
+	random_cards = decklist_data.random_cards;
 	add_always_start_cards();
 
 func add_always_start_cards() -> void:
@@ -193,3 +198,9 @@ func get_added_count_from_replacing_field(instance_id : int, card_type : CardEnu
 
 func get_active_cards() -> Array:
 	return cards_in_hand + cards_on_field;
+
+func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
+	var card : CardData = CardData.from_json(System.Data.read_card(System.Random.item(random_cards[card_type])));
+	cards_in_deck.append(card);
+	cards_in_deck.shuffle();
+	return card; 

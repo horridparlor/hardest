@@ -291,12 +291,16 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 		go_to_pre_results();
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
-	if card.has_celebration():
-		celebrate(player);
-	if card.has_influencer():
-		influence_opponent(opponent, card.default_type);
-	if card.has_wrapped():
-		player.gained_keyword = CardEnums.Keyword.BURIED;
+	for keyword in card.keywords:
+		match keyword:
+			CardEnums.Keyword.CELEBRATION:
+				celebrate(player);
+			CardEnums.Keyword.INFLUENCER:
+				influence_opponent(opponent, card.default_type);
+			CardEnums.Keyword.RELOAD:
+				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
+			CardEnums.Keyword.WRAPPED:
+				player.gained_keyword = CardEnums.Keyword.BURIED;
 
 func celebrate(player : Player) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand;
@@ -524,6 +528,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 1;
 			CardEnums.Keyword.CURSED:
 				value += 1;
+			CardEnums.Keyword.DEVOUR:
+				value += 3;
 			CardEnums.Keyword.DIGITAL:
 				value += 5;
 			CardEnums.Keyword.DIVINE:
@@ -534,6 +540,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 2;
 			CardEnums.Keyword.HORSE_GEAR:
 				value += 0;
+			CardEnums.Keyword.HYDRA:
+				value += 2;
 			CardEnums.Keyword.INFLUENCER:
 				value -= 1;
 			CardEnums.Keyword.PAIR:
@@ -542,10 +550,18 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 1;
 			CardEnums.Keyword.PICK_UP:
 				value += 0;
+			CardEnums.Keyword.RAINBOW:
+				value += 2;
+			CardEnums.Keyword.RELOAD:
+				value += 0;
 			CardEnums.Keyword.RUST:
 				value += 1;
 			CardEnums.Keyword.SALTY:
 				value += 5 if player_two.points == 0 else 1;
+			CardEnums.Keyword.SILVER:
+				value += 1;
+			CardEnums.Keyword.SOUL_HUNTER:
+				value += 1;
 			CardEnums.Keyword.UNDEAD:
 				value -= 1;
 			CardEnums.Keyword.VAMPIRE:

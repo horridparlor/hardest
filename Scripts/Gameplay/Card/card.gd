@@ -77,6 +77,8 @@ func get_panel_bg_color(card_type : CardEnums.CardType) -> String:
 			return SCISSORS_BG_COLOR;
 		CardEnums.CardType.GUN:
 			return GUN_BG_COLOR;
+		CardEnums.CardType.GOD:
+			return GOD_BG_COLOR;
 	return MIMIC_BG_COLOR;
 
 func get_panel_border_color(card_type : CardEnums.CardType) -> String:
@@ -89,6 +91,8 @@ func get_panel_border_color(card_type : CardEnums.CardType) -> String:
 			return SCISSORS_BORDER_COLOR;
 		CardEnums.CardType.GUN:
 			return GUN_BORDER_COLOR;
+		CardEnums.CardType.GOD:
+			return GOD_BORDER_COLOR;
 	return MIMIC_BORDER_COLOR;
 
 func _on_button_pressed() -> void:

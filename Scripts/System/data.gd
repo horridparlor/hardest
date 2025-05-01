@@ -10,10 +10,27 @@ const DEFAULT_CARD : Dictionary = {
 	"keywords": []
 }
 
+const DEFAULT_RANDOM_KEYWORDS : Array = [
+	"buried",
+	"pair",
+	"rust"
+]
+
+const DEFAULT_RANDOM_CARDS : Dictionary = {
+	CardEnums.CardType.ROCK: [1],
+	CardEnums.CardType.PAPER: [2],
+	CardEnums.CardType.SCISSORS: [3],
+	CardEnums.CardType.GUN: [4],
+	CardEnums.CardType.MIMIC: [5],
+	CardEnums.CardType.GOD: [42]
+}
+
 const DEFAULT_DECKLIST : Dictionary = {
 	"id": 0,
 	"main": [],
-	"extra": []
+	"extra": [],
+	"random_keywords": DEFAULT_RANDOM_KEYWORDS,
+	"random_cards": DEFAULT_RANDOM_CARDS
 }
 
 const DEFAULT_LEVEL : Dictionary = {
@@ -42,10 +59,20 @@ static func read_decklist(decklist_id : int) -> Dictionary:
 	System.Dictionaries.make_safe(data, DEFAULT_DECKLIST);
 	var main_deck : Dictionary = fill_decklist(data.main);
 	var extra_deck : Dictionary = fill_decklist(data.extra);
+	var random_keywords : Array = data.random_keywords;
+	var random_cards : Dictionary = read_random_cards(data.random_cards);
 	return {
 		"main": main_deck,
-		"extra": extra_deck
+		"extra": extra_deck,
+		"random_keywords": random_keywords,
+		"random_cards": random_cards
 	};
+
+static func read_random_cards(source : Dictionary) -> Dictionary:
+	var random_cards : Dictionary;
+	for card_type_name in source:
+		random_cards[CardEnums.TranslateCardType[card_type_name]] = source[card_type_name];
+	return System.Dictionaries.make_safe(random_cards, DEFAULT_RANDOM_CARDS);
 
 static func read_level(level_id : int) -> LevelData:
 	return LevelData.eat_json(System.Dictionaries.make_safe(

@@ -204,3 +204,9 @@ func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
 	cards_in_deck.append(card);
 	cards_in_deck.shuffle();
 	return card; 
+
+func get_rainbowed() -> void:
+	var card : CardData;
+	for c in cards_in_hand:
+		card = c;
+		card.eat_json(System.Data.read_card(System.Random.item(random_cards[card.default_type])));

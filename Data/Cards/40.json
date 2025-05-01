@@ -1,7 +1,7 @@
 {
 	"id": 40,
 	"name": "Hungry Mimic",
-	"type": "Mimic",
+	"type": "mimic",
 	"keywords": [
 		"buried",
 		"devour"

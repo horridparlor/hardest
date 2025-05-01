@@ -19,10 +19,11 @@ static func from_json(data : Dictionary) -> CardData:
 	return card;
 
 func eat_json(data : Dictionary) -> void:
+	var card_type_ : CardEnums.CardType = CardEnums.TranslateCardType[data.type];
 	card_id = data.id;
 	card_name = data.name;
-	card_type = CardEnums.TranslateCardType[data.type];
-	default_type = card_type;
+	card_type = card_type_;
+	default_type = card_type_;
 	keywords = [];
 	for key in data.keywords:
 		keywords.append(CardEnums.KeywordTranslate[key] if CardEnums.KeywordTranslate.has(key) else "?");

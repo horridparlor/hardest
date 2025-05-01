@@ -37,12 +37,12 @@ const BasicNames : Dictionary = {
 }
 
 const TranslateCardType : Dictionary = {
-	CardTypeName[CardType.ROCK]: CardType.ROCK,
-	CardTypeName[CardType.PAPER]: CardType.PAPER,
-	CardTypeName[CardType.SCISSORS]: CardType.SCISSORS,
-	CardTypeName[CardType.MIMIC]: CardType.MIMIC,
-	CardTypeName[CardType.GUN]: CardType.GUN,
-	CardTypeName[CardType.GOD]: CardType.GOD
+	"rock": CardType.ROCK,
+	"paper": CardType.PAPER,
+	"scissor": CardType.SCISSORS,
+	"gun": CardType.GUN,
+	"mimic": CardType.MIMIC,
+	"god": CardType.GOD
 }
 
 enum Zone {
@@ -158,7 +158,7 @@ var KeywordHints : Dictionary = {
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
 	Keyword.PICK_UP : "End of turn, discard this card from your hand.",
-	Keyword.RAINBOW : "Each card in opponent's hand becomes a random card.",
+	Keyword.RAINBOW : "Each card in opponent's hand becomes a random card of same type.",
 	Keyword.RELOAD : "Shuffle a random gun into your deck.",
 	Keyword.RUST : "Defeats any gun.",
 	Keyword.SALTY : "If loses, lose a point.",

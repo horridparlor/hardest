@@ -1,7 +1,7 @@
 {
 	"id": 30,
 	"name": "Tiny Scissors",
-	"type": "Scissor",
+	"type": "scissor",
 	"keywords": [
 		"pick-up"
 	]

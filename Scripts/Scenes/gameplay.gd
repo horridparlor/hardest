@@ -297,6 +297,9 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 				celebrate(player);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.default_type);
+			CardEnums.Keyword.RAINBOW:
+				opponent.get_rainbowed();
+				update_card_alterations();
 			CardEnums.Keyword.RELOAD:
 				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
 			CardEnums.Keyword.WRAPPED:
@@ -551,9 +554,9 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.PICK_UP:
 				value += 0;
 			CardEnums.Keyword.RAINBOW:
-				value += 2;
+				value += 1;
 			CardEnums.Keyword.RELOAD:
-				value += 0;
+				value += 1;
 			CardEnums.Keyword.RUST:
 				value += 1;
 			CardEnums.Keyword.SALTY:

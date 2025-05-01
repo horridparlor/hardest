@@ -1,7 +1,7 @@
 {
 	"id": 23,
 	"name": "Gravestone",
-	"type": "Rock",
+	"type": "rock",
 	"keywords": [
 		"undead"
 	]

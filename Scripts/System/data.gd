@@ -17,7 +17,7 @@ const DEFAULT_DECKLIST : Dictionary = {
 }
 
 const DEFAULT_LEVEL : Dictionary = {
-	"id": 0,
+	"id": 1,
 	"opponent": GameplayEnums.Character.PETE,
 	"deck": 1,
 	"deck2": 1
@@ -37,6 +37,8 @@ static func get_basic_card(card_type : CardEnums.CardType) -> CardData:
 
 static func read_decklist(decklist_id : int) -> Dictionary:
 	var data : Dictionary = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id));
+	if System.Json.is_error(data):
+		data = System.Json.read_data(DECKLIST_FOLDER_PATH + str(1));
 	System.Dictionaries.make_safe(data, DEFAULT_DECKLIST);
 	var main_deck : Dictionary = fill_decklist(data.main);
 	var extra_deck : Dictionary = fill_decklist(data.extra);

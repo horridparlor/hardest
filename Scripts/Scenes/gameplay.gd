@@ -485,7 +485,7 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 			card.is_buried = false;
 			trigger_play_effects(card, player, opponent);
 			transformed_any = true;
-		if card.card_type == CardEnums.CardType.MIMIC:
+		if card.has_copycat():
 			card.card_type = opponent.cards_on_field[0].card_type;
 		cards[card.instance_id].update_visuals(card.controller.gained_keyword);
 	return transformed_any;

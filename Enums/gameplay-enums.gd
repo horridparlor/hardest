@@ -50,7 +50,7 @@ const CharacterShowcaseName : Dictionary = {
 	Character.PEITSE : "Peitse",
 	Character.PETE : "Farty-Pete",
 	Character.RAISEN : "Raisen",
-	Character.SIMOONI : "Simooni"
+	Character.SIMOONI : "Jukulius"
 }
 
 const CharacterToId : Dictionary = {

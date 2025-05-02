@@ -41,7 +41,7 @@ const DEFAULT_LEVEL : Dictionary = {
 }
 
 const DEFAULT_SAVE_DATA : Dictionary = {
-	"levels_unlocked": 1
+	"levels_unlocked": 0
 };
 
 static func read_card(card_id : int) -> Dictionary:

@@ -17,12 +17,12 @@ const DEFAULT_RANDOM_KEYWORDS : Array = [
 ]
 
 const DEFAULT_RANDOM_CARDS : Dictionary = {
-	CardEnums.CardType.ROCK: [1],
-	CardEnums.CardType.PAPER: [2],
-	CardEnums.CardType.SCISSORS: [3],
-	CardEnums.CardType.GUN: [4],
-	CardEnums.CardType.MIMIC: [5],
-	CardEnums.CardType.GOD: [42]
+	"rock": [1],
+	"paper": [2],
+	"scissor": [3],
+	"gun": [4],
+	"mimic": [5],
+	"god": [42]
 }
 
 const DEFAULT_DECKLIST : Dictionary = {

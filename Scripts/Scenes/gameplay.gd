@@ -683,21 +683,9 @@ func round_results() -> void:
 		points *= 2;
 	match round_winner:
 		GameplayEnums.Controller.PLAYER_ONE:
-			player_one.gain_points(points);
-			click_your_points();
-			check_lose_effects(enemy, player_two);
-			if card.has_vampire():
-				player_two.lose_points();
-			if enemy.has_salty():
-				player_two.lose_points();
+			trigger_winner_loser_effects(points, card, enemy, player_one, player_two);
 		GameplayEnums.Controller.PLAYER_TWO:
-			player_two.gain_points(points);
-			click_opponents_points();
-			check_lose_effects(card, player_one);
-			if enemy.has_vampire():
-				player_one.lose_points();
-			if card.has_salty():
-				player_one.lose_points();
+			trigger_winner_loser_effects(points, enemy, card, player_two, player_one);
 		GameplayEnums.Controller.NULL:
 			play_point_sfx(TIE_SOUND_PATH);
 	your_points.text = str(player_one.points);
@@ -706,6 +694,26 @@ func round_results() -> void:
 		end_round();
 		return;
 	round_end_timer.start();
+
+func trigger_winner_loser_effects(points : int, card : CardData, enemy : CardData, player : Player, opponent : Player) -> void:
+	player.gain_points(points);
+	click_your_points() \
+		if player.controller == GameplayEnums.Controller.PLAYER_ONE \
+		else click_opponents_points();
+	check_lose_effects(enemy, opponent);
+	for keyword in card.keywords:
+		match keyword:
+			CardEnums.Keyword.SOUL_HUNTER:
+				steal_cards_soul(enemy, player);
+			CardEnums.Keyword.VAMPIRE:
+				enemy.lose_points();
+	for keyword in enemy.keywords:
+		match keyword:
+			CardEnums.Keyword.SALTY:
+				opponent.lose_points();
+
+func steal_cards_soul(card : CardData, player : Player) -> void:
+	print(222);
 
 func check_lose_effects(card : CardData, player : Player) -> void:
 	if card.has_greed():

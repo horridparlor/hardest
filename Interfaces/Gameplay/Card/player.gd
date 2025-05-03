@@ -91,11 +91,11 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 		cards_played_this_turn += 1;
 
 func eat_decklist(decklist_id : int = 0) -> void:
-	var decklist_data : Dictionary = System.Data.read_decklist(decklist_id);
+	var decklist_data : Decklist = System.Data.read_decklist(decklist_id);
 	var card_data : Dictionary;
-	for card in decklist_data.main:
+	for card in decklist_data.main_deck:
 		card_data = System.Data.read_card(card);
-		for i in range(decklist_data.main[card]):
+		for i in range(decklist_data.main_deck[card]):
 			cards_in_deck.append(CardData.from_json(card_data));
 	cards_in_deck.shuffle();
 	random_keywords = decklist_data.random_keywords;

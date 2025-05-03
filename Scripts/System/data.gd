@@ -2,6 +2,8 @@ const CARDS_FOLDER_PATH : String = "Cards/";
 const DECKLIST_FOLDER_PATH : String = "Decklists/";
 const LEVEL_FOLDER_PATH : String = "Levels/";
 const SAVE_DATA_PATH : String = "save-data";
+const SOUL_CARDS_SAVE_PATH : String = "card-souls/";
+const SOUL_CARDS_FOR_PLAYER_SAVE : String = SOUL_CARDS_SAVE_PATH + "player-souls";
 
 const DEFAULT_CARD : Dictionary = {
 	"id": 0,
@@ -126,7 +128,7 @@ static func load_card(card_id : int) -> CardData:
 static func get_basic_card(card_type : CardEnums.CardType) -> CardData:
 	return CardData.from_json(read_card(CardEnums.BasicIds[card_type]));
 
-static func read_decklist(decklist_id : int) -> Dictionary:
+static func read_decklist(decklist_id : int) -> Decklist:
 	var data : Dictionary = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id));
 	if System.Json.is_error(data):
 		data = System.Json.read_data(DECKLIST_FOLDER_PATH + str(1));
@@ -135,12 +137,7 @@ static func read_decklist(decklist_id : int) -> Dictionary:
 	var extra_deck : Dictionary = fill_decklist(data.extra);
 	var random_keywords : Array = read_random_keywords(data.random_keywords);
 	var random_cards : Dictionary = read_random_cards(data.random_cards);
-	return {
-		"main": main_deck,
-		"extra": extra_deck,
-		"random_keywords": random_keywords,
-		"random_cards": random_cards
-	};
+	return Decklist.new(main_deck, extra_deck, random_keywords, random_cards);
 
 static func read_random_keywords(source : Array) -> Array:
 	var random_keywords : Array;
@@ -183,3 +180,21 @@ static func read_save_data() -> Dictionary:
 
 static func write_save_data(data : Dictionary) -> void:
 	System.Json.write_save(data, SAVE_DATA_PATH);
+
+static func add_card_soul_to_player(card : CardData) -> void:
+	var soul_cards : CardSoulBank;
+
+static func get_card_souls_for_player(
+	count : int = System.Rules.MAX_HAND_SIZE - System.Rules.HAND_SIZE
+) -> Array:
+	var card_souls : Array;
+	return card_souls;
+
+static func add_card_soul_to_opponent(opponent_id : int, card : CardData) -> void:
+	pass;
+
+static func get_card_souls_for_opponent(opponent_id : int,
+	count : int = System.Rules.MAX_HAND_SIZE - System.Rules.HAND_SIZE
+) -> Array:
+	var card_souls : Array;
+	return card_souls;

@@ -12,17 +12,88 @@ const DEFAULT_CARD : Dictionary = {
 
 const DEFAULT_RANDOM_KEYWORDS : Array = [
 	"buried",
+	"celebration",
+	"champion",
+	"cooties",
+	"copycat",
+	"cursed",
+	"devour",
+	"digital",
+	"divine",
+	"greed",
+	"high-ground",
+	"horse-gear",
+	"hydra",
+	"influencer",
 	"pair",
-	"rust"
+	"pair-breaker",
+	"pick-up",
+	"rainbow",
+	"reload",
+	"rust",
+	"salty",
+	"silver",
+	"soul-hunter",
+	"undead",
+	"vampire",
+	"wrapped"
 ]
 
 const DEFAULT_RANDOM_CARDS : Dictionary = {
-	"rock": [1],
-	"paper": [2],
-	"scissor": [3],
-	"gun": [4],
-	"mimic": [5],
-	"god": [42]
+	"rock": [
+		1,
+		6,
+		9,
+		12,
+		15,
+		23,
+		25,
+		31,
+		35,
+		36
+	],
+	"paper": [
+		2,
+		7,
+		10,
+		13,
+		16,
+		20,
+		22,
+		26,
+		28,
+		32,
+		34,
+		37
+	],
+	"scissor": [
+		3,
+		8,
+		11,
+		14,
+		17,
+		21,
+		24,
+		29,
+		30,
+		33,
+		38,
+		41
+	],
+	"gun": [
+		4,
+		18,
+		19,
+		27,
+		39
+	],
+	"mimic": [
+		5,
+		40
+	],
+	"god": [
+		42
+	]
 }
 
 const DEFAULT_DECKLIST : Dictionary = {

@@ -19,6 +19,8 @@ var controller : GameplayEnums.Controller;
 var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL;
 var random_keywords : Array;
 var random_cards : Dictionary;
+var cards_played_this_turn : int;
+var field_position : Vector2;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -57,7 +59,7 @@ func draw_cards(amount : int = 1) -> void:
 
 func draw() -> bool:
 	var card : CardData;
-	if deck_empty():
+	if deck_empty() or count_hand() == System.Rules.MAX_HAND_SIZE:
 		return false;
 	card = cards_in_deck.pop_back();
 	cards_in_hand.append(card);
@@ -80,9 +82,13 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	card.zone = CardEnums.Zone.FIELD;
 	if is_digital_speed:
 		return;
-	if gained_keyword != CardEnums.Keyword.NULL and card.keywords.size() < System.Rules.MAX_KEYWORDS:
+	if gained_keyword != CardEnums.Keyword.NULL \
+	and card.keywords.size() < System.Rules.MAX_KEYWORDS \
+	and !card.keywords.has(gained_keyword):
 		card.keywords.append(gained_keyword);
 	gained_keyword = CardEnums.Keyword.NULL;
+	if !is_digital_speed:
+		cards_played_this_turn += 1;
 
 func eat_decklist(decklist_id : int = 0) -> void:
 	var decklist_data : Dictionary = System.Data.read_decklist(decklist_id);
@@ -142,13 +148,13 @@ func lose_points(amount : int = 1) -> void:
 func end_of_turn_clear(did_win : bool) -> void:
 	clear_field(did_win);
 	clear_pick_ups();
+	cards_played_this_turn = 0;
 
 func clear_field(did_win : bool = false) -> void:
 	var card : CardData;
 	for c in cards_on_field:
 		card = c;
-		cards_on_field.erase(card);
-		add_to_grave(card, did_win);
+		send_from_field_to_grave(card, did_win)
 
 func clear_pick_ups() -> void:
 	var card : CardData;
@@ -158,6 +164,10 @@ func clear_pick_ups() -> void:
 			continue;
 		cards_in_hand.erase(card);
 		add_to_grave(card);
+
+func send_from_field_to_grave(card : CardData, did_win : bool = false) -> void:
+	cards_on_field.erase(card);
+	add_to_grave(card, did_win);
 
 func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	card.zone = CardEnums.Zone.GRAVE;
@@ -221,3 +231,19 @@ func build_hydra(card : CardData) -> void:
 		keyword = System.Random.item(keywords);
 		keywords.erase(keyword);
 		card.keywords.append(keyword);
+
+func devour_card(eater : CardData, card : CardData) -> void:
+	if eater.is_buried:
+		eater.is_buried = false;
+	eater.card_type = card.card_type;
+	for keyword in card.keywords:
+		if eater.keywords.has(keyword) or [CardEnums.Keyword.BURIED, CardEnums.Keyword.DEVOUR].has(keyword):
+			continue;
+		if eater.keywords.size() == System.Rules.MAX_KEYWORDS:
+			if eater.keywords.has(CardEnums.Keyword.BURIED):
+				eater.keywords.erase(CardEnums.Keyword.BURIED);
+			elif eater.keywords.has(CardEnums.Keyword.DEVOUR):
+				eater.keywords.erase(CardEnums.Keyword.DEVOUR);
+			else:
+				return;
+		eater.keywords.append(keyword);

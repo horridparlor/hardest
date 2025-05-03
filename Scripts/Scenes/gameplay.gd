@@ -10,6 +10,7 @@ extends Gameplay
 @onready var game_over_timer : Timer = $Timers/GameOverTimer;
 @onready var points_click_timer : Timer = $Timers/PointsClickTimer;
 @onready var card_focus_timer : Timer = $Timers/CardFocusTimer;
+@onready var opponents_play_wait : Timer = $Timers/OpponentsPlayWait;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
@@ -47,6 +48,7 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 	for c in player.cards_in_deck:
 		card = c;
 		card.controller = player;
+	player.field_position = FIELD_POSITION if controller == GameplayEnums.Controller.PLAYER_ONE else -FIELD_POSITION;
 
 func initialize_background_music() -> void:
 	var music_file : Resource = load(LEVEL_THEME_PATH % [level_data.id]);
@@ -266,7 +268,7 @@ func replace_played_card(card : CardData) -> void:
 	player.clear_field();
 	play_card(spawn_card(card), player, opponent, true);
 
-func play_card(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> void:
+func play_card(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> bool:
 	player.play_card(card.card_data, is_digital_speed);
 	if card.card_data.has_hydra() and !card.card_data.has_buried():
 		player.build_hydra(card.card_data);
@@ -276,21 +278,48 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	else:
 		trigger_play_effects(card.card_data, player, opponent);
 	update_card_alterations();
+	if check_for_devoured(card, player, opponent):
+		reorder_hand();
+		return false;
 	if player == player_two:
 		show_opponents_field();
-		return;
+		return true;
 	card.goal_position = FIELD_POSITION;
 	card.is_moving = true;
 	reorder_hand();
 	if is_digital_speed:
-		return;
+		return true;
 	can_play_card = false;
 	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 	if going_first:
-		opponents_turn();
+		wait_opponent_to_play(card.card_data.has_devour());
 	else:
 		go_to_pre_results();
+	return true;
+
+func check_for_devoured(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> bool:
+	var enemy : CardData = opponent.get_field_card();
+	var eater_was_face_down : bool;
+	if is_digital_speed:
+		return false;
+	if enemy and enemy.has_devour() and player.cards_played_this_turn == 1:
+		eater_was_face_down = enemy.is_buried;
+		opponent.devour_card(enemy, card.card_data);
+		player.send_from_field_to_grave(card.card_data);
+		if eater_was_face_down:
+			trigger_play_effects(enemy, opponent, player);
+		get_card(enemy).update_visuals();
+		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * (2.85/4.0) \
+			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));
+		return true;
+	return false;
+
+func erase_card(card : GameplayCard, despawn_position : Vector2 = System.Vectors.default()) -> void:
+	cards.erase(card.instance_id);
+	cards_layer.remove_child(card);
+	cards_layer2.add_child(card);
+	card.despawn(despawn_position);
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
 	for keyword in card.keywords:
@@ -322,11 +351,21 @@ func opponents_turn() -> void:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
 	card = player_two.cards_in_hand.back();
-	play_card(spawn_card(card), player_two, player_one);
+	if !play_card(spawn_card(card), player_two, player_one):
+		wait_opponent_playing();
+		return;
 	if going_first:
 		go_to_pre_results();
 	else:
 		your_turn();
+
+func wait_opponent_to_play(do_extend : bool = false) -> void:
+	opponents_play_wait.wait_time = OPPONENT_TO_PLAY_WAIT * (2 if do_extend else 1);
+	opponents_play_wait.start();
+
+func wait_opponent_playing() -> void:
+	opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT;
+	opponents_play_wait.start();
 
 func go_to_results() -> void:
 	#This structure waits and comes back everytime some action is done
@@ -536,7 +575,7 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.CURSED:
 				value += 1;
 			CardEnums.Keyword.DEVOUR:
-				value += 3;
+				value += -1 if going_first else 5;
 			CardEnums.Keyword.DIGITAL:
 				value += 5;
 			CardEnums.Keyword.DIVINE:
@@ -906,3 +945,7 @@ func _on_card_focus_timer_timeout() -> void:
 	field_lines_visible = true;
 	fading_field_lines = true;
 	field_lines.modulate.a = min(1, max(0, field_lines.modulate.a));
+
+func _on_opponents_play_wait_timeout() -> void:
+	opponents_play_wait.stop();
+	opponents_turn();

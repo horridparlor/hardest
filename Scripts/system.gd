@@ -8,6 +8,7 @@ const Instance : GDScript = preload("res://Scripts/System/instance.gd");
 const Json : GDScript = preload("res://Scripts/System/json.gd");
 const Levels : GDScript = preload("res://Scripts/System/levels.gd");
 const Random : GDScript = preload("res://Scripts/System/random.gd");
+const ReleaseInformation : GDScript = preload("res://Scripts/System/release-information.gd");
 const Rules : GDScript = preload("res://Scripts/System/rules.gd");
 const Scale : GDScript = preload("res://Scripts/System/scale.gd");
 const Vectors : GDScript = preload("res://Scripts/System/vectors.gd");

@@ -756,13 +756,16 @@ func check_type_results(card : CardData, enemy : CardData) -> GameplayEnums.Cont
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
 	match enemy_type:
-		CardEnums.CardType.MIMIC:
-			if card_type != CardEnums.CardType.MIMIC:
-				return you_win;
 		CardEnums.CardType.GUN:
 			if card.has_rust():
 				return you_win;
-			if card_type != CardEnums.CardType.GUN:
+			if ![CardEnums.CardType.GUN, CardEnums.CardType.GOD].has(card_type):
+				return opponent_wins;
+		CardEnums.CardType.MIMIC:
+			if card_type != CardEnums.CardType.MIMIC:
+				return you_win;
+		CardEnums.CardType.GOD:
+			if card_type != CardEnums.CardType.GOD:
 				return opponent_wins;
 	match card_type:
 		CardEnums.CardType.ROCK:
@@ -783,13 +786,16 @@ func check_type_results(card : CardData, enemy : CardData) -> GameplayEnums.Cont
 					return you_win;
 				CardEnums.CardType.ROCK:
 					return opponent_wins;
-		CardEnums.CardType.MIMIC:
-			if enemy_type != CardEnums.CardType.MIMIC:
-				return opponent_wins;
 		CardEnums.CardType.GUN:
 			if enemy.has_rust():
 				return opponent_wins;
-			if enemy_type != CardEnums.CardType.GUN:
+			if ![CardEnums.CardType.GUN, CardEnums.CardType.GOD].has(enemy_type):
+				return you_win;
+		CardEnums.CardType.MIMIC:
+			if enemy_type != CardEnums.CardType.MIMIC:
+				return opponent_wins;
+		CardEnums.CardType.GOD:
+			if enemy_type != CardEnums.CardType.GOD:
 				return you_win;
 	return not_determined;
 

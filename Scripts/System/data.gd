@@ -49,6 +49,9 @@ static func read_card(card_id : int) -> Dictionary:
 		System.Json.read_data(CARDS_FOLDER_PATH + str(card_id)), DEFAULT_CARD
 	);
 
+static func load_card(card_id : int) -> CardData:
+	return CardData.from_json(read_card(card_id));
+
 static func get_basic_card(card_type : CardEnums.CardType) -> CardData:
 	return CardData.from_json(read_card(CardEnums.BasicIds[card_type]));
 

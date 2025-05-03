@@ -1,10 +1,12 @@
 extends Node
 
 const Data : GDScript = preload("res://Scripts/System/data.gd");
+const Debug : GDScript = preload("res://Scripts/System/debug.gd");
 const Dictionaries : GDScript = preload("res://Scripts/System/dictionaries.gd");
 const Display : int = 2;
 const Instance : GDScript = preload("res://Scripts/System/instance.gd");
 const Json : GDScript = preload("res://Scripts/System/json.gd");
+const Levels : GDScript = preload("res://Scripts/System/levels.gd");
 const Random : GDScript = preload("res://Scripts/System/random.gd");
 const Rules : GDScript = preload("res://Scripts/System/rules.gd");
 const Scale : GDScript = preload("res://Scripts/System/scale.gd");

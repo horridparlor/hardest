@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=10 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
 [ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/Patterns/NexusPattern.png" id="2_q58k7"]
@@ -7,6 +7,7 @@
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="3_cwu78"]
 [ext_resource type="FontFile" uid="uid://ckd00l7rafrhj" path="res://Assets/FontFiles/Montserrat/Montserrat-MediumItalic.ttf" id="4_ueumv"]
 [ext_resource type="AudioStream" uid="uid://ddsti6bid467t" path="res://Assets/Music/0.mp3" id="6_xvlj4"]
+[ext_resource type="PackedScene" uid="uid://du74m1788wbjd" path="res://Prefabs/Gameplay/Card/card.tscn" id="8_iwnol"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
 bg_color = Color(0.611381, 0.0337919, 0.238643, 1)
@@ -112,5 +113,24 @@ horizontal_alignment = 1
 [node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("6_xvlj4")
 autoplay = true
+
+[node name="ShowcaseCard" type="Node2D" parent="."]
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="ShowcaseCard"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = -960.0
+offset_right = 540.0
+offset_bottom = 960.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.00784314, 0.00784314, 0.00784314, 1)
+
+[node name="Card" parent="ShowcaseCard" instance=ExtResource("8_iwnol")]
 
 [connection signal="finished" from="BackgroundMusic" to="." method="_on_background_music_finished"]

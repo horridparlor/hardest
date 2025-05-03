@@ -10,20 +10,23 @@ func _process(delta : float) -> void:
 		get_tree().quit();
 
 func _ready() -> void:
-	var save_data : Dictionary = System.Data.read_save_data();
 	System.random.randomize();
 	System.create_directories();
 	DisplayServer.window_set_current_screen(System.Display);
 	set_process_input(true);
+	open_starting_scene();
+
+func open_starting_scene() -> void:
+	var save_data : Dictionary = System.Data.read_save_data();
 	if save_data.levels_unlocked == 0:
 		spawn_introduction_level(save_data);
 		return;
 	open_nexus();
-	
+
 func spawn_introduction_level(save_data : Dictionary) -> void:
 	save_data.levels_unlocked = 1;
 	System.Data.write_save_data(save_data);
-	open_gameplay(System.Data.read_level(8));
+	open_gameplay(System.Data.read_level(System.Levels.INTRODUCTION_LEVEL));
 
 func open_nexus() -> void:
 	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);

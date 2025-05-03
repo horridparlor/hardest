@@ -2,10 +2,21 @@ extends Nexus
 
 @onready var level_buttons_layer : Node2D = $LevelButtons;
 @onready var background_music : AudioStreamPlayer2D = $Background/BackgroundMusic;
+@onready var showcase_card : GameplayCard = $ShowcaseCard/Card;
+@onready var showcase_card_layer : Node2D = $ShowcaseCard;
 
 func _ready() -> void:
 	var save_data : Dictionary = System.Data.read_save_data();
 	spawn_level_buttons(save_data);
+	operate_showcase_layer();
+
+func operate_showcase_layer() -> void:
+	if System.Debug.SHOWCASE_CARD_ID != 0:	
+		showcase_card.card_data = System.Data.load_card(System.Debug.SHOWCASE_CARD_ID);
+		showcase_card.update_visuals();
+		showcase_card_layer.visible = true;
+	else:
+		showcase_card_layer.visible = false;
 
 func spawn_level_buttons(save_data : Dictionary) -> void:
 	var current_position : Vector2 = LEVEL_BUTTONS_STARTING_POSITION;

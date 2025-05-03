@@ -22,6 +22,7 @@ func flip_player(controller : Controller) -> Controller:
 
 enum Character {
 	ERIKA,
+	JUKULIUS,
 	KORVEK,
 	LOTTE,
 	MARK,
@@ -33,6 +34,7 @@ enum Character {
 
 const TranslateCharacter : Dictionary = {
 	"Erika": Character.ERIKA,
+	"Jukulius": Character.JUKULIUS,
 	"Korvek": Character.KORVEK,
 	"Lotte": Character.LOTTE,
 	"Mark": Character.MARK,
@@ -44,13 +46,14 @@ const TranslateCharacter : Dictionary = {
 
 const CharacterShowcaseName : Dictionary = {
 	Character.ERIKA : "Erika",
+	Character.JUKULIUS : "Jukulius",
 	Character.KORVEK : "Korvek",
 	Character.LOTTE : "Anne-Lotte",
 	Character.MARK : "Mark Mudwater",
 	Character.PEITSE : "Peitse",
 	Character.PETE : "Farty-Pete",
 	Character.RAISEN : "Raisen",
-	Character.SIMOONI : "Jukulius"
+	Character.SIMOONI : "Simooni"
 }
 
 const CharacterToId : Dictionary = {
@@ -61,5 +64,6 @@ const CharacterToId : Dictionary = {
 	Character.MARK: 5,
 	Character.KORVEK: 6,
 	Character.RAISEN: 7,
-	Character.SIMOONI: 8
+	Character.SIMOONI: 8,
+	Character.JUKULIUS: 9
 }

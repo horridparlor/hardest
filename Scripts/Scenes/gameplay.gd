@@ -623,6 +623,8 @@ func get_first_face_up_card(source : Array) -> CardData:
 
 func get_value_to_threaten(card : CardData) -> int:
 	var value : int;
+	if card.has_digital():
+		return -1;
 	if card.has_champion():
 		return 0;
 	value = get_card_value(card);

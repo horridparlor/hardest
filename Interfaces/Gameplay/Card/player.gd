@@ -15,12 +15,14 @@ var grave_type_counts : Dictionary = {
 	CardEnums.CardType.MIMIC: 0,
 	CardEnums.CardType.GOD: 0
 }
+var character : GameplayEnums.Character;
 var controller : GameplayEnums.Controller;
 var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL;
 var random_keywords : Array;
 var random_cards : Dictionary;
 var cards_played_this_turn : int;
 var field_position : Vector2;
+var extra_draws : int;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -51,6 +53,9 @@ func draw_hand() -> void:
 		draw();
 		if hand_size_reached():
 			break;
+	for i in range(extra_draws):
+		draw();
+	extra_draws = 0;
 
 func draw_cards(amount : int = 1) -> void:
 	for i in range(amount):
@@ -90,9 +95,12 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	if !is_digital_speed:
 		cards_played_this_turn += 1;
 
-func eat_decklist(decklist_id : int = 0) -> void:
+func eat_decklist(decklist_id : int = 0,
+	character_id : GameplayEnums.Character = GameplayEnums.Character.PEITSE
+) -> void:
 	var decklist_data : Decklist = System.Data.read_decklist(decklist_id);
 	var card_data : Dictionary;
+	character = character_id;
 	for card in decklist_data.main_deck:
 		card_data = System.Data.read_card(card);
 		for i in range(decklist_data.main_deck[card]):
@@ -112,14 +120,16 @@ func add_always_start_cards() -> void:
 		if horse_gear_paper == null else horse_gear_paper;
 	var scissor_card : CardData = System.Data.get_basic_card(CardEnums.CardType.SCISSORS) \
 		if horse_gear_scissor == null else horse_gear_scissor;
+	var card_souls : Array = System.Data.load_card_souls_for_character(character);
 	var always_cards : Array = [
 		rock_card,
 		paper_card,
 		scissor_card
-	]
+	] + card_souls;
 	always_cards.reverse();
 	for card in always_cards:
 		cards_in_deck.append(card);
+	extra_draws = card_souls.size();
 
 func find_horse_gear_card(card_type : CardEnums.CardType, do_remove_from_deck : bool = false) -> CardData:
 	var card : CardData;
@@ -211,6 +221,9 @@ func get_added_count_from_replacing_field(instance_id : int, card_type : CardEnu
 func get_active_cards() -> Array:
 	return cards_in_hand + cards_on_field;
 
+func get_cards() -> Array:
+	return cards_in_deck + get_active_cards();
+
 func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
 	var card : CardData = CardData.from_json(System.Data.read_card(System.Random.item(random_cards[card_type])));
 	cards_in_deck.append(card);
@@ -247,3 +260,6 @@ func devour_card(eater : CardData, card : CardData) -> void:
 			else:
 				return;
 		eater.keywords.append(keyword);
+
+func steal_card_soul(card : CardData) -> void:
+	System.Data.add_card_soul_to_character(character, card);

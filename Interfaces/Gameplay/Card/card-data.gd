@@ -7,8 +7,8 @@ var card_id : int;
 var card_name : String;
 var card_type : CardEnums.CardType = CardEnums.CardType.ROCK;
 var keywords : Array;
-var controller : Player;
 
+var controller : Player;
 var instance_id : int = System.Random.instance_id();
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
@@ -19,14 +19,28 @@ static func from_json(data : Dictionary) -> CardData:
 	return card;
 
 func eat_json(data : Dictionary) -> void:
-	var card_type_ : CardEnums.CardType = CardEnums.TranslateCardType[data.type];
 	card_id = data.id;
 	card_name = data.name;
-	card_type = card_type_;
-	default_type = card_type_;
+	card_type = CardEnums.TranslateCardType[data.type];
+	default_type = CardEnums.TranslateCardType[data.override_type];
 	keywords = [];
 	for key in data.keywords:
 		keywords.append(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else "?");
+
+func to_json() -> Dictionary:
+	return {
+		"id": card_id,
+		"name": card_name,
+		"type": CardEnums.CardTypeName[default_type].to_lower(),
+		"override_type": CardEnums.CardTypeName[card_type].to_lower(),
+		"keywords": get_keywords_json()
+	};
+
+func get_keywords_json() -> Array:
+	var source : Array;
+	for keyword in keywords:
+		source.append(CardEnums.KeywordNames[keyword].to_lower().replace(" ", "-"));
+	return source;
 
 func has_keyword(keyword : CardEnums.Keyword) -> bool:
 	return keywords.has(keyword);

@@ -2,13 +2,13 @@ const CARDS_FOLDER_PATH : String = "Cards/";
 const DECKLIST_FOLDER_PATH : String = "Decklists/";
 const LEVEL_FOLDER_PATH : String = "Levels/";
 const SAVE_DATA_PATH : String = "save-data";
-const SOUL_CARDS_SAVE_PATH : String = "card-souls/";
-const SOUL_CARDS_FOR_PLAYER_SAVE : String = SOUL_CARDS_SAVE_PATH + "player-souls";
+const SOUL_BANKS_SAVE_PATH : String = "card-souls/";
 
 const DEFAULT_CARD : Dictionary = {
 	"id": 0,
 	"name": "Name",
 	"type": "Mimic",
+	"override_type": null,
 	"keywords": []
 }
 
@@ -108,7 +108,8 @@ const DEFAULT_DECKLIST : Dictionary = {
 
 const DEFAULT_LEVEL : Dictionary = {
 	"id": 1,
-	"opponent": GameplayEnums.Character.PETE,
+	"player": "Peitse",
+	"opponent": "Peitse",
 	"deck": 1,
 	"deck2": 1
 }
@@ -118,9 +119,12 @@ const DEFAULT_SAVE_DATA : Dictionary = {
 };
 
 static func read_card(card_id : int) -> Dictionary:
-	return System.Dictionaries.make_safe(
+	var data : Dictionary = System.Dictionaries.make_safe(
 		System.Json.read_data(CARDS_FOLDER_PATH + str(card_id)), DEFAULT_CARD
 	);
+	if data.override_type == null:
+		data.override_type = data.type;
+	return data;
 
 static func load_card(card_id : int) -> CardData:
 	return CardData.from_json(read_card(card_id));
@@ -181,20 +185,28 @@ static func read_save_data() -> Dictionary:
 static func write_save_data(data : Dictionary) -> void:
 	System.Json.write_save(data, SAVE_DATA_PATH);
 
-static func add_card_soul_to_player(card : CardData) -> void:
-	var soul_cards : CardSoulBank;
+static func add_card_soul_to_character(character_id : GameplayEnums.Character, card : CardData) -> void:
+	var soul_bank : CardSoulBank = get_soul_bank(character_id);
+	soul_bank.add_card(card);
+	soul_bank.save();
 
-static func get_card_souls_for_player(
-	count : int = System.Rules.MAX_HAND_SIZE - System.Rules.HAND_SIZE
+static func get_soul_bank(character_id : GameplayEnums.Character) -> CardSoulBank:
+	var soul_bank : CardSoulBank;
+	var json : Dictionary = System.Json.read_save(SOUL_BANKS_SAVE_PATH + str(character_id));
+	if System.Json.is_error(json):
+		soul_bank = CardSoulBank.new(character_id);
+	else:
+		soul_bank = CardSoulBank.from_json(json);
+	return soul_bank;
+
+static func load_card_souls_for_character(character_id : int,
+	amount : int = System.Rules.MAX_HAND_SIZE - System.Rules.HAND_SIZE
 ) -> Array:
-	var card_souls : Array;
+	var soul_bank : CardSoulBank = get_soul_bank(character_id);
+	var card_souls : Array = soul_bank.pull_cards(amount);
+	soul_bank.save();
 	return card_souls;
 
-static func add_card_soul_to_opponent(opponent_id : int, card : CardData) -> void:
-	pass;
-
-static func get_card_souls_for_opponent(opponent_id : int,
-	count : int = System.Rules.MAX_HAND_SIZE - System.Rules.HAND_SIZE
-) -> Array:
-	var card_souls : Array;
-	return card_souls;
+static func save_soul_bank(soul_bank : CardSoulBank) -> void:
+	System.Json.write_save(soul_bank.to_json(), SOUL_BANKS_SAVE_PATH + str(soul_bank.character_id));
+	print(222);

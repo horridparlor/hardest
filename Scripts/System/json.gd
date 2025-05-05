@@ -12,9 +12,14 @@ static func is_error(json_data : Dictionary) -> bool:
 	return json_data.has(ERROR_KEY);
 
 static func create_directory() -> void:
-	var dir: DirAccess = DirAccess.open(SAVE_WRITE_PATH_PREFIX);
-	if dir == null:
-		DirAccess.make_dir_recursive_absolute(SAVE_WRITE_PATH_PREFIX);
+	var dir: DirAccess;
+	for path in [
+		SAVE_WRITE_PATH_PREFIX,
+		SAVE_WRITE_PATH_PREFIX + System.Data.SOUL_BANKS_SAVE_PATH
+	]:
+		dir = DirAccess.open(path);
+		if dir == null:
+			DirAccess.make_dir_recursive_absolute(path);
 
 static func get_file_path(file_prefix : String, file_name : String) -> String:
 	return file_prefix + file_name + SystemEnums.get_json_extension();

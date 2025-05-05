@@ -36,15 +36,17 @@ func init(level_data_ : LevelData) -> void:
 	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	start_round();
-	update_character_face();
+	update_character_faces();
 	initialize_background_music();
 	initialize_background_pattern();
 	cards_shadow.modulate.a = 0;
 
 func init_player(player : Player, controller : GameplayEnums.Controller, deck_id : int) -> void:
 	var card : CardData;
+	var character_id : GameplayEnums.Character = \
+		level_data.player if controller == GameplayEnums.Controller.PLAYER_ONE else level_data.opponent;
 	player.controller = controller;
-	player.eat_decklist(deck_id);
+	player.eat_decklist(deck_id, character_id);
 	for c in player.cards_in_deck:
 		card = c;
 		card.controller = player;
@@ -59,10 +61,22 @@ func initialize_background_pattern() -> void:
 	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.id]);
 	background_pattern.texture = pattern;
 	
-func update_character_face() -> void:
-	var face_texture : Resource = load(LevelButton.CHARACTER_FACE_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);
-	character_face.texture = face_texture;
-	enemy_name.text = GameplayEnums.CharacterShowcaseName[level_data.opponent] if GameplayEnums.CharacterShowcaseName.has(level_data.opponent) else "?";
+func update_character_faces() -> void:
+	var your_face_texture : Resource = load_face_texture(level_data.player);
+	var opponent_face_texture : Resource = load_face_texture(level_data.opponent);
+	your_face.texture = your_face_texture;
+	character_face.texture = opponent_face_texture;
+	your_name.text = translate_character_name(level_data.player);
+	enemy_name.text = translate_character_name(level_data.opponent);
+
+func load_face_texture(character_id : GameplayEnums.Character) -> Resource:
+	return load(LevelButton.CHARACTER_FACE_PATH % \
+		[GameplayEnums.CharacterToId[character_id]]);
+
+func translate_character_name(character_id : GameplayEnums.Character) -> String:
+	return GameplayEnums.CharacterShowcaseName[character_id] \
+		if GameplayEnums.CharacterShowcaseName.has(character_id) \
+		else "?";
 
 func init_timers() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT;
@@ -704,16 +718,13 @@ func trigger_winner_loser_effects(points : int, card : CardData, enemy : CardDat
 	for keyword in card.keywords:
 		match keyword:
 			CardEnums.Keyword.SOUL_HUNTER:
-				steal_cards_soul(enemy, player);
+				player.steal_card_soul(enemy);
 			CardEnums.Keyword.VAMPIRE:
-				enemy.lose_points();
+				opponent.lose_points();
 	for keyword in enemy.keywords:
 		match keyword:
 			CardEnums.Keyword.SALTY:
 				opponent.lose_points();
-
-func steal_cards_soul(card : CardData, player : Player) -> void:
-	print(222);
 
 func check_lose_effects(card : CardData, player : Player) -> void:
 	if card.has_greed():

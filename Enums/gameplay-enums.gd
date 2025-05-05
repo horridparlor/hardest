@@ -26,6 +26,7 @@ enum Character {
 	KORVEK,
 	LOTTE,
 	MARK,
+	MERITUULI,
 	PEITSE,
 	PETE,
 	RAISEN,
@@ -38,6 +39,7 @@ const TranslateCharacter : Dictionary = {
 	"Korvek": Character.KORVEK,
 	"Lotte": Character.LOTTE,
 	"Mark": Character.MARK,
+	"Merituuli": Character.MERITUULI,
 	"Peitse": Character.PEITSE,
 	"Pete": Character.PETE,
 	"Raisen": Character.RAISEN,
@@ -50,6 +52,7 @@ const CharacterShowcaseName : Dictionary = {
 	Character.KORVEK : "Korvek",
 	Character.LOTTE : "Anne-Lotte",
 	Character.MARK : "Mark Mudwater",
+	Character.MERITUULI : "Merituuli",
 	Character.PEITSE : "Peitse",
 	Character.PETE : "Farty-Pete",
 	Character.RAISEN : "Raisen",
@@ -65,5 +68,6 @@ const CharacterToId : Dictionary = {
 	Character.KORVEK: 6,
 	Character.RAISEN: 7,
 	Character.SIMOONI: 8,
-	Character.JUKULIUS: 9
+	Character.JUKULIUS: 9,
+	Character.MERITUULI: 10
 }

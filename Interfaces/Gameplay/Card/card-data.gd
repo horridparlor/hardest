@@ -51,6 +51,9 @@ func has_buried() -> bool:
 func has_celebration() -> bool:
 	return has_keyword(CardEnums.Keyword.CELEBRATION);
 
+func has_chameleon() -> bool:
+	return has_keyword(CardEnums.Keyword.CHAMELEON);
+
 func has_champion() -> bool:
 	return has_keyword(CardEnums.Keyword.CHAMPION);
 
@@ -113,6 +116,9 @@ func has_silver() -> bool:
 
 func has_soul_hunter() -> bool:
 	return has_keyword(CardEnums.Keyword.SOUL_HUNTER);
+
+func has_spy() -> bool:
+	return has_keyword(CardEnums.Keyword.SPY);
 
 func has_undead(needs_to_be_active : bool = false) -> bool:
 	if !has_keyword(CardEnums.Keyword.UNDEAD):

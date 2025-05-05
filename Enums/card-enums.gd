@@ -56,6 +56,7 @@ enum Keyword {
 	NULL,
 	BURIED,
 	CELEBRATION,
+	CHAMELEON,
 	CHAMPION,
 	COOTIES,
 	COPYCAT,
@@ -77,6 +78,7 @@ enum Keyword {
 	SALTY,
 	SILVER,
 	SOUL_HUNTER,
+	SPY,
 	UNDEAD,
 	VAMPIRE,
 	WRAPPED
@@ -85,6 +87,7 @@ enum Keyword {
 const KeywordNames : Dictionary = {
 	Keyword.BURIED : "Buried",
 	Keyword.CELEBRATION : "Celebration",
+	Keyword.CHAMELEON : "Chameleon",
 	Keyword.CHAMPION : "Champion",
 	Keyword.COOTIES : "Cooties",
 	Keyword.COPYCAT : "Copycat",
@@ -106,6 +109,7 @@ const KeywordNames : Dictionary = {
 	Keyword.SALTY : "Salty",
 	Keyword.SILVER : "Silver",
 	Keyword.SOUL_HUNTER : "Soul Hunter",
+	Keyword.SPY : "Spy",
 	Keyword.UNDEAD : "Undead",
 	Keyword.VAMPIRE : "Vampire",
 	Keyword.WRAPPED : "Wrapped"
@@ -114,6 +118,7 @@ const KeywordNames : Dictionary = {
 const TranslateKeyword : Dictionary = {
 	"buried" : Keyword.BURIED,
 	"celebration" : Keyword.CELEBRATION,
+	"chameleon" : Keyword.CHAMELEON,
 	"champion" : Keyword.CHAMPION,
 	"cooties" : Keyword.COOTIES,
 	"copycat" : Keyword.COPYCAT,
@@ -135,6 +140,7 @@ const TranslateKeyword : Dictionary = {
 	"salty" : Keyword.SALTY,
 	"silver" : Keyword.SILVER,
 	"soul-hunter" : Keyword.SOUL_HUNTER,
+	"spy" : Keyword.SPY,
 	"undead" : Keyword.UNDEAD,
 	"vampire" : Keyword.VAMPIRE,
 	"wrapped" : Keyword.WRAPPED
@@ -143,6 +149,7 @@ const TranslateKeyword : Dictionary = {
 var KeywordHints : Dictionary = {
 	Keyword.BURIED : "Played face-down.",
 	Keyword.CELEBRATION : "Shuffle your hand into deck, then draw 1.",
+	Keyword.CHAMELEON : "Whenever opponent gets a card, changes color.",
 	Keyword.CHAMPION : "Games with this card give double points.",
 	Keyword.COOTIES : "Defeats any card without an effect.",
 	Keyword.COPYCAT : "Copies opponent's card type.",
@@ -164,6 +171,7 @@ var KeywordHints : Dictionary = {
 	Keyword.SALTY : "If loses, lose a point.",
 	Keyword.SILVER : "Defeats any werewolf.",
 	Keyword.SOUL_HUNTER : "If wins, defeated cards will be added to your next starting hand.",
+	Keyword.SPY : "Fights a random card in opponent's hand.",
 	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun: If wins, purge the 3 SAME_TYPES from your grave." % [System.Rules.UNDEAD_LIMIT],
 	Keyword.VAMPIRE : "If wins, drains the point from opponent.",
 	Keyword.WRAPPED : "Next card you play, gains buried."

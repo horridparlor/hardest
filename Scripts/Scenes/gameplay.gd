@@ -417,6 +417,8 @@ func mimics_phase() -> bool:
 	return false;
 
 func digitals_phase() -> bool:
+	if player_one.get_field_card().has_emp() or player_two.get_field_card().has_emp():
+		return false;
 	if going_first:
 		if results_phase < 3:
 			results_phase = 3;

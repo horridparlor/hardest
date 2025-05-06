@@ -263,3 +263,29 @@ func devour_card(eater : CardData, card : CardData) -> void:
 
 func steal_card_soul(card : CardData) -> void:
 	System.Data.add_card_soul_to_character(character, card);
+
+func trigger_opponent_placed_effects() -> void:
+	var card : CardData = get_field_card();
+	if !card:
+		return;
+	for keyword in card.keywords:
+		match keyword:
+			CardEnums.Keyword.CHAMELEON:
+				trigger_chameleon(card);
+
+func trigger_chameleon(card : CardData) -> void:
+	var card_type : CardEnums.CardType = card.card_type;
+	match card_type:
+		CardEnums.CardType.ROCK:
+			card_type = CardEnums.CardType.SCISSORS;
+		CardEnums.CardType.PAPER:
+			card_type = CardEnums.CardType.ROCK;
+		CardEnums.CardType.SCISSORS:
+			card_type = CardEnums.CardType.PAPER;
+		CardEnums.CardType.MIMIC:
+			card_type = System.Random.item([
+				CardEnums.CardType.ROCK,
+				CardEnums.CardType.PAPER,
+				CardEnums.CardType.SCISSORS
+			]);
+	card.card_type = card_type;

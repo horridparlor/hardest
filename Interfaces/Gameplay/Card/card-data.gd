@@ -42,6 +42,12 @@ func get_keywords_json() -> Array:
 		source.append(CardEnums.KeywordNames[keyword].to_lower().replace(" ", "-"));
 	return source;
 
+func clone() -> CardData:
+	var card_data : CardData = CardData.new();
+	card_data.eat_json(to_json());
+	card_data.controller = controller;
+	return card_data;
+
 func has_keyword(keyword : CardEnums.Keyword) -> bool:
 	return keywords.has(keyword);
 

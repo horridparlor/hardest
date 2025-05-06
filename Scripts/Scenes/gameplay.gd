@@ -291,6 +291,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 			card.bury();
 	else:
 		trigger_play_effects(card.card_data, player, opponent);
+	opponent.trigger_opponent_placed_effects();
 	update_card_alterations();
 	if check_for_devoured(card, player, opponent):
 		reorder_hand();
@@ -648,20 +649,20 @@ func get_card_base_value(card : CardData) -> int:
 
 func get_result_for_playing(card : CardData) -> int:
 	var winner : GameplayEnums.Controller;
-	var first_face_up_card : CardData = get_first_face_up_card(player_one.cards_on_field);
+	var enemy : CardData = get_enemy_card_truth(player_one);
 	var value : int = 1;
 	if card.has_champion():
 		value *= 2;
-	if first_face_up_card and first_face_up_card.has_champion():
+	if enemy and enemy.has_champion():
 		value *= 2;
 	if going_first == false and player_one.gained_keyword == CardEnums.Keyword.BURIED and card.has_high_ground():
 		return value;
-	if !first_face_up_card:
+	if !enemy:
 		return get_value_to_threaten(card);
-	winner = determine_winner(card, first_face_up_card);
+	winner = determine_winner(card, enemy);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
-			if first_face_up_card.has_greed() and !player_two.is_close_to_winning():
+			if enemy.has_greed() and !player_two.is_close_to_winning():
 				return -2;
 			return value;
 		GameplayEnums.Controller.PLAYER_TWO:
@@ -669,6 +670,16 @@ func get_result_for_playing(card : CardData) -> int:
 				return 2;
 			return -value;
 	return 0;
+
+func get_enemy_card_truth(opponent : Player) -> CardData:
+	var card : CardData = opponent.get_field_card();
+	if !card:
+		return null;
+	card = card.clone();
+	if card.has_chameleon():
+		opponent.trigger_chameleon(card);
+	print(CardEnums.CardTypeName[card.card_type]);
+	return card;
 
 func get_first_face_up_card(source : Array) -> CardData:
 	for card in source:

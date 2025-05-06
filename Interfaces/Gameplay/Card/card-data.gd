@@ -75,6 +75,9 @@ func has_digital() -> bool:
 func has_divine() -> bool:
 	return has_keyword(CardEnums.Keyword.DIVINE);
 	
+func has_emp() -> bool:
+	return has_keyword(CardEnums.Keyword.EMP);
+
 func has_greed() -> bool:
 	return has_keyword(CardEnums.Keyword.GREED);
 
@@ -89,6 +92,9 @@ func has_hydra() -> bool:
 
 func has_influencer() -> bool:
 	return has_keyword(CardEnums.Keyword.INFLUENCER);
+
+func has_multi_spy() -> bool:
+	return has_keyword(CardEnums.Keyword.MULTI_SPY);
 
 func has_pair() -> bool:
 	return has_keyword(CardEnums.Keyword.PAIR);
@@ -110,6 +116,9 @@ func has_rust() -> bool:
 
 func has_salty() -> bool:
 	return has_keyword(CardEnums.Keyword.SALTY);
+
+func has_secrets() -> bool:
+	return has_keyword(CardEnums.Keyword.SECRETS);
 
 func has_silver() -> bool:
 	return has_keyword(CardEnums.Keyword.SILVER);

@@ -1,7 +1,7 @@
 extends Nexus
 
 @onready var level_buttons_layer : Node2D = $LevelButtons;
-@onready var background_music : AudioStreamPlayer2D = $Background/BackgroundMusic;
+@onready var background_music : AudioStreamPlayer2D = $BackgroundMusic;
 @onready var showcase_card : GameplayCard = $ShowcaseCard/Card;
 @onready var showcase_card_layer : Node2D = $ShowcaseCard;
 
@@ -27,7 +27,7 @@ func spawn_level_buttons(save_data : Dictionary) -> void:
 		button.position = current_position;
 		current_position.x += LEVEL_BUTTON_X_MARGIN;
 		buttons += 1;
-		button.init(System.Data.read_level(i + 1));
+		button.init(System.Data.read_level(i + 1), save_data.levels_unlocked == i + 1);
 		if i < save_data.levels_unlocked:
 			button.pressed.connect(_on_level_pressed);
 		else:

@@ -184,7 +184,7 @@ var KeywordHints : Dictionary = {
 	Keyword.RELOAD : "Shuffle a random gun into your deck.",
 	Keyword.RUST : "Defeats any gun.",
 	Keyword.SALTY : "If loses, lose a point.",
-	Keyword.SECRETS : "If you are spied, this card loses and opponent gains 3 points.",
+	Keyword.SECRETS : "If you are spied, this card from hand loses, and opponent gains 3 points.",
 	Keyword.SILVER : "Defeats any werewolf.",
 	Keyword.SOUL_HUNTER : "If wins, defeated cards will be added to your next starting hand.",
 	Keyword.SPY : "Fights a random card in opponent's hand.",

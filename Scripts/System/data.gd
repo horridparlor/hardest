@@ -209,4 +209,3 @@ static func load_card_souls_for_character(character_id : int,
 
 static func save_soul_bank(soul_bank : CardSoulBank) -> void:
 	System.Json.write_save(soul_bank.to_json(), SOUL_BANKS_SAVE_PATH + str(soul_bank.character_id));
-	print(222);

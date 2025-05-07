@@ -207,9 +207,13 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	var player : Player = get_opponent(enemy);
 	var card : CardData = player.get_field_card();
 	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
+	var points : int;
+	if enemy.has_secrets():
+		winner = GameplayEnums.Controller.PLAYER_ONE;
+		points = 3;
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
-			trigger_winner_loser_effects(card, enemy, player, opponent);
+			trigger_winner_loser_effects(card, enemy, player, opponent, points);
 			opponent.discard_from_hand(enemy);
 			spy_target.despawn();
 			if cards_to_spy > 0:
@@ -428,13 +432,19 @@ func spy_opponent(card : CardData, player : Player, opponent : Player, chain : i
 	var spied_card : GameplayCard
 	if opponent.hand_empty():
 		return false;
-	spied_card_data = System.Random.item(opponent.cards_in_hand);
+	spied_card_data = determine_spied_card(opponent);
 	spawn_card(spied_card_data);
 	spied_card = get_card(spied_card_data);
 	spied_card.go_visit_point(opponent.visit_point);
 	cards_to_spy = chain - 1;
 	is_spying = true;
 	return true;
+
+func determine_spied_card(opponent : Player) -> CardData:
+	var cards_with_secret : Array = opponent.cards_in_hand.filter(func(card : CardData):
+		return card.has_secrets();	
+	);
+	return System.Random.item(cards_with_secret if cards_with_secret.size() else opponent.cards_in_hand);
 
 func celebrate(player : Player) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand;
@@ -829,8 +839,9 @@ func update_point_visuals() -> void:
 	your_points.text = str(player_one.points);
 	opponents_points.text = str(player_two.points);
  
-func trigger_winner_loser_effects(card : CardData, enemy : CardData, player : Player, opponent : Player) -> void:
-	var points : int = 1;
+func trigger_winner_loser_effects(card : CardData, enemy : CardData,
+	player : Player, opponent : Player, points : int = 1
+) -> void:
 	if card and card.has_champion():
 		points *= 2;
 	if enemy and enemy.has_champion():

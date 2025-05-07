@@ -54,6 +54,7 @@ var points_goal_visibility : float;
 var shadow_goal_visibility : float;
 var is_updating_points_visibility : float;
 var is_spying : bool;
+var cards_to_spy : int;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

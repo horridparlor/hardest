@@ -147,7 +147,8 @@ func your_turn() -> void:
 	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	if player_one.hand_empty():
-		return _on_your_turn_end();
+		_on_your_turn_end() if going_first else _on_opponent_turns_end();
+		return;
 	can_play_card = true;
 
 func init_layers() -> void:
@@ -211,6 +212,9 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			trigger_winner_loser_effects(card, enemy, player, opponent);
 			opponent.discard_from_hand(enemy);
 			spy_target.despawn();
+			if cards_to_spy > 0:
+				if spy_opponent(card, player, opponent, cards_to_spy):
+					return;
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, opponent, player);
 			player.send_from_field_to_grave(card);
@@ -407,6 +411,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 				celebrate(player);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.default_type);
+			CardEnums.Keyword.MULTI_SPY:
+				spy_opponent(card, player, opponent, 3);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
 				update_card_alterations();
@@ -417,16 +423,18 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
 
-func spy_opponent(card : CardData, player : Player, opponent : Player) -> void:
+func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1) -> bool:
 	var spied_card_data : CardData;
 	var spied_card : GameplayCard
 	if opponent.hand_empty():
-		return;
+		return false;
 	spied_card_data = System.Random.item(opponent.cards_in_hand);
 	spawn_card(spied_card_data);
 	spied_card = get_card(spied_card_data);
 	spied_card.go_visit_point(opponent.visit_point);
+	cards_to_spy = chain - 1;
 	is_spying = true;
+	return true;
 
 func celebrate(player : Player) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand;
@@ -441,7 +449,8 @@ func opponents_turn() -> void:
 	if is_spying:
 		return wait_opponent_to_play();
 	if player_two.hand_empty():
-		return _on_opponent_turns_end();
+		_on_opponent_turns_end() if going_first else your_turn();
+		return;
 	player_two.cards_in_hand.sort_custom(best_to_play);
 	#for car in player_two.cards_in_hand:
 		#print(car.card_name, " ", get_result_for_playing(car));
@@ -688,6 +697,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 0;
 			CardEnums.Keyword.EMP:
 				value += 2;
+			CardEnums.Keyword.EXTRA_SALTY:
+				value += 6 if player_two.points == 0 else 2;
 			CardEnums.Keyword.GREED:
 				value += 10;
 			CardEnums.Keyword.HIGH_GROUND:
@@ -698,6 +709,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 2;
 			CardEnums.Keyword.INFLUENCER:
 				value -= 1;
+			CardEnums.Keyword.MULTI_SPY:
+				value += 3;
 			CardEnums.Keyword.PAIR:
 				value += 3;
 			CardEnums.Keyword.PAIR_BREAKER:
@@ -712,6 +725,8 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 				value += 1;
 			CardEnums.Keyword.SALTY:
 				value += 5 if player_two.points == 0 else 1;
+			CardEnums.Keyword.SECRETS:
+				value += 0;
 			CardEnums.Keyword.SILVER:
 				value += 1;
 			CardEnums.Keyword.SOUL_HUNTER:
@@ -835,6 +850,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData, player : Pl
 	if enemy:
 		for keyword in enemy.keywords:
 			match keyword:
+				CardEnums.Keyword.EXTRA_SALTY:
+					opponent.lose_points(-1);
 				CardEnums.Keyword.SALTY:
 					opponent.lose_points();
 	update_point_visuals();

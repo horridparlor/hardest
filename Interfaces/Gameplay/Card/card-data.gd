@@ -25,7 +25,31 @@ func eat_json(data : Dictionary) -> void:
 	default_type = CardEnums.TranslateCardType[data.override_type];
 	keywords = [];
 	for key in data.keywords:
-		keywords.append(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else "?");
+		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else "?");
+
+func add_keyword(keyword : CardEnums.Keyword) -> bool:
+	var upgrade_to_keys : Array;
+	match keyword:
+		CardEnums.Keyword.MULTI_SPY:
+			upgrade_to_keys = [CardEnums.Keyword.SPY];
+	for key in upgrade_to_keys:
+		if keywords.has(key):
+			keywords[keywords.find(key)] = keyword;
+	if keyword == CardEnums.Keyword.NULL or keywords.size() == System.Rules.MAX_KEYWORDS or \
+	has_keyword(keyword):
+		return false;
+	keywords.append(keyword);
+	return true;
+
+func has_keyword(keyword : CardEnums.Keyword) -> bool:
+	var duplicate_keys : Array = [keyword];
+	match keyword:
+		CardEnums.Keyword.SPY:
+			duplicate_keys += [CardEnums.Keyword.MULTI_SPY];
+	for key in duplicate_keys:
+		if keywords.has(key):
+			return true;
+	return false;
 
 func to_json() -> Dictionary:
 	return {
@@ -47,9 +71,6 @@ func clone() -> CardData:
 	card_data.eat_json(to_json());
 	card_data.controller = controller;
 	return card_data;
-
-func has_keyword(keyword : CardEnums.Keyword) -> bool:
-	return keywords.has(keyword);
 
 func has_buried() -> bool:
 	return has_keyword(CardEnums.Keyword.BURIED);
@@ -83,6 +104,9 @@ func has_divine() -> bool:
 	
 func has_emp() -> bool:
 	return has_keyword(CardEnums.Keyword.EMP);
+
+func has_extra_salty() -> bool:
+	return has_keyword(CardEnums.Keyword.EXTRA_SALTY);
 
 func has_greed() -> bool:
 	return has_keyword(CardEnums.Keyword.GREED);

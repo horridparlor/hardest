@@ -88,10 +88,7 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	card.zone = CardEnums.Zone.FIELD;
 	if is_digital_speed:
 		return;
-	if gained_keyword != CardEnums.Keyword.NULL \
-	and card.keywords.size() < System.Rules.MAX_KEYWORDS \
-	and !card.keywords.has(gained_keyword):
-		card.keywords.append(gained_keyword);
+	card.add_keyword(gained_keyword);
 	gained_keyword = CardEnums.Keyword.NULL;
 	if !is_digital_speed:
 		cards_played_this_turn += 1;
@@ -153,7 +150,7 @@ func gain_points(amount : int = 1) -> void:
 
 func lose_points(amount : int = 1) -> void:
 	points -= amount;
-	if points < 0:
+	if points < 0 or amount < 0:
 		points = 0;
 
 func end_of_turn_clear(did_win : bool) -> void:
@@ -258,7 +255,7 @@ func devour_card(eater : CardData, card : CardData) -> void:
 		eater.is_buried = false;
 	eater.card_type = card.card_type;
 	for keyword in card.keywords:
-		if eater.keywords.has(keyword) or [CardEnums.Keyword.BURIED, CardEnums.Keyword.DEVOUR].has(keyword):
+		if eater.has_keyword(keyword) or [CardEnums.Keyword.BURIED, CardEnums.Keyword.DEVOUR].has(keyword):
 			continue;
 		if eater.keywords.size() == System.Rules.MAX_KEYWORDS:
 			if eater.keywords.has(CardEnums.Keyword.BURIED):
@@ -267,7 +264,7 @@ func devour_card(eater : CardData, card : CardData) -> void:
 				eater.keywords.erase(CardEnums.Keyword.DEVOUR);
 			else:
 				return;
-		eater.keywords.append(keyword);
+		eater.add_keyword(keyword);
 
 func steal_card_soul(card : CardData) -> void:
 	System.Data.add_card_soul_to_character(character, card);

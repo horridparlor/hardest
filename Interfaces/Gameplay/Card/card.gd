@@ -4,6 +4,7 @@ class_name GameplayCard
 signal pressed(_self)
 signal released(_self)
 signal despawned(_self)
+signal visited(_self)
 
 const MIN_SCALE : float = 0.2;
 const MAX_SCALE :float = 1.0;
@@ -47,10 +48,12 @@ var is_moving : bool;
 var is_focused : bool;
 var following_mouse : bool;
 var goal_position : Vector2;
+var visit_point : Vector2;
 var starting_position : Vector2;
 var is_despawning : bool;
 var is_scaling : bool;
 var focus_timer : Timer = Timer.new();
+var is_visiting : bool;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -80,7 +83,10 @@ func _process(delta: float) -> void:
 func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
-	position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else goal_position, SPEED, delta);
+	position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED, delta);
+	if is_visiting and System.Vectors.equal(position, visit_point):
+		is_visiting = false;
+		emit_signal("visited", self);
 	if is_moving and System.Vectors.equal(position, goal_position):
 		is_moving = false;
 		if is_despawning:
@@ -121,6 +127,11 @@ func toggle_focus(value : bool = true) -> void:
 func move() -> void:
 	is_moving = true;
 	is_scaling = true;
+
+func go_visit_point(position : Vector2) -> void:
+	visit_point = position;
+	is_visiting = true;
+	move();
 
 func update_scale(delta : float) -> void:
 	var new_scale : float;

@@ -13,6 +13,7 @@ const FIELD_START_LINE : int = -115;
 const FIELD_END_LINE : int = 405;
 const FIELD_POSITION : Vector2 = Vector2(0, FIELD_START_LINE + (FIELD_END_LINE - FIELD_START_LINE) / 2);
 const ENEMY_FIELD_POSITION : Vector2 = Vector2(0, 3 * FIELD_START_LINE);
+const VISIT_POSITION : Vector2 = Vector2(-350, 350);
 
 const ROUND_RESULTS_WAIT : float = 0.3;
 const PRE_RESULTS_WAIT : float = 0.4;
@@ -22,6 +23,8 @@ const POINTS_CLICK_WAIT : float = 0.2;
 const CARD_FOCUS_WAIT : float = 0.2;
 const OPPONENTS_PLAY_WAIT : float = 1.2
 const OPPONENT_TO_PLAY_WAIT : float = 0.2;
+const YOU_TO_PLAY_WAIT : float = 0.2;
+const SPY_WAIT_TIME : float = 0.2;
 
 const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";
@@ -50,6 +53,7 @@ var results_phase : int;
 var points_goal_visibility : float;
 var shadow_goal_visibility : float;
 var is_updating_points_visibility : float;
+var is_spying : bool;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

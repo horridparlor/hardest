@@ -92,6 +92,10 @@ grow_vertical = 2
 
 [node name="OpponentsPlayWait" type="Timer" parent="Timers"]
 
+[node name="YouPlayWait" type="Timer" parent="Timers"]
+
+[node name="SpyingTimer" type="Timer" parent="Timers"]
+
 [node name="Points" type="Node2D" parent="."]
 
 [node name="YourPoints" type="Label" parent="Points"]
@@ -233,3 +237,5 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 [connection signal="timeout" from="Timers/PointsClickTimer" to="." method="_on_points_click_timer_timeout"]
 [connection signal="timeout" from="Timers/CardFocusTimer" to="." method="_on_card_focus_timer_timeout"]
 [connection signal="timeout" from="Timers/OpponentsPlayWait" to="." method="_on_opponents_play_wait_timeout"]
+[connection signal="timeout" from="Timers/YouPlayWait" to="." method="_on_you_play_wait_timeout"]
+[connection signal="timeout" from="Timers/SpyingTimer" to="." method="_on_spying_timer_timeout"]

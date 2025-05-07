@@ -22,6 +22,7 @@ var random_keywords : Array;
 var random_cards : Dictionary;
 var cards_played_this_turn : int;
 var field_position : Vector2;
+var visit_point : Vector2;
 var extra_draws : int;
 
 func count_deck() -> int:
@@ -178,6 +179,13 @@ func clear_pick_ups() -> void:
 func send_from_field_to_grave(card : CardData, did_win : bool = false) -> void:
 	cards_on_field.erase(card);
 	add_to_grave(card, did_win);
+
+func not_played_this_turn() -> bool:
+	return cards_played_this_turn == 0;
+
+func discard_from_hand(card : CardData) -> void:
+	cards_in_hand.erase(card);
+	add_to_grave(card);
 
 func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	card.zone = CardEnums.Zone.GRAVE;

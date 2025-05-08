@@ -13,3 +13,7 @@ static func chance(x : int) -> bool:
 static func boolean() -> bool:
 	return item([true, false]);
 	
+static func one_of_two(a, b, chance : int):
+	if System.random.randi_range(0, chance) == 0:
+		return b;
+	return a;

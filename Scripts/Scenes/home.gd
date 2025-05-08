@@ -28,10 +28,10 @@ func spawn_introduction_level(save_data : Dictionary) -> void:
 	System.Data.write_save_data(save_data);
 	open_gameplay(System.Data.read_level(System.Levels.INTRODUCTION_LEVEL));
 
-func open_nexus() -> void:
+func open_nexus(music_position : float = 0) -> void:
 	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);
 	nexus.enter_level.connect(open_gameplay);
-	nexus.is_active = true;
+	nexus.init(music_position);
 	
 func open_gameplay(level_data : LevelData) -> void:
 	gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
@@ -40,7 +40,7 @@ func open_gameplay(level_data : LevelData) -> void:
 	if System.Instance.exists(nexus):
 		nexus.queue_free();
 
-func _on_game_over() -> void:
+func _on_game_over(music_position : float = 0) -> void:
 	var old_scene : Gameplay = gameplay;
-	open_nexus();
+	open_nexus(music_position);
 	old_scene.queue_free();

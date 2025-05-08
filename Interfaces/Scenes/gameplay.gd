@@ -1,7 +1,7 @@
 extends Node2D
 class_name Gameplay
 
-signal game_over
+signal game_over(music_position)
 
 const CARD_PATH : String = "res://Prefabs/Gameplay/Card/card.tscn";
 const HAND_POSITION : Vector2 = Vector2(0, 760);
@@ -39,6 +39,10 @@ const POINTS_FADE_OUT_SPEED : float = 1.2;
 const SHADOW_FADE_IN_SPEED : float = 0.6;
 const SHADOW_FADE_OUT_SPEED : float = 0.8;
 
+const LED_PATH : String = "res://Prefabs/Nexus/EyeCandy/Led.tscn";
+const LEDS_PER_COLUMN : int = 10;
+const LED_MARGIN : int = 100;
+
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
 var cards : Dictionary;
@@ -55,6 +59,8 @@ var shadow_goal_visibility : float;
 var is_updating_points_visibility : float;
 var is_spying : bool;
 var cards_to_spy : int;
+var leds_left : Array;
+var leds_right : Array;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

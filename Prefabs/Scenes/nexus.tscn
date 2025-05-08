@@ -1,12 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=11 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
 [ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/Patterns/NexusPattern.png" id="2_q58k7"]
-[ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_t27xe"]
-[ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="3_7qjro"]
-[ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="3_cwu78"]
-[ext_resource type="FontFile" uid="uid://ckd00l7rafrhj" path="res://Assets/FontFiles/Montserrat/Montserrat-MediumItalic.ttf" id="4_ueumv"]
-[ext_resource type="AudioStream" uid="uid://ddsti6bid467t" path="res://Assets/Music/0.mp3" id="6_xvlj4"]
+[ext_resource type="Script" path="res://Interfaces/Common/glow_node.gd" id="3_u5q2p"]
+[ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="6_4dgit"]
+[ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="6_6h6rw"]
+[ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="6_8o3vx"]
+[ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="6_wxdwb"]
+[ext_resource type="AudioStream" uid="uid://ccdtpw0is4ana" path="res://Assets/Music/1000.mp3" id="7_b7131"]
 [ext_resource type="PackedScene" uid="uid://du74m1788wbjd" path="res://Prefabs/Gameplay/Card/card.tscn" id="8_iwnol"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
@@ -39,6 +40,8 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_fkb73")
 self_modulate = Color(1, 1, 1, 0.6)
 texture = ExtResource("2_q58k7")
 
+[node name="Leds" type="Node2D" parent="."]
+
 [node name="Edges" type="Node2D" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="Edges"]
@@ -69,21 +72,21 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
-[node name="Label" type="RichTextLabel" parent="."]
+[node name="TitleLabel" type="RichTextLabel" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -515.0
-offset_top = -880.5
+offset_top = -900.0
 offset_right = 515.0
-offset_bottom = -563.5
+offset_bottom = -583.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_fonts/normal_font = ExtResource("2_t27xe")
-theme_override_fonts/italics_font = ExtResource("3_7qjro")
-theme_override_fonts/bold_italics_font = ExtResource("4_ueumv")
+theme_override_fonts/normal_font = ExtResource("6_wxdwb")
+theme_override_fonts/italics_font = ExtResource("6_4dgit")
+theme_override_fonts/bold_italics_font = ExtResource("6_6h6rw")
 theme_override_font_sizes/bold_italics_font_size = 80
 theme_override_font_sizes/italics_font_size = 88
 theme_override_font_sizes/normal_font_size = 168
@@ -91,7 +94,28 @@ bbcode_enabled = true
 text = "[center]Hardest
 [i][b]the[/b] Card Game[/i][/center]"
 
-[node name="Label2" type="Label" parent="."]
+[node name="LabelsLayer" type="Node2D" parent="."]
+script = ExtResource("3_u5q2p")
+
+[node name="HintLabel" type="Label" parent="LabelsLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -307.0
+offset_top = -480.0
+offset_right = 307.0
+offset_bottom = -401.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.94902, 1, 0.4, 1)
+theme_override_fonts/font = ExtResource("6_8o3vx")
+theme_override_font_sizes/font_size = 48
+text = "PICK YOUR CHARACTER"
+horizontal_alignment = 1
+
+[node name="CreditLabel" type="Label" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -103,7 +127,7 @@ offset_right = 219.0
 offset_bottom = 938.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_fonts/font = ExtResource("3_cwu78")
+theme_override_fonts/font = ExtResource("6_6h6rw")
 theme_override_font_sizes/font_size = 48
 text = "by Eero Laine"
 horizontal_alignment = 1
@@ -111,8 +135,7 @@ horizontal_alignment = 1
 [node name="LevelButtons" type="Node2D" parent="."]
 
 [node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("6_xvlj4")
-autoplay = true
+stream = ExtResource("7_b7131")
 
 [node name="ShowcaseCard" type="Node2D" parent="."]
 visible = false
@@ -133,4 +156,9 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
 [node name="Card" parent="ShowcaseCard" instance=ExtResource("8_iwnol")]
 
+[node name="Timers" type="Node2D" parent="."]
+
+[node name="LedFrameTimer" type="Timer" parent="Timers"]
+
 [connection signal="finished" from="BackgroundMusic" to="." method="_on_background_music_finished"]
+[connection signal="timeout" from="Timers/LedFrameTimer" to="." method="_on_led_frame_timer_timeout"]

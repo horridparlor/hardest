@@ -138,7 +138,10 @@ func start_game_over(extend_wait : bool = false) -> void:
 	game_over_timer.start();
 
 func end_game() -> void:
-	emit_signal("game_over");
+	if level_data.id == System.Levels.INTRODUCTION_LEVEL:
+		emit_signal("game_over", background_music.get_playback_position());
+	else:
+		emit_signal("game_over");
 
 func your_turn() -> void:
 	if is_spying:

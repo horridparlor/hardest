@@ -21,6 +21,7 @@ System="*res://Scripts/system.gd"
 SystemEnums="*res://Enums/system-enums.gd"
 GameplayEnums="*res://Enums/gameplay-enums.gd"
 CardEnums="*res://Enums/card-enums.gd"
+CollectionEnums="*res://Enums/collection-enums.gd"
 
 [display]
 

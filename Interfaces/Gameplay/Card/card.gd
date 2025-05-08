@@ -17,7 +17,8 @@ const BORDER_RADIUS : int = 60;
 const TYPE_ICON_PATH : String = "res://Assets/Art/CardIcons/%s_120.png";
 const TYPE_FONT_SIZE_BIG : int = 128;
 const TYPE_FONT_SIZE_SMALL : int = 128;
-const CARD_ART_PATH : String = "res://Assets/Art/CardArt/%s.png";
+const CARD_ART_PATH : String = "res://Assets/Art/CardArtSmall/%s.png";
+const CARD_FULLART_PATH : String = "res://Assets/Art/CardArt/%s.png";
 const ROTATION_SPEED : float = 0.12;
 const FOCUS_WAIT : float = 1.8;
 const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
@@ -122,6 +123,7 @@ func toggle_focus(value : bool = true) -> void:
 	else:
 		focus_timer.stop();
 		is_focused = false;
+		update_card_art();
 	move();
 
 func move() -> void:
@@ -143,6 +145,10 @@ func update_scale(delta : float) -> void:
 func _on_focus_timer_timeout() -> void:
 	focus_timer.stop();
 	is_focused = true;
+	update_card_art(true);
 
 func bury() -> void:
+	pass;
+
+func update_card_art(do_full_art : bool = false) -> void:
 	pass;

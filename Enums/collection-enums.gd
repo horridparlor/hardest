@@ -84,18 +84,17 @@ const ScissorsCollection : Dictionary = {
 
 const SpecialsCollection : Dictionary = {
 	CardRarity.COMMON: [
-		18,
 		19,
 		27,
 		40
 	],
 	CardRarity.RARE: [
+		18
+	],
+	CardRarity.OP_RARE: [
 		39,
 		42,
 		46
-	],
-	CardRarity.OP_RARE: [
-		
 	],
 	CardRarity.STUPID_OP_RARE: [
 		

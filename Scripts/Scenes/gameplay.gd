@@ -163,8 +163,8 @@ func end_game() -> void:
 func your_turn() -> void:
 	if is_spying:
 		return you_play_wait.start();
-	led_direction = YOUR_LED_DIRECTION;
-	led_color = IDLE_LED_COLOR;
+	led_direction = YOUR_LED_DIRECTION if started_playing else OFF_LED_DIRECTION;
+	led_color = IDLE_LED_COLOR if started_playing else OFF_LED_DIRECTION;
 	show_hand();
 	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
@@ -289,6 +289,10 @@ func update_alterations_for_card(card_data : CardData) -> void:
 func _on_card_pressed(card : GameplayCard) -> void:
 	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND:
 		return;
+	if !started_playing:
+		started_playing = true;
+		led_direction = YOUR_LED_DIRECTION;
+		led_color = IDLE_LED_COLOR;
 	active_card = card;
 	card.toggle_follow_mouse();
 	update_keywords_hints(card);

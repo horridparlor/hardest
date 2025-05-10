@@ -53,9 +53,11 @@ const YOUR_LED_COLOR : Led.LedColor = Led.LedColor.BLUE;
 const OPPONENTS_LED_COLOR : Led.LedColor = Led.LedColor.RED;
 const IDLE_LED_COLOR : Led.LedColor = Led.LedColor.WHITE;
 const WARNING_LED_COLOR : Led.LedColor = Led.LedColor.YELLOW;
+const OFF_LED_COLOR : Led.LedColor = Led.LedColor.OFF;
 const YOUR_LED_DIRECTION : int = 1;
 const OPPONENTS_LED_DIRECTION : int = -1;
 const WARNING_LED_DIRECTION : int = 0;
+const OFF_LED_DIRECTION : int = 0;
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
@@ -79,6 +81,7 @@ var is_trolling : bool;
 var led_index : int = LEDS_PER_COLUMN - 1;
 var led_direction : int;
 var led_color : Led.LedColor = Led.LedColor.WHITE;
+var started_playing : bool;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

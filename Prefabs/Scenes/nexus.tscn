@@ -114,7 +114,7 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(0.94902, 1, 0.4, 1)
 theme_override_fonts/font = ExtResource("6_8o3vx")
 theme_override_font_sizes/font_size = 48
-text = "PICK THE CUTEST ONE"
+text = "DEMO VERSION"
 horizontal_alignment = 1
 
 [node name="CreditLabel" type="Label" parent="."]

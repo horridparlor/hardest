@@ -1,1 +1,1 @@
-const INTRODUCTION_LEVEL : int = 1000;
+const INTRODUCTION_LEVEL : int = 1;

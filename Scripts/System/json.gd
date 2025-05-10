@@ -37,9 +37,11 @@ static func write(json_data: Dictionary, file_name: String) -> void:
 	file.store_string(JSON.stringify(json_data));
 	file.close();
 
-static func read(file_name: String) -> Dictionary:
+static func read(file_name: String, do_debug : bool = false) -> Dictionary:
 	var json_data : Dictionary;
 	var file: FileAccess = FileAccess.open(file_name, FileAccess.READ);
+	if do_debug:
+		print("Reading: %s \n%s" % [file_name, not not file]);
 	if not file:
 		return ERROR;
 	json_data = parse(file.get_as_text());
@@ -59,8 +61,8 @@ static func read_save(file_name: String) -> Dictionary:
 static func write_save(json_data: Dictionary, file_name: String) -> void:
 	write(json_data, get_save_file_path(file_name));
 
-static func read_data(file_name: String) -> Dictionary:
-	return read(get_data_file_path(file_name));
+static func read_data(file_name: String, do_debug: bool = false) -> Dictionary:
+	return read(get_data_file_path(file_name), do_debug);
 
 static func write_data(json_data: Dictionary, file_name: String) -> void:
 	write(json_data, get_data_file_path(file_name));

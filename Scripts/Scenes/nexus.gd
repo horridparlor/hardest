@@ -4,9 +4,12 @@ extends Nexus
 @onready var background_music : AudioStreamPlayer2D = $BackgroundMusic;
 @onready var showcase_card : GameplayCard = $ShowcaseCard/Card;
 @onready var showcase_card_layer : Node2D = $ShowcaseCard;
+@onready var background_cards_layer : Node2D = $BackgroundCards;
 @onready var leds_layer : Node2D = $Leds;
-@onready var led_frame_timer : Timer = $Timers/LedFrameTimer;
 @onready var labels_layer : GlowNode = $LabelsLayer;
+
+@onready var led_frame_timer : Timer = $Timers/LedFrameTimer;
+@onready var card_spawn_timer : Timer = $Timers/CardSpawnTimer;
 
 func _ready() -> void:
 	var save_data : Dictionary = System.Data.read_save_data();
@@ -15,15 +18,20 @@ func _ready() -> void:
 	spawn_leds();
 	labels_layer.activate_animations();
 
+func spawn_a_background_card() -> void:
+	var card : GameplayCard = instance_background_card(background_cards_layer);
+	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT);
+	card_spawn_timer.start();
+
 func spawn_leds() -> void:
 	var position : Vector2 = LED_STARTING_POSITION;
 	var led : Led;
 	for i in range(LEDS_PER_COLUMN):
-		led = System.Instance.load_child(LED_PATH, leds_layer);
+		led = System.Instance.load_child(System.Paths.LED, leds_layer);
 		led.position = position;
 		leds_left.append(led);
 		
-		led = System.Instance.load_child(LED_PATH, leds_layer);
+		led = System.Instance.load_child(System.Paths.LED, leds_layer);
 		led.position = Vector2(-position.x, position.y);
 		leds_right.append(led);
 		
@@ -34,6 +42,7 @@ func spawn_leds() -> void:
 func init(music_position : float) -> void:
 	background_music.play(music_position);
 	is_active = true;
+	spawn_a_background_card();
 
 func operate_showcase_layer() -> void:
 	if System.Debug.SHOWCASE_CARD_ID != 0:	
@@ -52,7 +61,7 @@ func spawn_level_buttons(save_data : Dictionary) -> void:
 		button.position = current_position;
 		current_position.x += LEVEL_BUTTON_X_MARGIN;
 		buttons += 1;
-		button.init(System.Data.read_level(i + 1), save_data.levels_unlocked == i + 1);
+		button.init(System.Data.read_level(i + 2), save_data.levels_unlocked == i + 1);
 		if i < save_data.levels_unlocked:
 			button.pressed.connect(_on_level_pressed);
 		else:
@@ -73,41 +82,31 @@ func _on_background_music_finished() -> void:
 func _on_led_frame_timer_timeout() -> void:
 	led_frame();
 
+func get_led_columns() -> Array:
+	return [
+		leds_left,
+		leds_right
+	];
+
 func led_frame() -> void:
-	shut_leds(red_lex_index - RED_LED_SPEED);
-	shut_leds(current_led_row);
-	shut_leds(current_led_row + LEDS_BETWEEN_BURSTS);
-	shut_leds(current_led_row - LEDS_BETWEEN_BURSTS);
+	System.Leds.shut_leds(red_lex_index - RED_LED_SPEED, LEDS_PER_COLUMN, get_led_columns());
+	System.Leds.shut_leds(current_led_row, LEDS_PER_COLUMN, get_led_columns());
+	System.Leds.shut_leds(current_led_row + LEDS_BETWEEN_BURSTS, LEDS_PER_COLUMN, get_led_columns());
+	System.Leds.shut_leds(current_led_row - LEDS_BETWEEN_BURSTS, LEDS_PER_COLUMN, get_led_columns());
 	current_led_row += 1;
 	for i in range(LEDS_IN_BURST - 1):
-		light_leds(current_led_row - LEDS_BETWEEN_BURSTS + i);
+		System.Leds.light_leds(current_led_row - LEDS_BETWEEN_BURSTS + i, LEDS_PER_COLUMN, get_led_columns());
 	for i in range(LEDS_IN_BURST):
-		light_leds(current_led_row + i);
+		System.Leds.light_leds(current_led_row + i, LEDS_PER_COLUMN, get_led_columns());
 	for i in range(LEDS_IN_BURST - 1):
-		light_leds(current_led_row + LEDS_BETWEEN_BURSTS + i);
+		System.Leds.light_leds(current_led_row + LEDS_BETWEEN_BURSTS + i, LEDS_PER_COLUMN, get_led_columns());
 	if current_led_row == LEDS_PER_COLUMN:
 		current_led_row = 0;
-	light_leds(red_lex_index, Led.LedColor.RED);
+	System.Leds.light_leds(red_lex_index, LEDS_PER_COLUMN, get_led_columns(), Led.LedColor.RED);
 	red_lex_index += RED_LED_SPEED;
 	if red_lex_index >= LEDS_PER_COLUMN:
 		red_lex_index -= LEDS_PER_COLUMN;
 
-func light_leds(index : int, led_color : Led.LedColor = Led.LedColor.WHITE) -> void:
-	var leds : Array = get_leds_on_row(index);
-	for led in leds:
-		led.on(led_color);
-
-func get_leds_on_row(index : int) -> Array:
-	if index < 0:
-		index += LEDS_PER_COLUMN;
-	if index >= LEDS_PER_COLUMN:
-		index -= LEDS_PER_COLUMN;
-	return [
-		leds_left[index],
-		leds_right[index]
-	];
-
-func shut_leds(index : int) -> void:
-	var leds : Array = get_leds_on_row(index);
-	for led in leds:
-		led.off();
+func _on_card_spawn_timer_timeout() -> void:
+	card_spawn_timer.stop();
+	spawn_a_background_card();

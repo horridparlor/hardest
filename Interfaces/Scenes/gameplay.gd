@@ -3,7 +3,6 @@ class_name Gameplay
 
 signal game_over(music_position)
 
-const CARD_PATH : String = "res://Prefabs/Gameplay/Card/card.tscn";
 const HAND_POSITION : Vector2 = Vector2(0, 760);
 const HAND_MARGIN : int = 200;
 const CARD_STARTING_POSITION : Vector2 = Vector2(0, System.Window_.y + GameplayCard.SIZE.y)
@@ -25,6 +24,11 @@ const OPPONENTS_PLAY_WAIT : float = 1.2
 const OPPONENT_TO_PLAY_WAIT : float = 0.2;
 const YOU_TO_PLAY_WAIT : float = 0.2;
 const SPY_WAIT_TIME : float = 0.2;
+const TROLL_MIN_WAIT : float = 0.8;
+const TROLL_MAX_WAIT : float = 1.2;
+const TROLL_MIN_MOVE : float = 100;
+const TROLL_MAX_MOVE : float = 500;
+const TROLL_CHANCE : int = 5;
 
 const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";
@@ -38,10 +42,20 @@ const POINTS_FADE_IN_SPEED : float = 0.4;
 const POINTS_FADE_OUT_SPEED : float = 1.2;
 const SHADOW_FADE_IN_SPEED : float = 0.6;
 const SHADOW_FADE_OUT_SPEED : float = 0.8;
+const CHARACTER_FULL_ART_PATH : String = "res://Assets/Art/CharacterFull/%s.png";
 
-const LED_PATH : String = "res://Prefabs/Nexus/EyeCandy/Led.tscn";
-const LEDS_PER_COLUMN : int = 10;
-const LED_MARGIN : int = 100;
+const LED_STARTING_POSITION : Vector2 = Vector2(-480, -720);
+const LEDS_PER_COLUMN : int = 19;
+const LED_MARGIN : Vector2 = Vector2(60, 120);
+const LED_WAIT : float = 0.12;
+const LED_BURSTS : int = LEDS_PER_COLUMN / 3;
+const YOUR_LED_COLOR : Led.LedColor = Led.LedColor.BLUE;
+const OPPONENTS_LED_COLOR : Led.LedColor = Led.LedColor.RED;
+const IDLE_LED_COLOR : Led.LedColor = Led.LedColor.WHITE;
+const WARNING_LED_COLOR : Led.LedColor = Led.LedColor.YELLOW;
+const YOUR_LED_DIRECTION : int = 1;
+const OPPONENTS_LED_DIRECTION : int = -1;
+const WARNING_LED_DIRECTION : int = 0;
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
@@ -61,6 +75,10 @@ var is_spying : bool;
 var cards_to_spy : int;
 var leds_left : Array;
 var leds_right : Array;
+var is_trolling : bool;
+var led_index : int = LEDS_PER_COLUMN - 1;
+var led_direction : int;
+var led_color : Led.LedColor = Led.LedColor.WHITE;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

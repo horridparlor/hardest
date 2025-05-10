@@ -1,6 +1,7 @@
 extends Node
 
 enum CardType {
+	NULL,
 	ROCK,
 	PAPER,
 	SCISSORS,

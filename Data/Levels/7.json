@@ -1,6 +1,8 @@
 {
 	"id" : 7,
-	"opponent" : "Simooni",
-	"deck" : 13,
-	"deck2" : 14
+	"opponent" : "Jukulius",
+	"deck" : 7,
+	"deck2" : 7,
+	"music": 7,
+	"background" : 9
 }

@@ -22,7 +22,7 @@ func on(color : LedColor = LedColor.WHITE) -> void:
 		LedColor.OFF:
 			off_sprite.visible = true;
 		LedColor.BLUE:
-			red_sprite.visible = true;
+			blue_sprite.visible = true;
 		LedColor.RED:
 			red_sprite.visible = true;
 		LedColor.YELLOW:

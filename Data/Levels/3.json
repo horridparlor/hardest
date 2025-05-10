@@ -1,6 +1,8 @@
 {
 	"id" : 3,
-	"opponent" : "Lotte",
-	"deck" : 5,
-	"deck2" : 6
+	"opponent" : "Raisen",
+	"deck" : 3,
+	"deck2" : 3,
+	"music": 3,
+	"background" : 6
 }

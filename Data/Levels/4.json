@@ -1,6 +1,8 @@
 {
 	"id" : 4,
-	"opponent" : "Mark",
-	"deck" : 7,
-	"deck2" : 8
+	"opponent" : "Korvek",
+	"deck" : 4,
+	"deck2" : 4,
+	"music": 4,
+	"background" : 5
 }

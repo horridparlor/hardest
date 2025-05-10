@@ -1,4 +1,5 @@
 const INDIFFERENT_DISTANCE : float = 0.01;
+const WINDOW_CIRCUMRADIUS : float = sqrt(pow(System.Window_.x / 2, 2) + pow(System.Window_.y / 2, 2));
 
 static func is_default(vector : Vector2) -> bool:
 	return is_same(vector, default());
@@ -22,3 +23,9 @@ speed_multiplier : float, delta : float, min_speed : float = 0) -> Vector2:
 	var distance : float = max(point_a.distance_to(point_b), min_speed);
 	var movement : float = distance * speed_multiplier * delta;
 	return point_a.move_toward(point_b, movement);
+
+static func is_inside_window(position : Vector2, size : Vector2) -> bool:
+	return position.distance_to(default()) - get_cirmumradius(size) < WINDOW_CIRCUMRADIUS;
+
+static func get_cirmumradius(size : Vector2) -> float:
+	return sqrt(pow(size.x / 2, 2) + pow(size.y / 2, 2));

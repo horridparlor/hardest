@@ -22,6 +22,11 @@ const CARD_FULLART_PATH : String = "res://Assets/Art/CardArt/%s.png";
 const ROTATION_SPEED : float = 0.12;
 const FOCUS_WAIT : float = 1.8;
 const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
+const FLOW_SPEED : float = 0.6;
+const MIN_GRAVITY : float = 100;
+const MAX_GRAVITY : float = 1000;
+const X_FLOW_MULTIPLIER : float = 0.4;
+const MIN_X_FLOW : int = 100;
 
 const ROCK_BG_COLOR = "#008242";
 const ROCK_BORDER_COLOR = "#7bffc3";
@@ -55,6 +60,9 @@ var is_despawning : bool;
 var is_scaling : bool;
 var focus_timer : Timer = Timer.new();
 var is_visiting : bool;
+var flow_x : float;
+var flow_gravity : float;
+var is_flowing : bool;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -76,7 +84,7 @@ func rescale(is_instant : bool = false) -> void:
 		return;
 
 func _process(delta: float) -> void:
-	if !(is_moving or following_mouse):
+	if !(is_moving or following_mouse or is_flowing):
 		return;
 	move_card(delta);
 	update_scale(delta);
@@ -84,7 +92,8 @@ func _process(delta: float) -> void:
 func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
-	position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED, delta);
+	if is_moving or following_mouse:
+		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED, delta);
 	if is_visiting and System.Vectors.equal(position, visit_point):
 		is_visiting = false;
 		emit_signal("visited", self);
@@ -97,11 +106,20 @@ func move_card(delta : float) -> void:
 			min(System.Window_.x / 2 - card_margin.x, max(position.x, -System.Window_.x / 2 + card_margin.x)),
 			min(System.Window_.y / 2 - card_margin.y, max(position.y, -System.Window_.y / 2 + card_margin.y))
 		);
+	if is_flowing:
+		flow_frame(delta);
 	rotate_card(position - original_position, delta);
+
+func flow_frame(delta : float) -> void:
+	position = System.Vectors.slide_towards(position, Vector2(position.x + flow_x, position.y + flow_gravity), FLOW_SPEED, delta);
+	if !System.Vectors.is_inside_window(position, SIZE):
+		queue_free();
 
 func rotate_card(position_change : Vector2, delta : float) -> void:
 	if !System.Vectors.equal(position_change):
 		rotation_degrees += ROTATION_SPEED * position_change.x;
+	if is_flowing:
+		return;
 	rotation_degrees = System.Scale.baseline(rotation_degrees, 0, delta);
 
 func toggle_follow_mouse(value : bool = true) -> void:
@@ -152,3 +170,9 @@ func bury() -> void:
 
 func update_card_art(do_full_art : bool = false) -> void:
 	pass;
+
+func flow_down() -> void:
+	var direction : int;
+	flow_x = System.Floats.direction_safe_min(System.Random.x() * X_FLOW_MULTIPLIER, MIN_X_FLOW);
+	flow_gravity = System.random.randf_range(MIN_GRAVITY, MAX_GRAVITY);
+	is_flowing = true;

@@ -1,5 +1,4 @@
-const MAIN_DECK_SIZE : int = 15;
-const MAX_DECK_SIZE : int = 5;
+const DECK_SIZE : int = 15;
 const HAND_SIZE : int = 3;
 const MAX_HAND_SIZE : int = 5;
 const VICTORY_POINTS : int = 10;
@@ -8,3 +7,4 @@ const MAX_LEVELS : int = 6;
 const UNDEAD_LIMIT : int = 3;
 const MAX_KEYWORDS : int = 3;
 const HYDRA_KEYWORDS : int = 3;
+const MAX_CARD_ID : int = 52;

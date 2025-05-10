@@ -2,7 +2,6 @@ extends Node
 class_name Player
 
 var cards_in_deck : Array;
-var cards_in_extra_deck : Array;
 var cards_in_hand : Array;
 var cards_on_field : Array;
 var cards_in_grave : Array;
@@ -18,12 +17,11 @@ var grave_type_counts : Dictionary = {
 var character : GameplayEnums.Character;
 var controller : GameplayEnums.Controller;
 var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL;
-var random_keywords : Array;
-var random_cards : Dictionary;
 var cards_played_this_turn : int;
 var field_position : Vector2;
 var visit_point : Vector2;
 var extra_draws : int;
+var decklist : Decklist;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -50,7 +48,7 @@ func hand_size_reached() -> bool:
 	return cards_in_hand.size() >= System.Rules.HAND_SIZE;
 
 func draw_hand() -> void:
-	while !deck_empty():
+	while true:
 		draw();
 		if hand_size_reached():
 			break;
@@ -65,11 +63,12 @@ func draw_cards(amount : int = 1) -> void:
 
 func draw() -> bool:
 	var card : CardData;
-	if deck_empty() or count_hand() == System.Rules.MAX_HAND_SIZE:
+	if count_hand() == System.Rules.MAX_HAND_SIZE:
 		return false;
 	card = cards_in_deck.pop_back();
 	cards_in_hand.append(card);
 	card.zone = CardEnums.Zone.HAND;
+	generate_deck();
 	return true;
 
 func celebrate() -> void:
@@ -96,17 +95,22 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 func eat_decklist(decklist_id : int = 0,
 	character_id : GameplayEnums.Character = GameplayEnums.Character.PEITSE
 ) -> void:
-	var decklist_data : Decklist = System.Data.read_decklist(decklist_id);
-	var card_data : Dictionary;
+	decklist = System.Data.read_decklist(decklist_id);
 	character = character_id;
-	for card in decklist_data.main_deck:
-		card_data = System.Data.read_card(card);
-		for i in range(decklist_data.main_deck[card]):
-			cards_in_deck.append(CardData.from_json(card_data));
-	cards_in_deck.shuffle();
-	random_keywords = decklist_data.random_keywords;
-	random_cards = decklist_data.random_cards;
+	generate_deck();
 	add_always_start_cards();
+
+func generate_deck() -> void:
+	var card_data : Dictionary;
+	var card : CardData;
+	var amount = System.Rules.DECK_SIZE - count_deck();
+	if amount <= 0:
+		return;
+	for card_id in decklist.generate_cards(amount):
+		card_data = System.Data.read_card(card_id);
+		card = CardData.from_json(card_data)
+		card.controller = self;
+		cards_in_deck.append(card);
 
 func add_always_start_cards() -> void:
 	var horse_gear_rock : CardData = find_horse_gear_card(CardEnums.CardType.ROCK, true);
@@ -131,12 +135,8 @@ func add_always_start_cards() -> void:
 
 func find_horse_gear_card(card_type : CardEnums.CardType, do_remove_from_deck : bool = false) -> CardData:
 	var card : CardData;
-	for c in cards_in_deck.duplicate():
-		card = c;
-		if card.has_horse_gear() and card.default_type == card_type:
-			if do_remove_from_deck:
-				cards_in_deck.erase(card)
-			return card;
+	if decklist.starting_cards.has(card_type):
+		return System.Data.load_card(decklist.starting_cards[card_type]);
 	return null;
 
 func shuffle_hand() -> void:
@@ -185,6 +185,8 @@ func discard_from_hand(card : CardData) -> void:
 	add_to_grave(card);
 
 func add_to_grave(card : CardData, did_win : bool = false) -> void:
+	if !card:
+		return;
 	card.zone = CardEnums.Zone.GRAVE;
 	card.card_type = card.default_type;
 	if did_win and card.has_undead(true):
@@ -230,7 +232,7 @@ func get_cards() -> Array:
 	return cards_in_deck + get_active_cards();
 
 func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
-	var card : CardData = CardData.from_json(System.Data.read_card(System.Random.item(random_cards[card_type])));
+	var card : CardData = CardData.from_json(CollectionEnums.get_random_card(card_type));
 	cards_in_deck.append(card);
 	cards_in_deck.shuffle();
 	return card; 
@@ -239,10 +241,10 @@ func get_rainbowed() -> void:
 	var card : CardData;
 	for c in cards_in_hand:
 		card = c;
-		card.eat_json(System.Data.read_card(System.Random.item(random_cards[card.default_type])));
+		card.eat_json(CollectionEnums.get_random_card(card.default_type));
 
 func build_hydra(card : CardData) -> void:
-	var keywords : Array = random_keywords.duplicate();
+	var keywords : Array = CardEnums.Keyword.values();
 	var keyword : CardEnums.Keyword;
 	card.keywords = [];
 	for i in range(System.Rules.HYDRA_KEYWORDS):

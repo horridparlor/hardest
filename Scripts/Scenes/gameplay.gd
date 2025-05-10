@@ -13,6 +13,8 @@ extends Gameplay
 @onready var opponents_play_wait : Timer = $Timers/OpponentsPlayWait;
 @onready var you_play_wait : Timer = $Timers/YouPlayWait;
 @onready var spying_timer : Timer = $Timers/SpyingTimer;
+@onready var troll_timer : Timer = $Timers/TrollingTimer;
+@onready var led_timer : Timer = $Timers/LedTimer;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
@@ -26,12 +28,14 @@ extends Gameplay
 @onready var your_face : Sprite2D = $Points/YourFace;
 @onready var your_name : Label = $Points/YourFace/YourName;
 @onready var background_pattern : Sprite2D = $Background/Pattern;
+@onready var trolling_sprite : Sprite2D = $TrollingSprite;
+@onready var leds_layer : Node2D = $Background/Leds;
 
 
 func init(level_data_ : LevelData) -> void:
 	level_data = level_data_;
-	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck_id);
-	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck2_id);
+	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id);
+	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id);
 	init_layers();
 	init_timers();
 	going_first = System.Random.boolean();
@@ -42,6 +46,24 @@ func init(level_data_ : LevelData) -> void:
 	initialize_background_music();
 	initialize_background_pattern();
 	cards_shadow.modulate.a = 0;
+	trolling_sprite.visible = false;
+	spawn_leds();
+
+func spawn_leds() -> void:
+	var led : Led;
+	var position : Vector2 = LED_STARTING_POSITION;
+	var direction : float = 1;
+	for i in range(LEDS_PER_COLUMN):
+		led = System.Instance.load_child(System.Paths.LED, leds_layer);
+		led.position = Vector2(-position.x, position.y);
+		leds_left.append(led);
+		
+		led = System.Instance.load_child(System.Paths.LED, leds_layer);
+		led.position = position;
+		position += Vector2(direction * LED_MARGIN.x, abs(direction) * LED_MARGIN.y);
+		direction *= -0.965;
+		leds_right.append(led);
+	led_timer.start();
 
 func init_player(player : Player, controller : GameplayEnums.Controller, deck_id : int) -> void:
 	var card : CardData;
@@ -56,21 +78,23 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 	player.visit_point = VISIT_POSITION if controller == GameplayEnums.Controller.PLAYER_ONE else -VISIT_POSITION;
 
 func initialize_background_music() -> void:
-	var music_file : Resource = load(LEVEL_THEME_PATH % [level_data.id]);
+	var music_file : Resource = load(LEVEL_THEME_PATH % [level_data.music]);
 	background_music.stream = music_file;
 	background_music.play();
 	
 func initialize_background_pattern() -> void:
-	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.id]);
+	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.background]);
 	background_pattern.texture = pattern;
 	
 func update_character_faces() -> void:
 	var your_face_texture : Resource = load_face_texture(level_data.player);
 	var opponent_face_texture : Resource = load_face_texture(level_data.opponent);
+	var troll_texture : Resource = load(CHARACTER_FULL_ART_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);
 	your_face.texture = your_face_texture;
 	character_face.texture = opponent_face_texture;
 	your_name.text = translate_character_name(level_data.player);
 	enemy_name.text = translate_character_name(level_data.opponent);
+	trolling_sprite.texture = troll_texture;
 
 func load_face_texture(character_id : GameplayEnums.Character) -> Resource:
 	return load(LevelButton.CHARACTER_FACE_PATH % \
@@ -90,6 +114,11 @@ func init_timers() -> void:
 	card_focus_timer.wait_time = CARD_FOCUS_WAIT;
 	you_play_wait.wait_time = YOU_TO_PLAY_WAIT;
 	spying_timer.wait_time = SPY_WAIT_TIME;
+	get_troll_wait();
+	led_timer.wait_time = LED_WAIT;
+
+func get_troll_wait() -> void:
+	troll_timer.wait_time = System.random.randf_range(TROLL_MIN_WAIT, TROLL_MAX_WAIT);
 
 func have_you_won() -> bool:
 	var result : bool = player_one.points >= System.Rules.VICTORY_POINTS;
@@ -117,24 +146,12 @@ func start_round() -> void:
 	player_two.draw_hand();
 	show_hand();
 	player_two.shuffle_hand();
-	if (player_one.hand_empty() and player_one.deck_empty()) or (player_two.hand_empty() and player_two.deck_empty()):
-		start_game_over(true);
-		return;
 	if going_first:
 		your_turn();
 	else:
 		opponents_turn();
 
-func start_game_over(extend_wait : bool = false) -> void:
-	if extend_wait:
-		game_over_timer.wait_time *= 3;
-		if player_one.hand_empty() and player_one.deck_empty():
-			your_name.text = "DECK OUT";
-			your_name.add_theme_font_size_override("font_size", 64);
-		elif player_two.hand_empty() and player_two.deck_empty():
-			enemy_name.text = "DECK OUT";
-			enemy_name.add_theme_font_size_override("font_size", 64);
-			_on_you_won();
+func start_game_over() -> void:
 	game_over_timer.start();
 
 func end_game() -> void:
@@ -146,6 +163,8 @@ func end_game() -> void:
 func your_turn() -> void:
 	if is_spying:
 		return you_play_wait.start();
+	led_direction = YOUR_LED_DIRECTION;
+	led_color = IDLE_LED_COLOR;
 	show_hand();
 	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
@@ -187,7 +206,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	update_alterations_for_card(card_data);
 	if cards.has(card_data.instance_id):
 		return cards[card_data.instance_id];
-	var card : GameplayCard = System.Instance.load_child(CARD_PATH, cards_layer if active_card == null else cards_layer2);
+	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, cards_layer if active_card == null else cards_layer2);
 	card.card_data = card_data;
 	card.instance_id = card_data.instance_id;
 	card.init(card_data.controller.gained_keyword);
@@ -210,7 +229,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	var player : Player = get_opponent(enemy);
 	var card : CardData = player.get_field_card();
 	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
-	var points : int;
+	var points : int = 1;
 	if enemy.has_secrets():
 		winner = GameplayEnums.Controller.PLAYER_ONE;
 		points = 3;
@@ -464,6 +483,8 @@ func opponents_turn() -> void:
 	if player_two.hand_empty():
 		_on_opponent_turns_end() if going_first else your_turn();
 		return;
+	led_direction = OPPONENTS_LED_DIRECTION;
+	led_color = IDLE_LED_COLOR;
 	player_two.cards_in_hand.sort_custom(best_to_play);
 	#for car in player_two.cards_in_hand:
 		#print(car.card_name, " ", get_result_for_playing(car));
@@ -667,8 +688,6 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 	return transformed_any;
 
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
-	if opponent.deck_empty():
-		return;
 	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1].eat_json(System.Data.read_card(CardEnums.BasicIds[card_type]));
 
 func best_to_play(card_a : CardData, card_b : CardData) -> int:
@@ -823,6 +842,15 @@ func round_results() -> void:
 		card,
 		enemy
 	);
+	led_direction = YOUR_LED_DIRECTION;
+	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
+	if round_winner == GameplayEnums.Controller.PLAYER_TWO:
+		led_direction = OPPONENTS_LED_DIRECTION;
+		led_color = OPPONENTS_LED_COLOR;
+		if System.Random.chance(TROLL_CHANCE) or player_two.points >= System.Rules.VICTORY_POINTS - 1:
+			opponent_trolling_effect();
+			led_direction = WARNING_LED_DIRECTION;
+			led_color = WARNING_LED_COLOR;
 	match round_winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player_one, player_two);
@@ -892,6 +920,12 @@ func click_opponents_points() -> void:
 	if has_opponent_won():
 		return;
 	points_click_timer.start();
+
+func opponent_trolling_effect() -> void:
+	trolling_sprite.position = System.Vectors.default();
+	trolling_sprite.visible = true;
+	is_trolling = true;
+	troll_timer.start();
 
 func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
 	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
@@ -1058,6 +1092,14 @@ func _process(delta : float) -> void:
 		reorder_hand();
 	if is_updating_points_visibility:
 		update_points_visibility(delta);
+	if is_trolling:
+		move_troll_layer(delta);
+
+func move_troll_layer(delta : float) -> void:
+	trolling_sprite.position += delta * Vector2(
+		System.Random.direction() * System.random.randf_range(TROLL_MIN_MOVE, TROLL_MAX_MOVE),
+		System.Random.direction() * System.random.randf_range(TROLL_MIN_MOVE, TROLL_MAX_MOVE)
+	);
 
 func update_points_visibility(delta : float) -> void:
 	points_layer.modulate.a = System.Scale.baseline(
@@ -1126,3 +1168,29 @@ func _on_spying_timer_timeout() -> void:
 func _on_you_play_wait_timeout() -> void:
 	you_play_wait.stop();
 	your_turn();
+
+
+func _on_trolling_timer_timeout() -> void:
+	troll_timer.stop();
+	is_trolling = false;
+	trolling_sprite.visible = false;
+
+func _on_led_wait_timeout() -> void:
+	led_frame();
+
+func led_frame() -> void:
+	for i in range(LED_BURSTS):
+		System.Leds.shut_leds(led_index + 3 * i, LEDS_PER_COLUMN, get_led_columns());
+	led_index += led_direction * 1;
+	if led_index >= LEDS_PER_COLUMN:
+		led_index -= LEDS_PER_COLUMN;
+	elif led_index < 0:
+		led_index += LEDS_PER_COLUMN;
+	for i in range(LED_BURSTS):
+		System.Leds.light_leds(led_index + 3 * i, LEDS_PER_COLUMN, get_led_columns(), led_color);
+
+func get_led_columns() -> Array:
+	return [
+		leds_left,
+		leds_right
+	];

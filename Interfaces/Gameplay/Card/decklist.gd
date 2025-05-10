@@ -1,18 +1,91 @@
 extends Node
 class_name Decklist
 
-var main_deck : Dictionary;
-var extra_deck : Dictionary;
-var random_keywords : Array;
-var random_cards : Dictionary
+const DEFAULT_GUN_CHANCE : int = 3;
+const DEFAULT_MIMIC_CHANCE : int = 1;
+const DEFAULT_GOD_CHANCE : int = 0;
+const DEFAULT_DATA : Dictionary = {
+	"id": 1,
+	"cards": [],
+	"gun_chance": DEFAULT_GUN_CHANCE,
+	"mimic_chance": DEFAULT_MIMIC_CHANCE,
+	"god_chance": DEFAULT_GOD_CHANCE
+}
 
-func _init(
-	main_deck_ : Dictionary,
-	extra_deck_ : Dictionary,
-	random_keywords_ : Array,
-	random_cards_ : Dictionary
-) -> void:
-	main_deck = main_deck_;
-	extra_deck = extra_deck_;
-	random_keywords = random_keywords_;
-	random_cards = random_cards_;
+var id : int;
+var cards : Dictionary = {
+	CardEnums.CardType.ROCK: [],
+	CardEnums.CardType.PAPER: [],
+	CardEnums.CardType.SCISSORS: [],
+	CardEnums.CardType.GUN: [],
+	CardEnums.CardType.MIMIC: [],
+	CardEnums.CardType.GOD: []
+}
+var gun_chance : int = DEFAULT_GUN_CHANCE;
+var mimic_chance : int = DEFAULT_MIMIC_CHANCE;
+var god_chance : int = DEFAULT_GOD_CHANCE;
+var starting_cards : Dictionary;
+
+static func from_json(data : Dictionary) -> Decklist:
+	var decklist : Decklist = Decklist.new();
+	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
+	decklist.id = data.id;
+	decklist.gun_chance = data.gun_chance;
+	decklist.mimic_chance = data.mimic_chance;
+	decklist.god_chance = data.god_chance;
+	decklist.eat_cards(data.cards);
+	return decklist;
+
+func eat_cards(source : Array) -> void:
+	var card_type : CardEnums.CardType;
+	var card_data : CardData;
+	for card in source:
+		card_data = System.Data.load_card(card);
+		card_type = card_data.card_type;
+		if card_data.has_horse_gear():
+			starting_cards[card_type] = card;
+			card_data.queue_free();
+			continue;
+		match card_type:
+			CardEnums.CardType.GUN:
+				gun_chance += 1;
+			CardEnums.CardType.MIMIC:
+				mimic_chance += 1;
+			CardEnums.CardType.GOD:
+				god_chance += 1;
+		card_data.queue_free();
+		cards[card_type].append(card);
+
+func to_json() -> Dictionary:
+	return {
+		"id": id,
+		"cards": cards,
+		"gun_chance": gun_chance,
+		"mimic_chance": mimic_chance,
+		"god_chance": god_chance
+	};
+
+func generate_cards(amount : int = 1) -> Array:
+	var ids : Array;
+	var card_type : CardEnums.CardType;
+	for i in range(amount):
+		card_type = get_random_collection_type();
+		ids.append(System.Random.item(cards[card_type] + ([CardEnums.BasicIds[card_type]] if cards[card_type].is_empty() else [])));
+	return ids;
+
+func get_random_collection_type() -> CardEnums.CardType:
+	var result : int = System.random.randi_range(0, 39);
+	var threshold : int = god_chance;
+	if result < threshold:
+		return CardEnums.CardType.GOD;
+	threshold += gun_chance;
+	if result < threshold:
+		return CardEnums.CardType.GUN;
+	threshold += mimic_chance;
+	if result < mimic_chance:
+		return CardEnums.CardType.MIMIC;
+	return System.Random.item([
+		CardEnums.CardType.ROCK,
+		CardEnums.CardType.PAPER,
+		CardEnums.CardType.SCISSORS
+	]);

@@ -17,3 +17,9 @@ static func one_of_two(a, b, chance : int):
 	if System.random.randi_range(0, chance) == 0:
 		return b;
 	return a;
+
+static func x() -> float:
+	return System.random.randf_range(-System.Window_.x / 2, System.Window_.x / 2);
+
+static func direction() -> int:
+	return item([1, -1]);

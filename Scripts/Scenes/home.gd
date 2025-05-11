@@ -63,12 +63,15 @@ func _on_background_music_finished() -> void:
 	save_data.last_played_songs.append(save_data.current_song);
 	if save_data.last_played_songs.size() > Config.MAX_SONG_ID / 3:
 		save_data.last_played_songs.remove_at(0);
-	while true:
-		song_id = System.random.randi_range(1, Config.MAX_SONG_ID);
-		if save_data.last_played_songs.has(song_id):
-			continue;
-		save_data.current_song = song_id;
-		break;
+	if level_data.song_id != 1 and !save_data.last_played_songs.has(level_data.song_id):
+		save_data.current_song = level_data.song_id;
+	else:
+		while true:
+			song_id = System.random.randi_range(1, Config.MAX_SONG_ID);
+			if save_data.last_played_songs.has(song_id):
+				continue;
+			save_data.current_song = song_id;
+			break;
 	save_data.write();
 	load_music();
 

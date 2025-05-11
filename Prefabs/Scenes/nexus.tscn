@@ -160,5 +160,8 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
 [node name="CardSpawnTimer" type="Timer" parent="Timers"]
 
+[node name="AutoStartTimer" type="Timer" parent="Timers"]
+
 [connection signal="timeout" from="Timers/LedFrameTimer" to="." method="_on_led_frame_timer_timeout"]
 [connection signal="timeout" from="Timers/CardSpawnTimer" to="." method="_on_card_spawn_timer_timeout"]
+[connection signal="timeout" from="Timers/AutoStartTimer" to="." method="_on_auto_start_timer_timeout"]

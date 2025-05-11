@@ -100,6 +100,8 @@ grow_vertical = 2
 
 [node name="LedTimer" type="Timer" parent="Timers"]
 
+[node name="AutoPlayTimer" type="Timer" parent="Timers"]
+
 [node name="Points" type="Node2D" parent="."]
 
 [node name="YourPoints" type="Label" parent="Points"]
@@ -249,3 +251,4 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 [connection signal="timeout" from="Timers/SpyingTimer" to="." method="_on_spying_timer_timeout"]
 [connection signal="timeout" from="Timers/TrollingTimer" to="." method="_on_trolling_timer_timeout"]
 [connection signal="timeout" from="Timers/LedTimer" to="." method="_on_led_wait_timeout"]
+[connection signal="timeout" from="Timers/AutoPlayTimer" to="." method="_on_auto_play_timer_timeout"]

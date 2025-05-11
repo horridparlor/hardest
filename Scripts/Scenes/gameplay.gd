@@ -15,6 +15,7 @@ extends Gameplay
 @onready var spying_timer : Timer = $Timers/SpyingTimer;
 @onready var troll_timer : Timer = $Timers/TrollingTimer;
 @onready var led_timer : Timer = $Timers/LedTimer;
+@onready var auto_play_timer : Timer = $Timers/AutoPlayTimer;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
@@ -37,7 +38,7 @@ func init(level_data_ : LevelData) -> void:
 	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id);
 	init_layers();
 	init_timers();
-	going_first = System.Random.boolean();
+	set_going_first(System.Random.boolean());
 	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	start_round();
@@ -46,6 +47,11 @@ func init(level_data_ : LevelData) -> void:
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
 	spawn_leds();
+
+func set_going_first(value : bool):
+	going_first = value;
+	player_one.going_first = going_first;
+	player_two.going_first = !going_first;
 
 func spawn_leds() -> void:
 	var led : Led;
@@ -163,6 +169,10 @@ func your_turn() -> void:
 		_on_your_turn_end() if going_first else _on_opponent_turns_end();
 		return;
 	can_play_card = true;
+	if !Config.AUTO_PLAY:
+		return;
+	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT);
+	auto_play_timer.start()
 
 func init_layers() -> void:
 	field_lines.modulate.a = 0;
@@ -177,10 +187,13 @@ func show_hand() -> void:
 func get_card(card : CardData) -> GameplayCard:
 	return cards[card.instance_id] if cards.has(card.instance_id) else null;
 
-func reorder_hand() -> void:
+func reorder_hand(do_shuffle : bool = false) -> void:
 	var card : GameplayCard;
 	var position : Vector2 = HAND_POSITION;
-	player_one.cards_in_hand.sort_custom(sort_by_card_position);
+	if do_shuffle:
+		player_one.cards_in_hand.shuffle()
+	else:
+		player_one.cards_in_hand.sort_custom(sort_by_card_position);
 	position.x -= HAND_MARGIN * ((player_one.count_hand() - 1) / 2.0);
 	for card_data in player_one.cards_in_hand:
 		if System.Instance.exists(active_card) and active_card.card_data.instance_id == card_data.instance_id:
@@ -203,8 +216,9 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	card.init(card_data.controller.gained_keyword);
 	cards[card.card_data.instance_id] = card;
 	card.position = CARD_STARTING_POSITION if card_data.controller == player_one else -CARD_STARTING_POSITION;
-	card.pressed.connect(_on_card_pressed);
-	card.released.connect(_on_card_released);
+	if !Config.AUTO_PLAY:
+		card.pressed.connect(_on_card_pressed);
+		card.released.connect(_on_card_released);
 	card.despawned.connect(_on_card_despawned);
 	card.visited.connect(_on_card_visited);
 	return card;
@@ -213,7 +227,6 @@ func _on_card_visited(card : GameplayCard) -> void:
 	if is_spying:
 		resolve_spying(card);
 		
-
 func resolve_spying(spy_target : GameplayCard) -> void:
 	var enemy : CardData = spy_target.card_data;
 	var opponent : Player = enemy.controller;
@@ -483,7 +496,7 @@ func opponents_turn() -> void:
 		return;
 	led_direction = OPPONENTS_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR;
-	player_two.cards_in_hand.sort_custom(best_to_play);
+	player_two.cards_in_hand.sort_custom(best_to_play_for_opponent);
 	#for car in player_two.cards_in_hand:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
@@ -688,20 +701,26 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
 	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1].eat_json(System.Data.read_card(CardEnums.BasicIds[card_type]));
 
-func best_to_play(card_a : CardData, card_b : CardData) -> int:
-	var a_value : int = get_result_for_playing(card_a);
-	var b_value : int = get_result_for_playing(card_b);
+func best_to_play_for_you(card_a : CardData, card_b : CardData) -> int:
+	return best_to_play(card_a, card_b, player_one, player_two);
+
+func best_to_play_for_opponent(card_a : CardData, card_b : CardData) -> int:
+	return best_to_play(card_a, card_b, player_two, player_one);
+
+func best_to_play(card_a : CardData, card_b : CardData, player : Player, opponent : Player) -> int:
+	var a_value : int = get_result_for_playing(card_a, player, opponent);
+	var b_value : int = get_result_for_playing(card_b, player, opponent);
 	if a_value == b_value:
-		return most_valuable(card_a, card_b);
+		return most_valuable(card_a, card_b, player, opponent);
 	return a_value < b_value;
 
-func most_valuable(card_a : CardData, card_b : CardData) -> int:
-	return -get_card_value(card_a, -1) < -get_card_value(card_b, -1);
+func most_valuable(card_a : CardData, card_b : CardData, player : Player, opponent : Player) -> int:
+	return -get_card_value(card_a, player, opponent, -1) < -get_card_value(card_b, player, opponent, -1);
 
-func get_card_value(card : CardData, direction : int = 1) -> int:
+func get_card_value(card : CardData, player : Player, opponent : Player, direction : int = 1) -> int:
 	var value : int = 10 * get_card_base_value(card);
 	var card_data : CardData;
-	for c in player_two.cards_in_hand:
+	for c in player.cards_in_hand:
 		card_data = c;
 		if card_data.card_type == card.card_type:
 			value += direction * 1;
@@ -720,7 +739,7 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.CURSED:
 				value += 1;
 			CardEnums.Keyword.DEVOUR:
-				value += -1 if going_first else 5;
+				value += 5 if player.going_first else -1;
 			CardEnums.Keyword.DIGITAL:
 				value += 5;
 			CardEnums.Keyword.DIVINE:
@@ -728,7 +747,7 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.EMP:
 				value += 2;
 			CardEnums.Keyword.EXTRA_SALTY:
-				value += 6 if player_two.points == 0 else 2;
+				value += 6 if player.points == 0 else 2;
 			CardEnums.Keyword.GREED:
 				value += 10;
 			CardEnums.Keyword.HIGH_GROUND:
@@ -754,7 +773,7 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.RUST:
 				value += 1;
 			CardEnums.Keyword.SALTY:
-				value += 5 if player_two.points == 0 else 1;
+				value += 5 if player.points == 0 else 1;
 			CardEnums.Keyword.SECRETS:
 				value += 0;
 			CardEnums.Keyword.SILVER:
@@ -766,9 +785,9 @@ func get_card_value(card : CardData, direction : int = 1) -> int:
 			CardEnums.Keyword.UNDEAD:
 				value -= 1;
 			CardEnums.Keyword.VAMPIRE:
-				value += 5 if player_one.points > 0 else 0;
+				value += 5 if opponent.points > 0 else 0;
 			CardEnums.Keyword.WRAPPED:
-				value -= 5 if going_first else 0;
+				value += 0 if player.going_first else 1;
 	if card.has_champion() :
 		value *= 2;
 	return value;
@@ -785,26 +804,26 @@ func get_card_base_value(card : CardData) -> int:
 			return 2;
 	return 0;
 
-func get_result_for_playing(card : CardData) -> int:
+func get_result_for_playing(card : CardData, player : Player, opponent : Player) -> int:
 	var winner : GameplayEnums.Controller;
-	var enemy : CardData = get_enemy_card_truth(player_one);
+	var enemy : CardData = get_enemy_card_truth(opponent);
 	var value : int = 1;
 	if card.has_champion():
 		value *= 2;
 	if enemy and enemy.has_champion():
 		value *= 2;
-	if going_first == false and player_one.gained_keyword == CardEnums.Keyword.BURIED and card.has_high_ground():
+	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.has_high_ground():
 		return value;
 	if !enemy:
-		return get_value_to_threaten(card);
+		return get_value_to_threaten(card, player, opponent);
 	winner = determine_winner(card, enemy);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
-			if enemy.has_greed() and !player_two.is_close_to_winning():
+			if enemy.has_greed() and !player.is_close_to_winning():
 				return -2;
 			return value;
 		GameplayEnums.Controller.PLAYER_TWO:
-			if card.has_greed() and !player_one.is_close_to_winning():
+			if card.has_greed() and !opponent.is_close_to_winning():
 				return 2;
 			return -value;
 	return 0;
@@ -824,13 +843,13 @@ func get_first_face_up_card(source : Array) -> CardData:
 			return card;
 	return null;
 
-func get_value_to_threaten(card : CardData) -> int:
+func get_value_to_threaten(card : CardData, player : Player, opponent : Player) -> int:
 	var value : int;
 	if card.has_digital():
 		return -1;
 	if card.has_champion():
 		return 0;
-	value = get_card_value(card);
+	value = get_card_value(card, player, opponent);
 	return value;
 
 func round_results() -> void:
@@ -1057,7 +1076,7 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 
 func end_round() -> void:
 	clear_field();
-	going_first = !going_first;
+	set_going_first(!going_first);
 	start_round();
 
 func clear_field() -> void:
@@ -1196,3 +1215,14 @@ func get_led_columns() -> Array:
 		leds_left,
 		leds_right
 	];
+
+func _on_auto_play_timer_timeout() -> void:
+	auto_play_timer.stop();
+	if System.Random.chance(CHANCE_TO_FLICKER_HAND):
+		reorder_hand(true);
+		auto_play_timer.wait_time *= FLICKER_SPEED_UP;
+		auto_play_timer.start();
+		return;
+	player_one.shuffle_hand();
+	player_one.cards_in_hand.sort_custom(best_to_play_for_you);
+	play_card(get_card(player_one.cards_in_hand.back()), player_one, player_two);

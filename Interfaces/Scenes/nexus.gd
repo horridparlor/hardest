@@ -19,14 +19,17 @@ const RED_LED_SPEED : int = 2;
 
 const MIN_CARD_SPAWN_WAIT : float = 0.1;
 const MAX_CARD_SPAWN_WAIT : float = 3.0;
+const AUTO_START_WAIT : float = 0.5;
 
 var is_active : bool;
 var leds_left : Array;
 var leds_right : Array;
 var current_led_row : int = LEDS_PER_COLUMN - 1;
 var red_led_index : int;
+var level_buttons : Array;
+var levels_unlocked : int;
 
-func init(levels_unlocked : int) -> void:
+func init(levels_unlocked_ : int) -> void:
 	pass
 
 func instance_background_card(parent : Node) -> GameplayCard:

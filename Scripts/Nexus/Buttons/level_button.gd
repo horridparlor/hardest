@@ -4,7 +4,7 @@ extends LevelButton
 @onready var panel : Panel = $Panel;
 
 func _on_level_pressed_triggered() -> void:
-	emit_signal("pressed", level_data);
+	trigger();
 
 func update_visuals() -> void:
 	var face_texture : Resource = load(CHARACTER_FACE_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);

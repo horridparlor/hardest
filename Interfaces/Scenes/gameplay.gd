@@ -24,11 +24,16 @@ const OPPONENTS_PLAY_WAIT : float = 1.2
 const OPPONENT_TO_PLAY_WAIT : float = 0.2;
 const YOU_TO_PLAY_WAIT : float = 0.2;
 const SPY_WAIT_TIME : float = 0.2;
+const AUTO_PLAY_MIN_WAIT : float = 0.4;
+const AUTO_PLAY_MAX_WAIT : float = 0.8;
+
 const TROLL_MIN_WAIT : float = 0.8;
 const TROLL_MAX_WAIT : float = 1.2;
 const TROLL_MIN_MOVE : float = 100;
 const TROLL_MAX_MOVE : float = 500;
 const TROLL_CHANCE : int = 5;
+const CHANCE_TO_FLICKER_HAND : int = 3;
+const FLICKER_SPEED_UP : float = 2/3;
 
 const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";

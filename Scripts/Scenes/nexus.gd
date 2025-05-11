@@ -6,14 +6,20 @@ extends Nexus
 @onready var background_cards_layer : Node2D = $BackgroundCards;
 @onready var leds_layer : Node2D = $Leds;
 @onready var labels_layer : GlowNode = $LabelsLayer;
+@onready var hint_label : Label = $LabelsLayer/HintLabel;
 
 @onready var led_frame_timer : Timer = $Timers/LedFrameTimer;
 @onready var card_spawn_timer : Timer = $Timers/CardSpawnTimer;
+@onready var auto_start_timer : Timer = $Timers/AutoStartTimer;
 
 func _ready() -> void:
 	operate_showcase_layer();
 	spawn_leds();
 	labels_layer.activate_animations();
+	init_timers();
+
+func init_timers() -> void:
+	auto_start_timer.wait_time = AUTO_START_WAIT;
 
 func spawn_a_background_card() -> void:
 	var card : GameplayCard = instance_background_card(background_cards_layer);
@@ -36,10 +42,22 @@ func spawn_leds() -> void:
 	led_frame_timer.wait_time = LED_FRAME_WAIT;
 	led_frame_timer.start();
  
-func init(levels_unlocked : int) -> void:
+func init(levels_unlocked_ : int) -> void:
+	levels_unlocked = levels_unlocked_;
 	is_active = true;
 	spawn_level_buttons(levels_unlocked);
 	spawn_a_background_card();
+	if levels_unlocked == System.Levels.MAX_TUTORIAL_LEVELS:
+		hint_label.text = "YOU WON THE DEMO";
+	if Config.AUTO_START:
+		auto_start_timer.start();
+
+func auto_start_level() -> void:
+	var button : LevelButton;
+	if levels_unlocked >= System.Levels.MAX_TUTORIAL_LEVELS:
+		return;
+	button = level_buttons[levels_unlocked];
+	button.trigger();
 
 func operate_showcase_layer() -> void:
 	if System.Debug.SHOWCASE_CARD_ID != 0:	
@@ -62,10 +80,10 @@ func spawn_level_buttons(levels_unlocked : int) -> void:
 		level_data = System.Data.read_level(i + 2);
 		button.init(level_data, levels_unlocked == i);
 		if i <= levels_unlocked:
-			print(222);
 			button.pressed.connect(_on_level_pressed);
 		else:
 			button.hide_button();
+		level_buttons.append(button);
 		if buttons % LEVEL_BUTTONS_PER_ROW == 0:
 			current_position.y += LEVEL_BUTTON_Y_MARGIN;
 			current_position.x = LEVEL_BUTTONS_STARTING_POSITION.x;
@@ -105,3 +123,7 @@ func led_frame() -> void:
 func _on_card_spawn_timer_timeout() -> void:
 	card_spawn_timer.stop();
 	spawn_a_background_card();
+
+func _on_auto_start_timer_timeout() -> void:
+	auto_start_timer.stop();
+	auto_start_level();

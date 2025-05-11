@@ -61,7 +61,7 @@ func load_music() -> void:
 func _on_background_music_finished() -> void:
 	var song_id : int;
 	save_data.last_played_songs.append(save_data.current_song);
-	if save_data.last_played_songs.size() > Config.WAIT_BEFORE_SONG_TO_REPEAT:
+	while save_data.last_played_songs.size() > Config.WAIT_BEFORE_SONG_TO_REPEAT:
 		save_data.last_played_songs.remove_at(0);
 	if level_data and level_data.song_id != 1 and !save_data.last_played_songs.has(level_data.song_id):
 		save_data.current_song = level_data.song_id;
@@ -78,6 +78,7 @@ func _on_background_music_finished() -> void:
 func process_victory() -> void:
 	if save_data.tutorial_levels_won < level_data.id - 1:
 		save_data.tutorial_levels_won += 1;
+		save_data.tutorial_levels_won = min(System.Levels.MAX_TUTORIAL_LEVELS, save_data.tutorial_levels_won);
 		save_data.write();
 
 func process_loss() -> void:

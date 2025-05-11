@@ -22,6 +22,7 @@ var field_position : Vector2;
 var visit_point : Vector2;
 var extra_draws : int;
 var decklist : Decklist;
+var going_first : bool;
 
 func count_deck() -> int:
 	return cards_in_deck.size();

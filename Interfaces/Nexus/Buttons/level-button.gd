@@ -23,3 +23,6 @@ func update_visuals() -> void:
 
 func hide_button() -> void:
 	pass;
+
+func trigger() -> void:
+	emit_signal("pressed", level_data);

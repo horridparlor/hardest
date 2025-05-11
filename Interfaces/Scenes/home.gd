@@ -7,3 +7,5 @@ const SAVE_FILE_NAME : String = "save";
 
 var gameplay : Gameplay;
 var nexus : Nexus;
+var save_data : SaveData;
+var level_data : LevelData;

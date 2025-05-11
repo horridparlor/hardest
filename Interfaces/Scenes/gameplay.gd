@@ -1,7 +1,7 @@
 extends Node2D
 class_name Gameplay
 
-signal game_over(music_position)
+signal game_over(did_win)
 
 const HAND_POSITION : Vector2 = Vector2(0, 760);
 const HAND_MARGIN : int = 200;
@@ -84,6 +84,7 @@ var fast_led_index : int = led_index;
 var led_direction : int;
 var led_color : Led.LedColor = Led.LedColor.WHITE;
 var started_playing : bool;
+var did_win : bool;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

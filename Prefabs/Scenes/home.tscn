@@ -8,3 +8,7 @@ script = ExtResource("1_3c8kg")
 [node name="SceneLayer" type="Node2D" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
+
+[connection signal="finished" from="BackgroundMusic" to="." method="_on_background_music_finished"]

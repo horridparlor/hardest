@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=10 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
 [ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/Patterns/NexusPattern.png" id="2_q58k7"]
@@ -7,7 +7,6 @@
 [ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="6_6h6rw"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="6_8o3vx"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="6_wxdwb"]
-[ext_resource type="AudioStream" uid="uid://r7a8yvpqbohb" path="res://Assets/Songs/Beyond Redemption.wav" id="8_bi3do"]
 [ext_resource type="PackedScene" uid="uid://du74m1788wbjd" path="res://Prefabs/Gameplay/Card/gameplay-card.tscn" id="8_iwnol"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
@@ -114,7 +113,7 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(0.94902, 1, 0.4, 1)
 theme_override_fonts/font = ExtResource("6_8o3vx")
 theme_override_font_sizes/font_size = 48
-text = "DEMO VERSION"
+text = "BEAT TUTORIAL LEVELS"
 horizontal_alignment = 1
 
 [node name="CreditLabel" type="Label" parent="."]
@@ -135,9 +134,6 @@ text = "by Eero Laine"
 horizontal_alignment = 1
 
 [node name="LevelButtons" type="Node2D" parent="."]
-
-[node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("8_bi3do")
 
 [node name="ShowcaseCard" type="Node2D" parent="."]
 visible = false
@@ -164,6 +160,5 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
 [node name="CardSpawnTimer" type="Timer" parent="Timers"]
 
-[connection signal="finished" from="BackgroundMusic" to="." method="_on_background_music_finished"]
 [connection signal="timeout" from="Timers/LedFrameTimer" to="." method="_on_led_frame_timer_timeout"]
 [connection signal="timeout" from="Timers/CardSpawnTimer" to="." method="_on_card_spawn_timer_timeout"]

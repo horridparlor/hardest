@@ -26,7 +26,9 @@ const DEFAULT_LEVEL : Dictionary = {
 }
 
 const DEFAULT_SAVE_DATA : Dictionary = {
-	"levels_unlocked": 0
+	"tutorial_levels_won": -1,
+	"current_song": 1,
+	"last_played_songs": []
 };
 
 const DEFAULT_SONG_DATA : Dictionary = {
@@ -75,11 +77,11 @@ static func fill_decklist(cards : Array) -> Dictionary:
 					decklist[card] += 1;
 	return decklist;
 
-static func read_save_data() -> Dictionary:
-	var save_data : Dictionary = System.Json.read_save(SAVE_DATA_PATH);
-	if System.Json.is_error(save_data):
+static func load_save_data() -> SaveData:
+	var json : Dictionary = System.Json.read_save(SAVE_DATA_PATH);
+	if System.Json.is_error(json):
 		write_save_data(DEFAULT_SAVE_DATA);
-	return System.Dictionaries.make_safe(save_data, DEFAULT_SAVE_DATA);
+	return SaveData.from_json(System.Dictionaries.make_safe(json, DEFAULT_SAVE_DATA));
 
 static func write_save_data(data : Dictionary) -> void:
 	System.Json.write_save(data, SAVE_DATA_PATH);

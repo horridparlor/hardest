@@ -26,7 +26,7 @@ var leds_right : Array;
 var current_led_row : int = LEDS_PER_COLUMN - 1;
 var red_led_index : int;
 
-func init(music_position : float) -> void:
+func init(levels_unlocked : int) -> void:
 	pass
 
 func instance_background_card(parent : Node) -> GameplayCard:

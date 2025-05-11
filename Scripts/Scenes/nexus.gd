@@ -1,7 +1,6 @@
 extends Nexus
 
 @onready var level_buttons_layer : Node2D = $LevelButtons;
-@onready var background_music : AudioStreamPlayer2D = $BackgroundMusic;
 @onready var showcase_card : GameplayCard = $ShowcaseCard/Card;
 @onready var showcase_card_layer : Node2D = $ShowcaseCard;
 @onready var background_cards_layer : Node2D = $BackgroundCards;
@@ -12,9 +11,6 @@ extends Nexus
 @onready var card_spawn_timer : Timer = $Timers/CardSpawnTimer;
 
 func _ready() -> void:
-	var save_data : Dictionary = System.Data.read_save_data();
-	save_data.levels_unlocked = max(1, save_data.levels_unlocked);
-	spawn_level_buttons(save_data);
 	operate_showcase_layer();
 	spawn_leds();
 	labels_layer.activate_animations();
@@ -40,9 +36,9 @@ func spawn_leds() -> void:
 	led_frame_timer.wait_time = LED_FRAME_WAIT;
 	led_frame_timer.start();
  
-func init(music_position : float) -> void:
-	background_music.play(music_position);
+func init(levels_unlocked : int) -> void:
 	is_active = true;
+	spawn_level_buttons(levels_unlocked);
 	spawn_a_background_card();
 
 func operate_showcase_layer() -> void:
@@ -53,7 +49,7 @@ func operate_showcase_layer() -> void:
 	else:
 		showcase_card_layer.visible = false;
 
-func spawn_level_buttons(save_data : Dictionary) -> void:
+func spawn_level_buttons(levels_unlocked : int) -> void:
 	var current_position : Vector2 = LEVEL_BUTTONS_STARTING_POSITION;
 	var button : LevelButton;
 	var buttons : int;
@@ -64,8 +60,9 @@ func spawn_level_buttons(save_data : Dictionary) -> void:
 		current_position.x += LEVEL_BUTTON_X_MARGIN;
 		buttons += 1;
 		level_data = System.Data.read_level(i + 2);
-		button.init(level_data, save_data.levels_unlocked == i + 1);
-		if i + 1 <= save_data.levels_unlocked:
+		button.init(level_data, levels_unlocked == i);
+		if i <= levels_unlocked:
+			print(222);
 			button.pressed.connect(_on_level_pressed);
 		else:
 			button.hide_button();
@@ -78,9 +75,6 @@ func _on_level_pressed(level_data : LevelData) -> void:
 		return;
 	is_active = false;
 	emit_signal("enter_level", level_data);
-
-func _on_background_music_finished() -> void:
-	background_music.play();
 
 func _on_led_frame_timer_timeout() -> void:
 	led_frame();

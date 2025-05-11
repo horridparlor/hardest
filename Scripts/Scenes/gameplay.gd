@@ -18,7 +18,6 @@ extends Gameplay
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
-@onready var background_music : AudioStreamPlayer2D = $Background/BackgroundMusic;
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
@@ -43,7 +42,6 @@ func init(level_data_ : LevelData) -> void:
 	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	start_round();
 	update_character_faces();
-	initialize_background_music();
 	initialize_background_pattern();
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
@@ -76,9 +74,6 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 		card.controller = player;
 	player.field_position = FIELD_POSITION if controller == GameplayEnums.Controller.PLAYER_ONE else -FIELD_POSITION;
 	player.visit_point = VISIT_POSITION if controller == GameplayEnums.Controller.PLAYER_ONE else -VISIT_POSITION;
-
-func initialize_background_music() -> void:
-	background_music.stream = System.Data.load_song(level_data.song_id);
 	
 func initialize_background_pattern() -> void:
 	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.background_id]);
@@ -125,11 +120,6 @@ func have_you_won() -> bool:
 	return result;
 
 func _on_you_won() -> void:
-	var save_data : Dictionary;
-	save_data = System.Data.read_save_data();
-	if save_data.levels_unlocked < level_data.unlocks_level:
-		save_data.levels_unlocked = level_data.unlocks_level;
-		System.Data.write_save_data(save_data);
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 
@@ -140,9 +130,7 @@ func has_opponent_won() -> bool:
 	return result;
 
 func _on_opponent_wins() -> void:
-	var save_data : Dictionary = System.Data.read_save_data();
-	save_data.levels_unlocked = max(1, save_data.levels_unlocked);
-	System.Data.write_save_data(save_data);
+	pass;
 
 func start_round() -> void:
 	if have_you_won() or has_opponent_won():
@@ -161,10 +149,7 @@ func start_game_over() -> void:
 	game_over_timer.start();
 
 func end_game() -> void:
-	if level_data.id == System.Levels.INTRODUCTION_LEVEL:
-		emit_signal("game_over", background_music.get_playback_position());
-	else:
-		emit_signal("game_over");
+	emit_signal("game_over", did_win);
 
 func your_turn() -> void:
 	if is_spying:
@@ -307,7 +292,6 @@ func _on_started_playing() -> void:
 	started_playing = true;
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR;
-	background_music.play(4 if level_data.id == System.Levels.INTRODUCTION_LEVEL else 0);
 
 func toggle_points_visibility(value : bool = true) -> void:
 	points_goal_visibility = 1 if value else 0;
@@ -920,6 +904,7 @@ func click_your_points() -> void:
 	your_points.add_theme_color_override("font_color", Color.YELLOW);
 	play_point_sfx(YOUR_POINT_SOUND_PATH);
 	if have_you_won():
+		did_win = true;
 		return;
 	points_click_timer.start();
 
@@ -1155,9 +1140,6 @@ func _on_points_click_timer_timeout() -> void:
 	your_points.add_theme_color_override("font_color", Color.WHITE);
 	opponents_points.add_theme_color_override("font_color", Color.WHITE);
 
-func _on_background_music_finished() -> void:
-	background_music.play();
-
 func _on_pre_results_timer_timeout() -> void:
 	pre_results_timer.stop();
 	go_to_results();
@@ -1195,7 +1177,7 @@ func _on_led_wait_timeout() -> void:
 func led_frame() -> void:
 	var fast_led_color : Led.LedColor = YOUR_LED_COLOR if led_direction == YOUR_LED_DIRECTION else OPPONENTS_LED_COLOR;
 	System.Leds.shut_leds(fast_led_index, LEDS_PER_COLUMN, get_led_columns());
-	System.Leds.shut_leds(fast_led_index + LEDS_PER_COLUMN / 2, LEDS_PER_COLUMN, get_led_columns());
+	System.Leds.shut_leds(fast_led_index + LEDS_PER_COLUMN / 2 - 1, LEDS_PER_COLUMN, get_led_columns());
 	for i in range(LED_BURSTS):
 		System.Leds.shut_leds(led_index + 3 * i, LEDS_PER_COLUMN, get_led_columns());
 	led_index = System.Leds.index_tick(fast_led_index, LEDS_PER_COLUMN, led_direction);
@@ -1207,7 +1189,7 @@ func led_frame() -> void:
 	if led_direction == OFF_LED_DIRECTION:
 		return;
 	System.Leds.light_leds(fast_led_index, LEDS_PER_COLUMN, get_led_columns(), fast_led_color);
-	System.Leds.light_leds(fast_led_index + LEDS_PER_COLUMN / 2, LEDS_PER_COLUMN, get_led_columns(), fast_led_color);
+	System.Leds.light_leds(fast_led_index + LEDS_PER_COLUMN / 2 - 1, LEDS_PER_COLUMN, get_led_columns(), fast_led_color);
 
 func get_led_columns() -> Array:
 	return [

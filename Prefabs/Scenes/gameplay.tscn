@@ -1,8 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=11 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
-[ext_resource type="AudioStream" path="res://Assets/Music/1.mp3" id="2_1elka"]
 [ext_resource type="Texture2D" uid="uid://cthlduqrfhvr3" path="res://Assets/Art/CharacterFace/2.png" id="3_d4hyf"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
 [ext_resource type="Texture2D" uid="uid://dm15bo5qcxwt3" path="res://Assets/Art/CharacterFace/1.png" id="5_10ocq"]
@@ -44,9 +43,6 @@ self_modulate = Color(1, 1, 1, 0.6)
 
 [node name="Leds" type="Sprite2D" parent="Background"]
 self_modulate = Color(1, 1, 1, 0.6)
-
-[node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="Background"]
-stream = ExtResource("2_1elka")
 
 [node name="PointStreamer" type="AudioStreamPlayer2D" parent="Background"]
 
@@ -242,7 +238,6 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
-[connection signal="finished" from="Background/BackgroundMusic" to="." method="_on_background_music_finished"]
 [connection signal="timeout" from="Timers/RoundResultsTimer" to="." method="_on_round_results_timer_timeout"]
 [connection signal="timeout" from="Timers/PreResultsTimer" to="." method="_on_pre_results_timer_timeout"]
 [connection signal="timeout" from="Timers/RoundEndTimer" to="." method="_on_round_end_timer_timeout"]

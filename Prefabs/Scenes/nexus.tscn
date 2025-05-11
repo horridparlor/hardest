@@ -7,7 +7,7 @@
 [ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="6_6h6rw"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="6_8o3vx"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="6_wxdwb"]
-[ext_resource type="AudioStream" uid="uid://xtx56nbg5ac5" path="res://Assets/Music/1.mp3" id="8_564f5"]
+[ext_resource type="AudioStream" uid="uid://r7a8yvpqbohb" path="res://Assets/Songs/Beyond Redemption.wav" id="8_bi3do"]
 [ext_resource type="PackedScene" uid="uid://du74m1788wbjd" path="res://Prefabs/Gameplay/Card/gameplay-card.tscn" id="8_iwnol"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
@@ -137,7 +137,7 @@ horizontal_alignment = 1
 [node name="LevelButtons" type="Node2D" parent="."]
 
 [node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("8_564f5")
+stream = ExtResource("8_bi3do")
 
 [node name="ShowcaseCard" type="Node2D" parent="."]
 visible = false

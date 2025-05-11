@@ -6,8 +6,9 @@ var player : GameplayEnums.Character;
 var opponent : GameplayEnums.Character;
 var deck_id : int;
 var deck2_id : int;
-var music : int;
-var background : int;
+var song_id : int;
+var background_id : int;
+var unlocks_level : int;
 
 static func eat_json(data : Dictionary) -> LevelData:
 	var level_data : LevelData = LevelData.new();
@@ -16,8 +17,9 @@ static func eat_json(data : Dictionary) -> LevelData:
 	level_data.opponent = translate_character(data.opponent);
 	level_data.deck_id = data.deck;
 	level_data.deck2_id = data.deck2;
-	level_data.music = data.music;
-	level_data.background = data.background;
+	level_data.song_id = data.song;
+	level_data.background_id = data.background;
+	level_data.unlocks_level = data.unlocks;
 	return level_data;
 
 static func translate_character(character_name : String) -> GameplayEnums.Character:

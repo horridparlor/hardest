@@ -1,8 +1,9 @@
 {
-	"id" : 5,
-	"opponent" : "Simooni",
-	"deck" : 5,
-	"deck2" : 5,
-	"music": 5,
-	"background" : 1
+	"id": 5,
+	"opponent": "Simooni",
+	"deck": 5,
+	"deck2": 5,
+	"song": 10,
+	"background": 1,
+	"unlocks": 5
 }

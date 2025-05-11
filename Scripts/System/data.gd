@@ -1,6 +1,8 @@
 const CARDS_FOLDER_PATH : String = "Cards/";
 const DECKLIST_FOLDER_PATH : String = "Decklists/";
 const LEVEL_FOLDER_PATH : String = "Levels/";
+const SONGS_FOLDER_PATH : String = "Songs/";
+
 const SAVE_DATA_PATH : String = "save-data";
 const SOUL_BANKS_SAVE_PATH : String = "card-souls/";
 
@@ -18,13 +20,19 @@ const DEFAULT_LEVEL : Dictionary = {
 	"opponent": "Peitse",
 	"deck": 1,
 	"deck2": 1,
-	"music": 1,
-	"background": 1
+	"song": 1,
+	"background": 1,
+	"unlocks": 1
 }
 
 const DEFAULT_SAVE_DATA : Dictionary = {
 	"levels_unlocked": 0
 };
+
+const DEFAULT_SONG_DATA : Dictionary = {
+	"id": 1,
+	"name": "Beyond Redemption"
+}
 
 static func read_card(card_id : int) -> Dictionary:
 	var data : Dictionary = System.Dictionaries.make_safe(
@@ -41,7 +49,7 @@ static func get_basic_card(card_type : CardEnums.CardType) -> CardData:
 	return CardData.from_json(read_card(CardEnums.BasicIds[card_type]));
 
 static func read_decklist(decklist_id : int) -> Decklist:
-	var data : Dictionary = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id), true);
+	var data : Dictionary = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id));
 	if System.Json.is_error(data):
 		data = System.Json.read_data(DECKLIST_FOLDER_PATH + str(1));
 	return Decklist.from_json(data);
@@ -100,3 +108,8 @@ static func load_card_souls_for_character(character_id : int,
 
 static func save_soul_bank(soul_bank : CardSoulBank) -> void:
 	System.Json.write_save(soul_bank.to_json(), SOUL_BANKS_SAVE_PATH + str(soul_bank.character_id));
+
+static func load_song(song_id : int) -> Resource:
+	var song_data : Dictionary = System.Json.read_data(SONGS_FOLDER_PATH + str(song_id));
+	song_data = System.Dictionaries.make_safe(song_data, DEFAULT_SONG_DATA);
+	return load("res://Assets/Songs/%s.wav" % song_data.name);

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
-[ext_resource type="AudioStream" uid="uid://xtx56nbg5ac5" path="res://Assets/Music/1.mp3" id="2_1elka"]
+[ext_resource type="AudioStream" path="res://Assets/Music/1.mp3" id="2_1elka"]
 [ext_resource type="Texture2D" uid="uid://cthlduqrfhvr3" path="res://Assets/Art/CharacterFace/2.png" id="3_d4hyf"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
 [ext_resource type="Texture2D" uid="uid://dm15bo5qcxwt3" path="res://Assets/Art/CharacterFace/1.png" id="5_10ocq"]

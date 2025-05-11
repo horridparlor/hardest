@@ -17,3 +17,11 @@ static func shut_leds(index : int, leds_per_column : int, columns : Array) -> vo
 	var leds : Array = get_leds_on_row(index, leds_per_column, columns);
 	for led in leds:
 		led.off();
+
+static func index_tick(index : int, leds_per_column : int, tick_speed : int = 1) -> float:
+	index += tick_speed;
+	if index >= leds_per_column:
+		index -= leds_per_column;
+	elif index < 0:
+		index += leds_per_column;
+	return index;

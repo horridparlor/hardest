@@ -78,12 +78,10 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 	player.visit_point = VISIT_POSITION if controller == GameplayEnums.Controller.PLAYER_ONE else -VISIT_POSITION;
 
 func initialize_background_music() -> void:
-	var music_file : Resource = load(LEVEL_THEME_PATH % [level_data.music]);
-	background_music.stream = music_file;
-	background_music.play();
+	background_music.stream = System.Data.load_song(level_data.song_id);
 	
 func initialize_background_pattern() -> void:
-	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.background]);
+	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.background_id]);
 	background_pattern.texture = pattern;
 	
 func update_character_faces() -> void:
@@ -129,14 +127,22 @@ func have_you_won() -> bool:
 func _on_you_won() -> void:
 	var save_data : Dictionary;
 	save_data = System.Data.read_save_data();
-	if save_data.levels_unlocked == level_data.id:
-		save_data.levels_unlocked += 1;
+	if save_data.levels_unlocked < level_data.unlocks_level:
+		save_data.levels_unlocked = level_data.unlocks_level;
 		System.Data.write_save_data(save_data);
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
 	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
 
 func has_opponent_won() -> bool:
-	return player_two.points >= System.Rules.VICTORY_POINTS;
+	var result : bool = player_two.points >= System.Rules.VICTORY_POINTS;
+	if result:
+		_on_opponent_wins();
+	return result;
+
+func _on_opponent_wins() -> void:
+	var save_data : Dictionary = System.Data.read_save_data();
+	save_data.levels_unlocked = max(1, save_data.levels_unlocked);
+	System.Data.write_save_data(save_data);
 
 func start_round() -> void:
 	if have_you_won() or has_opponent_won():
@@ -290,14 +296,18 @@ func _on_card_pressed(card : GameplayCard) -> void:
 	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND:
 		return;
 	if !started_playing:
-		started_playing = true;
-		led_direction = YOUR_LED_DIRECTION;
-		led_color = IDLE_LED_COLOR;
+		_on_started_playing();
 	active_card = card;
 	card.toggle_follow_mouse();
 	update_keywords_hints(card);
 	card_focus_timer.start();
 	put_other_cards_behind(card);
+
+func _on_started_playing() -> void:
+	started_playing = true;
+	led_direction = YOUR_LED_DIRECTION;
+	led_color = IDLE_LED_COLOR;
+	background_music.play(4 if level_data.id == System.Levels.INTRODUCTION_LEVEL else 0);
 
 func toggle_points_visibility(value : bool = true) -> void:
 	points_goal_visibility = 1 if value else 0;
@@ -1183,15 +1193,21 @@ func _on_led_wait_timeout() -> void:
 	led_frame();
 
 func led_frame() -> void:
+	var fast_led_color : Led.LedColor = YOUR_LED_COLOR if led_direction == YOUR_LED_DIRECTION else OPPONENTS_LED_COLOR;
+	System.Leds.shut_leds(fast_led_index, LEDS_PER_COLUMN, get_led_columns());
+	System.Leds.shut_leds(fast_led_index + LEDS_PER_COLUMN / 2, LEDS_PER_COLUMN, get_led_columns());
 	for i in range(LED_BURSTS):
 		System.Leds.shut_leds(led_index + 3 * i, LEDS_PER_COLUMN, get_led_columns());
-	led_index += led_direction * 1;
-	if led_index >= LEDS_PER_COLUMN:
-		led_index -= LEDS_PER_COLUMN;
-	elif led_index < 0:
-		led_index += LEDS_PER_COLUMN;
+	led_index = System.Leds.index_tick(fast_led_index, LEDS_PER_COLUMN, led_direction);
+	fast_led_index = System.Leds.index_tick(fast_led_index, LEDS_PER_COLUMN, led_direction * FAST_LED_SPEED);
 	for i in range(LED_BURSTS):
 		System.Leds.light_leds(led_index + 3 * i, LEDS_PER_COLUMN, get_led_columns(), led_color);
+	if !started_playing:
+		System.Leds.light_leds(fast_led_index, LEDS_PER_COLUMN, get_led_columns(), YOUR_LED_COLOR);
+	if led_direction == OFF_LED_DIRECTION:
+		return;
+	System.Leds.light_leds(fast_led_index, LEDS_PER_COLUMN, get_led_columns(), fast_led_color);
+	System.Leds.light_leds(fast_led_index + LEDS_PER_COLUMN / 2, LEDS_PER_COLUMN, get_led_columns(), fast_led_color);
 
 func get_led_columns() -> Array:
 	return [

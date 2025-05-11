@@ -1,8 +1,9 @@
 {
-	"id" : 3,
-	"opponent" : "Raisen",
-	"deck" : 3,
-	"deck2" : 3,
-	"music": 3,
-	"background" : 6
+	"id": 3,
+	"opponent": "Raisen",
+	"deck": 3,
+	"deck2": 3,
+	"song": 6,
+	"background": 6,
+	"unlocks": 3
 }

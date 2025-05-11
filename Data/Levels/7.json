@@ -1,8 +1,9 @@
 {
-	"id" : 7,
-	"opponent" : "Jukulius",
-	"deck" : 7,
-	"deck2" : 7,
-	"music": 7,
-	"background" : 9
+	"id": 7,
+	"opponent": "Jukulius",
+	"deck": 7,
+	"deck2": 7,
+	"song": 9,
+	"background": 9,
+	"unlocks": 7
 }

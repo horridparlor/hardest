@@ -24,7 +24,7 @@ var is_active : bool;
 var leds_left : Array;
 var leds_right : Array;
 var current_led_row : int = LEDS_PER_COLUMN - 1;
-var red_lex_index : int;
+var red_led_index : int;
 
 func init(music_position : float) -> void:
 	pass

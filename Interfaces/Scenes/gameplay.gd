@@ -47,7 +47,7 @@ const CHARACTER_FULL_ART_PATH : String = "res://Assets/Art/CharacterFull/%s.png"
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -720);
 const LEDS_PER_COLUMN : int = 19;
 const LED_MARGIN : Vector2 = Vector2(60, 120);
-const LED_WAIT : float = 0.12;
+const LED_WAIT : float = 0.2;
 const LED_BURSTS : int = LEDS_PER_COLUMN / 3;
 const YOUR_LED_COLOR : Led.LedColor = Led.LedColor.BLUE;
 const OPPONENTS_LED_COLOR : Led.LedColor = Led.LedColor.RED;
@@ -58,6 +58,7 @@ const YOUR_LED_DIRECTION : int = 1;
 const OPPONENTS_LED_DIRECTION : int = -1;
 const WARNING_LED_DIRECTION : int = 0;
 const OFF_LED_DIRECTION : int = 0;
+const FAST_LED_SPEED : int = 2;
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
@@ -79,6 +80,7 @@ var leds_left : Array;
 var leds_right : Array;
 var is_trolling : bool;
 var led_index : int = LEDS_PER_COLUMN - 1;
+var fast_led_index : int = led_index;
 var led_direction : int;
 var led_color : Led.LedColor = Led.LedColor.WHITE;
 var started_playing : bool;

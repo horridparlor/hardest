@@ -1,8 +1,9 @@
 {
-	"id" : 4,
+	"id": 4,
 	"opponent" : "Korvek",
-	"deck" : 4,
-	"deck2" : 4,
-	"music": 4,
-	"background" : 5
+	"deck": 4,
+	"deck2": 4,
+	"song": 5,
+	"background": 5,
+	"unlocks": 4
 }

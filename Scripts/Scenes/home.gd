@@ -24,8 +24,6 @@ func open_starting_scene() -> void:
 	open_nexus();
 
 func spawn_introduction_level(save_data : Dictionary) -> void:
-	save_data.levels_unlocked = 1;
-	System.Data.write_save_data(save_data);
 	open_gameplay(System.Data.read_level(System.Levels.INTRODUCTION_LEVEL));
 
 func open_nexus(music_position : float = 0) -> void:

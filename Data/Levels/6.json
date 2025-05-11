@@ -1,8 +1,9 @@
 {
-	"id" : 6,
-	"opponent" : "Merituuli",
-	"deck" : 6,
-	"deck2" : 6,
-	"music": 6,
-	"background" : 4
+	"id": 6,
+	"opponent": "Merituuli",
+	"deck": 6,
+	"deck2": 6,
+	"song": 3,
+	"background": 4,
+	"unlocks": 6
 }

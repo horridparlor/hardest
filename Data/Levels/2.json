@@ -1,8 +1,9 @@
 {
-	"id" : 2,
-	"opponent" : "Lotte",
-	"deck" : 2,
-	"deck2" : 2,
-	"music": 2,
-	"background" : 8
+	"id": 2,
+	"opponent": "Lotte",
+	"deck": 2,
+	"deck2": 2,
+	"song": 2,
+	"background": 8,
+	"unlocks": 2
 }

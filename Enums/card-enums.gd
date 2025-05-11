@@ -89,6 +89,11 @@ enum Keyword {
 	WRAPPED
 }
 
+func get_keywords() -> Array:
+	var keywords : Array = Keyword.values();
+	keywords.remove_at(0);
+	return keywords;
+
 const KeywordNames : Dictionary = {
 	Keyword.BURIED : "Buried",
 	Keyword.CELEBRATION : "Celebration",

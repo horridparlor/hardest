@@ -244,6 +244,8 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		points = 3;
 	if card.is_gun():
 		play_shooting_animation(card, enemy);
+	if enemy.is_gun():
+		play_shooting_animation(enemy, card);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player, opponent, points);
@@ -933,14 +935,13 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 func play_shooting_animation(card : CardData, enemy : CardData) -> void:
 	var sound : Resource = load("res://Assets/SFX/CardSounds/gun-shot.wav");
 	var bullet : Bullet;
-	if !get_card(card) or !get_card(enemy):
-		return;
+	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy else -get_card(card).get_recoil_position();
 	bullet = System.Instance.load_child(System.Paths.BULLET, cards_layer);
-	bullet.init(get_card(enemy).get_recoil_position() - get_card(card).get_recoil_position());
+	bullet.init(enemy_position - get_card(card).get_recoil_position());
 	sfx_player.stream = sound;
 	if !Config.MUTE_SFX:
 		sfx_player.play();
-	get_card(card).recoil(get_card(enemy).position);
+	get_card(card).recoil(enemy_position);
 
 func check_lose_effects(card : CardData, player : Player) -> void:
 	if card and card.has_greed():

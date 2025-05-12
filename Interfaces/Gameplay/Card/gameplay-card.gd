@@ -202,6 +202,7 @@ func flow_down() -> void:
 func recoil(target_position : Vector2) -> void:
 	visit_point = System.Vectors.move_away(position, target_position, \
 		System.random.randf_range(MIN_RECOIL_DISTANCE, MAX_RECOIL_DISTANCE));
+	is_moving = true;
 	is_visiting = true;
 	is_shaking = true;
 	_on_shake_pos_alter_timer_timeout();

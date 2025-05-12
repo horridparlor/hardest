@@ -56,6 +56,8 @@ func close_gameplay() -> void:
 func load_music() -> void:
 	var song : Resource = System.Data.load_song(save_data.current_song);
 	background_music.stream = song;
+	if Config.MUTE or Config.MUTE_MUSIC:
+		return;
 	background_music.play();
 
 func _on_background_music_finished() -> void:

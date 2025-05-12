@@ -7,9 +7,9 @@ const DEFAULT_GOD_CHANCE : int = 0;
 const DEFAULT_DATA : Dictionary = {
 	"id": 1,
 	"cards": [],
-	"gun_chance": DEFAULT_GUN_CHANCE,
-	"mimic_chance": DEFAULT_MIMIC_CHANCE,
-	"god_chance": DEFAULT_GOD_CHANCE
+	"gunChance": DEFAULT_GUN_CHANCE,
+	"mimicChance": DEFAULT_MIMIC_CHANCE,
+	"godChance": DEFAULT_GOD_CHANCE
 }
 
 var id : int;
@@ -30,9 +30,9 @@ static func from_json(data : Dictionary) -> Decklist:
 	var decklist : Decklist = Decklist.new();
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	decklist.id = data.id;
-	decklist.gun_chance = data.gun_chance;
-	decklist.mimic_chance = data.mimic_chance;
-	decklist.god_chance = data.god_chance;
+	decklist.gun_chance = data.gunChance;
+	decklist.mimic_chance = data.mimicChance;
+	decklist.god_chance = data.godChance;
 	decklist.eat_cards(data.cards);
 	return decklist;
 
@@ -46,13 +46,6 @@ func eat_cards(source : Array) -> void:
 			starting_cards[card_type] = card;
 			card_data.queue_free();
 			continue;
-		match card_type:
-			CardEnums.CardType.GUN:
-				gun_chance += 1;
-			CardEnums.CardType.MIMIC:
-				mimic_chance += 1;
-			CardEnums.CardType.GOD:
-				god_chance += 1;
 		card_data.queue_free();
 		cards[card_type].append(card);
 
@@ -60,9 +53,9 @@ func to_json() -> Dictionary:
 	return {
 		"id": id,
 		"cards": cards,
-		"gun_chance": gun_chance,
-		"mimic_chance": mimic_chance,
-		"god_chance": god_chance
+		"gunChance": gun_chance,
+		"mimicChance": mimic_chance,
+		"godChance": god_chance
 	};
 
 func generate_cards(amount : int = 1) -> Array:

@@ -161,7 +161,7 @@ func end_of_turn_clear(did_win : bool) -> void:
 
 func clear_field(did_win : bool = false) -> void:
 	var card : CardData;
-	for c in cards_on_field:
+	for c in cards_on_field.duplicate():
 		card = c;
 		send_from_field_to_grave(card, did_win)
 
@@ -186,8 +186,6 @@ func discard_from_hand(card : CardData) -> void:
 	add_to_grave(card);
 
 func add_to_grave(card : CardData, did_win : bool = false) -> void:
-	if !card:
-		return;
 	card.zone = CardEnums.Zone.GRAVE;
 	card.card_type = card.default_type;
 	if did_win and card.has_undead(true):

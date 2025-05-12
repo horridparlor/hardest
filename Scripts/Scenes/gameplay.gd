@@ -248,7 +248,8 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, opponent, player);
 			player.send_from_field_to_grave(card);
-			get_card(card).despawn();
+			if get_card(card):
+				get_card(card).despawn();
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
 					spy_target.despawn(-CARD_STARTING_POSITION);
@@ -695,7 +696,8 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 			transformed_any = true;
 		if card.has_copycat():
 			card.card_type = opponent.cards_on_field[0].card_type;
-		cards[card.instance_id].update_visuals(card.controller.gained_keyword);
+		if get_card(card):
+			get_card(card).update_visuals(card.controller.gained_keyword);
 	return transformed_any;
 
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
@@ -930,6 +932,8 @@ func click_your_points() -> void:
 func play_point_sfx(file_path : String) -> void:
 	var sound_file : Resource = load(file_path);
 	point_streamer.stream = sound_file;
+	if Config.MUTE or Config.MUTE_SFX:
+		return;
 	point_streamer.play();
 
 func click_opponents_points() -> void:
@@ -1085,15 +1089,19 @@ func clear_field() -> void:
 
 func clear_players_field(player : Player, did_win : bool) -> void:
 	var card : CardData;
+	var gameplay_card : GameplayCard;
 	for c in player.cards_on_field:
 		card = c;
-		get_card(card).despawn();
+		gameplay_card = get_card(card);
+		if gameplay_card:
+			gameplay_card.despawn();
 	for c in player.cards_in_hand:
 		card = c;
 		if !card.has_pick_up():
 			continue;
-		if get_card(card):
-			get_card(card).despawn();
+		gameplay_card = get_card(card);
+		if gameplay_card:
+			gameplay_card.despawn();
 	player.end_of_turn_clear(did_win);
 
 func show_opponents_field() -> void:

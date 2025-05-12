@@ -106,7 +106,10 @@ func _on_level_pressed(level_data : LevelData) -> void:
 	emit_signal("enter_level", level_data);
 
 func _on_led_frame_timer_timeout() -> void:
+	led_frame_timer.stop();
 	led_frame();
+	led_frame_timer.wait_time += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_frame_timer.start();
 
 func get_led_columns() -> Array:
 	return [

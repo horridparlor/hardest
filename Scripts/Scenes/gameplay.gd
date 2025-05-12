@@ -403,6 +403,8 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	if player == player_two:
 		show_opponents_field();
 		return true;
+	if !started_playing:
+		_on_started_playing();
 	card.goal_position = FIELD_POSITION;
 	card.is_moving = true;
 	reorder_hand();
@@ -1203,7 +1205,10 @@ func _on_trolling_timer_timeout() -> void:
 	trolling_sprite.visible = false;
 
 func _on_led_wait_timeout() -> void:
+	led_timer.stop();
 	led_frame();
+	led_timer.wait_time += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_timer.start();
 
 func led_frame() -> void:
 	var fast_led_color : Led.LedColor = YOUR_LED_COLOR if led_direction == YOUR_LED_DIRECTION else OPPONENTS_LED_COLOR;

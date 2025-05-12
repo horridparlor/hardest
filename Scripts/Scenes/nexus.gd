@@ -3,7 +3,10 @@ extends Nexus
 @onready var level_buttons_layer : Node2D = $LevelButtons;
 @onready var showcase_card : GameplayCard = $ShowcaseCard/Card;
 @onready var showcase_card_layer : Node2D = $ShowcaseCard;
-@onready var background_cards_layer : Node2D = $BackgroundCards;
+@onready var cards_back_layer : Node2D = $BackgroundCards/CardsBack;
+@onready var cards_back_layer2 : Node2D = $BackgroundCards/CardsBack2;
+@onready var cards_front_layer : Node2D = $BackgroundCards/CardsFront;
+@onready var cards_front_layer2 : Node2D = $BackgroundCards/CardsFront2;
 @onready var leds_layer : Node2D = $Leds;
 @onready var labels_layer : GlowNode = $LabelsLayer;
 @onready var hint_label : Label = $LabelsLayer/HintLabel;
@@ -22,8 +25,15 @@ func init_timers() -> void:
 	auto_start_timer.wait_time = AUTO_START_WAIT;
 
 func spawn_a_background_card() -> void:
-	var card : GameplayCard = instance_background_card(background_cards_layer);
+	var is_back : bool = System.Random.boolean();
+	var layer : Node2D = System.Random.item(
+		[cards_back_layer, cards_back_layer2] if is_back \
+		else [cards_front_layer, cards_front_layer2]	
+	);
+	var card : GameplayCard = instance_background_card(layer);
 	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT);
+	if is_back:
+		card.scale *= BACKGROUND_CARDS_SCALE;
 	card_spawn_timer.start();
 
 func spawn_leds() -> void:

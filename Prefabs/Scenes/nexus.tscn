@@ -41,6 +41,14 @@ texture = ExtResource("2_q58k7")
 
 [node name="BackgroundCards" type="Node2D" parent="."]
 
+[node name="CardsBack" type="Node2D" parent="BackgroundCards"]
+
+[node name="CardsBack2" type="Node2D" parent="BackgroundCards"]
+
+[node name="CardsFront" type="Node2D" parent="BackgroundCards"]
+
+[node name="CardsFront2" type="Node2D" parent="BackgroundCards"]
+
 [node name="Leds" type="Node2D" parent="."]
 
 [node name="Edges" type="Node2D" parent="."]

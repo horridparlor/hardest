@@ -47,6 +47,10 @@ func init(level_data_ : LevelData) -> void:
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
 	spawn_leds();
+	init_audio();
+
+func init_audio() -> void:
+	point_streamer.volume_db = Config.VOLUME + Config.SFX_VOLUME;
 
 func set_going_first(value : bool):
 	going_first = value;

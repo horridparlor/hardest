@@ -59,6 +59,7 @@ func load_music() -> void:
 	if Config.MUTE or Config.MUTE_MUSIC:
 		return;
 	background_music.play();
+	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
 
 func _on_background_music_finished() -> void:
 	var song_id : int;

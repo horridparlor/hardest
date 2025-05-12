@@ -17,7 +17,7 @@ func _ready() -> void:
 	set_process_input(true);
 	save_data = System.Data.load_save_data();
 	open_starting_scene();
-	load_music();
+	background_music.play();
 
 func open_starting_scene() -> void:
 	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:
@@ -58,13 +58,13 @@ func load_music() -> void:
 	background_music.stream = song;
 	if Config.MUTE_MUSIC:
 		return;
+	background_music.play();
 	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
-	_on_background_music_finished();
 
 func _on_background_music_finished() -> void:
 	var song_id : int;
 	save_data.last_played_songs.append(save_data.current_song);
-	while save_data.last_played_songs.size() > Config.WAIT_BEFORE_SONG_TO_REPEAT:
+	if save_data.last_played_songs.size() > Config.WAIT_BEFORE_SONG_TO_REPEAT:
 		save_data.last_played_songs.remove_at(0);
 	if level_data and level_data.song_id != 1 and \
 	!save_data.last_played_songs.has(level_data.song_id) and level_data.song_id != save_data.current_song:

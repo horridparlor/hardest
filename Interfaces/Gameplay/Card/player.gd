@@ -222,7 +222,7 @@ func get_added_count_from_replacing_field(instance_id : int, card_type : CardEnu
 	if instance_id == 0:
 		return count;
 	field_card = get_field_card();
-	if field_card and field_card.instance_id != instance_id and field_card.card_type == card_type:
+	if field_card and field_card.instance_id != instance_id and field_card.default_type == card_type:
 		count += 1;
 	return count;
 

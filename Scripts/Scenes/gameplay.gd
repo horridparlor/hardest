@@ -496,7 +496,8 @@ func celebrate(player : Player) -> void:
 	player.celebrate();
 	for card in cards_where_in_hand:
 		if cards.has(card.instance_id) and !player.cards_in_hand.has(card):
-			cards[card.instance_id].despawn();
+			if get_card(card):
+				get_card(card).despawn();
 	show_hand();
 
 func opponents_turn() -> void:

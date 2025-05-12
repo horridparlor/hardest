@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Buttons/level_button.gd" id="1_5eg2m"]
 [ext_resource type="Texture2D" uid="uid://cytmdwnsx1g3" path="res://Assets/Art/Patterns/LevelButtonPattern.png" id="2_rgvvm"]
-[ext_resource type="Script" path="res://Scripts/Common/spring_button.gd" id="2_ubrkm"]
+[ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="2_ubrkm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmmwt"]
 bg_color = Color(0.78011, 0.813155, 0.972788, 1)

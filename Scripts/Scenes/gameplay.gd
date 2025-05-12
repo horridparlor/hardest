@@ -3,6 +3,7 @@ extends Gameplay
 @onready var cards_layer : Node2D = $CardsLayer;
 @onready var cards_layer2 : Node2D = $CardsLayer2;
 @onready var field_lines : Node2D = $FieldLines;
+@onready var starting_hints : JumpingText = $Background/StartingHints;
 
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
@@ -315,6 +316,7 @@ func _on_started_playing() -> void:
 	started_playing = true;
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR;
+	starting_hints.die();
 
 func toggle_points_visibility(value : bool = true) -> void:
 	points_goal_visibility = 1 if value else 0;

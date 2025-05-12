@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=11 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
 [ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/Patterns/NexusPattern.png" id="2_q58k7"]
@@ -8,6 +8,7 @@
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="6_8o3vx"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="6_wxdwb"]
 [ext_resource type="PackedScene" uid="uid://du74m1788wbjd" path="res://Prefabs/Gameplay/Card/gameplay-card.tscn" id="8_iwnol"]
+[ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="8_lmh8j"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
 bg_color = Color(0.611381, 0.0337919, 0.238643, 1)
@@ -104,6 +105,7 @@ text = "[center]Hardest
 [i][b]the[/b] Card Game[/i][/center]"
 
 [node name="LabelsLayer" type="Node2D" parent="."]
+position = Vector2(0, -440)
 script = ExtResource("3_u5q2p")
 
 [node name="HintLabel" type="Label" parent="LabelsLayer"]
@@ -113,9 +115,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -307.0
-offset_top = -480.0
+offset_top = -39.5
 offset_right = 307.0
-offset_bottom = -401.0
+offset_bottom = 39.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.94902, 1, 0.4, 1)
@@ -123,6 +125,7 @@ theme_override_fonts/font = ExtResource("6_8o3vx")
 theme_override_font_sizes/font_size = 48
 text = "BEAT TUTORIAL LEVELS"
 horizontal_alignment = 1
+script = ExtResource("8_lmh8j")
 
 [node name="CreditLabel" type="Label" parent="."]
 anchors_preset = 8

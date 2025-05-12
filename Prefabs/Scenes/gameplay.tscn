@@ -1,14 +1,17 @@
-[gd_scene load_steps=11 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=14 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
+[ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_7ibue"]
+[ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="3_0gad1"]
 [ext_resource type="Texture2D" uid="uid://cthlduqrfhvr3" path="res://Assets/Art/CharacterFace/2.png" id="3_d4hyf"]
+[ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="4_04fvt"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
 [ext_resource type="Texture2D" uid="uid://dm15bo5qcxwt3" path="res://Assets/Art/CharacterFace/1.png" id="5_10ocq"]
 [ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="5_r3tby"]
+[ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="5_sou8c"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
 [ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="9_vl4hw"]
-[ext_resource type="Texture2D" uid="uid://cf0t84q3gjgle" path="res://Assets/Art/CharacterFace/4.png" id="10_j53d4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
 bg_color = Color(0.0395679, 0.203455, 0.26303, 1)
@@ -48,6 +51,66 @@ self_modulate = Color(1, 1, 1, 0.6)
 
 [node name="SfxPlayer" type="AudioStreamPlayer2D" parent="Background"]
 
+[node name="StartingHints" type="RichTextLabel" parent="Background"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -160.0
+offset_right = 400.0
+offset_bottom = 640.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("2_7ibue")
+theme_override_fonts/italics_font = ExtResource("3_0gad1")
+theme_override_fonts/bold_font = ExtResource("4_04fvt")
+theme_override_font_sizes/bold_italics_font_size = 24
+theme_override_font_sizes/italics_font_size = 56
+theme_override_font_sizes/normal_font_size = 56
+theme_override_font_sizes/bold_font_size = 56
+bbcode_enabled = true
+text = "[center]
+[i]Get [/i][b]10 points[/b] [i]to[/i] win!
+[b][i]​[/i][/b]
+Play a card [i]from
+your hand. (RPS)[/i]
+[b][i]​[/i][/b]
+[i]Hold a card in hand
+to read its effects.[/i]
+[/center]"
+script = ExtResource("5_sou8c")
+theme_override_font_sizes/italics_font_size = 56
+theme_override_font_sizes/normal_font_size = 56
+theme_override_font_sizes/bold_font_size = 56
+
+[node name="Timers" type="Node2D" parent="."]
+
+[node name="RoundResultsTimer" type="Timer" parent="Timers"]
+
+[node name="PreResultsTimer" type="Timer" parent="Timers"]
+
+[node name="RoundEndTimer" type="Timer" parent="Timers"]
+
+[node name="GameOverTimer" type="Timer" parent="Timers"]
+
+[node name="PointsClickTimer" type="Timer" parent="Timers"]
+
+[node name="CardFocusTimer" type="Timer" parent="Timers"]
+
+[node name="OpponentsPlayWait" type="Timer" parent="Timers"]
+
+[node name="YouPlayWait" type="Timer" parent="Timers"]
+
+[node name="SpyingTimer" type="Timer" parent="Timers"]
+
+[node name="TrollingTimer" type="Timer" parent="Timers"]
+
+[node name="LedTimer" type="Timer" parent="Timers"]
+
+[node name="AutoPlayTimer" type="Timer" parent="Timers"]
+
 [node name="FieldLines" type="Node2D" parent="."]
 
 [node name="Top" type="ColorRect" parent="FieldLines"]
@@ -77,32 +140,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="CardsLayer2" type="Node2D" parent="."]
-
-[node name="Timers" type="Node2D" parent="."]
-
-[node name="RoundResultsTimer" type="Timer" parent="Timers"]
-
-[node name="PreResultsTimer" type="Timer" parent="Timers"]
-
-[node name="RoundEndTimer" type="Timer" parent="Timers"]
-
-[node name="GameOverTimer" type="Timer" parent="Timers"]
-
-[node name="PointsClickTimer" type="Timer" parent="Timers"]
-
-[node name="CardFocusTimer" type="Timer" parent="Timers"]
-
-[node name="OpponentsPlayWait" type="Timer" parent="Timers"]
-
-[node name="YouPlayWait" type="Timer" parent="Timers"]
-
-[node name="SpyingTimer" type="Timer" parent="Timers"]
-
-[node name="TrollingTimer" type="Timer" parent="Timers"]
-
-[node name="LedTimer" type="Timer" parent="Timers"]
-
-[node name="AutoPlayTimer" type="Timer" parent="Timers"]
 
 [node name="Points" type="Node2D" parent="."]
 
@@ -210,7 +247,6 @@ text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down [b]The Gun
 [node name="TrollingSprite" type="Sprite2D" parent="."]
 rotation = 0.23911
 scale = Vector2(1.3, 1.3)
-texture = ExtResource("10_j53d4")
 
 [node name="Edges" type="Node2D" parent="."]
 

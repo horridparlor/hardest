@@ -1,4 +1,4 @@
-const LED_CLOCK_ERROR : float = 0.001;
+const LED_CLOCK_ERROR : float = 0.01;
 
 static func light_leds(index : int, leds_per_column : int, columns : Array, led_color : Led.LedColor = Led.LedColor.WHITE) -> void:
 	var leds : Array = get_leds_on_row(index, leds_per_column, columns);

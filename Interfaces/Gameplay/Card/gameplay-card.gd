@@ -27,6 +27,14 @@ const MIN_GRAVITY : float = 100;
 const MAX_GRAVITY : float = 1000;
 const X_FLOW_MULTIPLIER : float = 0.4;
 const MIN_X_FLOW : int = 100;
+const MIN_RECOIL_DISTANCE : int = 400;
+const MAX_RECOIL_DISTANCE : int = 600;
+const RECOIL_MIN_SHAKE : int = 400;
+const RECOIL_MAX_SHAKE : int = 1000;
+const RECOIL_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
+const SHAKE_POS_WAIT : float = 0.05 * Config.GAME_SPEED_MULTIPLIER;
+const MIN_RECOIL : int = 0;
+const MAX_RECOIL : int = 20;
 
 const ROCK_BG_COLOR = "#008242";
 const ROCK_BORDER_COLOR = "#7bffc3";
@@ -59,10 +67,14 @@ var starting_position : Vector2;
 var is_despawning : bool;
 var is_scaling : bool;
 var focus_timer : Timer = Timer.new();
+var recoil_timer : Timer = Timer.new();
+var shake_pos_alter_timer : Timer = Timer.new();
 var is_visiting : bool;
 var flow_x : float;
 var flow_gravity : float;
 var is_flowing : bool;
+var is_shaking : bool;
+var shake_to_position : Vector2;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -74,6 +86,12 @@ func initialize_timers() -> void:
 	add_child(focus_timer);
 	focus_timer.wait_time = FOCUS_WAIT;
 	focus_timer.timeout.connect(_on_focus_timer_timeout);
+	add_child(recoil_timer);
+	recoil_timer.wait_time = RECOIL_WAIT;
+	recoil_timer.timeout.connect(_on_recoil_timer_timeout)
+	add_child(shake_pos_alter_timer);
+	shake_pos_alter_timer.wait_time = SHAKE_POS_WAIT;
+	shake_pos_alter_timer.timeout.connect(_on_shake_pos_alter_timer_timeout);
 
 func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	pass;
@@ -93,9 +111,12 @@ func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
 	if is_moving or following_mouse:
-		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED, delta);
+		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED * delta);
+		if is_shaking:
+			position = System.Vectors.slide_towards(position, position + shake_to_position, delta);
 	if is_visiting and System.Vectors.equal(position, visit_point):
 		is_visiting = false;
+		is_shaking = false;
 		emit_signal("visited", self);
 	if is_moving and System.Vectors.equal(position, goal_position):
 		is_moving = false;
@@ -111,7 +132,7 @@ func move_card(delta : float) -> void:
 	rotate_card(position - original_position, delta);
 
 func flow_frame(delta : float) -> void:
-	position = System.Vectors.slide_towards(position, Vector2(position.x + flow_x, position.y + flow_gravity), FLOW_SPEED, delta);
+	position = System.Vectors.slide_towards(position, Vector2(position.x + flow_x, position.y + flow_gravity), FLOW_SPEED * delta);
 	if !System.Vectors.is_inside_window(position, SIZE):
 		queue_free();
 
@@ -132,7 +153,8 @@ func despawn(despawn_position : Vector2 = System.Vectors.default()) -> void:
 	is_despawning = true;
 	goal_position = despawn_position \
 		if !System.Vectors.is_default(despawn_position) \
-		else Vector2(System.Window_.x / 2 + SIZE.x, goal_position.y);
+		else Vector2( System.Random.direction() \
+		* (System.Window_.x / 2 + SIZE.x), goal_position.y);
 	toggle_focus(false);
 
 func toggle_focus(value : bool = true) -> void:
@@ -176,3 +198,25 @@ func flow_down() -> void:
 	flow_x = System.Floats.direction_safe_min(System.Random.x() * X_FLOW_MULTIPLIER, MIN_X_FLOW);
 	flow_gravity = System.random.randf_range(MIN_GRAVITY, MAX_GRAVITY);
 	is_flowing = true;
+
+func recoil(target_position : Vector2) -> void:
+	visit_point = System.Vectors.move_away(position, target_position, \
+		System.random.randf_range(MIN_RECOIL_DISTANCE, MAX_RECOIL_DISTANCE));
+	is_visiting = true;
+	is_shaking = true;
+	_on_shake_pos_alter_timer_timeout();
+	recoil_timer.start();
+
+func _on_recoil_timer_timeout() -> void:
+	recoil_timer.stop();
+	is_visiting = false;
+	is_shaking = false;
+
+func _on_shake_pos_alter_timer_timeout() -> void:
+	shake_pos_alter_timer.stop();
+	shake_to_position = System.Random.vector(RECOIL_MIN_SHAKE, RECOIL_MAX_SHAKE);
+	if is_shaking:
+		shake_pos_alter_timer.start();
+
+func get_recoil_position() -> Vector2:
+	return position + System.Random.vector(MIN_RECOIL, MAX_RECOIL);

@@ -186,6 +186,8 @@ func discard_from_hand(card : CardData) -> void:
 	add_to_grave(card);
 
 func add_to_grave(card : CardData, did_win : bool = false) -> void:
+	if !card:
+		return;
 	card.zone = CardEnums.Zone.GRAVE;
 	card.card_type = card.default_type;
 	if did_win and card.has_undead(true):

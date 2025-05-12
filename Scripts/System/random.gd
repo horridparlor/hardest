@@ -13,7 +13,7 @@ static func chance(x : int) -> bool:
 static func boolean() -> bool:
 	return item([true, false]);
 	
-static func one_of_two(a, b, chance : int):
+static func one_of_two(a, b, chance : int = 1):
 	if System.random.randi_range(0, chance) == 0:
 		return b;
 	return a;
@@ -23,3 +23,9 @@ static func x() -> float:
 
 static func direction() -> int:
 	return item([1, -1]);
+
+static func vector(min : float, max : float) -> Vector2:
+	return Vector2(
+		System.random.randf_range(min, max),
+		System.random.randf_range(min, max)
+	);

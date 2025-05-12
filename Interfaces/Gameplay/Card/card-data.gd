@@ -174,3 +174,6 @@ func is_vanilla() -> bool:
 
 func has_wrapped() -> bool:
 	return has_keyword(CardEnums.Keyword.WRAPPED);
+
+func is_gun() -> bool:
+	return card_type == CardEnums.CardType.GUN;

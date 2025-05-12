@@ -131,8 +131,14 @@ func led_frame() -> void:
 		System.Leds.light_leds(current_led_row + LEDS_BETWEEN_BURSTS + i, LEDS_PER_COLUMN, get_led_columns());
 	if current_led_row == LEDS_PER_COLUMN:
 		current_led_row = 0;
-	System.Leds.light_leds(red_led_index, LEDS_PER_COLUMN, get_led_columns(), Led.LedColor.RED);
+	System.Leds.light_leds(red_led_index, LEDS_PER_COLUMN, get_led_columns(), red_led_color);
 	red_led_index = System.Leds.index_tick(red_led_index, LEDS_PER_COLUMN, RED_LED_SPEED);
+	if red_led_index < RED_LED_SPEED:
+		red_led_color = Led.LedColor.RED;
+		if System.Random.chance(RED_LED_COLOR_CHANGE_CHANCE):
+			red_led_color = Led.LedColor.BLUE;
+			if System.Random.chance(RED_LED_COLOR_CHANGE_CHANCE * RED_LED_COLOR_CHANGE_CHANCE):
+				red_led_color = Led.LedColor.YELLOW;
 
 func _on_card_spawn_timer_timeout() -> void:
 	card_spawn_timer.stop();

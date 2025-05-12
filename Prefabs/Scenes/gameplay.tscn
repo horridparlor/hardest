@@ -46,6 +46,8 @@ self_modulate = Color(1, 1, 1, 0.6)
 
 [node name="PointStreamer" type="AudioStreamPlayer2D" parent="Background"]
 
+[node name="SfxPlayer" type="AudioStreamPlayer2D" parent="Background"]
+
 [node name="FieldLines" type="Node2D" parent="."]
 
 [node name="Top" type="ColorRect" parent="FieldLines"]

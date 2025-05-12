@@ -17,6 +17,7 @@ const LED_FRAME_WAIT : float = 0.12;
 const LEDS_IN_BURST : int = 3;
 const LEDS_BETWEEN_BURSTS : int = 6;
 const RED_LED_SPEED : int = 2;
+const RED_LED_COLOR_CHANGE_CHANCE : int = 4;
 
 const MIN_CARD_SPAWN_WAIT : float = 0.1;
 const MAX_CARD_SPAWN_WAIT : float = 3.0;
@@ -27,6 +28,7 @@ var leds_left : Array;
 var leds_right : Array;
 var current_led_row : int = LEDS_PER_COLUMN - 1;
 var red_led_index : int;
+var red_led_color : Led.LedColor = Led.LedColor.RED;
 var level_buttons : Array;
 var levels_unlocked : int;
 

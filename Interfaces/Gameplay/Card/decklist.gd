@@ -1,7 +1,7 @@
 extends Node
 class_name Decklist
 
-const DEFAULT_GUN_CHANCE : int = 3;
+const DEFAULT_GUN_CHANCE : int = 4;
 const DEFAULT_MIMIC_CHANCE : int = 1;
 const DEFAULT_GOD_CHANCE : int = 0;
 const DEFAULT_DATA : Dictionary = {

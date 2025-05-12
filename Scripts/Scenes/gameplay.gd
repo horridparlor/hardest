@@ -20,6 +20,7 @@ extends Gameplay
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
+@onready var sfx_player : AudioStreamPlayer2D = $Background/SfxPlayer;
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
 @onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;
@@ -189,7 +190,7 @@ func show_hand() -> void:
 	reorder_hand();
 
 func get_card(card : CardData) -> GameplayCard:
-	return cards[card.instance_id] if cards.has(card.instance_id) else null;
+	return cards[card.instance_id] if card and cards.has(card.instance_id) else null;
 
 func reorder_hand(do_shuffle : bool = false) -> void:
 	var card : GameplayCard;
@@ -241,6 +242,8 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	if enemy.has_secrets():
 		winner = GameplayEnums.Controller.PLAYER_ONE;
 		points = 3;
+	if card.is_gun():
+		play_shooting_animation(card, enemy);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player, opponent, points);
@@ -869,6 +872,10 @@ func round_results() -> void:
 	);
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
+	if card and card.is_gun():
+		play_shooting_animation(card, enemy);
+	if enemy and enemy.is_gun():
+		play_shooting_animation(enemy, card);
 	if round_winner == GameplayEnums.Controller.PLAYER_TWO:
 		led_direction = OPPONENTS_LED_DIRECTION;
 		led_color = OPPONENTS_LED_COLOR;
@@ -923,6 +930,18 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 					opponent.lose_points();
 	update_point_visuals();
 
+func play_shooting_animation(card : CardData, enemy : CardData) -> void:
+	var sound : Resource = load("res://Assets/SFX/CardSounds/gun-shot.wav");
+	var bullet : Bullet;
+	if !get_card(card) or !get_card(enemy):
+		return;
+	bullet = System.Instance.load_child(System.Paths.BULLET, cards_layer);
+	bullet.init(get_card(enemy).get_recoil_position() - get_card(card).get_recoil_position());
+	sfx_player.stream = sound;
+	if !Config.MUTE_SFX:
+		sfx_player.play();
+	get_card(card).recoil(get_card(enemy).position);
+
 func check_lose_effects(card : CardData, player : Player) -> void:
 	if card and card.has_greed():
 		player.draw_cards(2);
@@ -938,7 +957,7 @@ func click_your_points() -> void:
 func play_point_sfx(file_path : String) -> void:
 	var sound_file : Resource = load(file_path);
 	point_streamer.stream = sound_file;
-	if Config.MUTE or Config.MUTE_SFX:
+	if Config.MUTE_SFX:
 		return;
 	point_streamer.play();
 
@@ -1234,6 +1253,7 @@ func get_led_columns() -> Array:
 	];
 
 func _on_auto_play_timer_timeout() -> void:
+	var card : CardData;
 	auto_play_timer.stop();
 	if System.Random.chance(CHANCE_TO_FLICKER_HAND):
 		reorder_hand(true);
@@ -1242,4 +1262,6 @@ func _on_auto_play_timer_timeout() -> void:
 		return;
 	player_one.shuffle_hand();
 	player_one.cards_in_hand.sort_custom(best_to_play_for_you);
-	play_card(get_card(player_one.cards_in_hand.back()), player_one, player_two);
+	card = player_one.cards_in_hand.back();
+	spawn_card(card)
+	play_card(get_card(card), player_one, player_two);

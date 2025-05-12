@@ -3,7 +3,7 @@ class_name JumpingText
 
 const MIN_SCALE : float = 1;
 const MAX_SCALE : float = 1.4
-const INFLATE_SPEED : float = 0.2;
+const INFLATE_SPEED : float = 0.2 * Config.GAME_SPEED;
 const DEFLATE_SPEED : float = 0.4;
 const ERROR_CHANCE : float = 0.1;
 const DYING_SPEED : float = 1.5 * Config.GAME_SPEED;

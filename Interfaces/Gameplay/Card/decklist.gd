@@ -75,7 +75,7 @@ func get_random_collection_type() -> CardEnums.CardType:
 	if result < threshold:
 		return CardEnums.CardType.GUN;
 	threshold += mimic_chance;
-	if result < mimic_chance:
+	if result < threshold:
 		return CardEnums.CardType.MIMIC;
 	return System.Random.item([
 		CardEnums.CardType.ROCK,

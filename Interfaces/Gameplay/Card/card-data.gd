@@ -7,6 +7,7 @@ var card_id : int;
 var card_name : String;
 var card_type : CardEnums.CardType = CardEnums.CardType.ROCK;
 var keywords : Array;
+var bullet_id : int;
 
 var controller : Player;
 var instance_id : int = System.Random.instance_id();
@@ -26,6 +27,7 @@ func eat_json(data : Dictionary) -> void:
 	keywords = [];
 	for key in data.keywords:
 		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else "?");
+	bullet_id = data.bullet;
 
 func add_keyword(keyword : CardEnums.Keyword) -> bool:
 	var upgrade_to_keys : Array;
@@ -57,7 +59,8 @@ func to_json() -> Dictionary:
 		"name": card_name,
 		"type": CardEnums.CardTypeName[default_type].to_lower(),
 		"override_type": CardEnums.CardTypeName[card_type].to_lower(),
-		"keywords": get_keywords_json()
+		"keywords": get_keywords_json(),
+		"bullet": bullet_id
 	};
 
 func get_keywords_json() -> Array:

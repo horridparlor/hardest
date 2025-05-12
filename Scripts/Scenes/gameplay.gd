@@ -947,14 +947,18 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	update_point_visuals();
 
 func play_shooting_animation(card : CardData, enemy : CardData) -> void:
-	var sound : Resource = load("res://Assets/SFX/CardSounds/gun-shot.wav");
 	var bullet : Bullet;
 	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy else -get_card(card).get_recoil_position();
-	bullet = System.Instance.load_child(System.Paths.BULLET, cards_layer);
-	bullet.init(enemy_position - get_card(card).get_recoil_position());
-	sfx_player.stream = sound;
-	if !Config.MUTE_SFX:
-		sfx_player.play();
+	var bullets : int = 1;
+	if card.has_champion():
+		bullets = System.random.randi_range(3, 5)
+	elif card.has_pair():
+		bullets = 2;
+	for i in range(bullets):
+		if i > 0:
+			enemy_position += System.Random.vector(100, 200);
+		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
+		bullet.init(enemy_position - get_card(card).get_recoil_position());
 	get_card(card).recoil(enemy_position);
 
 func check_lose_effects(card : CardData, player : Player) -> void:
@@ -986,6 +990,7 @@ func click_opponents_points() -> void:
 func opponent_trolling_effect() -> void:
 	trolling_sprite.position = System.Vectors.default();
 	trolling_sprite.visible = true;
+	trolling_sprite.rotation_degrees *= System.Random.direction();
 	is_trolling = true;
 	troll_timer.start();
 

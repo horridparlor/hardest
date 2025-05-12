@@ -4,5 +4,6 @@
 	"type": "scissor",
 	"keywords": [
 		"undead"
-	]
+	],
+	"bullet": 4
 }

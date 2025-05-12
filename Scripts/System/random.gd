@@ -26,6 +26,6 @@ static func direction() -> int:
 
 static func vector(min : float, max : float) -> Vector2:
 	return Vector2(
-		System.random.randf_range(min, max),
-		System.random.randf_range(min, max)
+		direction() * System.random.randf_range(min, max),
+		direction() * System.random.randf_range(min, max)
 	);

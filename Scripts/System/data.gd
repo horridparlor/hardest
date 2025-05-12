@@ -2,6 +2,7 @@ const CARDS_FOLDER_PATH : String = "Cards/";
 const DECKLIST_FOLDER_PATH : String = "Decklists/";
 const LEVEL_FOLDER_PATH : String = "Levels/";
 const SONGS_FOLDER_PATH : String = "Songs/";
+const BULLETS_FOLDER_PATH : String = "CardEffects/Bullets/";
 
 const SAVE_DATA_PATH : String = "save-data";
 const SOUL_BANKS_SAVE_PATH : String = "card-souls/";
@@ -11,7 +12,8 @@ const DEFAULT_CARD : Dictionary = {
 	"name": "Name",
 	"type": "Mimic",
 	"override_type": null,
-	"keywords": []
+	"keywords": [],
+	"bullet": 1
 }
 
 const DEFAULT_LEVEL : Dictionary = {
@@ -115,3 +117,10 @@ static func load_song(song_id : int) -> Resource:
 	var song_data : Dictionary = System.Json.read_data(SONGS_FOLDER_PATH + str(song_id));
 	song_data = System.Dictionaries.make_safe(song_data, DEFAULT_SONG_DATA);
 	return load("res://Assets/Songs/%s.wav" % song_data.name);
+
+static func load_bullet(bullet_id : int, parent : Node) -> Bullet:
+	var data : Dictionary = System.Json.read_data(BULLETS_FOLDER_PATH + str(bullet_id));
+	var bullet_data : BulletData = BulletData.from_json(data);
+	var bullet : Bullet = System.Instance.load_child(System.Paths.BULLET, parent);
+	bullet.set_data(bullet_data);
+	return bullet;

@@ -6,8 +6,8 @@ const MAX_SCALE : float = 1.4
 const INFLATE_SPEED : float = 0.2;
 const DEFLATE_SPEED : float = 0.4;
 const ERROR_CHANCE : float = 0.1;
-const DYING_SPEED : float = 1.5;
-const FADE_IN_SPEED : float = 0.4;
+const DYING_SPEED : float = 1.5 * Config.GAME_SPEED;
+const FADE_IN_SPEED : float = 0.4 * Config.GAME_SPEED;
 
 var scale_multiplier : float = 1;
 var direction : int = 1;

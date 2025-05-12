@@ -17,7 +17,7 @@ func _ready() -> void:
 	set_process_input(true);
 	save_data = System.Data.load_save_data();
 	open_starting_scene();
-	background_music.play();
+	_on_background_music_finished()
 
 func open_starting_scene() -> void:
 	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:

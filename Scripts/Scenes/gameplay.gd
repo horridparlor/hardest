@@ -4,6 +4,8 @@ extends Gameplay
 @onready var cards_layer2 : Node2D = $CardsLayer2;
 @onready var field_lines : Node2D = $FieldLines;
 @onready var starting_hints : JumpingText = $Background/StartingHints;
+@onready var victory_banner : JumpingText = $VictoryBanner;
+@onready var victory_banner_sprite : Sprite2D = $VictoryBanner/Sprite2D;
 
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
@@ -50,6 +52,7 @@ func init(level_data_ : LevelData) -> void:
 	trolling_sprite.visible = false;
 	spawn_leds();
 	init_audio();
+	victory_banner.stop();
 
 func init_audio() -> void:
 	point_streamer.volume_db = Config.VOLUME + Config.SFX_VOLUME;
@@ -158,7 +161,13 @@ func start_round() -> void:
 		opponents_turn();
 
 func start_game_over() -> void:
+	victory_banner.fade_in();
+	init_victory_banner_sprite();
 	game_over_timer.start();
+
+func init_victory_banner_sprite() -> void:
+	var texture : Resource = load("res://Assets/Art/VictoryBanners/%s.png" % ["champion" if did_win else "loser"]);
+	victory_banner_sprite.texture = texture;
 
 func end_game() -> void:
 	emit_signal("game_over", did_win);

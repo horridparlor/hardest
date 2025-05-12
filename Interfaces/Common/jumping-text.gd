@@ -7,13 +7,18 @@ const INFLATE_SPEED : float = 0.2;
 const DEFLATE_SPEED : float = 0.4;
 const ERROR_CHANCE : float = 0.1;
 const DYING_SPEED : float = 1.5;
+const FADE_IN_SPEED : float = 0.4;
 
 var scale_multiplier : float = 1;
 var direction : int = 1;
 var error : float = 1;
 var is_dying : bool;
+var is_fading_in : bool;
+var is_stopped : bool;
 
 func _process(delta: float) -> void:
+	if is_stopped:
+		return;
 	var starting_scale : float = scale_multiplier;
 	scale_multiplier += direction * (INFLATE_SPEED if direction == 1 else DEFLATE_SPEED) * delta * error;
 	if direction == 1:
@@ -27,6 +32,11 @@ func _process(delta: float) -> void:
 	scale = Vector2(scale_multiplier, scale_multiplier);
 	position *= (scale / starting_scale);
 	error += System.Random.direction() * ERROR_CHANCE * delta;
+	if is_fading_in:
+		modulate.a += FADE_IN_SPEED * delta;
+		if modulate.a >= 1:
+			modulate.a == 0;
+			is_fading_in = false;
 	if !is_dying:
 		return;
 	modulate.a -= DYING_SPEED * delta;
@@ -35,3 +45,13 @@ func _process(delta: float) -> void:
 
 func die() -> void:
 	is_dying = true;
+
+func fade_in() -> void:
+	visible = true;
+	modulate.a = 0;
+	is_fading_in = true;
+	is_stopped = false;
+
+func stop():
+	is_stopped = true;
+	visible = false;

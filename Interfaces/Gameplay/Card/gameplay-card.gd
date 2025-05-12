@@ -23,8 +23,8 @@ const ROTATION_SPEED : float = 0.12;
 const FOCUS_WAIT : float = 1.8;
 const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
 const FLOW_SPEED : float = 0.6;
-const MIN_GRAVITY : float = 100 * Config.GAME_SPEED;
-const MAX_GRAVITY : float = 1000 * Config.GAME_SPEED;
+const MIN_GRAVITY : float = 100;
+const MAX_GRAVITY : float = 1000;
 const X_FLOW_MULTIPLIER : float = 0.4;
 const MIN_X_FLOW : int = 100;
 

@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://bsij7erbum2aw"]
+[gd_scene load_steps=4 format=3 uid="uid://bsij7erbum2aw"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/home.gd" id="1_3c8kg"]
+[ext_resource type="Texture2D" uid="uid://x75pmnom4dx3" path="res://Assets/Art/BackgroundProps/greed-rotated.png" id="2_f6y3p"]
+[ext_resource type="Texture2D" uid="uid://d2cvjf2xdaell" path="res://Assets/Art/BackgroundProps/bubbles-rotated.png" id="3_bgo1n"]
 
 [node name="Home" type="Node2D"]
 script = ExtResource("1_3c8kg")
@@ -10,5 +12,17 @@ script = ExtResource("1_3c8kg")
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
+
+[node name="Greed-rotated" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.568627)
+position = Vector2(1155, 6)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("2_f6y3p")
+
+[node name="Bubbles-rotated" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.388235)
+position = Vector2(-1105, 525)
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("3_bgo1n")
 
 [connection signal="finished" from="BackgroundMusic" to="." method="_on_background_music_finished"]

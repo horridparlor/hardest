@@ -20,7 +20,7 @@ func _ready() -> void:
 	load_music();
 
 func open_starting_scene() -> void:
-	if save_data.tutorial_levels_won < 0:
+	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:
 		spawn_introduction_level();
 		return;
 	open_nexus();

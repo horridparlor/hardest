@@ -12,14 +12,14 @@ const LEVEL_BUTTONS_PER_ROW : int = 2;
 const LEDS_PER_COLUMN : int = 19;
 const LED_MARGIN : Vector2 = Vector2(20, 100);
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -900);
-const LED_FRAME_WAIT : float = 0.12 * Config.GAME_SPEED_MULTIPLIER;
+const LED_FRAME_WAIT : float = 0.12;
 const LEDS_IN_BURST : int = 3;
 const LEDS_BETWEEN_BURSTS : int = 6;
 const RED_LED_SPEED : int = 2;
 
-const MIN_CARD_SPAWN_WAIT : float = 0.1 * Config.GAME_SPEED_MULTIPLIER;
-const MAX_CARD_SPAWN_WAIT : float = 3.0 * Config.GAME_SPEED_MULTIPLIER;
-const AUTO_START_WAIT : float = 0.5 * Config.GAME_SPEED_MULTIPLIER;
+const MIN_CARD_SPAWN_WAIT : float = 0.1;
+const MAX_CARD_SPAWN_WAIT : float = 3.0;
+const AUTO_START_WAIT : float = 0.5;
 
 var is_active : bool;
 var leds_left : Array;

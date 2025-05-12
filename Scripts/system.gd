@@ -1,7 +1,6 @@
 extends Node
 
 const Data : GDScript = preload("res://Scripts/System/data.gd");
-const Debug : GDScript = preload("res://Scripts/System/debug.gd");
 const Dictionaries : GDScript = preload("res://Scripts/System/dictionaries.gd");
 const Display : int = 2;
 const Floats : GDScript = preload("res://Scripts/System/floats.gd");

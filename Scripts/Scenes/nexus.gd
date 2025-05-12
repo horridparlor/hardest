@@ -60,9 +60,10 @@ func auto_start_level() -> void:
 	button.trigger();
 
 func operate_showcase_layer() -> void:
-	if System.Debug.SHOWCASE_CARD_ID != 0:	
-		showcase_card.card_data = System.Data.load_card(System.Debug.SHOWCASE_CARD_ID);
+	if Config.SHOWCASE_CARD_ID != 0:	
+		showcase_card.card_data = System.Data.load_card(Config.SHOWCASE_CARD_ID);
 		showcase_card.update_visuals();
+		showcase_card.update_card_art(true);
 		showcase_card_layer.visible = true;
 	else:
 		showcase_card_layer.visible = false;
@@ -79,7 +80,7 @@ func spawn_level_buttons(levels_unlocked : int) -> void:
 		buttons += 1;
 		level_data = System.Data.read_level(i + 2);
 		button.init(level_data, levels_unlocked == i);
-		if i <= levels_unlocked:
+		if i <= levels_unlocked and Config.SHOWCASE_CARD_ID == 0:
 			button.pressed.connect(_on_level_pressed);
 		else:
 			button.hide_button();

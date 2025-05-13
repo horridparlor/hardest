@@ -95,18 +95,17 @@ func initialize_background_pattern() -> void:
 	background_pattern.texture = pattern;
 	
 func update_character_faces() -> void:
-	var your_face_texture : Resource = load_face_texture(level_data.player);
-	var opponent_face_texture : Resource = load_face_texture(level_data.opponent);
-	var troll_texture : Resource = load(CHARACTER_FULL_ART_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);
+	var your_face_texture : Resource = load_face_texture(level_data.player_variant);
+	var opponent_face_texture : Resource = load_face_texture(level_data.opponent_variant);
+	var troll_texture : Resource = load(CHARACTER_FULL_ART_PATH % level_data.opponent_variant);
 	your_face.texture = your_face_texture;
 	character_face.texture = opponent_face_texture;
 	your_name.text = translate_character_name(level_data.player);
 	enemy_name.text = translate_character_name(level_data.opponent);
 	trolling_sprite.texture = troll_texture;
 
-func load_face_texture(character_id : GameplayEnums.Character) -> Resource:
-	return load(LevelButton.CHARACTER_FACE_PATH % \
-		[GameplayEnums.CharacterToId[character_id]]);
+func load_face_texture(character_id : int) -> Resource:
+	return load(LevelButton.CHARACTER_FACE_PATH % character_id);
 
 func translate_character_name(character_id : GameplayEnums.Character) -> String:
 	return GameplayEnums.CharacterShowcaseName[character_id] \

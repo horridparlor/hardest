@@ -81,9 +81,6 @@ your hand. (RPS)[/i]
 to read its effects.[/i]
 [/center]"
 script = ExtResource("5_sou8c")
-theme_override_font_sizes/italics_font_size = 56
-theme_override_font_sizes/normal_font_size = 56
-theme_override_font_sizes/bold_font_size = 56
 
 [node name="Timers" type="Node2D" parent="."]
 

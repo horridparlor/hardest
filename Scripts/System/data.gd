@@ -16,17 +16,6 @@ const DEFAULT_CARD : Dictionary = {
 	"bullet": 1
 }
 
-const DEFAULT_LEVEL : Dictionary = {
-	"id": 1,
-	"player": "Peitse",
-	"opponent": "Peitse",
-	"deck": 1,
-	"deck2": 1,
-	"song": 1,
-	"background": 1,
-	"unlocks": 1
-}
-
 const DEFAULT_SAVE_DATA : Dictionary = {
 	"tutorial_levels_won": -1,
 	"current_song": 1,
@@ -59,9 +48,9 @@ static func read_decklist(decklist_id : int) -> Decklist:
 	return Decklist.from_json(data);
 
 static func read_level(level_id : int) -> LevelData:
-	return LevelData.eat_json(System.Dictionaries.make_safe(
-		System.Json.read_data(LEVEL_FOLDER_PATH + str(level_id)), DEFAULT_LEVEL
-	));
+	return LevelData.eat_json(
+		System.Json.read_data(LEVEL_FOLDER_PATH + str(level_id))
+	);
 
 static func fill_decklist(cards : Array) -> Dictionary:
 	var decklist : Dictionary;
@@ -116,7 +105,7 @@ static func save_soul_bank(soul_bank : CardSoulBank) -> void:
 static func load_song(song_id : int) -> Resource:
 	var song_data : Dictionary = System.Json.read_data(SONGS_FOLDER_PATH + str(song_id));
 	song_data = System.Dictionaries.make_safe(song_data, DEFAULT_SONG_DATA);
-	return load("res://Assets/Songs/%s.wav" % song_data.name);
+	return load(System.Paths.SONG % song_data.name);
 
 static func load_bullet(bullet_id : int, parent : Node) -> Bullet:
 	var data : Dictionary = System.Json.read_data(BULLETS_FOLDER_PATH + str(bullet_id));

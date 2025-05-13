@@ -7,7 +7,7 @@ func _on_level_pressed_triggered() -> void:
 	trigger();
 
 func update_visuals() -> void:
-	var face_texture : Resource = load(CHARACTER_FACE_PATH % [GameplayEnums.CharacterToId[level_data.opponent]]);
+	var face_texture : Resource = load(CHARACTER_FACE_PATH % level_data.opponent_variant);
 	face_sprite.texture = face_texture;
 	if is_latest_level:
 		make_latest_level();

@@ -9,15 +9,34 @@ func _process(delta : float) -> void:
 			close_gameplay();
 			return;
 		get_tree().quit();
+	base_rotation_frame(delta);
 
-func _ready() -> void:
-	System.random.randomize();
-	System.create_directories();
-	DisplayServer.window_set_current_screen(System.Display);
-	set_process_input(true);
-	save_data = System.Data.load_save_data();
+func base_rotation_frame(delta : float) -> void:
+	var direction : float = base_rotation_direction * \
+		(base_rotation_left_speed_error \
+		if base_rotation_direction == -1 \
+		else base_rotation_right_speed_error);
+	var threshold : float = MAX_BASE_ROTATION * \
+		(base_rotation_left_speed_error \
+		if min_base_rotation_error == -1 \
+		else max_base_rotation_error);
+	System.base_rotation += direction * BASE_RATION_SPEED * delta;
+	if abs(System.base_rotation) >= threshold:
+		System.base_rotation = direction * threshold;
+		base_rotation_direction *= -1;
+	base_rotation_left_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	base_rotation_right_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	min_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	max_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+
+func init() -> void:
 	open_starting_scene();
-	_on_background_music_finished()
+	if save_data.next_song != 0:
+		save_data.current_song = save_data.next_song;
+		save_data.next_song = 0;
+		load_music();
+	else:
+		_on_background_music_finished()
 
 func open_starting_scene() -> void:
 	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:
@@ -40,6 +59,13 @@ func open_gameplay(level_data_ : LevelData) -> void:
 	gameplay.init(level_data);
 	if System.Instance.exists(nexus):
 		nexus.queue_free();
+	reset_base_rotation();
+
+func reset_base_rotation() -> void:
+	min_base_rotation_error = 1;
+	max_base_rotation_error = 1;
+	base_rotation_left_speed_error = 1;
+	base_rotation_right_speed_error = 1;
 
 func _on_game_over(did_win : bool) -> void:
 	if did_win:

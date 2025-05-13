@@ -162,21 +162,30 @@ text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CharacterFace" type="Sprite2D" parent="Points"]
-position = Vector2(180, -780)
+[node name="OpponentsCharacter" type="Control" parent="Points"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 160.0
+offset_top = -800.0
+offset_right = 200.0
+offset_bottom = -760.0
+script = ExtResource("5_sou8c")
+
+[node name="OpponentsFace" type="Sprite2D" parent="Points/OpponentsCharacter"]
+position = Vector2(20, 20)
 texture = ExtResource("3_d4hyf")
 
-[node name="EnemyName" type="Label" parent="Points/CharacterFace"]
+[node name="EnemyName" type="Label" parent="Points"]
 modulate = Color(1, 1, 1, 0.8)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -286.0
-offset_top = 19.0
-offset_right = 14.0
-offset_bottom = 69.0
+offset_left = 30.0
+offset_top = -605.0
+offset_right = 330.0
+offset_bottom = -555.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_0nx3a")
@@ -184,21 +193,30 @@ theme_override_font_sizes/font_size = 40
 text = "Name"
 horizontal_alignment = 1
 
-[node name="YourFace" type="Sprite2D" parent="Points"]
-position = Vector2(-180, -780)
+[node name="YourCharacter" type="Control" parent="Points"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -200.0
+offset_top = -800.0
+offset_right = -160.0
+offset_bottom = -760.0
+script = ExtResource("5_sou8c")
+
+[node name="YourFace" type="Sprite2D" parent="Points/YourCharacter"]
+position = Vector2(20, 20)
 texture = ExtResource("5_10ocq")
 
-[node name="YourName" type="Label" parent="Points/YourFace"]
+[node name="YourName" type="Label" parent="Points"]
 modulate = Color(1, 1, 1, 0.8)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -286.0
-offset_top = 19.0
-offset_right = 14.0
-offset_bottom = 69.0
+offset_left = -330.0
+offset_top = -605.0
+offset_right = -30.0
+offset_bottom = -555.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_0nx3a")

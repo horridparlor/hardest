@@ -16,6 +16,7 @@ const Vectors : GDScript = preload("res://Scripts/System/vectors.gd");
 const Window_ : Vector2 = Vector2(1080, 1920);
 
 var random : RandomNumberGenerator = RandomNumberGenerator.new();
+var base_rotation : float = 0;
 
 static func create_directories() -> void:
 	Json.create_directory();

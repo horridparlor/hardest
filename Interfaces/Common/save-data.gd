@@ -4,19 +4,22 @@ class_name SaveData
 var tutorial_levels_won : int;
 var current_song : int;
 var last_played_songs : Array;
+var next_song : int;
 
 static func from_json(data : Dictionary) -> SaveData:
 	var save : SaveData = SaveData.new();
 	save.tutorial_levels_won = data.tutorial_levels_won;
 	save.current_song = data.current_song;
 	save.last_played_songs = data.last_played_songs;
+	save.next_song = data.next_song;
 	return save;
 
 func to_json() -> Dictionary:
 	return {
 		"tutorial_levels_won": tutorial_levels_won,
 		"current_song": current_song,
-		"last_played_songs": last_played_songs
+		"last_played_songs": last_played_songs,
+		"next_song": next_song
 	}
 
 func write() -> void:

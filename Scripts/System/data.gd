@@ -19,7 +19,8 @@ const DEFAULT_CARD : Dictionary = {
 const DEFAULT_SAVE_DATA : Dictionary = {
 	"tutorial_levels_won": -1,
 	"current_song": 1,
-	"last_played_songs": []
+	"last_played_songs": [],
+	"next_song": 0
 };
 
 const DEFAULT_SONG_DATA : Dictionary = {

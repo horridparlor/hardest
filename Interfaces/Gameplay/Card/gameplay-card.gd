@@ -103,6 +103,7 @@ func rescale(is_instant : bool = false) -> void:
 
 func _process(delta: float) -> void:
 	if !(is_moving or following_mouse or is_flowing):
+		baseline_rotation(delta);
 		return;
 	move_card(delta);
 	update_scale(delta);
@@ -141,7 +142,10 @@ func rotate_card(position_change : Vector2, delta : float) -> void:
 		rotation_degrees += ROTATION_SPEED * position_change.x;
 	if is_flowing:
 		return;
-	rotation_degrees = System.Scale.baseline(rotation_degrees, 0, delta);
+	baseline_rotation(delta);
+
+func baseline_rotation(delta : float) -> void:
+	rotation_degrees = System.Scale.baseline(rotation_degrees, 0 if following_mouse else System.base_rotation, delta);
 
 func toggle_follow_mouse(value : bool = true) -> void:
 	following_mouse = value;

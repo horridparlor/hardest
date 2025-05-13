@@ -27,10 +27,12 @@ extends Gameplay
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
 @onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;
-@onready var character_face : Sprite2D = $Points/CharacterFace;
-@onready var enemy_name : Label = $Points/CharacterFace/EnemyName;
-@onready var your_face : Sprite2D = $Points/YourFace;
-@onready var your_name : Label = $Points/YourFace/YourName;
+@onready var opponents_face : Sprite2D = $Points/OpponentsCharacter/OpponentsFace;
+@onready var enemy_name : Label = $Points/EnemyName;
+@onready var your_face : Sprite2D = $Points/YourCharacter/YourFace;
+@onready var your_name : Label = $Points/YourName;
+@onready var your_character : JumpingText = $Points/YourCharacter;
+@onready var opponents_character : JumpingText = $Points/OpponentsCharacter;
 @onready var background_pattern : Sprite2D = $Background/Pattern;
 @onready var trolling_sprite : Sprite2D = $TrollingSprite;
 @onready var leds_layer : Node2D = $Background/Leds;
@@ -43,8 +45,7 @@ func init(level_data_ : LevelData) -> void:
 	init_layers();
 	init_timers();
 	set_going_first(System.Random.boolean());
-	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
-	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
+	highlight_face(false);
 	start_round();
 	update_character_faces();
 	initialize_background_pattern();
@@ -53,6 +54,14 @@ func init(level_data_ : LevelData) -> void:
 	spawn_leds();
 	init_audio();
 	victory_banner.stop();
+	victory_banner.modulate.a = 0;
+
+func highlight_face(is_yours : bool = true) -> void:
+	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY if is_yours else INACTIVE_CHARACTER_VISIBILITY;
+	opponents_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY if is_yours else ACTIVE_CHARACTER_VISIBILITY;
+	your_character.stop();
+	opponents_character.stop();
+	your_character.start() if is_yours else opponents_character.start();
 
 func init_audio() -> void:
 	point_streamer.volume_db = Config.VOLUME + Config.SFX_VOLUME;
@@ -99,7 +108,7 @@ func update_character_faces() -> void:
 	var opponent_face_texture : Resource = load_face_texture(level_data.opponent_variant);
 	var troll_texture : Resource = load(CHARACTER_FULL_ART_PATH % level_data.opponent_variant);
 	your_face.texture = your_face_texture;
-	character_face.texture = opponent_face_texture;
+	opponents_face.texture = opponent_face_texture;
 	your_name.text = translate_character_name(level_data.player);
 	enemy_name.text = translate_character_name(level_data.opponent);
 	trolling_sprite.texture = troll_texture;
@@ -134,8 +143,7 @@ func have_you_won() -> bool:
 	return result;
 
 func _on_you_won() -> void:
-	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
-	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
+	highlight_face();
 
 func has_opponent_won() -> bool:
 	var result : bool = player_two.points >= System.Rules.VICTORY_POINTS;
@@ -177,8 +185,7 @@ func your_turn() -> void:
 	led_direction = YOUR_LED_DIRECTION if started_playing else OFF_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR if started_playing else OFF_LED_DIRECTION;
 	show_hand();
-	character_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
-	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
+	highlight_face();
 	if player_one.hand_empty():
 		_on_your_turn_end() if going_first else _on_opponent_turns_end();
 		return;
@@ -428,8 +435,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	if is_digital_speed:
 		return true;
 	can_play_card = false;
-	character_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY;
-	your_face.modulate.a = INACTIVE_CHARACTER_VISIBILITY;
+	highlight_face(false);
 	if going_first:
 		_on_your_turn_end(card.card_data.has_devour());
 	else:

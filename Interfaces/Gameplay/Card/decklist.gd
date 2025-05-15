@@ -30,7 +30,7 @@ static func from_json(data : Dictionary) -> Decklist:
 	var decklist : Decklist = Decklist.new();
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	decklist.id = data.id;
-	decklist.gun_chance = data.gunChance;
+	decklist.gun_chance = data.gunChance * Config.GUN_CHANCE;
 	decklist.mimic_chance = data.mimicChance;
 	decklist.god_chance = data.godChance;
 	decklist.eat_cards(data.cards);

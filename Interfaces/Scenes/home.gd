@@ -7,15 +7,27 @@ const SAVE_FILE_NAME : String = "save";
 const MAX_BASE_ROTATION : float = 5;
 const BASE_RATION_SPEED : float = 2.4;
 const BASE_ROTATION_ERROR : float = 0.01;
-const ZOOM_WAIT : float = 1.1;
+const ZOOM_WAIT : float = 0.8;
 const ZOOM_MIN_IN_SPEED : float = 2.9;
 const ZOOM_MAX_IN_SPEED : float = 3.5;
 const ZOOM_MIN_OUT_SPEED : float = 4.8;
 const ZOOM_MAX_OUT_SPEED : float = 5.6;
 const MIN_ZOOM_SPEED : float = 0.1;
-const ZOOM_MULTIPLIER : float = 1.6;
-const ZOOMED_IN_SCALE : Vector2 = Vector2(ZOOM_MULTIPLIER, ZOOM_MULTIPLIER);
+const MIN_ZOOM_MULTIPLIER : float = 1.5;
+const MAX_ZOOM_MULTIPLIER : float = 2.4;
 const CAMERA_MOVE_SPEED : float = 0.9;
+
+const SLOWING_IN_MIN_SPEED : float = 4.1
+const SLOWING_IN_MAX_SPEED : float = 5.2
+const SLOWING_OUT_MIN_SPEED : float = 2.2;
+const SLOWING_OUT_MAX_SPEED : float = 3.2;
+const SLOW_GAME_SPEED : float = 0.1;
+const SLOW_DOWN_MIN_WAIT : float = 0.4;
+const SLOW_DOWN_MAX_WAIT : float = 0.8;
+const MIN_ZOOM_TO_NODE_MULTIPLIER : float = 3.9;
+const MAX_ZOOM_TO_NODE_MULTIPLIER : float = 6.7;
+const QUICK_ZOOM_MULTIPLIER : float = 0.4;
+const AUDIO_SPEED_BACK_GLITCH_CHANCE : int = 3;
 
 var gameplay : Gameplay;
 var nexus : Nexus;
@@ -33,11 +45,23 @@ var is_zooming : bool;
 var zoom_speed : float;
 var zoom_position : Vector2;
 var is_moving_camera : bool;
+var is_slowing : bool;
+var zoomed_node : Node2D;
+var slowing_speed : float;
+var slow_down_timer : Timer = Timer.new();
+var is_speeding : bool;
+var background_music : AudioStreamPlayer2D = AudioStreamPlayer2D.new();
+var zoom_to_node_multiplier : float;
+var is_quick_zooming : bool;
+var pitch_locked : bool;
+var zoomed_in_scale : Vector2;
 
 func _ready() -> void:
 	for node in [
 		camera,
-		zoom_timer
+		zoom_timer,
+		slow_down_timer,
+		background_music
 	]:
 		add_child(node);
 	System.random.randomize();
@@ -50,17 +74,21 @@ func _ready() -> void:
 
 func init_timers() -> void:
 	zoom_timer.timeout.connect(_on_zoom_out);
+	slow_down_timer.timeout.connect(_on_speed_back_up);
 
 func init() -> void:
 	pass;
 
-func zoom_in(point : Vector2 = System.Vectors.default()) -> void:
-	goal_zoom = ZOOMED_IN_SCALE;
-	zoom_speed = System.random.randf_range(ZOOM_MIN_IN_SPEED, ZOOM_MAX_IN_SPEED);
-	zoom_position = point * (System.Vectors.default_scale() / ZOOMED_IN_SCALE);
+func zoom_in(point : Vector2 = System.Vectors.default(), is_quick : bool = false) -> void:
+	var zoom_multiplier : float = System.random.randf_range(MIN_ZOOM_MULTIPLIER, MAX_ZOOM_MULTIPLIER);
+	is_quick_zooming = is_quick;
+	zoomed_in_scale = Vector2(zoom_multiplier, zoom_multiplier);
+	goal_zoom = zoomed_in_scale;
+	zoom_speed = System.random.randf_range(ZOOM_MIN_IN_SPEED, ZOOM_MAX_IN_SPEED) * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
+	zoom_position = point * (System.Vectors.default_scale() / zoomed_in_scale);
 	is_zooming = true;
 	is_moving_camera = true;
-	zoom_timer.wait_time = ZOOM_WAIT * System.game_speed_multiplier;
+	zoom_timer.wait_time = ZOOM_WAIT * System.game_speed_multiplier * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
 	zoom_timer.start();
 
 func reset_camera() -> void:
@@ -70,9 +98,9 @@ func reset_camera() -> void:
 func _on_zoom_out() -> void:
 	zoom_timer.stop();
 	goal_zoom = System.Vectors.default_scale();
-	zoom_speed = System.random.randf_range(ZOOM_MIN_OUT_SPEED, ZOOM_MAX_OUT_SPEED);
+	zoom_speed = System.random.randf_range(ZOOM_MIN_OUT_SPEED, ZOOM_MAX_OUT_SPEED) * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
 	zoom_position = System.Vectors.default();
-	if nexus:
+	if nexus and !gameplay:
 		if !level_data.is_locked:
 			open_gameplay();
 			return;
@@ -81,18 +109,37 @@ func _on_zoom_out() -> void:
 	is_zooming = true;
 	is_moving_camera = true;
 
+func _on_quick_zoom_to(position : Vector2) -> void:
+	if is_zooming or !zoom_timer.is_stopped():
+		return;
+	zoom_in(1 / QUICK_ZOOM_MULTIPLIER * position, true);
+
 func zoom_frame(delta : float) -> void:
 	if is_zooming:
 		zoom_camera(delta);
 	if is_moving_camera:
 		move_camera(delta);
+	if is_slowing:
+		slowing_frame(delta);
+	
+func slowing_frame(delta : float):
+	var goal_speed : float = 1 if is_speeding else SLOW_GAME_SPEED;
+	System.game_speed = max(Config.MIN_GAME_SPEED, System.Scale.baseline(System.game_speed, goal_speed, delta * slowing_speed));
+	if !pitch_locked:
+		background_music.pitch_scale = max(Config.MIN_PITCH, System.game_speed);
+	if System.Scale.equal(System.game_speed, goal_speed):
+		System.game_speed = goal_speed;
+		is_slowing = false;
 
 func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	pass;
 
 func move_camera(delta : float) -> void:
+	var zoomed_node_exists : bool = System.Instance.exists(zoomed_node);
+	if zoomed_node_exists:
+		zoom_position = zoom_to_node_multiplier * zoomed_node.position;
 	camera.position = System.Vectors.slide_towards(camera.position, zoom_position, zoom_speed * delta * CAMERA_MOVE_SPEED);
-	if System.Vectors.equal(camera.position, zoom_position):
+	if System.Vectors.equal(camera.position, zoom_position) and !zoomed_node_exists:
 		camera.position = zoom_position;
 		is_moving_camera = false;
 
@@ -101,3 +148,31 @@ func zoom_camera(delta : float) -> void:
 	if System.Vectors.equal(camera.zoom, goal_zoom):
 		camera.zoom = goal_zoom;
 		is_zooming = false;
+
+func _on_zoom_to(node : Node2D, do_slow_down : bool = false) -> void:
+	if is_slowing or System.Instance.exists(zoomed_node):
+		return;
+	zoomed_node = node;
+	zoom_in(node.position);
+	if do_slow_down:
+		slow_game();
+
+func slow_game() -> void:
+	slowing_speed = System.random.randf_range(SLOWING_IN_MIN_SPEED, SLOWING_IN_MAX_SPEED);
+	slow_down_timer.wait_time = System.random.randf_range(SLOW_DOWN_MIN_WAIT, SLOW_DOWN_MAX_WAIT);
+	slow_down_timer.start();
+	is_speeding = false;
+	is_slowing = true;
+	zoom_to_node_multiplier = System.random.randf_range(MIN_ZOOM_TO_NODE_MULTIPLIER, MAX_ZOOM_TO_NODE_MULTIPLIER);
+	pitch_locked = false;
+
+func _on_speed_back_up() -> void:
+	slow_down_timer.stop();
+	is_slowing = true;
+	is_speeding = true;
+	slowing_speed = System.random.randf_range(SLOWING_OUT_MIN_SPEED, SLOWING_OUT_MAX_SPEED);
+	zoomed_node = null;
+	_on_zoom_out();
+	if !System.Random.chance(AUDIO_SPEED_BACK_GLITCH_CHANCE):
+		pitch_locked = true;
+		background_music.pitch_scale = 1;

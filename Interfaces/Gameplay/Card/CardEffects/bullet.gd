@@ -15,9 +15,10 @@ var bullet_data : BulletData;
 var sfx_player : AudioStreamPlayer2D = AudioStreamPlayer2D.new();
 var sprite : Sprite2D = Sprite2D.new();
 
-func init(direction_ : Vector2):
+func init(direction_ : Vector2, play_sound : bool = false):
 	add_child(sfx_player);
 	sfx_player.finished.connect(queue_free);
+	sfx_player.volume_db = Config.VOLUME + Config.SFX_VOLUME + Config.GUN_VOLUME if play_sound else Config.INAUDBLE_DB;
 	add_child(sprite);
 	speed = System.random.randf_range(MIN_SPEED, MAX_SPEED);
 	direction = direction_;
@@ -40,5 +41,5 @@ func set_sound() -> void:
 	var sound : Resource = load(BULLET_SOUND_PATH % bullet_data.sound_name);
 	sfx_player.stream = sound;
 	await randf_range(SOUND_MIN_DELAY, SOUND_MAX_DELAY);
-	sfx_player.pitch_scale = System.game_speed;
+	sfx_player.pitch_scale = max(Config.MIN_PITCH, System.game_speed);
 	sfx_player.play();

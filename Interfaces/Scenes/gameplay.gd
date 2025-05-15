@@ -2,6 +2,8 @@ extends Node2D
 class_name Gameplay
 
 signal game_over(did_win)
+signal zoom_to(node, do_slow_down)
+signal quick_zoom_to(position)
 
 const HAND_POSITION : Vector2 = Vector2(0, 760);
 const HAND_MARGIN : int = 200;
@@ -24,8 +26,8 @@ const OPPONENTS_PLAY_WAIT : float = 1.2 * Config.GAME_SPEED_MULTIPLIER;
 const OPPONENT_TO_PLAY_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const YOU_TO_PLAY_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const SPY_WAIT_TIME : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
-const AUTO_PLAY_MIN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
-const AUTO_PLAY_MAX_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
+const AUTO_PLAY_MIN_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
+const AUTO_PLAY_MAX_WAIT : float = 0.6 * Config.GAME_SPEED_MULTIPLIER;
 
 const TROLL_MIN_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
 const TROLL_MAX_WAIT : float = 1.2 * Config.GAME_SPEED_MULTIPLIER;

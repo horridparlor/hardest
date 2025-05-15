@@ -1,7 +1,6 @@
 extends Home
 
 @onready var scene_layer : Node2D = $SceneLayer;
-@onready var background_music : AudioStreamPlayer2D = $BackgroundMusic;
 
 func init() -> void:
 	open_starting_scene();
@@ -61,6 +60,8 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	level_data = level_data_;
 	gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
 	gameplay.game_over.connect(_on_game_over);
+	gameplay.zoom_to.connect(_on_zoom_to);
+	gameplay.quick_zoom_to.connect(_on_quick_zoom_to);
 	gameplay.init(level_data);
 	if System.Instance.exists(nexus):
 		nexus.queue_free();

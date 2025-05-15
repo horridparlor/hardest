@@ -885,24 +885,32 @@ func round_results() -> void:
 		card,
 		enemy
 	);
+	var is_motion_shooting : bool;
+	var someone_close_to_winning : bool = player_one.is_close_to_winning() or player_two.is_close_to_winning();
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
 	if card and card.is_gun():
-		play_shooting_animation(card, enemy);
+		is_motion_shooting = true;
+		play_shooting_animation(card, enemy, true);
 	if enemy and enemy.is_gun():
-		play_shooting_animation(enemy, card);
+		is_motion_shooting = true;
+		play_shooting_animation(enemy, card, true);
 	if round_winner == GameplayEnums.Controller.PLAYER_TWO:
 		led_direction = OPPONENTS_LED_DIRECTION;
 		led_color = OPPONENTS_LED_COLOR;
-		if System.Random.chance(TROLL_CHANCE) or player_two.points >= System.Rules.VICTORY_POINTS - 1:
+		if !is_motion_shooting and (System.Random.chance(TROLL_CHANCE) or player_two.points >= System.Rules.VICTORY_POINTS - 1):
 			opponent_trolling_effect();
 			led_direction = WARNING_LED_DIRECTION;
 			led_color = WARNING_LED_COLOR;
 	match round_winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player_one, player_two);
+			if !player_one.is_close_to_winning():
+				emit_signal("quick_zoom_to", your_points.position);
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, player_two, player_one);
+			if !player_two.is_close_to_winning():
+				emit_signal("quick_zoom_to", opponents_points.position);
 		GameplayEnums.Controller.NULL:
 			play_tie_sound()
 	if round_winner == GameplayEnums.Controller.NULL:
@@ -946,7 +954,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 					opponent.lose_points();
 	update_point_visuals();
 
-func play_shooting_animation(card : CardData, enemy : CardData) -> void:
+func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false) -> void:
 	var bullet : Bullet;
 	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy else -get_card(card).get_recoil_position();
 	var bullets : int = 1;
@@ -958,8 +966,13 @@ func play_shooting_animation(card : CardData, enemy : CardData) -> void:
 		if i > 0:
 			enemy_position += System.Random.vector(100, 200);
 		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
-		bullet.init(enemy_position - get_card(card).get_recoil_position());
+		bullet.init(enemy_position - get_card(card).get_recoil_position(), i < 2);
+		if do_zoom and i == 0:
+			zoom_to_bullet(bullet);
 	get_card(card).recoil(enemy_position);
+
+func zoom_to_bullet(bullet : Bullet) -> void:
+	emit_signal("zoom_to", bullet, true);
 
 func check_lose_effects(card : CardData, player : Player) -> void:
 	if card and card.has_greed():
@@ -979,7 +992,7 @@ func play_point_sfx(file_path : String) -> void:
 	point_streamer.stream = sound_file;
 	if Config.MUTE_SFX:
 		return;
-	point_streamer.pitch_scale = System.game_speed;
+	point_streamer.pitch_scale = max(Config.MIN_PITCH, System.game_speed);
 	point_streamer.play();
 
 func click_opponents_points() -> void:

@@ -36,6 +36,8 @@ const TROLL_MAX_MOVE : float = 500;
 const TROLL_CHANCE : int = 5;
 const CHANCE_TO_FLICKER_HAND : int = 3;
 const FLICKER_SPEED_UP : float = 2/3;
+const YOUR_POINTS_ZOOM_CHANCE : int = 3;
+const OPPONENTS_POINTS_ZOOM_CHANCE : int = 4;
 
 const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";

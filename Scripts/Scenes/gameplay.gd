@@ -890,8 +890,9 @@ func round_results() -> void:
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
 	if card and card.is_gun():
-		is_motion_shooting = true;
-		play_shooting_animation(card, enemy, true);
+		if round_winner != GameplayEnums.Controller.NULL or System.Random.chance(2):
+			is_motion_shooting = true;
+			play_shooting_animation(card, enemy, true);
 	if enemy and enemy.is_gun():
 		is_motion_shooting = true;
 		play_shooting_animation(enemy, card, true);
@@ -905,11 +906,11 @@ func round_results() -> void:
 	match round_winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player_one, player_two);
-			if !player_one.is_close_to_winning():
+			if !player_one.is_close_to_winning() and !System.Random.chance(YOUR_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", your_points.position);
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, player_two, player_one);
-			if !player_two.is_close_to_winning():
+			if !player_two.is_close_to_winning() and !System.Random.chance(OPPONENTS_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", opponents_points.position);
 		GameplayEnums.Controller.NULL:
 			play_tie_sound()

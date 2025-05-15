@@ -34,6 +34,10 @@ window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
 window/handheld/orientation=1
 
+[editor]
+
+movie_writer/movie_file="/home/eero/Documents/hardest/marketing/videos/godot-gameplay.avi"
+
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true

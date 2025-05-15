@@ -397,7 +397,9 @@ func check_if_played(card : GameplayCard) -> void:
 func replace_played_card(card : CardData) -> void:
 	var player : Player = card.controller;
 	var opponent : Player = get_opponent(card);
-	get_card(player.get_field_card()).despawn();
+	var card_to_replace : GameplayCard = get_card(player.get_field_card());
+	card_to_replace.despawn();
+	card_to_replace.move();
 	player.clear_field();
 	play_card(spawn_card(card), player, opponent, true);
 

@@ -131,7 +131,7 @@ func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
 	if is_moving or following_mouse:
-		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED * delta);
+		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED * delta, 1);
 		if is_shaking:
 			position = System.Vectors.slide_towards(position, position + shake_to_position, delta);
 	if is_visiting and System.Vectors.equal(position, visit_point):

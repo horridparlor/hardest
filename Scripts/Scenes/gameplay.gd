@@ -145,6 +145,7 @@ func start_round() -> void:
 	if have_you_won() or has_opponent_won():
 		start_game_over();
 		return;
+	round_number += 1;
 	player_one.draw_hand();
 	player_two.draw_hand();
 	show_hand();
@@ -466,7 +467,7 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = System.Vectors
 func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
 	for keyword in card.keywords:
 		match keyword:
-			CardEnums.Keyword.CELEBRATION:
+			CardEnums.Keyword.CELEBRATE:
 				celebrate(player);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.default_type);
@@ -502,12 +503,11 @@ func determine_spied_card(opponent : Player) -> CardData:
 	return System.Random.item(cards_with_secret if cards_with_secret.size() else opponent.cards_in_hand);
 
 func celebrate(player : Player) -> void:
-	var cards_where_in_hand : Array = player.cards_in_hand;
+	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();
 	player.celebrate();
 	for card in cards_where_in_hand:
-		if cards.has(card.instance_id) and !player.cards_in_hand.has(card):
-			if get_card(card):
-				get_card(card).despawn();
+		if get_card(card):
+			get_card(card).despawn();
 	show_hand();
 
 func opponents_turn() -> void:
@@ -754,7 +754,7 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 		match keyword:
 			CardEnums.Keyword.BURIED:
 				value += 5;
-			CardEnums.Keyword.CELEBRATION:
+			CardEnums.Keyword.CELEBRATE:
 				value += 0;
 			CardEnums.Keyword.CHAMELEON:
 				value += 1;
@@ -889,10 +889,10 @@ func round_results() -> void:
 	var someone_close_to_winning : bool = player_one.is_close_to_winning() or player_two.is_close_to_winning();
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
-	if card and card.is_gun():
+	if card and card.is_gun() and round_winner != GameplayEnums.Controller.PLAYER_TWO:
 		is_motion_shooting = true;
 		play_shooting_animation(card, enemy, round_winner != GameplayEnums.Controller.NULL or System.Random.chance(2));
-	if enemy and enemy.is_gun():
+	if enemy and enemy.is_gun() and round_winner != GameplayEnums.Controller.PLAYER_ONE:
 		is_motion_shooting = true;
 		play_shooting_animation(enemy, card, true);
 	if round_winner == GameplayEnums.Controller.PLAYER_TWO:
@@ -1264,6 +1264,7 @@ func _on_led_wait_timeout() -> void:
 	led_timer.stop();
 	led_frame();
 	led_wait += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_wait = max(System.Leds.MIN_LED_WAIT, led_wait);
 	led_timer.wait_time = led_wait * System.game_speed_multiplier;
 	led_timer.start();
 

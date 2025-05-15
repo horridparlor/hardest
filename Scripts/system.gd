@@ -19,6 +19,7 @@ var random : RandomNumberGenerator = RandomNumberGenerator.new();
 var base_rotation : float = 0;
 var game_speed : float = 1;
 var game_speed_multiplier : float = 1 / game_speed;
+var running_instance_id : int;
 
 static func create_directories() -> void:
 	Json.create_directory();

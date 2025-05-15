@@ -104,6 +104,7 @@ func _on_led_frame_timer_timeout() -> void:
 	led_frame_timer.stop();
 	led_frame();
 	led_wait += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_wait = max(System.Leds.MIN_LED_WAIT, led_wait);
 	led_frame_timer.wait_time = led_wait * System.game_speed_multiplier;
 	led_frame_timer.start();
 

@@ -10,9 +10,12 @@ var keywords : Array;
 var bullet_id : int;
 
 var controller : Player;
-var instance_id : int = System.Random.instance_id();
+var instance_id : int;
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
+
+func _init() -> void:
+	instance_id = System.Random.instance_id();
 
 static func from_json(data : Dictionary) -> CardData:
 	var card : CardData = CardData.new();
@@ -78,8 +81,8 @@ func clone() -> CardData:
 func has_buried() -> bool:
 	return has_keyword(CardEnums.Keyword.BURIED);
 
-func has_celebration() -> bool:
-	return has_keyword(CardEnums.Keyword.CELEBRATION);
+func has_celebrate() -> bool:
+	return has_keyword(CardEnums.Keyword.CELEBRATE);
 
 func has_chameleon() -> bool:
 	return has_keyword(CardEnums.Keyword.CHAMELEON);

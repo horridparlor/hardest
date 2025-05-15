@@ -73,14 +73,12 @@ func draw() -> bool:
 	return true;
 
 func celebrate() -> void:
-	shuffle_hand_to_deck();
+	discard_hand();
 	draw();
 
-func shuffle_hand_to_deck() -> void:
+func discard_hand() -> void:
 	for card in cards_in_hand.duplicate():
-		cards_in_deck.append(card);
-	cards_in_hand = [];
-	cards_in_deck.shuffle();
+		discard_from_hand(card);
 
 func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	cards_in_hand.erase(card);

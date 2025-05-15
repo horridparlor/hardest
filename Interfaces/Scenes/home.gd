@@ -56,6 +56,7 @@ var zoom_to_node_multiplier : float;
 var is_quick_zooming : bool;
 var pitch_locked : bool;
 var zoomed_in_scale : Vector2;
+var cached_game_speed : float = Config.MUSIC_NIGHTCORE_PITCH;
 
 func _ready() -> void:
 	for node in [
@@ -110,6 +111,15 @@ func _on_zoom_out() -> void:
 	is_zooming = true;
 	is_moving_camera = true;
 
+func load_music() -> void:
+	var song : Resource = System.Data.load_song(save_data.current_song);
+	background_music.stream = song;
+	if Config.MUTE_MUSIC:
+		return;
+	background_music.pitch_scale = System.game_speed * cached_game_speed;
+	background_music.play();
+	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
+
 func _on_quick_zoom_to(position : Vector2) -> void:
 	if is_zooming or !zoom_timer.is_stopped():
 		return;
@@ -127,7 +137,7 @@ func slowing_frame(delta : float):
 	var goal_speed : float = 1 if is_speeding else SLOW_GAME_SPEED;
 	System.game_speed = max(Config.MIN_GAME_SPEED, System.Scale.baseline(System.game_speed, goal_speed, delta * slowing_speed));
 	if !pitch_locked:
-		background_music.pitch_scale = max(Config.MIN_PITCH, System.game_speed);
+		background_music.pitch_scale = max(Config.MIN_PITCH, System.game_speed * cached_game_speed);
 	if System.Scale.equal(System.game_speed, goal_speed):
 		System.game_speed = goal_speed;
 		is_slowing = false;
@@ -174,9 +184,14 @@ func _on_speed_back_up() -> void:
 	slowing_speed = System.random.randf_range(SLOWING_OUT_MIN_SPEED, SLOWING_OUT_MAX_SPEED);
 	zoomed_node = null;
 	_on_zoom_out();
-	if !System.Random.chance(AUDIO_SPEED_BACK_GLITCH_CHANCE):
+	if System.Random.chance(AUDIO_SPEED_BACK_GLITCH_CHANCE):
+		if cached_game_speed == 1:
+			cached_game_speed = Config.MUSIC_NIGHTCORE_PITCH;
+		else:
+			cached_game_speed = 1;
+	else:
 		pitch_locked = true;
-		background_music.pitch_scale = Config.MUSIC_NIGHTCORE_PITCH;
+		background_music.pitch_scale = cached_game_speed;
 
 func base_rotation_frame(delta : float) -> void:
 	var direction : float = base_rotation_direction * \

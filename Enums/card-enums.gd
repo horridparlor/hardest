@@ -56,7 +56,7 @@ enum Zone {
 enum Keyword {
 	NULL,
 	BURIED,
-	CELEBRATION,
+	CELEBRATE,
 	CHAMELEON,
 	CHAMPION,
 	COOTIES,
@@ -96,7 +96,7 @@ func get_keywords() -> Array:
 
 const KeywordNames : Dictionary = {
 	Keyword.BURIED : "Buried",
-	Keyword.CELEBRATION : "Celebration",
+	Keyword.CELEBRATE : "Celebrate",
 	Keyword.CHAMELEON : "Chameleon",
 	Keyword.CHAMPION : "Champion",
 	Keyword.COOTIES : "Cooties",
@@ -131,7 +131,7 @@ const KeywordNames : Dictionary = {
 
 const TranslateKeyword : Dictionary = {
 	"buried" : Keyword.BURIED,
-	"celebration" : Keyword.CELEBRATION,
+	"celebrate" : Keyword.CELEBRATE,
 	"chameleon" : Keyword.CHAMELEON,
 	"champion" : Keyword.CHAMPION,
 	"cooties" : Keyword.COOTIES,
@@ -166,7 +166,7 @@ const TranslateKeyword : Dictionary = {
 
 var KeywordHints : Dictionary = {
 	Keyword.BURIED : "Played face-down.",
-	Keyword.CELEBRATION : "Shuffle your hand into deck, then draw 1.",
+	Keyword.CELEBRATE : "Discard your hand, then draw 1.",
 	Keyword.CHAMELEON : "Whenever opponent gets a card, changes color.",
 	Keyword.CHAMPION : "Games with this card give double points.",
 	Keyword.COOTIES : "Defeats any card without an effect.",

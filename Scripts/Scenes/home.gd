@@ -4,6 +4,7 @@ extends Home
 @onready var edges : Node2D = $Edges;
 
 func init() -> void:
+	background_music.finished.connect(load_music);
 	open_starting_scene();
 	if save_data.next_song != 0:
 		save_data.current_song = save_data.next_song;
@@ -76,7 +77,7 @@ func load_music() -> void:
 	background_music.stream = song;
 	if Config.MUTE_MUSIC:
 		return;
-	background_music.pitch_scale = System.game_speed;
+	background_music.pitch_scale = System.game_speed * Config.MUSIC_NIGHTCORE_PITCH;
 	background_music.play();
 	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
 

@@ -12,6 +12,7 @@ const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 const GUN_CHANCE : int = 1 if DEV_MODE else 1;
+const MUSIC_NIGHTCORE_PITCH : float = 1.2;
 
 const MUTE : bool = false if DEV_MODE else false;
 const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;

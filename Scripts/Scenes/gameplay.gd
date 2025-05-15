@@ -37,13 +37,11 @@ extends Gameplay
 @onready var trolling_sprite : Sprite2D = $TrollingSprite;
 @onready var leds_layer : Node2D = $Background/Leds;
 
-
 func init(level_data_ : LevelData) -> void:
 	level_data = level_data_;
 	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id);
 	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id);
 	init_layers();
-	init_timers();
 	set_going_first(System.Random.boolean());
 	highlight_face(false);
 	start_round();
@@ -85,6 +83,7 @@ func spawn_leds() -> void:
 		position += Vector2(direction * LED_MARGIN.x, abs(direction) * LED_MARGIN.y);
 		direction *= -0.965;
 		leds_right.append(led);
+	led_timer.wait_time = LED_WAIT * System.game_speed_multiplier;
 	led_timer.start();
 
 func init_player(player : Player, controller : GameplayEnums.Controller, deck_id : int) -> void:
@@ -121,20 +120,8 @@ func translate_character_name(character_id : GameplayEnums.Character) -> String:
 		if GameplayEnums.CharacterShowcaseName.has(character_id) \
 		else "?";
 
-func init_timers() -> void:
-	round_results_timer.wait_time = ROUND_RESULTS_WAIT;
-	pre_results_timer.wait_time = PRE_RESULTS_WAIT;
-	round_end_timer.wait_time = ROUND_END_WAIT;
-	game_over_timer.wait_time = GAME_OVER_WAIT;
-	points_click_timer.wait_time = POINTS_CLICK_WAIT;
-	card_focus_timer.wait_time = CARD_FOCUS_WAIT;
-	you_play_wait.wait_time = YOU_TO_PLAY_WAIT;
-	spying_timer.wait_time = SPY_WAIT_TIME;
-	get_troll_wait();
-	led_timer.wait_time = LED_WAIT;
-
 func get_troll_wait() -> void:
-	troll_timer.wait_time = System.random.randf_range(TROLL_MIN_WAIT, TROLL_MAX_WAIT);
+	troll_timer.wait_time = System.random.randf_range(TROLL_MIN_WAIT, TROLL_MAX_WAIT) * System.game_speed_multiplier;
 
 func have_you_won() -> bool:
 	var result : bool = player_one.points >= System.Rules.VICTORY_POINTS;
@@ -170,6 +157,7 @@ func start_round() -> void:
 func start_game_over() -> void:
 	victory_banner.fade_in();
 	init_victory_banner_sprite();
+	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_multiplier;
 	game_over_timer.start();
 
 func init_victory_banner_sprite() -> void:
@@ -181,6 +169,7 @@ func end_game() -> void:
 
 func your_turn() -> void:
 	if is_spying:
+		you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_multiplier;
 		return you_play_wait.start();
 	led_direction = YOUR_LED_DIRECTION if started_playing else OFF_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR if started_playing else OFF_LED_DIRECTION;
@@ -192,7 +181,7 @@ func your_turn() -> void:
 	can_play_card = true;
 	if !Config.AUTO_PLAY:
 		return;
-	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT);
+	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_multiplier;
 	auto_play_timer.start()
 
 func init_layers() -> void:
@@ -297,6 +286,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				spy_target.despawn(-CARD_STARTING_POSITION)
 			else:
 				reorder_hand();
+	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_multiplier;
 	spying_timer.start();
 
 func stop_spying() -> void:
@@ -324,6 +314,7 @@ func _on_card_pressed(card : GameplayCard) -> void:
 	active_card = card;
 	card.toggle_follow_mouse();
 	update_keywords_hints(card);
+	card_focus_timer.wait_time = CARD_FOCUS_WAIT * System.game_speed_multiplier;
 	card_focus_timer.start();
 	put_other_cards_behind(card);
 
@@ -422,6 +413,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	if check_for_devoured(card, player, opponent):
 		reorder_hand();
 		if player == player_one and Config.AUTO_PLAY:
+			auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_multiplier;
 			auto_play_timer.start();
 		return false;
 	if player == player_two:
@@ -562,6 +554,7 @@ func go_to_results() -> void:
 	if results_phase < 4:
 		if digitals_phase():
 			return results_wait();
+	round_results_timer.wait_time = ROUND_RESULTS_WAIT * System.game_speed_multiplier;
 	round_results_timer.start();
 
 func mimics_phase() -> bool:
@@ -701,6 +694,7 @@ func go_to_pre_results() -> void:
 	results_wait();
 
 func results_wait() -> void:
+	pre_results_timer.wait_time = PRE_RESULTS_WAIT * System.game_speed_multiplier;
 	pre_results_timer.start();
 
 func no_mimics() -> bool:
@@ -914,6 +908,7 @@ func round_results() -> void:
 	if round_winner == GameplayEnums.Controller.NULL:
 		end_round();
 		return;
+	round_end_timer.wait_time = ROUND_END_WAIT * System.game_speed_multiplier;
 	round_end_timer.start();
 
 func play_tie_sound() -> void:
@@ -976,6 +971,7 @@ func click_your_points() -> void:
 	if have_you_won():
 		did_win = true;
 		return;
+	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_multiplier;
 	points_click_timer.start();
 
 func play_point_sfx(file_path : String) -> void:
@@ -983,6 +979,7 @@ func play_point_sfx(file_path : String) -> void:
 	point_streamer.stream = sound_file;
 	if Config.MUTE_SFX:
 		return;
+	point_streamer.pitch_scale = System.game_speed;
 	point_streamer.play();
 
 func click_opponents_points() -> void:
@@ -990,6 +987,7 @@ func click_opponents_points() -> void:
 	play_point_sfx(OPPONENTS_POINT_SOUND_PATH);
 	if has_opponent_won():
 		return;
+	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_multiplier;
 	points_click_timer.start();
 
 func opponent_trolling_effect() -> void:
@@ -997,6 +995,7 @@ func opponent_trolling_effect() -> void:
 	trolling_sprite.visible = true;
 	trolling_sprite.rotation_degrees *= System.Random.direction();
 	is_trolling = true;
+	get_troll_wait();
 	troll_timer.start();
 
 func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
@@ -1172,7 +1171,7 @@ func _process(delta : float) -> void:
 		move_troll_layer(delta);
 
 func move_troll_layer(delta : float) -> void:
-	trolling_sprite.position += delta * Vector2(
+	trolling_sprite.position += delta * System.game_speed * Vector2(
 		System.Random.direction() * System.random.randf_range(TROLL_MIN_MOVE, TROLL_MAX_MOVE),
 		System.Random.direction() * System.random.randf_range(TROLL_MIN_MOVE, TROLL_MAX_MOVE)
 	);
@@ -1181,12 +1180,12 @@ func update_points_visibility(delta : float) -> void:
 	points_layer.modulate.a = System.Scale.baseline(
 		points_layer.modulate.a,
 		points_goal_visibility,
-		(POINTS_FADE_IN_SPEED if points_goal_visibility == 1 else POINTS_FADE_OUT_SPEED) * delta
+		(POINTS_FADE_IN_SPEED if points_goal_visibility == 1 else POINTS_FADE_OUT_SPEED) * delta * System.game_speed
 	);
 	cards_shadow.modulate.a = System.Scale.baseline(
 		cards_shadow.modulate.a,
 		shadow_goal_visibility,
-		(SHADOW_FADE_IN_SPEED if shadow_goal_visibility == 1 else SHADOW_FADE_OUT_SPEED) * delta
+		(SHADOW_FADE_IN_SPEED if shadow_goal_visibility == 1 else SHADOW_FADE_OUT_SPEED) * delta * System.game_speed
 	);
 	if System.Scale.equal(points_layer.modulate.a, points_goal_visibility):
 		points_layer.modulate.a = points_goal_visibility;
@@ -1195,7 +1194,7 @@ func update_points_visibility(delta : float) -> void:
 
 func fade_field_lines(delta : float) -> void:
 	var direction : int = 1 if field_lines_visible else -1;
-	field_lines.modulate.a += direction * delta * (FIELD_LINES_FADE_IN_SPEED if field_lines_visible else FIELD_LINES_FADE_OUT_SPEED);
+	field_lines.modulate.a += direction * delta * System.game_speed * (FIELD_LINES_FADE_IN_SPEED if field_lines_visible else FIELD_LINES_FADE_OUT_SPEED);
 	if abs(field_lines.modulate.a) >= 1:
 		field_lines.modulate.a = 1 if field_lines_visible else 0;
 		fading_field_lines = false;
@@ -1251,7 +1250,8 @@ func _on_trolling_timer_timeout() -> void:
 func _on_led_wait_timeout() -> void:
 	led_timer.stop();
 	led_frame();
-	led_timer.wait_time += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_wait += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_timer.wait_time = led_wait * System.game_speed_multiplier;
 	led_timer.start();
 
 func led_frame() -> void:

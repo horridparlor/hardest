@@ -287,36 +287,6 @@ color = Color(0.00820202, 0.00820202, 0.00820202, 1)
 [node name="Sprite2D" type="Sprite2D" parent="VictoryBanner"]
 scale = Vector2(0.72, 0.72)
 
-[node name="Edges" type="Node2D" parent="."]
-
-[node name="ColorRect" type="ColorRect" parent="Edges"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -2160.0
-offset_top = -960.0
-offset_right = -540.0
-offset_bottom = 960.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.00820202, 0.00820202, 0.00820202, 1)
-
-[node name="ColorRect2" type="ColorRect" parent="Edges"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 540.0
-offset_top = -960.0
-offset_right = 2160.0
-offset_bottom = 960.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.00784314, 0.00784314, 0.00784314, 1)
-
 [connection signal="timeout" from="Timers/RoundResultsTimer" to="." method="_on_round_results_timer_timeout"]
 [connection signal="timeout" from="Timers/PreResultsTimer" to="." method="_on_pre_results_timer_timeout"]
 [connection signal="timeout" from="Timers/RoundEndTimer" to="." method="_on_round_end_timer_timeout"]

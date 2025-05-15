@@ -48,7 +48,7 @@ func _physics_process(delta : float) -> void:
 
 func glow_frame(delta : float) -> void:
 	glow_intensity += glowing_direction * glow_speed * \
-		(RADIATE_SPEED_MULTIPLIER if radiates else 1) * delta;
+		(RADIATE_SPEED_MULTIPLIER if radiates else 1) * delta * System.game_speed;
 	if glowing_direction == 1 and glow_intensity >= top_glow or \
 	glowing_direction == -1 and glow_intensity <= BASE_INTENSITY:
 		if radiates:
@@ -58,14 +58,14 @@ func glow_frame(delta : float) -> void:
 
 func shutter_frame(delta : float) -> void:
 	glow_intensity -= glow_speed * SHUTTER_SPEED_MULTIPLIER \
-		* (OPACITY_SPEED_MULTIPLIER if is_opacity() else 1) * delta;
+		* (OPACITY_SPEED_MULTIPLIER if is_opacity() else 1) * delta * System.game_speed;
 	if glow_intensity <= SHUTTERED_INTENSITY:
 		glow_intensity = SHUTTERED_INTENSITY;
 	do_effect();
 
 func baseline_frame(delta : float) -> void:
 	glow_intensity += glow_speed * SHUTTER_SPEED_MULTIPLIER \
-		* (OPACITY_SPEED_MULTIPLIER if is_opacity() else 1) * delta;
+		* (OPACITY_SPEED_MULTIPLIER if is_opacity() else 1) * delta * System.game_speed;
 	if glow_intensity >= 1:
 		glow_intensity = 1;
 	do_effect();

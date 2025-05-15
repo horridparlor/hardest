@@ -14,9 +14,12 @@ var is_latest_level : bool;
 
 func init(level_data_ : LevelData, is_latest_level_ : bool) -> void:
 	level_data = level_data_;
+	level_data.position = position;
 	is_latest_level = is_latest_level_;
 	update_visuals();
 	activate_animations();
+	if level_data.is_locked:
+		hide_button();
 
 func update_visuals() -> void:
 	pass;

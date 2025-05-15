@@ -9,8 +9,6 @@ script = ExtResource("1_3c8kg")
 
 [node name="SceneLayer" type="Node2D" parent="."]
 
-[node name="Camera2D" type="Camera2D" parent="."]
-
 [node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
 
 [node name="Greed-rotated" type="Sprite2D" parent="."]
@@ -24,5 +22,35 @@ self_modulate = Color(1, 1, 1, 0.388235)
 position = Vector2(-1105, 525)
 scale = Vector2(0.9, 0.9)
 texture = ExtResource("3_bgo1n")
+
+[node name="Edges" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Edges"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2160.0
+offset_top = -1440.0
+offset_right = -540.0
+offset_bottom = 1440.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.00820202, 0.00820202, 0.00820202, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="Edges"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 540.0
+offset_top = -1440.0
+offset_right = 2160.0
+offset_bottom = 1440.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
 [connection signal="finished" from="BackgroundMusic" to="." method="_on_background_music_finished"]

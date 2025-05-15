@@ -17,6 +17,8 @@ const Window_ : Vector2 = Vector2(1080, 1920);
 
 var random : RandomNumberGenerator = RandomNumberGenerator.new();
 var base_rotation : float = 0;
+var game_speed : float = 1;
+var game_speed_multiplier : float = 1 / game_speed;
 
 static func create_directories() -> void:
 	Json.create_directory();

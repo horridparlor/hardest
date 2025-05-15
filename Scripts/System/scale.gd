@@ -12,7 +12,7 @@ static func vectors(vector : Vector2, min_vector : Vector2, max_vector : Vector2
 
 static func baseline(value : float, base : float, delta : float) -> float:
 	base = round_base(base);
-	value += WITHER * (get_min_distance(value, base)) * delta;
+	value += WITHER * (get_min_distance(value, base)) * delta * System.game_speed;
 	if abs(get_min_distance(value, base)) < MIN_BASE:
 		value = base;
 	return value;

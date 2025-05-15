@@ -25,7 +25,8 @@ func _process(delta: float) -> void:
 	var starting_scale : float = scale_multiplier;
 	var max : float = MAX_SCALE if override_max_scale <= 0 else override_max_scale;
 	var min : float = MIN_SCALE if override_min_scale <= 0 else override_min_scale;
-	scale_multiplier += direction * (INFLATE_SPEED if direction == 1 else DEFLATE_SPEED) * delta * error;
+	var true_delta : float = delta * System.game_speed;
+	scale_multiplier += direction * (INFLATE_SPEED if direction == 1 else DEFLATE_SPEED) * true_delta * error;
 	if direction == 1:
 		if scale_multiplier >= max:
 			scale_multiplier = max;
@@ -37,15 +38,15 @@ func _process(delta: float) -> void:
 	scale = Vector2(scale_multiplier, scale_multiplier);
 	if !dont_move:
 		position *= (scale / starting_scale);
-	error += System.Random.direction() * ERROR_CHANCE * delta;
+	error += System.Random.direction() * ERROR_CHANCE * true_delta;
 	if is_fading_in:
-		modulate.a += FADE_IN_SPEED * delta;
+		modulate.a += FADE_IN_SPEED * true_delta;
 		if modulate.a >= 1:
 			modulate.a == 0;
 			is_fading_in = false;
 	if !is_dying:
 		return;
-	modulate.a -= DYING_SPEED * delta;
+	modulate.a -= DYING_SPEED * true_delta;
 	if modulate.a <= 0:
 		queue_free();
 

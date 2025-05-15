@@ -7,6 +7,9 @@ static func is_default(vector : Vector2) -> bool:
 static func default() -> Vector2:
 	return Vector2(0, 0);
 
+static func default_scale() -> Vector2:
+	return Vector2(1, 1);
+
 static func equal(vector_a : Vector2, vector_b : Vector2 = default(), extra_distance : float = 0) -> bool:
 	return vector_a.distance_to(vector_b) <= INDIFFERENT_DISTANCE + extra_distance;
 
@@ -21,7 +24,7 @@ static func have_distance(point_a : Vector2, point_b : Vector2, min_distance : f
 static func slide_towards(point_a : Vector2, point_b : Vector2,
 delta : float, min_speed : float = 0) -> Vector2:
 	var distance : float = max(point_a.distance_to(point_b), min_speed);
-	var movement : float = distance * delta;
+	var movement : float = distance * delta * System.game_speed;
 	return point_a.move_toward(point_b, movement);
 
 static func is_inside_window(position : Vector2, size : Vector2) -> bool:

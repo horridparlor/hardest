@@ -90,6 +90,7 @@ var led_direction : int;
 var led_color : Led.LedColor = Led.LedColor.WHITE;
 var started_playing : bool;
 var did_win : bool;
+var led_wait : float = LED_WAIT;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

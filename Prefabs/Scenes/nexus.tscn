@@ -52,36 +52,6 @@ texture = ExtResource("2_q58k7")
 
 [node name="Leds" type="Node2D" parent="."]
 
-[node name="Edges" type="Node2D" parent="."]
-
-[node name="ColorRect" type="ColorRect" parent="Edges"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -2160.0
-offset_top = -960.0
-offset_right = -540.0
-offset_bottom = 960.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.00820202, 0.00820202, 0.00820202, 1)
-
-[node name="ColorRect2" type="ColorRect" parent="Edges"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 540.0
-offset_top = -960.0
-offset_right = 2160.0
-offset_bottom = 960.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.00784314, 0.00784314, 0.00784314, 1)
-
 [node name="TitleLabel" type="RichTextLabel" parent="."]
 anchors_preset = 8
 anchor_left = 0.5

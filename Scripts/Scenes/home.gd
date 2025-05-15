@@ -3,6 +3,15 @@ extends Home
 @onready var scene_layer : Node2D = $SceneLayer;
 @onready var background_music : AudioStreamPlayer2D = $BackgroundMusic;
 
+func init() -> void:
+	open_starting_scene();
+	if save_data.next_song != 0:
+		save_data.current_song = save_data.next_song;
+		save_data.next_song = 0;
+		load_music();
+	else:
+		_on_background_music_finished();
+
 func _process(delta : float) -> void:
 	if Input.is_action_pressed("ui_cancel"):
 		if gameplay != null:
@@ -10,6 +19,7 @@ func _process(delta : float) -> void:
 			return;
 		get_tree().quit();
 	base_rotation_frame(delta);
+	zoom_frame(delta);
 
 func base_rotation_frame(delta : float) -> void:
 	var direction : float = base_rotation_direction * \
@@ -29,15 +39,6 @@ func base_rotation_frame(delta : float) -> void:
 	min_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
 	max_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
 
-func init() -> void:
-	open_starting_scene();
-	if save_data.next_song != 0:
-		save_data.current_song = save_data.next_song;
-		save_data.next_song = 0;
-		load_music();
-	else:
-		_on_background_music_finished()
-
 func open_starting_scene() -> void:
 	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:
 		spawn_introduction_level();
@@ -49,10 +50,14 @@ func spawn_introduction_level() -> void:
 
 func open_nexus() -> void:
 	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);
-	nexus.enter_level.connect(open_gameplay);
+	nexus.enter_level.connect(_on_open_gameplay);
 	nexus.init(max(0, save_data.tutorial_levels_won));
-	
-func open_gameplay(level_data_ : LevelData) -> void:
+
+func _on_open_gameplay(level_data_ : LevelData) -> void:
+	level_data = level_data_;
+	zoom_in(level_data.position);
+
+func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	level_data = level_data_;
 	gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
 	gameplay.game_over.connect(_on_game_over);
@@ -60,6 +65,7 @@ func open_gameplay(level_data_ : LevelData) -> void:
 	if System.Instance.exists(nexus):
 		nexus.queue_free();
 	reset_base_rotation();
+	reset_camera();
 
 func reset_base_rotation() -> void:
 	min_base_rotation_error = 1;
@@ -84,6 +90,7 @@ func load_music() -> void:
 	background_music.stream = song;
 	if Config.MUTE_MUSIC:
 		return;
+	background_music.pitch_scale = System.game_speed;
 	background_music.play();
 	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
 

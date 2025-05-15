@@ -29,6 +29,7 @@ var leds_right : Array;
 var current_led_row : int = LEDS_PER_COLUMN - 1;
 var red_led_index : int;
 var red_led_color : Led.LedColor = Led.LedColor.RED;
+var led_wait : float = LED_FRAME_WAIT;
 var level_buttons : Array;
 var levels_unlocked : int;
 
@@ -42,3 +43,6 @@ func instance_background_card(parent : Node) -> GameplayCard:
 	card.init();
 	card.flow_down();
 	return card;
+
+func toggle_active(value : bool = true) -> void:
+	is_active = value;

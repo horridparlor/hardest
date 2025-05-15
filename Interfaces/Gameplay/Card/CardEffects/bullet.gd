@@ -26,7 +26,7 @@ func init(direction_ : Vector2):
 	set_sound();
 
 func _process(delta: float) -> void:
-	position += direction * delta * speed;
+	position += direction * delta * speed * System.game_speed;
 
 func set_data(data : BulletData) -> void:
 	bullet_data = data;
@@ -40,4 +40,5 @@ func set_sound() -> void:
 	var sound : Resource = load(BULLET_SOUND_PATH % bullet_data.sound_name);
 	sfx_player.stream = sound;
 	await randf_range(SOUND_MIN_DELAY, SOUND_MAX_DELAY);
+	sfx_player.pitch_scale = System.game_speed;
 	sfx_player.play();

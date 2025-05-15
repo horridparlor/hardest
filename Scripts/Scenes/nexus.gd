@@ -19,10 +19,6 @@ func _ready() -> void:
 	operate_showcase_layer();
 	spawn_leds();
 	labels_layer.activate_animations();
-	init_timers();
-
-func init_timers() -> void:
-	auto_start_timer.wait_time = AUTO_START_WAIT;
 
 func spawn_a_background_card() -> void:
 	var is_back : bool = System.Random.boolean();
@@ -31,7 +27,7 @@ func spawn_a_background_card() -> void:
 		else [cards_front_layer, cards_front_layer2]	
 	);
 	var card : GameplayCard = instance_background_card(layer);
-	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT);
+	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT) * System.game_speed_multiplier;
 	if is_back:
 		card.scale *= BACKGROUND_CARDS_SCALE;
 	card_spawn_timer.start();
@@ -49,7 +45,7 @@ func spawn_leds() -> void:
 		leds_right.append(led);
 		
 		position += Vector2((-1 if i % 3 == 0 else 1) * (1 if i < 10 else -0.5) * LED_MARGIN.x, LED_MARGIN.y);
-	led_frame_timer.wait_time = LED_FRAME_WAIT;
+	led_frame_timer.wait_time = LED_FRAME_WAIT * System.game_speed_multiplier;
 	led_frame_timer.start();
  
 func init(levels_unlocked_ : int) -> void:
@@ -60,6 +56,7 @@ func init(levels_unlocked_ : int) -> void:
 	if levels_unlocked == System.Levels.MAX_TUTORIAL_LEVELS:
 		hint_label.text = "YOU WON THE DEMO";
 	if Config.AUTO_START:
+		auto_start_timer.wait_time = AUTO_START_WAIT * System.game_speed_multiplier;
 		auto_start_timer.start();
 
 func auto_start_level() -> void:
@@ -89,11 +86,9 @@ func spawn_level_buttons(levels_unlocked : int) -> void:
 		current_position.x += LEVEL_BUTTON_X_MARGIN;
 		buttons += 1;
 		level_data = System.Data.read_level(i + 2);
+		level_data.is_locked = i > levels_unlocked or Config.SHOWCASE_CARD_ID != 0
 		button.init(level_data, levels_unlocked == i);
-		if i <= levels_unlocked and Config.SHOWCASE_CARD_ID == 0:
-			button.pressed.connect(_on_level_pressed);
-		else:
-			button.hide_button();
+		button.pressed.connect(_on_level_pressed);
 		level_buttons.append(button);
 		if buttons % LEVEL_BUTTONS_PER_ROW == 0:
 			current_position.y += LEVEL_BUTTON_Y_MARGIN;
@@ -108,7 +103,8 @@ func _on_level_pressed(level_data : LevelData) -> void:
 func _on_led_frame_timer_timeout() -> void:
 	led_frame_timer.stop();
 	led_frame();
-	led_frame_timer.wait_time += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_wait += System.Random.direction() * System.Leds.LED_CLOCK_ERROR;
+	led_frame_timer.wait_time = led_wait * System.game_speed_multiplier;
 	led_frame_timer.start();
 
 func get_led_columns() -> Array:

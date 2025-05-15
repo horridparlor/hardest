@@ -12,6 +12,9 @@ var song_id : int;
 var background_id : int;
 var unlocks_level : int;
 
+var position : Vector2;
+var is_locked : bool;
+
 const DEFAULT_DATA : Dictionary = {
 	"id": 1,
 	"player": "Peitse",

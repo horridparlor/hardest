@@ -176,7 +176,7 @@ func _on_speed_back_up() -> void:
 	_on_zoom_out();
 	if !System.Random.chance(AUDIO_SPEED_BACK_GLITCH_CHANCE):
 		pitch_locked = true;
-		background_music.pitch_scale = 1;
+		background_music.pitch_scale = Config.MUSIC_NIGHTCORE_PITCH;
 
 func base_rotation_frame(delta : float) -> void:
 	var direction : float = base_rotation_direction * \

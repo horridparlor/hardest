@@ -22,11 +22,18 @@ const CARD_FULLART_PATH : String = "res://Assets/Art/CardArt/%s.png";
 const ROTATION_SPEED : float = 0.12;
 const FOCUS_WAIT : float = 1.8;
 const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
+
 const FLOW_SPEED : float = 0.6;
 const MIN_GRAVITY : float = 100;
 const MAX_GRAVITY : float = 1000;
 const X_FLOW_MULTIPLIER : float = 0.4;
 const MIN_X_FLOW : int = 100;
+const CHANCE_TO_DISSOLVE_DURING_FLOWING : int = 84;
+const MIN_DISSOLVE_SPEED : float = 1.1;
+const MAX_DISSOLVE_SPEED : float = 1.6;
+const MAX_DISSOLVE_VALUE : float = 2;
+const FLOW_DISSOLVE_MULTIPLIER : float = 0.21;
+
 const MIN_RECOIL_DISTANCE : int = 400;
 const MAX_RECOIL_DISTANCE : int = 600;
 const RECOIL_MIN_SHAKE : int = 400;
@@ -76,11 +83,21 @@ var is_flowing : bool;
 var is_shaking : bool;
 var shake_to_position : Vector2;
 
+var dissolve_value : float;
+var is_dissolving : bool;
+var dissolve_speed : float;
+
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
 	update_visuals(gained_keyword);
 	activate_animations();
 	initialize_timers();
+
+func init_shader() -> void:
+	var shader : Resource = load("res://Shaders/CardEffects/card-dissolve.gdshader");
+	var shader_material := ShaderMaterial.new();
+	shader_material.shader = shader;
+	material = shader_material;
 
 func initialize_timers() -> void:
 	add_child(focus_timer);
@@ -102,6 +119,8 @@ func rescale(is_instant : bool = false) -> void:
 		return;
 
 func _process(delta: float) -> void:
+	if is_dissolving:
+		dissolve_frame(delta);
 	if !(is_moving or following_mouse or is_flowing):
 		baseline_rotation(delta);
 		return;
@@ -120,9 +139,9 @@ func move_card(delta : float) -> void:
 		is_shaking = false;
 		emit_signal("visited", self);
 	if is_moving and System.Vectors.equal(position, goal_position):
-		is_moving = false;
 		if is_despawning:
 			emit_signal("despawned", self);
+		is_moving = false;
 	if following_mouse:
 		position = Vector2(
 			min(System.Window_.x / 2 - card_margin.x, max(position.x, -System.Window_.x / 2 + card_margin.x)),
@@ -134,7 +153,9 @@ func move_card(delta : float) -> void:
 
 func flow_frame(delta : float) -> void:
 	position = System.Vectors.slide_towards(position, Vector2(position.x + flow_x, position.y + flow_gravity), FLOW_SPEED * delta);
-	if !System.Vectors.is_inside_window(position, SIZE):
+	if !is_dissolving and System.Random.chance(CHANCE_TO_DISSOLVE_DURING_FLOWING * (1 / (System.Window_.y / position.y)) * (1 / delta)):
+		dissolve();
+	if !System.Vectors.is_inside_window(position, SIZE) or dissolve_value == MAX_DISSOLVE_VALUE:
 		queue_free();
 
 func rotate_card(position_change : Vector2, delta : float) -> void:
@@ -154,12 +175,20 @@ func toggle_follow_mouse(value : bool = true) -> void:
 	toggle_focus(value);
 	
 func despawn(despawn_position : Vector2 = System.Vectors.default()) -> void:
+	if is_despawning:
+		return;
 	is_despawning = true;
 	goal_position = despawn_position \
 		if !System.Vectors.is_default(despawn_position) \
 		else Vector2( System.Random.direction() \
 		* (System.Window_.x / 2 + SIZE.x), goal_position.y);
 	toggle_focus(false);
+
+func dissolve() -> void:
+	pass;
+
+func dissolve_frame(delta : float) -> void:
+	pass;
 
 func toggle_focus(value : bool = true) -> void:
 	if value:

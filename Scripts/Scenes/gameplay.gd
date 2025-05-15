@@ -256,7 +256,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player, opponent, points);
 			opponent.discard_from_hand(enemy);
-			spy_target.despawn();
+			spy_target.dissolve();
 			if cards_to_spy > 0:
 				if spy_opponent(card, player, opponent, cards_to_spy):
 					return;
@@ -264,7 +264,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			trigger_winner_loser_effects(enemy, card, opponent, player);
 			player.send_from_field_to_grave(card);
 			if get_card(card):
-				get_card(card).despawn();
+				get_card(card).dissolve();
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
 					spy_target.despawn(-CARD_STARTING_POSITION);
@@ -907,10 +907,14 @@ func round_results() -> void:
 			trigger_winner_loser_effects(card, enemy, player_one, player_two);
 			if !player_one.is_close_to_winning() and !System.Random.chance(YOUR_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", your_points.position);
+			if enemy:
+				get_card(enemy).dissolve();
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, player_two, player_one);
 			if !player_two.is_close_to_winning() and !System.Random.chance(OPPONENTS_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", opponents_points.position);
+			if card:
+				get_card(card).dissolve();
 		GameplayEnums.Controller.NULL:
 			play_tie_sound()
 	if round_winner == GameplayEnums.Controller.NULL:
@@ -1146,10 +1150,10 @@ func end_round() -> void:
 	start_round();
 
 func clear_field() -> void:
-	clear_players_field(player_one, round_winner == GameplayEnums.Controller.PLAYER_ONE);
-	clear_players_field(player_two, round_winner == GameplayEnums.Controller.PLAYER_TWO);
+	clear_players_field(player_one, round_winner == GameplayEnums.Controller.PLAYER_ONE, round_winner == GameplayEnums.Controller.PLAYER_TWO);
+	clear_players_field(player_two, round_winner == GameplayEnums.Controller.PLAYER_TWO, round_winner == GameplayEnums.Controller.PLAYER_ONE);
 
-func clear_players_field(player : Player, did_win : bool) -> void:
+func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> void:
 	var card : CardData;
 	var gameplay_card : GameplayCard;
 	for c in player.cards_on_field:

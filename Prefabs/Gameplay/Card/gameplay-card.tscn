@@ -31,7 +31,7 @@ expand_margin_top = 4.0
 expand_margin_right = 4.0
 expand_margin_bottom = 4.0
 
-[node name="Card" type="Node2D"]
+[node name="GameplayCard" type="Node2D"]
 script = ExtResource("1_s1wa0")
 
 [node name="Button" type="TouchScreenButton" parent="."]

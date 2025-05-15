@@ -6,6 +6,7 @@ extends GameplayCard
 @onready var left_type_icon : Sprite2D = $TypeIcons/LeftIcon;
 @onready var right_type_icon : Sprite2D = $TypeIcons/RightIcon;
 @onready var card_art : Sprite2D = $ArtLayer/CardArt;
+@onready var art_background : Panel = $ArtLayer/Panel;
 @onready var keywords_label : Label = $KeywordsLabel;
 @onready var background_pattern : Sprite2D = $Pattern;
 
@@ -63,7 +64,7 @@ func update_card_art(do_full_art : bool = false) -> void:
 
 func update_keywords_text(keywords : Array, gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var keywords_text : Array;
-	if card_data.zone == CardEnums.Zone.HAND and gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
+	if card_data.zone == CardEnums.Zone.HAND and gained_keyword != CardEnums.Keyword.NULL and !keywords.has(gained_keyword) and keywords.size() < System.Rules.MAX_KEYWORDS:
 		keywords.push_back(gained_keyword);
 	for keyword in keywords:
 		keywords_text.append(CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?");
@@ -102,3 +103,32 @@ func _on_button_pressed() -> void:
 
 func _on_button_released() -> void:
 	emit_signal("released", self);
+
+func dissolve() -> void:
+	var shader : Resource = load("res://Shaders/CardEffects/card-dissolve.gdshader");
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	shader_material.shader = shader;
+	shader_material.set_shader_parameter("viewport_size", System.Window_);
+	for node in [
+		background_pattern,
+		name_label,
+		type_label,
+		keywords_label,
+		card_art,
+		art_background,
+		left_type_icon,
+		right_type_icon,
+		panel
+	]:
+		node.material = shader_material;
+	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED);
+	is_dissolving = true;
+	is_despawning = true;
+	is_moving = false;
+
+func dissolve_frame(delta : float) -> void:
+	dissolve_value += dissolve_speed * delta * (FLOW_DISSOLVE_MULTIPLIER if is_flowing else 1);
+	if dissolve_value >= MAX_DISSOLVE_VALUE:
+		is_dissolving = false;
+		emit_signal("despawned", self);
+	panel.material.set_shader_parameter("threshold", dissolve_value);

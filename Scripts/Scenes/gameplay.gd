@@ -890,9 +890,8 @@ func round_results() -> void:
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
 	if card and card.is_gun():
-		if round_winner != GameplayEnums.Controller.NULL or System.Random.chance(2):
-			is_motion_shooting = true;
-			play_shooting_animation(card, enemy, true);
+		is_motion_shooting = true;
+		play_shooting_animation(card, enemy, round_winner != GameplayEnums.Controller.NULL or System.Random.chance(2));
 	if enemy and enemy.is_gun():
 		is_motion_shooting = true;
 		play_shooting_animation(enemy, card, true);

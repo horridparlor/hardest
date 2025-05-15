@@ -5,7 +5,7 @@ const GAMEPLAY_PATH : String = "res://Prefabs/Scenes/gameplay.tscn";
 const NEXUS_PATH : String = "res://Prefabs/Scenes/nexus.tscn";
 const SAVE_FILE_NAME : String = "save";
 const MAX_BASE_ROTATION : float = 7.2;
-const BASE_ROTATION_EDGE : float = 5;
+const BASE_ROTATION_EDGE : float = 4.3;
 const BASE_RATION_SPEED : float = 2.4;
 const BASE_ROTATION_ERROR : float = 0.01;
 const ZOOM_WAIT : float = 0.8;
@@ -187,9 +187,10 @@ func base_rotation_frame(delta : float) -> void:
 		(base_rotation_left_speed_error \
 		if min_base_rotation_error == -1 \
 		else max_base_rotation_error);
-	System.base_rotation += direction * BASE_RATION_SPEED * delta;
+	System.base_rotation += direction * BASE_RATION_SPEED * delta * System.game_speed;
 	if abs(System.base_rotation) >= threshold:
 		base_rotation_direction *= -1;
+		System.base_rotation += base_rotation_direction * BASE_RATION_SPEED * delta * System.game_speed;
 	base_rotation_left_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
 	base_rotation_right_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
 	min_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;

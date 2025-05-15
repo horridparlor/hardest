@@ -20,8 +20,11 @@ const TYPE_FONT_SIZE_SMALL : int = 128;
 const CARD_ART_PATH : String = "res://Assets/Art/CardArtSmall/%s.png";
 const CARD_FULLART_PATH : String = "res://Assets/Art/CardArt/%s.png";
 const ROTATION_SPEED : float = 0.12;
+const CHAMELEON_ROTATION_SPEED : float = 0.87;
 const FOCUS_WAIT : float = 1.8;
 const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
+const MIN_MOVEMENT_SPEED : float = 1.0;
+const MIN_VISIT_SPEED : float = 4.5;
 
 const FLOW_SPEED : float = 0.6;
 const MIN_GRAVITY : float = 100;
@@ -131,7 +134,7 @@ func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
 	if is_moving or following_mouse:
-		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED * delta, 1);
+		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) if following_mouse else (visit_point if is_visiting else goal_position), SPEED * delta, MIN_VISIT_SPEED if is_visiting else MIN_MOVEMENT_SPEED);
 		if is_shaking:
 			position = System.Vectors.slide_towards(position, position + shake_to_position, delta);
 	if is_visiting and System.Vectors.equal(position, visit_point):
@@ -160,7 +163,7 @@ func flow_frame(delta : float) -> void:
 
 func rotate_card(position_change : Vector2, delta : float) -> void:
 	if !System.Vectors.equal(position_change):
-		rotation_degrees += ROTATION_SPEED * position_change.x;
+		rotation_degrees += position_change.x * (CHAMELEON_ROTATION_SPEED if card_data.has_chameleon() else ROTATION_SPEED);
 	if is_flowing:
 		return;
 	baseline_rotation(delta);

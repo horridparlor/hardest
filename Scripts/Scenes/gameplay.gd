@@ -266,6 +266,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			player.send_from_field_to_grave(card);
 			if get_card(card):
 				get_card(card).dissolve();
+				get_card(card).despawn();
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
 					spy_target.despawn(-CARD_STARTING_POSITION);

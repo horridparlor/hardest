@@ -248,15 +248,16 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	if enemy.has_secrets():
 		winner = GameplayEnums.Controller.PLAYER_ONE;
 		points = 3;
-	if card and card.is_gun():
+	if card and card.is_gun() and winner != GameplayEnums.Controller.PLAYER_TWO:
 		play_shooting_animation(card, enemy);
-	if enemy and enemy.is_gun():
+	if enemy and enemy.is_gun() and winner != GameplayEnums.Controller.PLAYER_ONE:
 		play_shooting_animation(enemy, card);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player, opponent, points);
 			opponent.discard_from_hand(enemy);
 			spy_target.dissolve();
+			spy_target.despawn();
 			if cards_to_spy > 0:
 				if spy_opponent(card, player, opponent, cards_to_spy):
 					return;

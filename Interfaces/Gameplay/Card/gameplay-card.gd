@@ -175,8 +175,6 @@ func toggle_follow_mouse(value : bool = true) -> void:
 	toggle_focus(value);
 	
 func despawn(despawn_position : Vector2 = System.Vectors.default()) -> void:
-	if is_despawning:
-		return;
 	is_despawning = true;
 	goal_position = despawn_position \
 		if !System.Vectors.is_default(despawn_position) \

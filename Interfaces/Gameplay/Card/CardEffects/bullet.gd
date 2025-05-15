@@ -4,7 +4,7 @@ class_name Bullet
 const MIN_SPEED : int = 7;
 const MAX_SPEED : int = 15;
 const SIZE : Vector2 = Vector2(80, 160);
-const BULLET_SOUND_PATH : String = "res://Assets/SFX/CardSounds/%s.wav";
+const BULLET_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Bullets/%s.wav";
 const BULLET_ART_PATH : String = "res://Assets/Art/CardEffects/Bullets/%s.png";
 const SOUND_MIN_DELAY : float = 0;
 const SOUND_MAX_DELAY : float = 1.8;

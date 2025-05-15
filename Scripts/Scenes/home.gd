@@ -1,6 +1,7 @@
 extends Home
 
 @onready var scene_layer : Node2D = $SceneLayer;
+@onready var edges : Node2D = $Edges;
 
 func init() -> void:
 	open_starting_scene();
@@ -19,24 +20,8 @@ func _process(delta : float) -> void:
 		get_tree().quit();
 	base_rotation_frame(delta);
 	zoom_frame(delta);
-
-func base_rotation_frame(delta : float) -> void:
-	var direction : float = base_rotation_direction * \
-		(base_rotation_left_speed_error \
-		if base_rotation_direction == -1 \
-		else base_rotation_right_speed_error);
-	var threshold : float = MAX_BASE_ROTATION * \
-		(base_rotation_left_speed_error \
-		if min_base_rotation_error == -1 \
-		else max_base_rotation_error);
-	System.base_rotation += direction * BASE_RATION_SPEED * delta;
-	if abs(System.base_rotation) >= threshold:
-		System.base_rotation = direction * threshold;
-		base_rotation_direction *= -1;
-	base_rotation_left_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
-	base_rotation_right_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
-	min_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
-	max_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	scene_layer.rotation_degrees = System.base_rotation;
+	edges.rotation_degrees = System.base_rotation;
 
 func open_starting_scene() -> void:
 	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:

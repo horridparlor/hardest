@@ -9,18 +9,6 @@ script = ExtResource("1_3c8kg")
 
 [node name="SceneLayer" type="Node2D" parent="."]
 
-[node name="Greed-rotated" type="Sprite2D" parent="."]
-self_modulate = Color(1, 1, 1, 0.568627)
-position = Vector2(1155, 6)
-scale = Vector2(1.6, 1.6)
-texture = ExtResource("2_f6y3p")
-
-[node name="Bubbles-rotated" type="Sprite2D" parent="."]
-self_modulate = Color(1, 1, 1, 0.388235)
-position = Vector2(-1105, 525)
-scale = Vector2(0.9, 0.9)
-texture = ExtResource("3_bgo1n")
-
 [node name="Edges" type="Node2D" parent="."]
 
 [node name="ColorRect" type="ColorRect" parent="Edges"]
@@ -50,3 +38,15 @@ offset_bottom = 1440.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.00784314, 0.00784314, 0.00784314, 1)
+
+[node name="Greed-rotated" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.568627)
+position = Vector2(1155, 6)
+scale = Vector2(1.6, 1.6)
+texture = ExtResource("2_f6y3p")
+
+[node name="Bubbles-rotated" type="Sprite2D" parent="."]
+self_modulate = Color(1, 1, 1, 0.388235)
+position = Vector2(-1105, 525)
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("3_bgo1n")

@@ -4,7 +4,8 @@ class_name Home
 const GAMEPLAY_PATH : String = "res://Prefabs/Scenes/gameplay.tscn";
 const NEXUS_PATH : String = "res://Prefabs/Scenes/nexus.tscn";
 const SAVE_FILE_NAME : String = "save";
-const MAX_BASE_ROTATION : float = 5;
+const MAX_BASE_ROTATION : float = 7.2;
+const BASE_ROTATION_EDGE : float = 5;
 const BASE_RATION_SPEED : float = 2.4;
 const BASE_ROTATION_ERROR : float = 0.01;
 const ZOOM_WAIT : float = 0.8;
@@ -176,3 +177,22 @@ func _on_speed_back_up() -> void:
 	if !System.Random.chance(AUDIO_SPEED_BACK_GLITCH_CHANCE):
 		pitch_locked = true;
 		background_music.pitch_scale = 1;
+
+func base_rotation_frame(delta : float) -> void:
+	var direction : float = base_rotation_direction * \
+		(base_rotation_left_speed_error \
+		if base_rotation_direction == -1 \
+		else base_rotation_right_speed_error);
+	var threshold : float = MAX_BASE_ROTATION * \
+		(base_rotation_left_speed_error \
+		if min_base_rotation_error == -1 \
+		else max_base_rotation_error);
+	System.base_rotation += direction * BASE_RATION_SPEED * delta;
+	if abs(System.base_rotation) >= threshold:
+		base_rotation_direction *= -1;
+	base_rotation_left_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	base_rotation_right_speed_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	min_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	min_base_rotation_error = max(-BASE_ROTATION_EDGE, min_base_rotation_error);
+	max_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
+	max_base_rotation_error = min(BASE_ROTATION_EDGE, max_base_rotation_error);

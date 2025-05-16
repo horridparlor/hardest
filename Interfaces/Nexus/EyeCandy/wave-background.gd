@@ -1,10 +1,10 @@
 extends Sprite2D
 class_name WaveBackground
 
-const MIN_STARTING_AMPLITUDE : float = 0.12 * Config.GAME_SPEED;
-const MAX_STARTING_AMPLITUDE : float = 1.12 * Config.GAME_SPEED;
-const MIN_STARTING_VELOCITY : float = 0.3 * Config.GAME_SPEED;
-const MAX_STARTING_VELOCITY : float = 2.3 * Config.GAME_SPEED;
+const MIN_STARTING_AMPLITUDE : float = 0.64 * Config.GAME_SPEED;
+const MAX_STARTING_AMPLITUDE : float = 1.64 * Config.GAME_SPEED;
+const MIN_STARTING_VELOCITY : float = 0.2 * Config.GAME_SPEED;
+const MAX_STARTING_VELOCITY : float = 0.4 * Config.GAME_SPEED;
 const AMPLITUDE_ERROR : float = 0.01 * Config.GAME_SPEED;
 const VELOCITY_ERROR : float = 0.05 * Config.GAME_SPEED;
 const DEFAULT_DISTORTION : float = 0.001 * Config.GAME_SPEED;

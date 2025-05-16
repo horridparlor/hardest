@@ -13,7 +13,7 @@ const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE els
 const DEBUG_CARD : int = 0 if DEV_MODE else 0;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
-const GUN_CHANCE : int = 1 if DEV_MODE else 1;
+const GUN_CHANCE : int = 5 if DEV_MODE else 1;
 const MIMIC_CHANCE : int = 1 if DEV_MODE else 1;
 const MUSIC_NIGHTCORE_PITCH : float = 1.2;
 

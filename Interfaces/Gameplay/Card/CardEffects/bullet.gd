@@ -31,6 +31,9 @@ func init(direction_ : Vector2, play_sound : bool = false):
 func _process(delta: float) -> void:
 	position += direction * delta * speed * System.game_speed;
 	if !System.Vectors.is_inside_window(position, SIZE):
+		if bullet_data.id != 8:
+			queue_free();
+			return;
 		is_moving = false;
 		position = System.Vectors.default();
 		visible = false;

@@ -2,6 +2,7 @@ extends Gameplay
 
 @onready var cards_layer : Node2D = $CardsLayer;
 @onready var cards_layer2 : Node2D = $CardsLayer2;
+@onready var above_cards_layer : Node2D = $AboveCardsLayer;
 @onready var field_lines : Node2D = $FieldLines;
 @onready var starting_hints : JumpingText = $Background/StartingHints;
 @onready var victory_banner : JumpingText = $VictoryBanner;
@@ -36,6 +37,7 @@ extends Gameplay
 @onready var background_pattern : Sprite2D = $Background/Pattern;
 @onready var trolling_sprite : Sprite2D = $TrollingSprite;
 @onready var leds_layer : Node2D = $Background/Leds;
+@onready var divine_judgment : DivineJudgment = $AboveCardsLayer/DivineJudgment;
 
 func init(level_data_ : LevelData) -> void:
 	level_data = level_data_;
@@ -53,6 +55,7 @@ func init(level_data_ : LevelData) -> void:
 	init_audio();
 	victory_banner.stop();
 	victory_banner.modulate.a = 0;
+	divine_judgment.visible = false;
 
 func highlight_face(is_yours : bool = true) -> void:
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY if is_yours else INACTIVE_CHARACTER_VISIBILITY;
@@ -965,11 +968,9 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	update_point_visuals();
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
-	var divine_judgment : DivineJudgment;
 	var judgment_position : Vector2;
 	if !get_card(enemy):
 		return;
-	divine_judgment = System.Instance.load_child(System.Paths.DIVINE_JUDGMENT, cards_layer);
 	judgment_position = Vector2(
 		get_card(enemy).position.x,
 		get_card(enemy).position.y + GameplayCard.SIZE.y / 2

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=15 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="5_sou8c"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
 [ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="9_vl4hw"]
+[ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
 bg_color = Color(0.0395679, 0.203455, 0.26303, 1)
@@ -258,6 +259,10 @@ bbcode_enabled = true
 text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down [b]The Gun[/b]."
 
 [node name="CardsLayer" type="Node2D" parent="."]
+
+[node name="AboveCardsLayer" type="Node2D" parent="."]
+
+[node name="DivineJudgment" parent="AboveCardsLayer" instance=ExtResource("13_kpgfb")]
 
 [node name="TrollingSprite" type="Sprite2D" parent="."]
 rotation = 0.23911

@@ -4,5 +4,6 @@
 	"type": "gun",
 	"keywords": [
 		"buried"
-	]
+	],
+	"bullet": 9
 }

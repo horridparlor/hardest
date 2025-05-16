@@ -14,6 +14,7 @@ var speed : float;
 var bullet_data : BulletData;
 var sfx_player : AudioStreamPlayer2D = AudioStreamPlayer2D.new();
 var sprite : Sprite2D = Sprite2D.new();
+var is_moving : bool;
 
 func init(direction_ : Vector2, play_sound : bool = false):
 	add_child(sfx_player);
@@ -25,9 +26,14 @@ func init(direction_ : Vector2, play_sound : bool = false):
 	rotation_degrees = direction.angle() * 180 / PI;
 	set_sprite();
 	set_sound();
+	is_moving = true;
 
 func _process(delta: float) -> void:
 	position += direction * delta * speed * System.game_speed;
+	if !System.Vectors.is_inside_window(position, SIZE):
+		is_moving = false;
+		position = System.Vectors.default();
+		visible = false;
 
 func set_data(data : BulletData) -> void:
 	bullet_data = data;

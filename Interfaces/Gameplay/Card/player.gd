@@ -245,11 +245,11 @@ func get_rainbowed() -> void:
 func build_hydra(card : CardData) -> void:
 	var keywords : Array = CardEnums.get_keywords();
 	var keyword : CardEnums.Keyword;
-	card.keywords = [];
+	card.keywords = [] if Config.DEBUG_KEYWORD == CardEnums.Keyword.NULL else [Config.DEBUG_KEYWORD];
 	for i in range(System.Rules.HYDRA_KEYWORDS):
 		keyword = System.Random.item(keywords);
 		keywords.erase(keyword);
-		card.keywords.append(keyword);
+		card.add_keyword(keyword);
 
 func devour_card(eater : CardData, card : CardData) -> void:
 	if eater.is_buried:

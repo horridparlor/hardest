@@ -49,7 +49,6 @@ func make_sound() -> void:
 	sound_delay_timer.stop();
 	sound = load("res://Assets/SFX/CardSounds/Bursts/thunder.wav");
 	sfx_player.stream = sound;
-	sfx_player.pitch_scale = System.game_speed;
 	sfx_player.volume_db = Config.SFX_VOLUME + Config.GUN_VOLUME;
 	sfx_player.play();
 

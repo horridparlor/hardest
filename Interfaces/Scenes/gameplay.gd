@@ -68,6 +68,7 @@ const OPPONENTS_LED_DIRECTION : int = -1;
 const WARNING_LED_DIRECTION : int = 0;
 const OFF_LED_DIRECTION : int = 0;
 const FAST_LED_SPEED : int = 2;
+const BACKGROUND_OPACITY : float = 0.6;
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();

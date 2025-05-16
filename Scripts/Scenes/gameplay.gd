@@ -104,6 +104,7 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 func initialize_background_pattern() -> void:
 	var pattern : Resource = load(LEVEL_BACKGROUND_PATH % [level_data.background_id]);
 	background_pattern.texture = pattern;
+	background_pattern.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
 	
 func update_character_faces() -> void:
 	var your_face_texture : Resource = load_face_texture(level_data.player_variant);

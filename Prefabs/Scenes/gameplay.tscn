@@ -1,10 +1,12 @@
-[gd_scene load_steps=15 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=18 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_7ibue"]
+[ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_fmyns"]
 [ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="3_0gad1"]
 [ext_resource type="Texture2D" uid="uid://cthlduqrfhvr3" path="res://Assets/Art/CharacterFace/2.png" id="3_d4hyf"]
+[ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="3_ixfah"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="4_04fvt"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
 [ext_resource type="Texture2D" uid="uid://dm15bo5qcxwt3" path="res://Assets/Art/CharacterFace/1.png" id="5_10ocq"]
@@ -22,6 +24,13 @@ border_width_right = 8
 border_width_bottom = 8
 border_color = Color(0.255382, 0.0595813, 0.335234, 1)
 border_blend = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1o3qo"]
+shader = ExtResource("2_fmyns")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 0.6
 
 [node name="Gameplay" type="Node2D"]
 script = ExtResource("1_5y1xe")
@@ -43,7 +52,8 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0s264")
 
 [node name="Pattern" type="Sprite2D" parent="Background"]
-self_modulate = Color(1, 1, 1, 0.6)
+material = SubResource("ShaderMaterial_1o3qo")
+script = ExtResource("3_ixfah")
 
 [node name="Leds" type="Sprite2D" parent="Background"]
 self_modulate = Color(1, 1, 1, 0.6)

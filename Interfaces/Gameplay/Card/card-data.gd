@@ -30,11 +30,14 @@ func eat_json(data : Dictionary) -> void:
 	keywords = [];
 	for key in data.keywords:
 		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else "?");
+	add_keyword(Config.DEBUG_KEYWORD);
 	bullet_id = data.bullet;
 
 func add_keyword(keyword : CardEnums.Keyword) -> bool:
 	var upgrade_to_keys : Array;
 	match keyword:
+		CardEnums.Keyword.NULL:
+			return false;
 		CardEnums.Keyword.MULTI_SPY:
 			upgrade_to_keys = [CardEnums.Keyword.SPY];
 	for key in upgrade_to_keys:

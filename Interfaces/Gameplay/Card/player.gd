@@ -256,6 +256,10 @@ func devour_card(eater : CardData, card : CardData) -> void:
 		eater.is_buried = false;
 	eater.card_type = card.card_type;
 	for keyword in card.keywords:
+		match keyword:
+			CardEnums.Keyword.UNDEAD:
+				if eater.is_gun():
+					continue;
 		if eater.has_keyword(keyword) or [CardEnums.Keyword.BURIED, CardEnums.Keyword.DEVOUR].has(keyword):
 			continue;
 		if eater.keywords.size() == System.Rules.MAX_KEYWORDS:

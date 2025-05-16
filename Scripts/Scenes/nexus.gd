@@ -10,6 +10,7 @@ extends Nexus
 @onready var leds_layer : Node2D = $Leds;
 @onready var labels_layer : GlowNode = $LabelsLayer;
 @onready var hint_label : Label = $LabelsLayer/HintLabel;
+@onready var background : Sprite2D = $BackgroundPattern;
 
 @onready var led_frame_timer : Timer = $Timers/LedFrameTimer;
 @onready var card_spawn_timer : Timer = $Timers/CardSpawnTimer;
@@ -19,6 +20,7 @@ func _ready() -> void:
 	operate_showcase_layer();
 	spawn_leds();
 	labels_layer.activate_animations();
+	background.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
 
 func spawn_a_background_card() -> void:
 	var is_back : bool = System.Random.boolean();

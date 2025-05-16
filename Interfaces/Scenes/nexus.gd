@@ -9,6 +9,7 @@ const LEVEL_BUTTON_Y_MARGIN : int = 400;
 const LEVEL_BUTTONS_STARTING_POSITION : Vector2 = Vector2(-LEVEL_BUTTON_X_MARGIN * 0.5, -180);
 const LEVEL_BUTTONS_PER_ROW : int = 2;
 const BACKGROUND_CARDS_SCALE : float = 0.96;
+const BACKGROUND_OPACITY : float = 0.76;
 
 const LEDS_PER_COLUMN : int = 19;
 const LED_MARGIN : Vector2 = Vector2(20, 100);

@@ -1,8 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=14 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
+[ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_0aihb"]
 [ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/Patterns/NexusPattern.png" id="2_q58k7"]
 [ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="3_u5q2p"]
+[ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="4_tn2cr"]
 [ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="6_4dgit"]
 [ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="6_6h6rw"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="6_8o3vx"]
@@ -18,6 +20,13 @@ border_width_right = 8
 border_width_bottom = 8
 border_color = Color(0.520201, 0.0166778, 0.0821806, 1)
 border_blend = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_upkmw"]
+shader = ExtResource("2_0aihb")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 1.0
+shader_parameter/opacity = 0.6
 
 [node name="Nexus" type="Node2D"]
 script = ExtResource("1_wr5g5")
@@ -37,8 +46,9 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fkb73")
 
 [node name="BackgroundPattern" type="Sprite2D" parent="."]
-self_modulate = Color(1, 1, 1, 0.6)
+material = SubResource("ShaderMaterial_upkmw")
 texture = ExtResource("2_q58k7")
+script = ExtResource("4_tn2cr")
 
 [node name="BackgroundCards" type="Node2D" parent="."]
 

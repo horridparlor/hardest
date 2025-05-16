@@ -2,14 +2,14 @@ extends Node2D
 class_name DivineJudgment
 
 const SIZE : Vector2 = Vector2(1080, 1536);
-const MIN_SPEED : float = 19.8;
-const MAX_SPEED : float = 27.6;
+const MIN_SPEED : float = 159.8;
+const MAX_SPEED : float = 227.6;
 const DISAPPEAR_MIN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
 const DISAPPEAR_MAX_WAIT : float = 0.9 * Config.GAME_SPEED_MULTIPLIER;
-const MIN_DISAPPEAR_SPEED : float = 2.3;
-const MAX_DISAPPEAR_SPEED : float = 4.5;
-const MIN_SOUND_DELAY : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
-const MAX_SOUND_DELAY : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
+const MIN_DISAPPEAR_SPEED : float = 18.9;
+const MAX_DISAPPEAR_SPEED : float = 20.4;
+const MIN_SOUND_DELAY : float = 0 * Config.GAME_SPEED_MULTIPLIER;
+const MAX_SOUND_DELAY : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 
 var goal_position : Vector2;
 var speed : float;

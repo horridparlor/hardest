@@ -18,13 +18,13 @@ const MIN_ZOOM_MULTIPLIER : float = 1.5;
 const MAX_ZOOM_MULTIPLIER : float = 2.4;
 const CAMERA_MOVE_SPEED : float = 0.9;
 
-const SLOWING_IN_MIN_SPEED : float = 4.1
-const SLOWING_IN_MAX_SPEED : float = 5.2
-const SLOWING_OUT_MIN_SPEED : float = 2.2;
-const SLOWING_OUT_MAX_SPEED : float = 3.2;
+const SLOWING_IN_MIN_SPEED : float = 4.1 * Config.GAME_SPEED;
+const SLOWING_IN_MAX_SPEED : float = 5.2 * Config.GAME_SPEED;
+const SLOWING_OUT_MIN_SPEED : float = 2.2 * Config.GAME_SPEED;
+const SLOWING_OUT_MAX_SPEED : float = 3.2 * Config.GAME_SPEED;
 const SLOW_GAME_SPEED : float = 0.1;
-const SLOW_DOWN_MIN_WAIT : float = 0.4;
-const SLOW_DOWN_MAX_WAIT : float = 0.8;
+const SLOW_DOWN_MIN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
+const SLOW_DOWN_MAX_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
 const MIN_ZOOM_TO_NODE_MULTIPLIER : float = 3.9;
 const MAX_ZOOM_TO_NODE_MULTIPLIER : float = 6.7;
 const QUICK_ZOOM_MULTIPLIER : float = 0.4;
@@ -83,6 +83,8 @@ func init() -> void:
 
 func zoom_in(point : Vector2 = System.Vectors.default(), is_quick : bool = false) -> void:
 	var zoom_multiplier : float = System.random.randf_range(MIN_ZOOM_MULTIPLIER, MAX_ZOOM_MULTIPLIER);
+	zoom_timer.stop();
+	slow_down_timer.stop();
 	is_quick_zooming = is_quick;
 	zoomed_in_scale = Vector2(zoom_multiplier, zoom_multiplier);
 	goal_zoom = zoomed_in_scale;
@@ -121,7 +123,7 @@ func load_music() -> void:
 	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
 
 func _on_quick_zoom_to(position : Vector2) -> void:
-	if is_zooming or !zoom_timer.is_stopped():
+	if is_zooming or !zoom_timer.is_stopped() or is_slowing:
 		return;
 	zoom_in(1 / QUICK_ZOOM_MULTIPLIER * position, true);
 
@@ -161,7 +163,7 @@ func zoom_camera(delta : float) -> void:
 		is_zooming = false;
 
 func _on_zoom_to(node : Node2D, do_slow_down : bool = false) -> void:
-	if is_slowing or System.Instance.exists(zoomed_node):
+	if is_slowing or System.Instance.exists(zoomed_node) or is_zooming:
 		return;
 	zoomed_node = node;
 	zoom_in(node.position);

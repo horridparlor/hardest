@@ -949,6 +949,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	if card:
 		for keyword in card.keywords:
 			match keyword:
+				CardEnums.Keyword.DIVINE:
+					summon_divine_judgment(card, enemy);
 				CardEnums.Keyword.SOUL_HUNTER:
 					player.steal_card_soul(enemy);
 				CardEnums.Keyword.VAMPIRE:
@@ -961,6 +963,20 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.SALTY:
 					opponent.lose_points();
 	update_point_visuals();
+
+func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
+	var divine_judgment : DivineJudgment;
+	var judgment_position : Vector2;
+	if !get_card(enemy):
+		return;
+	divine_judgment = System.Instance.load_child(System.Paths.DIVINE_JUDGMENT, cards_layer);
+	judgment_position = Vector2(
+		get_card(enemy).position.x,
+		get_card(enemy).position.y + GameplayCard.SIZE.y / 2
+	);
+	divine_judgment.strike_down(judgment_position);
+	if System.game_speed == 1 and !card.is_gun():
+		emit_signal("zoom_to", get_card(enemy).position);
 
 func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false) -> void:
 	var bullet : Bullet;

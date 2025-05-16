@@ -1,0 +1,55 @@
+[gd_scene load_steps=6 format=3 uid="uid://cd6ghj8xvjf8l"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Card/divine_judgment.gd" id="1_h3lry"]
+[ext_resource type="Texture2D" uid="uid://3r580aipr3k3" path="res://Assets/Art/CardEffects/Bursts/divine-judgment.png" id="1_o7mtu"]
+
+[sub_resource type="Animation" id="Animation_gvyak"]
+resource_name = "Active"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3]
+}
+
+[sub_resource type="Animation" id="Animation_y1nmw"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rltrn"]
+_data = {
+"Active": SubResource("Animation_gvyak"),
+"RESET": SubResource("Animation_y1nmw")
+}
+
+[node name="DivineJudgment" type="Node2D"]
+script = ExtResource("1_h3lry")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_o7mtu")
+hframes = 4
+vframes = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_rltrn")
+}

@@ -231,6 +231,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	card.init(card_data.controller.gained_keyword);
 	cards[card.card_data.instance_id] = card;
 	card.position = CARD_STARTING_POSITION if card_data.controller == player_one else -CARD_STARTING_POSITION;
+	card.position.x = System.random.randf_range(-System.Window_.x, System.Window_.x) / 2;
 	if !Config.AUTO_PLAY:
 		card.pressed.connect(_on_card_pressed);
 		card.released.connect(_on_card_released);

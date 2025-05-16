@@ -186,3 +186,9 @@ func has_wrapped() -> bool:
 
 func is_gun() -> bool:
 	return card_type == CardEnums.CardType.GUN;
+
+func is_mimic() -> bool:
+	return card_type == CardEnums.CardType.MIMIC;
+
+func is_god() -> bool:
+	return card_type == CardEnums.CardType.GOD;

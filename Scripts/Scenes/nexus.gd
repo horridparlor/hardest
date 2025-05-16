@@ -32,6 +32,8 @@ func spawn_a_background_card() -> void:
 	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT) * System.game_speed_multiplier;
 	if is_back:
 		card.scale *= BACKGROUND_CARDS_SCALE;
+	if card.card_data.is_god():
+		card.dissolve();
 	card_spawn_timer.start();
 
 func spawn_leds() -> void:

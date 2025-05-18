@@ -14,7 +14,7 @@ func init() -> void:
 		_on_background_music_finished();
 
 func _process(delta : float) -> void:
-	if Input.is_action_pressed("ui_cancel"):
+	if Input.is_action_just_pressed("ui_cancel"):
 		if gameplay != null:
 			close_gameplay();
 			return;
@@ -23,6 +23,32 @@ func _process(delta : float) -> void:
 	zoom_frame(delta);
 	scene_layer.rotation_degrees = System.base_rotation;
 	edges.rotation_degrees = System.base_rotation;
+	if Config.DEV_MODE:
+		process_dev_mode_shortcut_actions();
+
+func process_dev_mode_shortcut_actions() -> void:
+	if Input.is_action_just_pressed("quit_game"):
+		get_tree().quit();
+	if Input.is_action_just_pressed("slow_game"):
+		set_game_speed(Config.MIN_GAME_SPEED);
+		background_music.pitch_scale = System.game_speed;
+	if Input.is_action_just_pressed("accelerate_game"):
+		set_game_speed(System.game_speed + 1);
+		background_music.pitch_scale = System.game_speed;
+	if Input.is_action_just_pressed("screenshot"):
+		System.Json.take_screenshot(self);
+	if Input.is_action_just_pressed("toggle_auto_play"):
+		System.auto_play = !System.auto_play;
+		if System.auto_play and gameplay and gameplay.can_play_card:
+			gameplay._on_auto_play_timer_timeout();
+		elif !System.auto_play and gameplay and !gameplay.auto_play_timer.is_stopped():
+			gameplay.can_play_card = true;
+	if Input.is_action_just_pressed("card_for_you"):
+		if gameplay:
+			gameplay.player_one.spawn_card(Config.SPAWNED_CARD);
+	if Input.is_action_just_pressed("card_for_opponent"):
+		if gameplay:
+			gameplay.player_two.spawn_card(Config.SPAWNED_CARD);
 
 func open_starting_scene() -> void:
 	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:
@@ -30,10 +56,13 @@ func open_starting_scene() -> void:
 		return;
 	open_nexus();
 
-func spawn_introduction_level() -> void:
-	open_gameplay(System.Data.read_level(System.Levels.INTRODUCTION_LEVEL));
+func spawn_introduction_level(level_index : int = System.Levels.INTRODUCTION_LEVEL) -> void:
+	open_gameplay(System.Data.read_level(level_index));
 
 func open_nexus() -> void:
+	if Config.AUTO_LEVEL != 0:
+		spawn_introduction_level(Config.AUTO_LEVEL);
+		return;
 	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);
 	nexus.enter_level.connect(_on_open_gameplay);
 	nexus.init(max(0, save_data.tutorial_levels_won));

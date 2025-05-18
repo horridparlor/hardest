@@ -27,7 +27,8 @@ const OPPONENT_TO_PLAY_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const YOU_TO_PLAY_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const SPY_WAIT_TIME : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const AUTO_PLAY_MIN_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
-const AUTO_PLAY_MAX_WAIT : float = 0.6 * Config.GAME_SPEED_MULTIPLIER;
+const AUTO_PLAY_MAX_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
+const GULP_WAIT : float = 0.5 * Config.GAME_SPEED_MULTIPLIER;
 
 const TROLL_MIN_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
 const TROLL_MAX_WAIT : float = 1.2 * Config.GAME_SPEED_MULTIPLIER;
@@ -47,10 +48,10 @@ const ACTIVE_CHARACTER_VISIBILITY : float = 1.0;
 const INACTIVE_CHARACTER_VISIBILITY : float = 0.4;
 const LEVEL_THEME_PATH : String = "res://Assets/Music/%s.mp3";
 const LEVEL_BACKGROUND_PATH : String = "res://Assets/Art/Patterns/%s.png";
-const POINTS_FADE_IN_SPEED : float = 0.4;
-const POINTS_FADE_OUT_SPEED : float = 1.2;
-const SHADOW_FADE_IN_SPEED : float = 0.6;
-const SHADOW_FADE_OUT_SPEED : float = 0.8;
+const POINTS_FADE_IN_SPEED : float = 0.4 * Config.GAME_SPEED;
+const POINTS_FADE_OUT_SPEED : float = 1.2 * Config.GAME_SPEED;
+const SHADOW_FADE_IN_SPEED : float = 0.6 * Config.GAME_SPEED;
+const SHADOW_FADE_OUT_SPEED : float = 0.8 * Config.GAME_SPEED;
 const CHARACTER_FULL_ART_PATH : String = "res://Assets/Art/CharacterFull/%s.png";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -720);

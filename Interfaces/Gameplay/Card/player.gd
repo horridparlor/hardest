@@ -100,16 +100,19 @@ func eat_decklist(decklist_id : int = 0,
 	add_always_start_cards();
 
 func generate_deck() -> void:
-	var card_data : Dictionary;
-	var card : CardData;
 	var amount = System.Rules.DECK_SIZE - count_deck();
 	if amount <= 0:
 		return;
 	for card_id in decklist.generate_cards(amount):
-		card_data = System.Data.read_card(card_id);
-		card = CardData.from_json(card_data)
-		card.controller = self;
-		cards_in_deck.append(card);
+		spawn_card(card_id);
+
+func spawn_card(card_id : int) -> void:
+	var card_data : Dictionary;
+	var card : CardData;
+	card_data = System.Data.read_card(card_id);
+	card = CardData.from_json(card_data)
+	card.controller = self;
+	cards_in_deck.append(card);
 
 func add_always_start_cards() -> void:
 	var horse_gear_rock : CardData = find_horse_gear_card(CardEnums.CardType.ROCK, true);
@@ -127,6 +130,8 @@ func add_always_start_cards() -> void:
 		paper_card,
 		scissor_card
 	] + card_souls;
+	if Config.DEBUG_CARD != 0:
+		return;
 	always_cards.reverse();
 	for card in always_cards:
 		cards_in_deck.append(card);

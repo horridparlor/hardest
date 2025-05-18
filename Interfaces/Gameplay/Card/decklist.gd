@@ -6,6 +6,7 @@ const DEFAULT_MIMIC_CHANCE : int = 1;
 const DEFAULT_GOD_CHANCE : int = 0;
 const DEFAULT_DATA : Dictionary = {
 	"id": 1,
+	"title": "",
 	"cards": [],
 	"gunChance": DEFAULT_GUN_CHANCE,
 	"mimicChance": DEFAULT_MIMIC_CHANCE,
@@ -13,6 +14,7 @@ const DEFAULT_DATA : Dictionary = {
 }
 
 var id : int;
+var title : String;
 var cards : Dictionary = {
 	CardEnums.CardType.ROCK: [],
 	CardEnums.CardType.PAPER: [],
@@ -30,6 +32,7 @@ static func from_json(data : Dictionary) -> Decklist:
 	var decklist : Decklist = Decklist.new();
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	decklist.id = data.id;
+	decklist.title = data.title;
 	decklist.gun_chance = data.gunChance * Config.GUN_CHANCE;
 	decklist.mimic_chance = data.mimicChance * Config.MIMIC_CHANCE;
 	decklist.god_chance = data.godChance;
@@ -52,6 +55,7 @@ func eat_cards(source : Array) -> void:
 func to_json() -> Dictionary:
 	return {
 		"id": id,
+		"title": title,
 		"cards": cards,
 		"gunChance": gun_chance,
 		"mimicChance": mimic_chance,
@@ -63,7 +67,7 @@ func generate_cards(amount : int = 1) -> Array:
 	var card_type : CardEnums.CardType;
 	for i in range(amount):
 		card_type = get_random_collection_type();
-		if Config.DEBUG_CARD != 0 and System.Random.chance(2):
+		if Config.DEBUG_CARD != 0:
 			ids.append(Config.DEBUG_CARD);
 			continue;
 		ids.append(System.Random.item(cards[card_type] + ([CardEnums.BasicIds[card_type]] if cards[card_type].is_empty() else [])));

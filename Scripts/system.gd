@@ -20,6 +20,16 @@ var base_rotation : float = 0;
 var game_speed : float = 1;
 var game_speed_multiplier : float = 1 / game_speed;
 var running_instance_id : int;
+var auto_play : bool = Config.AUTO_PLAY;
 
 static func create_directories() -> void:
 	Json.create_directory();
+
+static func wait(wait : float, parent : Node) -> void:
+	var timer : Timer = Timer.new();
+	timer.wait_time = wait * System.game_speed_multiplier;
+	timer.one_shot = true;
+	parent.add_child(timer);
+	timer.start();
+	await timer.timeout;
+	timer.queue_free();

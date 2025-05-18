@@ -4,6 +4,7 @@ const ERROR_KEY : String = "SYSTEM_RESERVER_KEY_ERROR";
 const ERROR : Dictionary = {
 	ERROR_KEY: ERROR_KEY
 }
+const SCREENSHOTS_PATH : String = "user://screenshots/";
 
 static func success(json_data : Dictionary) -> bool:
 	return not is_error(json_data);
@@ -15,7 +16,8 @@ static func create_directory() -> void:
 	var dir: DirAccess;
 	for path in [
 		SAVE_WRITE_PATH_PREFIX,
-		SAVE_WRITE_PATH_PREFIX + System.Data.SOUL_BANKS_SAVE_PATH
+		SAVE_WRITE_PATH_PREFIX + System.Data.SOUL_BANKS_SAVE_PATH,
+		SCREENSHOTS_PATH
 	]:
 		dir = DirAccess.open(path);
 		if dir == null:
@@ -66,3 +68,12 @@ static func read_data(file_name: String, do_debug: bool = false) -> Dictionary:
 
 static func write_data(json_data: Dictionary, file_name: String) -> void:
 	write(json_data, get_data_file_path(file_name));
+
+static func take_screenshot(node : Node2D) -> void:
+	var image : Image = node.get_viewport().get_texture().get_image();
+	var file_path = "user://screenshots/%s.png" % Time.get_datetime_string_from_system();
+	var error = image.save_png(file_path);
+	if error == OK:
+		print("Screenshot saved to: ", file_path);
+	else:
+		print("Error saving screenshot");

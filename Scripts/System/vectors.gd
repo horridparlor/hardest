@@ -23,9 +23,8 @@ static func have_distance(point_a : Vector2, point_b : Vector2, min_distance : f
 
 static func slide_towards(point_a : Vector2, point_b : Vector2,
 delta : float, min_speed : float = 0) -> Vector2:
-	var distance : float = max(point_a.distance_to(point_b), min_speed);
-	var movement : float = distance * delta * System.game_speed;
-	return point_a.move_toward(point_b, movement);
+	var distance : float = point_a.distance_to(point_b) * delta * System.game_speed;
+	return point_a.move_toward(point_b, max(distance, min_speed));
 
 static func is_inside_window(position : Vector2, size : Vector2) -> bool:
 	return position.distance_to(default()) - get_cirmumradius(size) < WINDOW_CIRCUMRADIUS;

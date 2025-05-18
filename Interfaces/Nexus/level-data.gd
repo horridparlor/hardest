@@ -2,6 +2,7 @@ extends Node
 class_name LevelData
 
 var id : int;
+var title : String;
 var player : GameplayEnums.Character;
 var opponent : GameplayEnums.Character;
 var player_variant : int;
@@ -17,6 +18,7 @@ var is_locked : bool;
 
 const DEFAULT_DATA : Dictionary = {
 	"id": 1,
+	"title": "",
 	"player": "Peitse",
 	"opponent": "Peitse",
 	"deck": 1,
@@ -32,6 +34,7 @@ static func eat_json(data : Dictionary) -> LevelData:
 	var level_data : LevelData = LevelData.new();
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	level_data.id = data.id;
+	level_data.title = data.title;
 	level_data.player = translate_character(data.player);
 	level_data.opponent = translate_character(data.opponent);
 	level_data.deck_id = data.deck;

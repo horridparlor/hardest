@@ -184,7 +184,7 @@ func your_turn() -> void:
 		_on_your_turn_end() if going_first else _on_opponent_turns_end();
 		return;
 	can_play_card = true;
-	if !Config.AUTO_PLAY:
+	if !System.auto_play:
 		return;
 	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_multiplier;
 	auto_play_timer.start()
@@ -232,9 +232,8 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	cards[card.card_data.instance_id] = card;
 	card.position = CARD_STARTING_POSITION if card_data.controller == player_one else -CARD_STARTING_POSITION;
 	card.position.x = System.random.randf_range(-System.Window_.x, System.Window_.x) / 2;
-	if !Config.AUTO_PLAY:
-		card.pressed.connect(_on_card_pressed);
-		card.released.connect(_on_card_released);
+	card.pressed.connect(_on_card_pressed);
+	card.released.connect(_on_card_released);
 	card.despawned.connect(_on_card_despawned);
 	card.visited.connect(_on_card_visited);
 	return card;
@@ -279,6 +278,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 						opponents_play_wait.stop();
 						pre_results_timer.stop();
 						stop_spying();
+						you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_multiplier;
 						you_play_wait.start();
 						return;
 				GameplayEnums.Controller.PLAYER_TWO:
@@ -286,6 +286,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 					if !opponent.hand_empty():
 						you_play_wait.stop();
 						stop_spying();
+						opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_multiplier;
 						opponents_play_wait.start();
 						return;
 		GameplayEnums.Controller.NULL:
@@ -422,7 +423,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	update_card_alterations();
 	if check_for_devoured(card, player, opponent):
 		reorder_hand();
-		if player == player_one and Config.AUTO_PLAY:
+		if player == player_one and System.auto_play:
 			auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_multiplier;
 			auto_play_timer.start();
 		return false;
@@ -462,10 +463,30 @@ func check_for_devoured(card : GameplayCard, player : Player, opponent : Player,
 		if eater_was_face_down:
 			trigger_play_effects(enemy, opponent, player);
 		get_card(enemy).update_visuals();
+		spawn_tongue(card, get_card(enemy));
 		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * (2.85/4.0) \
 			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));
 		return true;
 	return false;
+
+func spawn_tongue(card : GameplayCard, enemy : GameplayCard) -> void:
+	var tongue : Tongue;
+	if !card or !enemy:
+		return;
+	tongue = System.Instance.load_child(System.Paths.TONGUE, cards_layer2);
+	tongue.form(enemy, card);
+	play_gulp_sound();
+
+func play_gulp_sound() -> void:
+	var sound : Resource = load("res://Assets/SFX/CardSounds/Transformations/mimic-gulp.wav");
+	await System.wait(GULP_WAIT, self);
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
+
+func play_sfx(sound : Resource, volume : int = Config.SFX_VOLUME):
+	sfx_player.pitch_scale = System.game_speed;
+	sfx_player.volume_db = volume;
+	sfx_player.stream = sound;
+	sfx_player.play();
 
 func erase_card(card : GameplayCard, despawn_position : Vector2 = System.Vectors.default()) -> void:
 	cards.erase(card.instance_id);
@@ -542,11 +563,11 @@ func opponents_turn() -> void:
 		your_turn();
 
 func wait_opponent_to_play(do_extend : bool = false) -> void:
-	opponents_play_wait.wait_time = OPPONENT_TO_PLAY_WAIT * (2 if do_extend else 1);
+	opponents_play_wait.wait_time = OPPONENT_TO_PLAY_WAIT * (2 if do_extend else 1) * System.game_speed_multiplier;
 	opponents_play_wait.start();
 
 func wait_opponent_playing() -> void:
-	opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT;
+	opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_multiplier;
 	opponents_play_wait.start();
 
 func go_to_results() -> void:

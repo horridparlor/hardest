@@ -137,12 +137,16 @@ func zoom_frame(delta : float) -> void:
 	
 func slowing_frame(delta : float):
 	var goal_speed : float = 1 if is_speeding else SLOW_GAME_SPEED;
-	System.game_speed = max(Config.MIN_GAME_SPEED, System.Scale.baseline(System.game_speed, goal_speed, delta * slowing_speed));
-	if !pitch_locked:
-		background_music.pitch_scale = max(Config.MIN_PITCH, System.game_speed * cached_game_speed);
+	set_game_speed(max(Config.MIN_GAME_SPEED, System.Scale.baseline(System.game_speed, goal_speed, delta * slowing_speed)), !pitch_locked);
 	if System.Scale.equal(System.game_speed, goal_speed):
-		System.game_speed = goal_speed;
+		set_game_speed(goal_speed);
 		is_slowing = false;
+
+func set_game_speed(new_speed : float, update_music_pitch : bool = true):
+	System.game_speed = new_speed;
+	System.game_speed_multiplier = 1 / new_speed;
+	if update_music_pitch:
+		background_music.pitch_scale = max(Config.MIN_PITCH, System.game_speed * cached_game_speed);
 
 func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	pass;

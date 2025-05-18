@@ -168,6 +168,9 @@ func has_soul_hunter() -> bool:
 func has_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.SPY);
 
+func has_time_stop() -> bool:
+	return has_keyword(CardEnums.Keyword.TIME_STOP);
+
 func has_undead(needs_to_be_active : bool = false) -> bool:
 	if !has_keyword(CardEnums.Keyword.UNDEAD):
 		return false;

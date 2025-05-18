@@ -550,9 +550,15 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
 			CardEnums.Keyword.TIME_STOP:
-				time_stop_effect_in();
+				activate_time_stop(card);
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
+
+func activate_time_stop(card : CardData) -> void:
+	if is_time_stopped:
+		return;
+	time_stopping_player = card.controller;
+	time_stop_effect_in();
 
 func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1) -> bool:
 	var spied_card_data : CardData;
@@ -809,8 +815,8 @@ func best_to_play(card_a : CardData, card_b : CardData, player : Player, opponen
 	var a_value : int = get_result_for_playing(card_a, player, opponent);
 	var b_value : int = get_result_for_playing(card_b, player, opponent);
 	if a_value == b_value:
-		return most_valuable(card_a, card_b, player, opponent);
-	return a_value < b_value;
+		return most_valuable(card_a, card_b, player, opponent) * (-1 if time_stopping_player == player else 1);
+	return a_value < b_value if time_stopping_player != player else a_value > b_value;
 
 func most_valuable(card_a : CardData, card_b : CardData, player : Player, opponent : Player) -> int:
 	return -get_card_value(card_a, player, opponent, -1) < -get_card_value(card_b, player, opponent, -1);
@@ -880,6 +886,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.SPY:
 				value += 2;
+			CardEnums.Keyword.TIME_STOP:
+				value += 10;
 			CardEnums.Keyword.UNDEAD:
 				value -= 1;
 			CardEnums.Keyword.VAMPIRE:
@@ -959,6 +967,9 @@ func round_results() -> void:
 	);
 	var is_motion_shooting : bool;
 	var someone_close_to_winning : bool = player_one.is_close_to_winning() or player_two.is_close_to_winning();
+	if is_time_stopped:
+		stopped_time_results();
+		return;
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
 	if card and card.is_gun() and round_winner != GameplayEnums.Controller.PLAYER_TWO:
@@ -994,6 +1005,23 @@ func round_results() -> void:
 		return;
 	round_end_timer.wait_time = ROUND_END_WAIT * System.game_speed_multiplier;
 	round_end_timer.start();
+
+func stopped_time_results() -> void:
+	var card : CardData = time_stopping_player.get_field_card();
+	if time_stopping_player.hand_empty() or (card and (card.is_gun() or card.is_god())):
+		time_stop_effect_out();
+		return;
+	time_stopping_player.send_from_field_to_grave(card);
+	if get_card(card):
+		get_card(card).dissolve();
+	if time_stopping_player == player_one:
+		going_first = false;
+		if System.auto_play:
+			auto_play_timer.start();
+		your_turn();
+	else:
+		going_first = true;
+		opponents_play_wait.start();
 
 func play_tie_sound() -> void:
 	play_point_sfx(TIE_SOUND_PATH);
@@ -1302,6 +1330,8 @@ func after_time_stop() -> void:
 	led_wait /= TIME_STOP_LED_ACCELERATION;
 	System.update_game_speed(1);
 	is_time_stopped = false;
+	time_stopping_player = null;
+	pre_results_timer.start();
 
 func time_stop_frame(delta : float) -> void:
 	if !is_stopping_time and !is_accelerating_time:
@@ -1473,6 +1503,7 @@ func _on_auto_play_timer_timeout() -> void:
 		auto_play_timer.wait_time *= FLICKER_SPEED_UP;
 		auto_play_timer.start();
 		return;
+	active_player = player_one;
 	player_one.shuffle_hand();
 	player_one.cards_in_hand.sort_custom(best_to_play_for_you);
 	card = player_one.cards_in_hand.back();

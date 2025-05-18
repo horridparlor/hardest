@@ -2,9 +2,13 @@
 	"id": 9,
 	"title": "Time-stop test deck",
 	"cards": [
+		1,
+		2,
+		3,
+		
 		53,
 		54,
 		55
 	],
-	"startWith": [53, 54, 55]
+	"startWith?": [53, 54, 55]
 }

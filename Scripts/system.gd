@@ -29,11 +29,14 @@ func update_game_speed(speed : float) -> void:
 static func create_directories() -> void:
 	Json.create_directory();
 
-static func wait(wait : float, parent : Node) -> void:
+func wait(wait : float) -> void:
 	var timer : Timer = Timer.new();
 	timer.wait_time = wait * System.game_speed_multiplier;
 	timer.one_shot = true;
-	parent.add_child(timer);
+	add_child(timer);
 	timer.start();
 	await timer.timeout;
 	timer.queue_free();
+
+func wait_range(min : float, max : float) -> void:
+	await wait(System.random.randf_range(min, max));

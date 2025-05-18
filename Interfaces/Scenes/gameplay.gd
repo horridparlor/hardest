@@ -80,6 +80,20 @@ const BACKGROUND_OPACITY : float = 0.6;
 const TIME_STOP_ACCELERATION_SPEED : float = 0.5;
 const TIME_STOP_LED_ACCELERATION : int = 12;
 const TIME_STOP_GAME_SPEED : float = 0.6;
+const MIN_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.2;
+const MAX_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.3;
+const MIN_STOPPED_TIME_WAIT : float = 0.09;
+const MAX_STOPPED_TIME_WAIT : float = 0.18;
+
+const TIME_STOP_IN_GLITCH_MIN_SPEED : float = 5;
+const TIME_STOP_IN_GLITCH_MAX_SPEED : float = 7.8;
+const TIME_STOP_IN_BW_MIN_SPEED : float = 1.9;
+const TIME_STOP_IN_BW_MAX_SPEED : float = 3.8;
+const TIME_STOP_OUT_BW_MIN_SPEED : float = 0.3;
+const TIME_STOP_OUT_BW_MAX_SPEED : float = 0.9;
+const TIME_STOP_OUT_GLITCH_MIN_SPEED : float = 5;
+const TIME_STOP_OUT_GLITCH_MAX_SPEED : float = 8.9;
+
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
@@ -117,6 +131,8 @@ var is_time_stopped : bool;
 var active_player : Player;
 var time_stop_nodes : Array;
 var time_stopping_player : Player;
+var time_stopped_bullets : Array;
+var has_been_stopping_turn : bool;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

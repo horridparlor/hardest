@@ -13,6 +13,7 @@ var controller : Player;
 var instance_id : int;
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
+var has_stopped_time_advantage : bool;
 
 func _init() -> void:
 	instance_id = System.Random.instance_id();

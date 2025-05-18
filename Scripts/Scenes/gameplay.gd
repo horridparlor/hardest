@@ -466,6 +466,9 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	return true;
 
 func _on_your_turn_end(do_extend_wait : bool = false) -> void:
+	if has_been_stopping_turn:
+		stopped_time_results();
+		return;
 	wait_opponent_to_play();
 
 func _on_opponent_turns_end() -> void:
@@ -500,7 +503,7 @@ func spawn_tongue(card : GameplayCard, enemy : GameplayCard) -> void:
 
 func play_time_stop_sound() -> void:
 	var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/time-stop.wav");
-	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME, System.game_speed * time_stop_goal_velocity / TIME_STOP_IN_GLITCH_MIN_SPEED);
 	emit_signal("stop_music");
 	if Config.MUTE_SFX:
 		return;
@@ -509,20 +512,20 @@ func play_time_stop_sound() -> void:
 
 func play_time_stop_sound_reverse() -> void:
 	var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/time-accelerate.wav");
-	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME, 1);
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME, 1 * (time_stop_goal_velocity / TIME_STOP_OUT_BW_MAX_SPEED));
 	if !Config.MUTE_SFX:
 		await sfx_player.finished;
 	emit_signal("play_prev_song");
 
 func play_gulp_sound() -> void:
 	var sound : Resource = load("res://Assets/SFX/CardSounds/Transformations/mimic-gulp.wav");
-	await System.wait(GULP_WAIT, self);
+	await System.wait(GULP_WAIT);
 	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
 
 func play_sfx(sound : Resource, volume : int = Config.SFX_VOLUME, pitch : float = System.game_speed):
 	if Config.MUTE_SFX:
 		return;
-	sfx_player.pitch_scale = System.game_speed;
+	sfx_player.pitch_scale = pitch;
 	sfx_player.volume_db = volume;
 	sfx_player.stream = sound;
 	sfx_player.play();
@@ -555,7 +558,7 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 				player.gained_keyword = CardEnums.Keyword.BURIED;
 
 func activate_time_stop(card : CardData) -> void:
-	if is_time_stopped:
+	if time_stopping_player != null:
 		return;
 	time_stopping_player = card.controller;
 	time_stop_effect_in();
@@ -605,7 +608,7 @@ func opponents_turn() -> void:
 	if !play_card(spawn_card(card), player_two, player_one):
 		wait_opponent_playing();
 		return;
-	if going_first:
+	if going_first or has_been_stopping_turn:
 		go_to_pre_results();
 	else:
 		your_turn();
@@ -624,6 +627,8 @@ func go_to_results() -> void:
 	#Better structure to use enum for the phase and make it not crawl
 	#The whole structure like this. Fix, if this ever gets longer than
 	#Let's say 100 lines :D
+	if is_time_stopped:
+		return start_results();
 	if is_spying:
 		return results_wait();
 	if results_phase < 2:
@@ -632,6 +637,9 @@ func go_to_results() -> void:
 	if results_phase < 4:
 		if digitals_phase():
 			return results_wait();
+	start_results();
+
+func start_results() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT * System.game_speed_multiplier;
 	round_results_timer.start();
 
@@ -754,6 +762,8 @@ func calculate_base_points(card : CardData, enemy : CardData) -> int:
 		points *= 2;
 	if enemy.has_champion():
 		points *= 2;
+	if card.has_stopped_time_advantage:
+		points *= System.Rules.STOPPED_TIME_SHOTS;
 	return points;
 
 func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
@@ -894,8 +904,10 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 5 if opponent.points > 0 else 0;
 			CardEnums.Keyword.WRAPPED:
 				value += 0 if player.going_first else 1;
-	if card.has_champion() :
+	if card.has_champion():
 		value *= 2;
+	if card.is_gun and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
+		value *= System.Rules.STOPPED_TIME_SHOTS;
 	return value;
 
 func get_card_base_value(card : CardData) -> int:
@@ -1008,20 +1020,29 @@ func round_results() -> void:
 
 func stopped_time_results() -> void:
 	var card : CardData = time_stopping_player.get_field_card();
+	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
 	if time_stopping_player.hand_empty() or (card and (card.is_gun() or card.is_god())):
+		if card and card.is_gun():
+			await stopped_time_shooting(card, get_opponent(card).get_field_card());
 		time_stop_effect_out();
 		return;
 	time_stopping_player.send_from_field_to_grave(card);
 	if get_card(card):
 		get_card(card).dissolve();
+	has_been_stopping_turn = true;
 	if time_stopping_player == player_one:
-		going_first = false;
 		if System.auto_play:
 			auto_play_timer.start();
 		your_turn();
 	else:
-		going_first = true;
 		opponents_play_wait.start();
+
+func stopped_time_shooting(card : CardData, enemy : CardData) -> void:
+	for i in range(System.Rules.STOPPED_TIME_SHOTS):
+		for bullet in play_shooting_animation(card, enemy, true, true):
+			time_stopped_bullets.append(bullet);
+			await System.wait_range(MIN_STOPPED_TIME_SHOOTING_ROUND_WAIT, MAX_STOPPED_TIME_SHOOTING_ROUND_WAIT);
+	card.has_stopped_time_advantage = true;
 
 func play_tie_sound() -> void:
 	play_point_sfx(TIE_SOUND_PATH);
@@ -1037,6 +1058,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 		points *= 2;
 	if enemy and enemy.has_champion():
 		points *= 2;
+	if card.has_stopped_time_advantage:
+		points *= System.Rules.STOPPED_TIME_SHOTS;
 	player.gain_points(points);
 	click_your_points() \
 		if player.controller == GameplayEnums.Controller.PLAYER_ONE \
@@ -1050,14 +1073,14 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.SOUL_HUNTER:
 					player.steal_card_soul(enemy);
 				CardEnums.Keyword.VAMPIRE:
-					opponent.lose_points();
+					opponent.lose_points(points);
 	if enemy:
 		for keyword in enemy.keywords:
 			match keyword:
 				CardEnums.Keyword.EXTRA_SALTY:
 					opponent.lose_points(-1);
 				CardEnums.Keyword.SALTY:
-					opponent.lose_points();
+					opponent.lose_points(points);
 	update_point_visuals();
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
@@ -1072,22 +1095,29 @@ func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 	if System.game_speed == 1 and !card.is_gun():
 		emit_signal("zoom_to", get_card(enemy).position);
 
-func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false) -> void:
+func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false) -> Array:
+	var bullets : Array;
 	var bullet : Bullet;
 	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy else -get_card(card).get_recoil_position();
-	var bullets : int = 1;
+	var count : int = 1;
+	if card.has_stopped_time_advantage:
+		return bullets;
 	if card.has_champion():
-		bullets = System.random.randi_range(3, 5)
+		count = System.random.randi_range(3, 5)
 	elif card.has_pair():
-		bullets = 2;
-	for i in range(bullets):
+		count = 2;
+	for i in range(count):
 		if i > 0:
 			enemy_position += System.Random.vector(100, 200);
 		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
+		if slow_down:
+			bullet.slow_down();
 		bullet.init(enemy_position - get_card(card).get_recoil_position(), i < 2);
+		bullets.append(bullet);
 		if do_zoom and i == 0:
 			zoom_to_bullet(bullet);
 	get_card(card).recoil(enemy_position);
+	return bullets;
 
 func zoom_to_bullet(bullet : Bullet) -> void:
 	emit_signal("zoom_to", bullet, true);
@@ -1250,6 +1280,10 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
+	if card.has_stopped_time_advantage:
+		return you_win;
+	elif enemy.has_stopped_time_advantage:
+		return opponent_wins;
 	if card.has_pair():
 		if !enemy.has_pair():
 			return you_win;
@@ -1330,7 +1364,12 @@ func after_time_stop() -> void:
 	led_wait /= TIME_STOP_LED_ACCELERATION;
 	System.update_game_speed(1);
 	is_time_stopped = false;
+	is_stopping_time = false;
+	has_been_stopping_turn = false;
 	time_stopping_player = null;
+	for bullet in time_stopped_bullets:
+		bullet.speed_up();
+	time_stopped_bullets = [];
 	pre_results_timer.start();
 
 func time_stop_frame(delta : float) -> void:
@@ -1338,20 +1377,19 @@ func time_stop_frame(delta : float) -> void:
 		return;
 	time_stop_velocity = System.Scale.baseline(time_stop_velocity, time_stop_goal_velocity, delta * TIME_STOP_ACCELERATION_SPEED * System.game_speed);
 	if is_stopping_time:
-		time_stop_shader_time += time_stop_velocity * delta * System.game_speed;
+		time_stop_shader_time -= time_stop_velocity * delta * System.game_speed;
 		if time_stop_shader_time <= 0:
 			time_stop_shader_time = 1.9999;
-			time_stop_goal_velocity = -1.9;
-		if time_stop_goal_velocity > -2 and time_stop_shader_time <= 1.0001:
+			time_stop_goal_velocity = System.random.randf_range(TIME_STOP_IN_BW_MIN_SPEED, TIME_STOP_IN_BW_MAX_SPEED);
+		if time_stop_goal_velocity < TIME_STOP_IN_GLITCH_MIN_SPEED and time_stop_shader_time <= 1.0001:
 			time_stop_shader_time = 1.001;
-			is_stopping_time = false;
 			time_stop_velocity = 0;
 	if is_accelerating_time:
 		time_stop_shader_time += time_stop_velocity * delta * System.game_speed;
 		if time_stop_shader_time >= 1.9999:
 			time_stop_shader_time = 0;
-			time_stop_goal_velocity = 5;
-		if time_stop_goal_velocity > 0.3 and time_stop_shader_time >= 0.9999:
+			time_stop_goal_velocity = System.random.randf_range(TIME_STOP_OUT_GLITCH_MIN_SPEED, TIME_STOP_OUT_GLITCH_MAX_SPEED);
+		if time_stop_goal_velocity > TIME_STOP_OUT_BW_MAX_SPEED and time_stop_shader_time >= 0.9999:
 			time_stop_shader_time = 0.9999;
 			is_accelerating_time = false;
 			time_stop_velocity = 0;
@@ -1377,13 +1415,13 @@ func time_stop_effect_in() -> void:
 	time_stop_shader_time = 0.9999;
 	is_accelerating_time = false;
 	is_stopping_time = true;
-	time_stop_goal_velocity = -5;
+	time_stop_goal_velocity = System.random.randf_range(TIME_STOP_IN_GLITCH_MIN_SPEED, TIME_STOP_IN_GLITCH_MAX_SPEED);
 
 func time_stop_effect_out() -> void:
-	time_stop_shader_time = 1.0001;
+	time_stop_shader_time = 1.01;
 	is_stopping_time = false;
 	is_accelerating_time = true;
-	time_stop_goal_velocity = 0.3;
+	time_stop_goal_velocity = System.random.randf_range(TIME_STOP_OUT_BW_MIN_SPEED, TIME_STOP_OUT_BW_MAX_SPEED);
 	emit_signal("stop_music_if_special");
 	play_time_stop_sound_reverse();
 

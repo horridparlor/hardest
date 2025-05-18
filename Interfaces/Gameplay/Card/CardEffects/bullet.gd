@@ -1,20 +1,30 @@
 extends Node2D
 class_name Bullet
 
-const MIN_SPEED : int = 7;
-const MAX_SPEED : int = 15;
+const MIN_SPEED : int = 7 * Config.GAME_SPEED;
+const MAX_SPEED : int = 15 * Config.GAME_SPEED;
 const SIZE : Vector2 = Vector2(80, 160);
 const BULLET_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Bullets/%s.wav";
 const BULLET_ART_PATH : String = "res://Assets/Art/CardEffects/Bullets/%s.png";
-const SOUND_MIN_DELAY : float = 0;
-const SOUND_MAX_DELAY : float = 1.8;
+const SOUND_MIN_DELAY : float = 0 * Config.GAME_SPEED_MULTIPLIER;
+const SOUND_MAX_DELAY : float = 1.8 * Config.GAME_SPEED_MULTIPLIER;
+const MIN_SLOW_DOWN_SPEED : float = 1 / 0.14 * Config.GAME_SPEED;
+const MAX_SLOW_DOWN_SPEED : float = 1 / 0.24 * Config.GAME_SPEED;
+const MIN_SPEED_UP_SPEED : float = 1 / 0.25 * Config.GAME_SPEED;
+const MAX_SPEED_UP_SPEED : float = 1 / 0.38 * Config.GAME_SPEED;
+const MIN_BULLET_SOUND_DELAY_POST_TIME_STOP : float = 0.02 * Config.GAME_SPEED_MULTIPLIER;
+const MAX_BULLET_SOUND_DELAY_POST_TIME_STOP : float = 0.12 * Config.GAME_SPEED_MULTIPLIER;
 
 var direction : Vector2;
 var speed : float;
+var speed_multiplier : float = 1;
 var bullet_data : BulletData;
 var sfx_player : AudioStreamPlayer2D = AudioStreamPlayer2D.new();
 var sprite : Sprite2D = Sprite2D.new();
 var is_moving : bool;
+var is_slowing_down : bool;
+var is_speeding_up : bool;
+var slowing_acceleration : float;
 
 func init(direction_ : Vector2, play_sound : bool = false):
 	add_child(sfx_player);
@@ -29,7 +39,12 @@ func init(direction_ : Vector2, play_sound : bool = false):
 	is_moving = true;
 
 func _process(delta: float) -> void:
-	position += direction * delta * speed * System.game_speed;
+	if is_slowing_down:
+		slowing_frame(delta);
+		return;
+	if is_speeding_up:
+		speeding_frame(delta);
+	position += direction * delta * speed * speed_multiplier * System.game_speed;
 	if !System.Vectors.is_inside_window(position, SIZE):
 		if bullet_data.id != 8:
 			queue_free();
@@ -37,6 +52,26 @@ func _process(delta: float) -> void:
 		is_moving = false;
 		position = System.Vectors.default();
 		visible = false;
+
+func slowing_frame(delta : float):
+	speed_multiplier -= slowing_acceleration * delta;
+	if speed_multiplier < 0.1:
+		sfx_player.stop();
+	else:
+		sfx_player.pitch_scale *= min(1, speed_multiplier * System.game_speed);
+	if speed_multiplier <= 0:
+		speed_multiplier = 0;
+		is_slowing_down = false;
+
+func speeding_frame(delta : float):
+	speed_multiplier += slowing_acceleration * delta;
+	if speed_multiplier > 0.1:
+		if !sfx_player.playing:
+			sfx_player.play(System.random.randf_range(MIN_BULLET_SOUND_DELAY_POST_TIME_STOP, MAX_BULLET_SOUND_DELAY_POST_TIME_STOP));
+		sfx_player.pitch_scale *= speed_multiplier * System.game_speed;
+	if speed_multiplier >= 1:
+		speed_multiplier = 1;
+		is_speeding_up = false;
 
 func set_data(data : BulletData) -> void:
 	bullet_data = data;
@@ -52,3 +87,13 @@ func set_sound() -> void:
 	await randf_range(SOUND_MIN_DELAY, SOUND_MAX_DELAY);
 	sfx_player.pitch_scale = max(Config.MIN_PITCH, System.game_speed);
 	sfx_player.play();
+
+func speed_up() -> void:
+	is_slowing_down = false;
+	slowing_acceleration = System.random.randf_range(MIN_SPEED_UP_SPEED, MAX_SPEED_UP_SPEED);
+	is_speeding_up = true;
+
+func slow_down() -> void:
+	is_speeding_up = false;
+	slowing_acceleration = System.random.randf_range(MIN_SLOW_DOWN_SPEED, MAX_SLOW_DOWN_SPEED);
+	is_slowing_down = true;

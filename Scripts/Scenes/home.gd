@@ -107,7 +107,7 @@ func _on_play_prev_song() -> void:
 	is_song_locked = true;
 	load_music();
 	background_music.play(prev_song_position);
-	await System.wait(0.2, self);
+	await System.wait(0.2);
 	is_song_locked = false;
 
 func _on_stop_music() -> void:

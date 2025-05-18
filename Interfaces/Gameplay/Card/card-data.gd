@@ -29,7 +29,7 @@ func eat_json(data : Dictionary) -> void:
 	default_type = CardEnums.TranslateCardType[data.override_type];
 	keywords = [];
 	for key in data.keywords:
-		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else "?");
+		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else CardEnums.Keyword.NULL);
 	add_keyword(Config.DEBUG_KEYWORD);
 	bullet_id = data.bullet;
 

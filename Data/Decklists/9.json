@@ -1,0 +1,10 @@
+{
+	"id": 9,
+	"title": "Time-stop test deck",
+	"cards": [
+		53,
+		54,
+		55
+	],
+	"startWith": [53, 54, 55]
+}

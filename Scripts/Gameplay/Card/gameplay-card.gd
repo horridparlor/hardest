@@ -58,6 +58,7 @@ func update_type_icons(card_type : CardEnums.CardType) -> void:
 
 func update_card_art(do_full_art : bool = false) -> void:
 	var art_texture : Resource = load((CARD_FULLART_PATH if do_full_art else CARD_ART_PATH) % [card_data.card_id]);
+	print((CARD_FULLART_PATH if do_full_art else CARD_ART_PATH) % [card_data.card_id]);
 	var art_scale : float = MAX_SCALE if do_full_art else 1 / MIN_SCALE;
 	card_art.texture = art_texture;
 	card_art.scale = Vector2(art_scale, art_scale);
@@ -109,7 +110,15 @@ func dissolve() -> void:
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
 	shader_material.shader = shader;
 	shader_material.set_shader_parameter("viewport_size", System.Window_);
-	for node in [
+	for node in get_shader_layers():
+		node.material = shader_material;
+	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED);
+	is_dissolving = true;
+	is_despawning = true;
+	is_moving = false;
+
+func get_shader_layers() -> Array:
+	return [
 		background_pattern,
 		name_label,
 		type_label,
@@ -119,12 +128,7 @@ func dissolve() -> void:
 		left_type_icon,
 		right_type_icon,
 		panel
-	]:
-		node.material = shader_material;
-	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED);
-	is_dissolving = true;
-	is_despawning = true;
-	is_moving = false;
+	];
 
 func dissolve_frame(delta : float) -> void:
 	dissolve_value += dissolve_speed * delta * (FLOW_DISSOLVE_MULTIPLIER if is_flowing else 1);

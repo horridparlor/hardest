@@ -38,3 +38,12 @@ func get_sprites() -> Array:
 		yellow_sprite,
 		white_sprite
 	];
+
+func get_shader_layers() -> Array:
+	return [
+		off_sprite,
+		blue_sprite,
+		red_sprite,
+		yellow_sprite,
+		white_sprite
+	];

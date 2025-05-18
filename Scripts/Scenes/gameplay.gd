@@ -46,16 +46,27 @@ func init(level_data_ : LevelData) -> void:
 	init_layers();
 	set_going_first(System.Random.boolean());
 	highlight_face(false);
-	start_round();
 	update_character_faces();
 	initialize_background_pattern();
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
 	spawn_leds();
+	init_time_stop_nodes();
 	init_audio();
 	victory_banner.stop();
 	victory_banner.modulate.a = 0;
 	divine_judgment.visible = false;
+	
+	start_round();
+
+func init_time_stop_nodes() -> void:
+	time_stop_nodes = [
+		background_pattern,
+		your_face,
+		opponents_face
+	];
+	for led in leds_left + leds_right:
+		time_stop_nodes += led.get_shader_layers();
 
 func highlight_face(is_yours : bool = true) -> void:
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY if is_yours else INACTIVE_CHARACTER_VISIBILITY;
@@ -176,6 +187,7 @@ func your_turn() -> void:
 	if is_spying:
 		you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_multiplier;
 		return you_play_wait.start();
+	active_player = player_one;
 	led_direction = YOUR_LED_DIRECTION if started_playing else OFF_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR if started_playing else OFF_LED_DIRECTION;
 	show_hand();
@@ -236,7 +248,15 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	card.released.connect(_on_card_released);
 	card.despawned.connect(_on_card_despawned);
 	card.visited.connect(_on_card_visited);
+	if is_time_stopped:
+		add_time_stop_shader(card);
+	time_stop_nodes += card.get_shader_layers();
 	return card;
+
+func add_time_stop_shader(card : GameplayCard) -> void:
+	var material : ShaderMaterial = get_time_stop_material();
+	for layer in card.get_shader_layers():
+		layer.material = material;
 
 func _on_card_visited(card : GameplayCard) -> void:
 	if is_spying:
@@ -462,7 +482,7 @@ func check_for_devoured(card : GameplayCard, player : Player, opponent : Player,
 		player.send_from_field_to_grave(card.card_data);
 		if eater_was_face_down:
 			trigger_play_effects(enemy, opponent, player);
-		get_card(enemy).update_visuals();
+		update_alterations_for_card(enemy);
 		spawn_tongue(card, get_card(enemy));
 		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * (2.85/4.0) \
 			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));
@@ -475,6 +495,7 @@ func spawn_tongue(card : GameplayCard, enemy : GameplayCard) -> void:
 		return;
 	tongue = System.Instance.load_child(System.Paths.TONGUE, cards_layer2);
 	tongue.form(enemy, card);
+	emit_signal("quick_zoom_to", enemy.position);
 	play_gulp_sound();
 
 func play_gulp_sound() -> void:
@@ -483,6 +504,8 @@ func play_gulp_sound() -> void:
 	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
 
 func play_sfx(sound : Resource, volume : int = Config.SFX_VOLUME):
+	if Config.MUTE_SFX:
+		return;
 	sfx_player.pitch_scale = System.game_speed;
 	sfx_player.volume_db = volume;
 	sfx_player.stream = sound;
@@ -544,6 +567,7 @@ func opponents_turn() -> void:
 	var card : CardData;
 	if is_spying:
 		return wait_opponent_to_play();
+	active_player = player_two;
 	if player_two.hand_empty():
 		_on_opponent_turns_end() if going_first else your_turn();
 		return;
@@ -751,7 +775,7 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 		if card.has_copycat():
 			card.card_type = opponent.cards_on_field[0].card_type;
 		if get_card(card):
-			get_card(card).update_visuals(card.controller.gained_keyword);
+			update_alterations_for_card(card);
 	return transformed_any;
 
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
@@ -1230,6 +1254,87 @@ func _process(delta : float) -> void:
 		update_points_visibility(delta);
 	if is_trolling:
 		move_troll_layer(delta);
+	time_stop_frame(delta);
+
+func init_time_stop() -> void:
+	var shader_material : ShaderMaterial = get_time_stop_material();
+	for node in get_time_stop_nodes():
+		node.material = shader_material;
+	led_wait *= TIME_STOP_LED_ACCELERATION;
+	is_time_stopped = true;
+
+func get_time_stop_material() -> ShaderMaterial:
+	var shader : Resource = load("res://Shaders/CardEffects/za-warudo-shader.gdshader");
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	shader_material.shader = shader;
+	shader_material.set_shader_parameter("time", 0.9999);
+	shader_material.set_shader_parameter("glitch_mix", 0.3);
+	shader_material.set_shader_parameter("bw_mix", 0.96);
+	shader_material.set_shader_parameter("pulse_width", 0.8);
+	return shader_material;
+
+func after_time_stop() -> void:
+	var shader : Resource = load("res://Shaders/Background/background-wave.gdshader");
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	shader_material.shader = shader;
+	for node in get_time_stop_nodes():
+		node.material = null;
+	background_pattern.material = shader_material;
+	led_wait /= TIME_STOP_LED_ACCELERATION;
+	System.update_game_speed(1);
+	is_time_stopped = false;
+
+func time_stop_frame(delta : float) -> void:
+	if !is_stopping_time and !is_accelerating_time:
+		return;
+	time_stop_velocity = System.Scale.baseline(time_stop_velocity, time_stop_goal_velocity, delta * TIME_STOP_ACCELERATION_SPEED * System.game_speed);
+	if is_stopping_time:
+		time_stop_shader_time += time_stop_velocity * delta * System.game_speed;
+		if time_stop_shader_time <= 0:
+			time_stop_shader_time = 1.9999;
+			time_stop_goal_velocity = -1.9;
+		if time_stop_goal_velocity > -2 and time_stop_shader_time <= 1.0001:
+			time_stop_shader_time = 1.001;
+			is_stopping_time = false;
+			time_stop_velocity = 0;
+	if is_accelerating_time:
+		time_stop_shader_time += time_stop_velocity * delta * System.game_speed;
+		if time_stop_shader_time >= 1.9999:
+			time_stop_shader_time = 0;
+			time_stop_goal_velocity = 5;
+		if time_stop_goal_velocity > 2 and time_stop_shader_time >= 0.9999:
+			time_stop_shader_time = 0.9999;
+			is_accelerating_time = false;
+			time_stop_velocity = 0;
+			after_time_stop();
+	System.update_game_speed(System.Scale.baseline(\
+		System.game_speed, TIME_STOP_GAME_SPEED if is_stopping_time else 1, delta));
+	update_time_stop_time();
+
+func get_time_stop_nodes() -> Array:
+	for node in time_stop_nodes.duplicate():
+		if !System.Instance.exists(node):
+			time_stop_nodes.erase(node);
+	return time_stop_nodes;
+
+func update_time_stop_time() -> void:
+	for node in get_time_stop_nodes():
+		if !node.material:
+			continue;
+		node.material.set_shader_parameter("time", time_stop_shader_time);
+
+func time_stop_effect_in() -> void:
+	init_time_stop();
+	time_stop_shader_time = 0.9999;
+	is_accelerating_time = false;
+	is_stopping_time = true;
+	time_stop_goal_velocity = -5;
+
+func time_stop_effect_out() -> void:
+	time_stop_shader_time = 1.0001;
+	is_stopping_time = false;
+	is_accelerating_time = true;
+	time_stop_goal_velocity = 2;
 
 func move_troll_layer(delta : float) -> void:
 	trolling_sprite.position += delta * System.game_speed * Vector2(

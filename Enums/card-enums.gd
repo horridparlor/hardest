@@ -84,6 +84,7 @@ enum Keyword {
 	SILVER,
 	SOUL_HUNTER,
 	SPY,
+	TIME_STOP,
 	UNDEAD,
 	VAMPIRE,
 	WRAPPED
@@ -124,6 +125,7 @@ const KeywordNames : Dictionary = {
 	Keyword.SILVER : "Silver",
 	Keyword.SOUL_HUNTER : "Soul Hunter",
 	Keyword.SPY : "Spy",
+	Keyword.TIME_STOP : "Time-stop",
 	Keyword.UNDEAD : "Undead",
 	Keyword.VAMPIRE : "Vampire",
 	Keyword.WRAPPED : "Wrapped"
@@ -159,6 +161,7 @@ const TranslateKeyword : Dictionary = {
 	"silver" : Keyword.SILVER,
 	"soul-hunter" : Keyword.SOUL_HUNTER,
 	"spy" : Keyword.SPY,
+	"time-stop" : Keyword.TIME_STOP,
 	"undead" : Keyword.UNDEAD,
 	"vampire" : Keyword.VAMPIRE,
 	"wrapped" : Keyword.WRAPPED
@@ -173,7 +176,7 @@ var KeywordHints : Dictionary = {
 	Keyword.COPYCAT : "Copies opponent's card type.",
 	Keyword.CURSED : "Cannot be replaced or destroyed.",
 	Keyword.DEVOUR : "Eats the first card opponent plays.",
-	Keyword.DIGITAL : "If you would not win: If better, this card from hand replaces the card you played.",
+	Keyword.DIGITAL : "Counterspell from hand.",
 	Keyword.DIVINE : "Defeats any undead.",
 	Keyword.EMP : "Negates digital.",
 	Keyword.EXTRA_SALTY : "If loses, lose all your points.",
@@ -182,7 +185,7 @@ var KeywordHints : Dictionary = {
 	Keyword.HORSE_GEAR : "Starts in your opening hand.",
 	Keyword.HYDRA : "Gains 3 random keywords.",
 	Keyword.INFLUENCER : "Opponent's top card becomes SAME_BASIC.",
-	Keyword.MULTI_SPY : "Fights a random card in opponent's hand. If wins, repeat up to twice.",
+	Keyword.MULTI_SPY : "Fights up to 3 random cards in opponent's hand.",
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
 	Keyword.PICK_UP : "End of turn, discard this card from your hand.",
@@ -190,11 +193,12 @@ var KeywordHints : Dictionary = {
 	Keyword.RELOAD : "Shuffle a random gun into your deck.",
 	Keyword.RUST : "Defeats any gun.",
 	Keyword.SALTY : "If loses, lose a point.",
-	Keyword.SECRETS : "If you are spied, this card from hand loses, and opponent gains 3 points.",
+	Keyword.SECRETS : "Loses to spies and gives them 3 points.",
 	Keyword.SILVER : "Defeats any werewolf.",
-	Keyword.SOUL_HUNTER : "If wins, defeated cards will be added to your next starting hand.",
+	Keyword.SOUL_HUNTER : "You get the cards this defeats at the start of next game.",
 	Keyword.SPY : "Fights a random card in opponent's hand.",
-	Keyword.UNDEAD : "While you have %s SAME_TYPES in your grave, turns into a gun: If wins, purge the 3 SAME_TYPES from your grave." % [System.Rules.UNDEAD_LIMIT],
+	Keyword.TIME_STOP : "Extends your turn.",
+	Keyword.UNDEAD : "Takes 3 %s SAME_TYPES from your grave and turns into a gun." % [System.Rules.UNDEAD_LIMIT],
 	Keyword.VAMPIRE : "If wins, drains the point from opponent.",
 	Keyword.WRAPPED : "Next card you play, gains buried."
 }

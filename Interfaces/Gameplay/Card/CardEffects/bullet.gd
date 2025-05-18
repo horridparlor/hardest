@@ -19,7 +19,7 @@ var is_moving : bool;
 func init(direction_ : Vector2, play_sound : bool = false):
 	add_child(sfx_player);
 	sfx_player.finished.connect(queue_free);
-	sfx_player.volume_db = Config.VOLUME + Config.SFX_VOLUME + Config.GUN_VOLUME if play_sound else Config.INAUDBLE_DB;
+	sfx_player.volume_db = Config.VOLUME + Config.SFX_VOLUME + Config.GUN_VOLUME if play_sound and !Config.MUTE_SFX else Config.INAUDBLE_DB;
 	add_child(sprite);
 	speed = System.random.randf_range(MIN_SPEED, MAX_SPEED);
 	direction = direction_;

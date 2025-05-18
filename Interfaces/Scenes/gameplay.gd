@@ -28,7 +28,7 @@ const YOU_TO_PLAY_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const SPY_WAIT_TIME : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const AUTO_PLAY_MIN_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const AUTO_PLAY_MAX_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
-const GULP_WAIT : float = 0.5 * Config.GAME_SPEED_MULTIPLIER;
+const GULP_WAIT : float = 0.35 * Config.GAME_SPEED_MULTIPLIER;
 
 const TROLL_MIN_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
 const TROLL_MAX_WAIT : float = 1.2 * Config.GAME_SPEED_MULTIPLIER;
@@ -71,6 +71,10 @@ const OFF_LED_DIRECTION : int = 0;
 const FAST_LED_SPEED : int = 2;
 const BACKGROUND_OPACITY : float = 0.6;
 
+const TIME_STOP_ACCELERATION_SPEED : float = 0.5;
+const TIME_STOP_LED_ACCELERATION : int = 12;
+const TIME_STOP_GAME_SPEED : float = 0.6;
+
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
 var cards : Dictionary;
@@ -98,6 +102,14 @@ var started_playing : bool;
 var did_win : bool;
 var led_wait : float = LED_WAIT;
 var round_number : int;
+var time_stop_shader_time : float = 1;
+var is_stopping_time : bool;
+var is_accelerating_time : bool;
+var time_stop_velocity : float;
+var time_stop_goal_velocity : float;
+var is_time_stopped : bool;
+var active_player : Player;
+var time_stop_nodes : Array;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

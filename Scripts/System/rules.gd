@@ -7,4 +7,3 @@ const MAX_LEVELS : int = 6;
 const UNDEAD_LIMIT : int = 3;
 const MAX_KEYWORDS : int = 3;
 const HYDRA_KEYWORDS : int = 3;
-const MAX_CARD_ID : int = 52;

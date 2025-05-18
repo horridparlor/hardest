@@ -39,7 +39,8 @@ func strike_down(point : Vector2) -> void:
 	appear_timer.wait_time = System.random.randf_range(DISAPPEAR_MIN_WAIT, DISAPPEAR_MAX_WAIT) * System.game_speed_multiplier;
 	appear_timer.start();
 	sound_delay_timer.wait_time = System.random.randf_range(MIN_SOUND_DELAY, MAX_SOUND_DELAY);
-	sound_delay_timer.start();
+	if !Config.MUTE_SFX:
+		sound_delay_timer.start();
 	start_animation();
 	visible = true;
 	modulate.a = 1;

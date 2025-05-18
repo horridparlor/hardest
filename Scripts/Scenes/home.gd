@@ -49,6 +49,12 @@ func process_dev_mode_shortcut_actions() -> void:
 	if Input.is_action_just_pressed("card_for_opponent"):
 		if gameplay:
 			gameplay.player_two.spawn_card(Config.SPAWNED_CARD);
+	if Input.is_action_just_pressed("hot_action_1") and gameplay:
+		gameplay.time_stop_effect_in();
+	if Input.is_action_just_pressed("hot_action_2") and gameplay:
+		gameplay.time_stop_effect_out();
+	if Input.is_action_just_pressed("hot_action_3") and gameplay:
+		pass;
 
 func open_starting_scene() -> void:
 	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:

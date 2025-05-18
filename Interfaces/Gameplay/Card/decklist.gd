@@ -10,7 +10,8 @@ const DEFAULT_DATA : Dictionary = {
 	"cards": [],
 	"gunChance": DEFAULT_GUN_CHANCE,
 	"mimicChance": DEFAULT_MIMIC_CHANCE,
-	"godChance": DEFAULT_GOD_CHANCE
+	"godChance": DEFAULT_GOD_CHANCE,
+	"startWith": []
 }
 
 var id : int;
@@ -27,6 +28,7 @@ var gun_chance : int = DEFAULT_GUN_CHANCE;
 var mimic_chance : int = DEFAULT_MIMIC_CHANCE;
 var god_chance : int = DEFAULT_GOD_CHANCE;
 var starting_cards : Dictionary;
+var start_with : Array;
 
 static func from_json(data : Dictionary) -> Decklist:
 	var decklist : Decklist = Decklist.new();
@@ -36,19 +38,32 @@ static func from_json(data : Dictionary) -> Decklist:
 	decklist.gun_chance = data.gunChance * Config.GUN_CHANCE;
 	decklist.mimic_chance = data.mimicChance * Config.MIMIC_CHANCE;
 	decklist.god_chance = data.godChance;
+	for card_id in data.startWith:
+		decklist.start_with.append(int(card_id));
 	decklist.eat_cards(data.cards);
 	return decklist;
 
 func eat_cards(source : Array) -> void:
 	var card_type : CardEnums.CardType;
+	var starting_type : CardEnums.CardType;
 	var card_data : CardData;
 	for card in source:
 		card_data = System.Data.load_card(card);
 		card_type = card_data.card_type;
-		if card_data.has_horse_gear():
-			starting_cards[card_type] = card;
+		if card_data.has_horse_gear() or start_with.has(card_data.card_id):
+			starting_type = card_type if card_type in [
+				CardEnums.CardType.ROCK,
+				CardEnums.CardType.PAPER,
+				CardEnums.CardType.SCISSORS
+			] else System.Random.item([
+				CardEnums.CardType.ROCK,
+				CardEnums.CardType.PAPER,
+				CardEnums.CardType.SCISSORS
+			]);
+			starting_cards[starting_type] = card;
 			card_data.queue_free();
-			continue;
+			if card_data.has_salty():
+				continue;
 		card_data.queue_free();
 		cards[card_type].append(card);
 

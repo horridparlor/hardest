@@ -1,8 +1,18 @@
 {
-	"id": 7,
+	"id": 8,
 	"title": "Mimic test-level deck",
 	"cards": [
-		40
+		1,
+		2,
+		3,
+		
+		40,
+		
+		18,
+		46,
+		27,
+		39
 	],
-	"mimicChance": 8
+	"mimicChance": 10,
+	"startWith": [27, 40, 40, 40, 40, 40, 27]
 }

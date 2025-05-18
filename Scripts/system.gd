@@ -22,6 +22,10 @@ var game_speed_multiplier : float = 1 / game_speed;
 var running_instance_id : int;
 var auto_play : bool = Config.AUTO_PLAY;
 
+func update_game_speed(speed : float) -> void:
+	game_speed = speed;
+	game_speed_multiplier = 1 / game_speed;
+
 static func create_directories() -> void:
 	Json.create_directory();
 

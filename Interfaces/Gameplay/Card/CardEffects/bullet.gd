@@ -8,12 +8,12 @@ const BULLET_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Bullets/%s.wav";
 const BULLET_ART_PATH : String = "res://Assets/Art/CardEffects/Bullets/%s.png";
 const SOUND_MIN_DELAY : float = 0 * Config.GAME_SPEED_MULTIPLIER;
 const SOUND_MAX_DELAY : float = 1.8 * Config.GAME_SPEED_MULTIPLIER;
-const MIN_SLOW_DOWN_SPEED : float = 1 / 0.14 * Config.GAME_SPEED;
-const MAX_SLOW_DOWN_SPEED : float = 1 / 0.24 * Config.GAME_SPEED;
+const MIN_SLOW_DOWN_SPEED : float = 1 / 0.54 * Config.GAME_SPEED;
+const MAX_SLOW_DOWN_SPEED : float = 1 / 0.96 * Config.GAME_SPEED;
 const MIN_SPEED_UP_SPEED : float = 1 / 0.25 * Config.GAME_SPEED;
 const MAX_SPEED_UP_SPEED : float = 1 / 0.38 * Config.GAME_SPEED;
-const MIN_BULLET_SOUND_DELAY_POST_TIME_STOP : float = 0.02 * Config.GAME_SPEED_MULTIPLIER;
-const MAX_BULLET_SOUND_DELAY_POST_TIME_STOP : float = 0.12 * Config.GAME_SPEED_MULTIPLIER;
+const MIN_BULLET_SOUND_DELAY_POST_TIME_STOP : float = 0 * Config.GAME_SPEED_MULTIPLIER;
+const MAX_BULLET_SOUND_DELAY_POST_TIME_STOP : float = 0.01 * Config.GAME_SPEED_MULTIPLIER;
 
 var direction : Vector2;
 var speed : float;
@@ -65,10 +65,9 @@ func slowing_frame(delta : float):
 
 func speeding_frame(delta : float):
 	speed_multiplier += slowing_acceleration * delta;
-	if speed_multiplier > 0.1:
-		if !sfx_player.playing:
-			sfx_player.play(System.random.randf_range(MIN_BULLET_SOUND_DELAY_POST_TIME_STOP, MAX_BULLET_SOUND_DELAY_POST_TIME_STOP));
-		sfx_player.pitch_scale *= speed_multiplier * System.game_speed;
+	if !sfx_player.playing:
+		sfx_player.play(System.random.randf_range(MIN_BULLET_SOUND_DELAY_POST_TIME_STOP, MAX_BULLET_SOUND_DELAY_POST_TIME_STOP));
+		sfx_player.pitch_scale = 1;
 	if speed_multiplier >= 1:
 		speed_multiplier = 1;
 		is_speeding_up = false;
@@ -81,11 +80,11 @@ func set_sprite() -> void:
 	sprite.rotation_degrees = 180;
 	sprite.texture = texture;
 
-func set_sound() -> void:
+func set_sound(pitch : float = System.game_speed) -> void:
 	var sound : Resource = load(BULLET_SOUND_PATH % bullet_data.sound_name);
 	sfx_player.stream = sound;
 	await randf_range(SOUND_MIN_DELAY, SOUND_MAX_DELAY);
-	sfx_player.pitch_scale = max(Config.MIN_PITCH, System.game_speed);
+	sfx_player.pitch_scale = max(Config.MIN_PITCH, pitch);
 	sfx_player.play();
 
 func speed_up() -> void:

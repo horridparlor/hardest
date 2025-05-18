@@ -512,7 +512,7 @@ func play_time_stop_sound() -> void:
 
 func play_time_stop_sound_reverse() -> void:
 	var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/time-accelerate.wav");
-	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME, 1 * (time_stop_goal_velocity / TIME_STOP_OUT_BW_MAX_SPEED));
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME, 1 * ((time_stop_goal_velocity + time_stop_goal_velocity2) / (TIME_STOP_OUT_BW_MIN_SPEED + TIME_STOP_OUT_GLITCH_MIN_SPEED)));
 	if !Config.MUTE_SFX:
 		await sfx_player.finished;
 	emit_signal("play_prev_song");
@@ -762,8 +762,7 @@ func calculate_base_points(card : CardData, enemy : CardData) -> int:
 		points *= 2;
 	if enemy.has_champion():
 		points *= 2;
-	if card.has_stopped_time_advantage:
-		points *= System.Rules.STOPPED_TIME_SHOTS;
+	points *= card.stopped_time_advantage;
 	return points;
 
 func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
@@ -907,7 +906,7 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 	if card.has_champion():
 		value *= 2;
 	if card.is_gun and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
-		value *= System.Rules.STOPPED_TIME_SHOTS;
+		value *= card.stopped_time_advantage;
 	return value;
 
 func get_card_base_value(card : CardData) -> int:
@@ -1038,11 +1037,12 @@ func stopped_time_results() -> void:
 		opponents_play_wait.start();
 
 func stopped_time_shooting(card : CardData, enemy : CardData) -> void:
-	for i in range(System.Rules.STOPPED_TIME_SHOTS):
+	var stopped_time_advantage : int = System.random.randi_range(System.Rules.STOPPED_TIME_MIN_SHOTS, System.Rules.STOPPED_TIME_MAX_SHOTS);
+	for i in range(stopped_time_advantage):
 		for bullet in play_shooting_animation(card, enemy, true, true):
 			time_stopped_bullets.append(bullet);
 			await System.wait_range(MIN_STOPPED_TIME_SHOOTING_ROUND_WAIT, MAX_STOPPED_TIME_SHOOTING_ROUND_WAIT);
-	card.has_stopped_time_advantage = true;
+	card.stopped_time_advantage = stopped_time_advantage;
 
 func play_tie_sound() -> void:
 	play_point_sfx(TIE_SOUND_PATH);
@@ -1058,8 +1058,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 		points *= 2;
 	if enemy and enemy.has_champion():
 		points *= 2;
-	if card.has_stopped_time_advantage:
-		points *= System.Rules.STOPPED_TIME_SHOTS;
+	if card.stopped_time_advantage:
+		points *= card.stopped_time_advantage;
 	player.gain_points(points);
 	click_your_points() \
 		if player.controller == GameplayEnums.Controller.PLAYER_ONE \
@@ -1100,7 +1100,7 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 	var bullet : Bullet;
 	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy else -get_card(card).get_recoil_position();
 	var count : int = 1;
-	if card.has_stopped_time_advantage:
+	if card.stopped_time_advantage > 0:
 		return bullets;
 	if card.has_champion():
 		count = System.random.randi_range(3, 5)
@@ -1280,9 +1280,9 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
-	if card.has_stopped_time_advantage:
+	if card.stopped_time_advantage > 0:
 		return you_win;
-	elif enemy.has_stopped_time_advantage:
+	elif enemy.stopped_time_advantage > 0:
 		return opponent_wins;
 	if card.has_pair():
 		if !enemy.has_pair():
@@ -1388,7 +1388,7 @@ func time_stop_frame(delta : float) -> void:
 		time_stop_shader_time += time_stop_velocity * delta * System.game_speed;
 		if time_stop_shader_time >= 1.9999:
 			time_stop_shader_time = 0;
-			time_stop_goal_velocity = System.random.randf_range(TIME_STOP_OUT_GLITCH_MIN_SPEED, TIME_STOP_OUT_GLITCH_MAX_SPEED);
+			time_stop_goal_velocity = time_stop_goal_velocity2;
 		if time_stop_goal_velocity > TIME_STOP_OUT_BW_MAX_SPEED and time_stop_shader_time >= 0.9999:
 			time_stop_shader_time = 0.9999;
 			is_accelerating_time = false;
@@ -1422,6 +1422,7 @@ func time_stop_effect_out() -> void:
 	is_stopping_time = false;
 	is_accelerating_time = true;
 	time_stop_goal_velocity = System.random.randf_range(TIME_STOP_OUT_BW_MIN_SPEED, TIME_STOP_OUT_BW_MAX_SPEED);
+	time_stop_goal_velocity2 = System.random.randf_range(TIME_STOP_OUT_GLITCH_MIN_SPEED, TIME_STOP_OUT_GLITCH_MAX_SPEED);
 	emit_signal("stop_music_if_special");
 	play_time_stop_sound_reverse();
 

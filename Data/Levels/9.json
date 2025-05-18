@@ -1,9 +1,10 @@
 {
 	"id": 9,
 	"title": "Time-stop test level",
-	"opponent": "Erika",
+	"opponent": "Pete",
+	"variant": 11,
 	"deck": 9,
 	"deck2": 9,
-	"song": 13,
+	"song": 2,
 	"background": 11
 }

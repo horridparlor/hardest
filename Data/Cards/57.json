@@ -6,5 +6,6 @@
 		"champion",
 		"vampire",
 		"time-stop"
-	]
+	],
+	"bullet": 10
 }

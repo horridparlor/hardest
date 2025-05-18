@@ -7,7 +7,7 @@ const MAX_SONG_ID : int = 16;
 const MAX_CARD_ID : int = 55;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID / 2, 10);
 
-const AUTO_PLAY : bool = true if DEV_MODE else false;
+const AUTO_PLAY : bool = false if DEV_MODE else false;
 const AUTO_START : bool = false if DEV_MODE else false;
 const AUTO_LEVEL : int = 9 if DEV_MODE else 0;
 const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
@@ -20,7 +20,7 @@ const GUN_CHANCE : int = 1 if DEV_MODE else 1;
 const MIMIC_CHANCE : int = 1 if DEV_MODE else 1;
 const MUSIC_NIGHTCORE_PITCH : float = 1.2;
 
-const MUTE : bool = true if DEV_MODE else false;
+const MUTE : bool = false if DEV_MODE else false;
 const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;
 const MUTE_SFX : bool = (false if DEV_MODE else false) or MUTE;
 const VOLUME : int = 0 if DEV_MODE else 0;

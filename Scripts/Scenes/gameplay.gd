@@ -498,12 +498,28 @@ func spawn_tongue(card : GameplayCard, enemy : GameplayCard) -> void:
 	emit_signal("quick_zoom_to", enemy.position);
 	play_gulp_sound();
 
+func play_time_stop_sound() -> void:
+	var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/time-stop.wav");
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
+	emit_signal("stop_music");
+	if Config.MUTE_SFX:
+		return;
+	await sfx_player.finished;
+	emit_signal("play_song", 1001, System.random.randf_range(MIN_TIME_STOP_PITCH, MAX_TIME_STOP_PITCH));
+
+func play_time_stop_sound_reverse() -> void:
+	var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/time-accelerate.wav");
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME, 1);
+	if !Config.MUTE_SFX:
+		await sfx_player.finished;
+	emit_signal("play_prev_song");
+
 func play_gulp_sound() -> void:
 	var sound : Resource = load("res://Assets/SFX/CardSounds/Transformations/mimic-gulp.wav");
 	await System.wait(GULP_WAIT, self);
 	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
 
-func play_sfx(sound : Resource, volume : int = Config.SFX_VOLUME):
+func play_sfx(sound : Resource, volume : int = Config.SFX_VOLUME, pitch : float = System.game_speed):
 	if Config.MUTE_SFX:
 		return;
 	sfx_player.pitch_scale = System.game_speed;
@@ -533,6 +549,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
+			CardEnums.Keyword.TIME_STOP:
+				time_stop_effect_in();
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
 
@@ -1262,6 +1280,7 @@ func init_time_stop() -> void:
 		node.material = shader_material;
 	led_wait *= TIME_STOP_LED_ACCELERATION;
 	is_time_stopped = true;
+	play_time_stop_sound();
 
 func get_time_stop_material() -> ShaderMaterial:
 	var shader : Resource = load("res://Shaders/CardEffects/za-warudo-shader.gdshader");
@@ -1302,7 +1321,7 @@ func time_stop_frame(delta : float) -> void:
 		if time_stop_shader_time >= 1.9999:
 			time_stop_shader_time = 0;
 			time_stop_goal_velocity = 5;
-		if time_stop_goal_velocity > 2 and time_stop_shader_time >= 0.9999:
+		if time_stop_goal_velocity > 0.3 and time_stop_shader_time >= 0.9999:
 			time_stop_shader_time = 0.9999;
 			is_accelerating_time = false;
 			time_stop_velocity = 0;
@@ -1334,7 +1353,9 @@ func time_stop_effect_out() -> void:
 	time_stop_shader_time = 1.0001;
 	is_stopping_time = false;
 	is_accelerating_time = true;
-	time_stop_goal_velocity = 2;
+	time_stop_goal_velocity = 0.3;
+	emit_signal("stop_music_if_special");
+	play_time_stop_sound_reverse();
 
 func move_troll_layer(delta : float) -> void:
 	trolling_sprite.position += delta * System.game_speed * Vector2(

@@ -57,6 +57,9 @@ var is_quick_zooming : bool;
 var pitch_locked : bool;
 var zoomed_in_scale : Vector2;
 var cached_game_speed : float = Config.MUSIC_NIGHTCORE_PITCH;
+var prev_song_position : float;
+var prev_song : int;
+var is_song_locked : bool;
 
 func _ready() -> void:
 	for node in [
@@ -113,12 +116,12 @@ func _on_zoom_out() -> void:
 	is_zooming = true;
 	is_moving_camera = true;
 
-func load_music() -> void:
+func load_music(pitch : float = cached_game_speed) -> void:
 	var song : Resource = System.Data.load_song(save_data.current_song);
 	background_music.stream = song;
 	if Config.MUTE_MUSIC:
 		return;
-	background_music.pitch_scale = System.game_speed * cached_game_speed;
+	background_music.pitch_scale = pitch * System.game_speed;
 	background_music.play();
 	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
 

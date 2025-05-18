@@ -58,7 +58,6 @@ func update_type_icons(card_type : CardEnums.CardType) -> void:
 
 func update_card_art(do_full_art : bool = false) -> void:
 	var art_texture : Resource = load((CARD_FULLART_PATH if do_full_art else CARD_ART_PATH) % [card_data.card_id]);
-	print((CARD_FULLART_PATH if do_full_art else CARD_ART_PATH) % [card_data.card_id]);
 	var art_scale : float = MAX_SCALE if do_full_art else 1 / MIN_SCALE;
 	card_art.texture = art_texture;
 	card_art.scale = Vector2(art_scale, art_scale);

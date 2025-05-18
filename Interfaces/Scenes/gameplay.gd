@@ -4,6 +4,10 @@ class_name Gameplay
 signal game_over(did_win)
 signal zoom_to(node, do_slow_down)
 signal quick_zoom_to(position)
+signal play_song(song_id)
+signal stop_music
+signal stop_music_if_special
+signal play_prev_song
 
 const HAND_POSITION : Vector2 = Vector2(0, 760);
 const HAND_MARGIN : int = 200;
@@ -39,6 +43,8 @@ const CHANCE_TO_FLICKER_HAND : int = 3;
 const FLICKER_SPEED_UP : float = 2/3;
 const YOUR_POINTS_ZOOM_CHANCE : int = 3;
 const OPPONENTS_POINTS_ZOOM_CHANCE : int = 4;
+const MIN_TIME_STOP_PITCH : float = 1.2;
+const MAX_TIME_STOP_PITCH : float = 1.5;
 
 const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";

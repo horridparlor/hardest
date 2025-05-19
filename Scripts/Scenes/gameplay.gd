@@ -1098,7 +1098,7 @@ func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false) -> Array:
 	var bullets : Array;
 	var bullet : Bullet;
-	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy else -get_card(card).get_recoil_position();
+	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy and get_card(enemy) else -get_card(card).get_recoil_position();
 	var count : int = 1;
 	if card.stopped_time_advantage > 0:
 		return bullets;
@@ -1112,7 +1112,7 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
 		if slow_down:
 			bullet.slow_down();
-		bullet.init(enemy_position - get_card(card).get_recoil_position(), i < 2);
+		bullet.init(enemy_position - (get_card(card).get_recoil_position() if get_card(card) else System.Vectors.default()), i < 2);
 		bullets.append(bullet);
 		if do_zoom and i == 0:
 			zoom_to_bullet(bullet);

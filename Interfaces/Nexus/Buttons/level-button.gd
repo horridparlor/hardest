@@ -27,6 +27,7 @@ var velocity : float;
 var random : RandomNumberGenerator = RandomNumberGenerator.new();
 
 func init(level_data_ : LevelData, is_latest_level_ : bool) -> void:
+	rotation_degrees = System.random.randf_range(-ROTATION_SPEED, ROTATION_SPEED);
 	level_data = level_data_;
 	level_data.position = position;
 	is_latest_level = is_latest_level_;

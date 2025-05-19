@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://c7fcloc41ve0j"]
+
+[ext_resource type="Texture2D" uid="uid://cugyhfw27i5na" path="res://Assets/Art/Buttons/blue-arrow.png" id="1_uw33t"]
+[ext_resource type="Script" path="res://Prefabs/Nexus/Buttons/nexus-page-toggle-arrow.gd" id="1_y5rww"]
+[ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="3_xidyn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2uk7e"]
+size = Vector2(200, 200)
+
+[node name="NexusPageToggleArrow" type="Node2D"]
+script = ExtResource("1_y5rww")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_uw33t")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+texture = ExtResource("1_uw33t")
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="."]
+shape = SubResource("RectangleShape2D_2uk7e")
+script = ExtResource("3_xidyn")
+
+[connection signal="triggered" from="TouchScreenButton" to="." method="_on_touch_screen_button_triggered"]

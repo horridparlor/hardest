@@ -15,12 +15,18 @@ extends Nexus
 @onready var led_frame_timer : Timer = $Timers/LedFrameTimer;
 @onready var card_spawn_timer : Timer = $Timers/CardSpawnTimer;
 @onready var auto_start_timer : Timer = $Timers/AutoStartTimer;
+@onready var left_arrow : NexusPageToggleArrow = $Buttons/DownLeftArrow;
+@onready var right_arrow : NexusPageToggleArrow = $Buttons/DownRightArrow;
+@onready var roguelike_page : RoguelikePage = $RoguelikePage;
 
 func _ready() -> void:
 	operate_showcase_layer();
 	spawn_leds();
 	labels_layer.activate_animations();
 	background.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
+	roguelike_page.visible = false;
+	roguelike_page.init();
+	roguelike_page.roll_out();
 
 func spawn_a_background_card() -> void:
 	var is_back : bool = System.Random.boolean();
@@ -56,12 +62,24 @@ func init(levels_unlocked_ : int) -> void:
 	levels_unlocked = levels_unlocked_;
 	is_active = true;
 	spawn_level_buttons(levels_unlocked);
+	init_arrow_buttons();
 	spawn_a_background_card();
-	if levels_unlocked == System.Levels.MAX_TUTORIAL_LEVELS:
-		hint_label.text = "YOU WON THE DEMO";
+	update_hint_label();
+	if open_page == NexusPage.TUTORIAL and levels_unlocked == System.Levels.MAX_TUTORIAL_LEVELS:
+		hint_label.text = "SCROLL DOWN";
 	if Config.AUTO_START:
 		auto_start_timer.wait_time = AUTO_START_WAIT * System.game_speed_multiplier;
 		auto_start_timer.start();
+
+func update_hint_label() -> void:
+	if open_page == NexusPage.ROGUELIKE:
+		hint_label.text = "COLLECT 100 CARDS";
+	else:
+		hint_label.text = "BEAT TUTORIAL LEVELS";
+
+func init_arrow_buttons() -> void:
+	left_arrow.triggered.connect(switch_page);
+	right_arrow.triggered.connect(switch_page);
 
 func auto_start_level() -> void:
 	var button : LevelButton;
@@ -99,7 +117,7 @@ func spawn_level_buttons(levels_unlocked : int) -> void:
 			current_position.x = LEVEL_BUTTONS_STARTING_POSITION.x;
 
 func _on_level_pressed(level_data : LevelData) -> void:
-	if !is_active:
+	if !is_active or open_page != NexusPage.TUTORIAL:
 		return;
 	is_active = false;
 	emit_signal("enter_level", level_data);
@@ -148,3 +166,43 @@ func _on_card_spawn_timer_timeout() -> void:
 func _on_auto_start_timer_timeout() -> void:
 	auto_start_timer.stop();
 	auto_start_level();
+
+func _on_scroll_button_pressed() -> void:
+	if !is_active or is_scrolling:
+		return;
+	scrolling_origin_point = Vector2(0, get_global_mouse_position().y);
+	is_scrolling = true;
+
+func _on_scroll_button_released() -> void:
+	if !is_active:
+		return;
+	is_scrolling = false;
+
+func _process(delta: float) -> void:
+	if !is_scrolling:
+		return;
+	if Vector2(0, get_global_mouse_position().y).distance_to(scrolling_origin_point) >= SCROLLING_THRESHOLD:
+		switch_page();
+		is_scrolling = false;
+
+func switch_page() -> void:
+	if !is_active:
+		return;
+	if open_page == NexusPage.TUTORIAL:
+		open_roguelike_page();
+	else:
+		open_tutorial_page();
+	update_hint_label();
+
+func open_roguelike_page() -> void:
+	for button in level_buttons:
+		button.roll_out();
+	roguelike_page.roll_in();
+	roguelike_page.visible = true;
+	open_page = NexusPage.ROGUELIKE;
+
+func open_tutorial_page() -> void:
+	for button in level_buttons:
+		button.roll_in();
+	roguelike_page.roll_out();
+	open_page = NexusPage.TUTORIAL;

@@ -3,6 +3,11 @@ class_name Nexus
 
 signal enter_level(level_data);
 
+enum NexusPage {
+	TUTORIAL,
+	ROGUELIKE
+}
+
 const LEVEL_BUTTON_PATH : String = "res://Prefabs/Nexus/Buttons/level-button.tscn";
 const LEVEL_BUTTON_X_MARGIN : int = 342;
 const LEVEL_BUTTON_Y_MARGIN : int = 400;
@@ -23,6 +28,7 @@ const RED_LED_COLOR_CHANGE_CHANCE : int = 4;
 const MIN_CARD_SPAWN_WAIT : float = 0.1;
 const MAX_CARD_SPAWN_WAIT : float = 3.0;
 const AUTO_START_WAIT : float = 0.5;
+const SCROLLING_THRESHOLD : float = 240;
 
 var is_active : bool;
 var leds_left : Array;
@@ -33,6 +39,9 @@ var red_led_color : Led.LedColor = Led.LedColor.RED;
 var led_wait : float = LED_FRAME_WAIT;
 var level_buttons : Array;
 var levels_unlocked : int;
+var is_scrolling : bool;
+var scrolling_origin_point : Vector2;
+var open_page : NexusPage = NexusPage.TUTORIAL;
 
 func init(levels_unlocked_ : int) -> void:
 	pass

@@ -25,8 +25,8 @@ static func x() -> float:
 static func direction() -> int:
 	return item([1, -1]);
 
-static func vector(min : float, max : float) -> Vector2:
+static func vector(min : float, max : float, random : RandomNumberGenerator = System.random) -> Vector2:
 	return Vector2(
-		direction() * System.random.randf_range(min, max),
-		direction() * System.random.randf_range(min, max)
+		direction() * random.randf_range(min, max),
+		direction() * random.randf_range(min, max)
 	);

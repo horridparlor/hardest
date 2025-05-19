@@ -417,7 +417,7 @@ func _on_card_despawned(card : GameplayCard) -> void:
 func check_if_played(card : GameplayCard) -> void:
 	var mouse_position : Vector2 = get_local_mouse_position();
 	var card_margin : int = GameplayCard.SIZE.y;
-	if !(can_play_card and mouse_position.y + card_margin >= FIELD_START_LINE and mouse_position.y - card_margin <= FIELD_END_LINE):
+	if !(can_play_card and mouse_position.y + card_margin >= FIELD_START_LINE and mouse_position.y - card_margin <= FIELD_END_LINE) or card.scale > GameplayCard.MIN_SCALE_VECTOR:
 		return;
 	play_card(card, player_one, player_two);
 

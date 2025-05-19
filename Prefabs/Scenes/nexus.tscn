@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=17 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
 [ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_0aihb"]
@@ -11,6 +11,8 @@
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="6_wxdwb"]
 [ext_resource type="PackedScene" uid="uid://du74m1788wbjd" path="res://Prefabs/Gameplay/Card/gameplay-card.tscn" id="8_iwnol"]
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="8_lmh8j"]
+[ext_resource type="PackedScene" uid="uid://c7fcloc41ve0j" path="res://Prefabs/Nexus/Buttons/nexus-page-toggle-arrow.tscn" id="12_hieps"]
+[ext_resource type="PackedScene" uid="uid://dr5fq4v3lflqw" path="res://Prefabs/Nexus/Pages/roguelike-page.tscn" id="13_252js"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
 bg_color = Color(0.611381, 0.0337919, 0.238643, 1)
@@ -27,6 +29,9 @@ shader_parameter/amplitude = 10.0
 shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 1.0
 shader_parameter/opacity = 0.6
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3j4h8"]
+size = Vector2(1620, 2880)
 
 [node name="Nexus" type="Node2D"]
 script = ExtResource("1_wr5g5")
@@ -153,6 +158,24 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
 [node name="AutoStartTimer" type="Timer" parent="Timers"]
 
+[node name="Buttons" type="Node2D" parent="."]
+
+[node name="DownLeftArrow" parent="Buttons" instance=ExtResource("12_hieps")]
+position = Vector2(-345, 945)
+rotation = 3.14159
+
+[node name="DownRightArrow" parent="Buttons" instance=ExtResource("12_hieps")]
+position = Vector2(345, 945)
+rotation = 3.14159
+
+[node name="ScrollButton" type="TouchScreenButton" parent="Buttons"]
+shape = SubResource("RectangleShape2D_3j4h8")
+
+[node name="RoguelikePage" parent="." instance=ExtResource("13_252js")]
+position = Vector2(0, 200)
+
 [connection signal="timeout" from="Timers/LedFrameTimer" to="." method="_on_led_frame_timer_timeout"]
 [connection signal="timeout" from="Timers/CardSpawnTimer" to="." method="_on_card_spawn_timer_timeout"]
 [connection signal="timeout" from="Timers/AutoStartTimer" to="." method="_on_auto_start_timer_timeout"]
+[connection signal="pressed" from="Buttons/ScrollButton" to="." method="_on_scroll_button_pressed"]
+[connection signal="released" from="Buttons/ScrollButton" to="." method="_on_scroll_button_released"]

@@ -181,7 +181,7 @@ func _on_scroll_button_released() -> void:
 func _process(delta: float) -> void:
 	if !is_scrolling:
 		return;
-	if Vector2(0, get_global_mouse_position().y).distance_to(scrolling_origin_point) >= SCROLLING_THRESHOLD:
+	if get_global_mouse_position().y < scrolling_origin_point.y and abs(get_global_mouse_position().y - scrolling_origin_point.y) >= SCROLLING_THRESHOLD:
 		switch_page();
 		is_scrolling = false;
 

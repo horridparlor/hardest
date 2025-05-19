@@ -2,7 +2,7 @@ extends Node
 
 const VERSION : String = "0.3";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = false ;
 const MAX_SONG_ID : int = 16;
 const MAX_CARD_ID : int = 57;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID / 2, 10);

@@ -25,9 +25,11 @@ var is_rolling_out : bool;
 var rolling_direction : Vector2;
 var velocity : float;
 var random : RandomNumberGenerator = RandomNumberGenerator.new();
+var base_rotation : float;
 
 func init(level_data_ : LevelData, is_latest_level_ : bool) -> void:
-	rotation_degrees = System.random.randf_range(-ROTATION_SPEED, ROTATION_SPEED);
+	base_rotation = System.random.randf_range(-ROTATION_SPEED, ROTATION_SPEED);
+	rotation_degrees = base_rotation;
 	level_data = level_data_;
 	level_data.position = position;
 	is_latest_level = is_latest_level_;
@@ -76,3 +78,5 @@ func _process(delta : float) -> void:
 
 func rotation_frame(angle : float, delta : float) -> void:
 	rotation_degrees += angle * ROTATION_SPEED * delta;
+	if is_rolling_in:
+		rotation_degrees = System.Scale.baseline(rotation_degrees, base_rotation, ROTATION_SPEED / 2 * delta);

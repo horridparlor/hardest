@@ -5,6 +5,7 @@ uniform float glitch_mix : hint_range(0.0, 1.0) = 1.0;
 uniform float bw_mix : hint_range(0.0, 1.0) = 1.0;
 uniform vec2 screen_center = vec2(0.5, 0.5);
 uniform float pulse_width = 0.15;
+uniform float opacity : hint_range(0.0, 1.0) = 1.0;
 
 vec3 rgb2gray(vec3 color) {
     float gray = dot(color, vec3(0.299, 0.587, 0.114));
@@ -45,5 +46,5 @@ void fragment() {
         color = mix(glitch, grayscale, effect_strength);
     }
 
-    COLOR = vec4(color, original.a);
+    COLOR = vec4(color, original.a * opacity);
 }

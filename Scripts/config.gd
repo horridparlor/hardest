@@ -2,19 +2,19 @@ extends Node
 
 const VERSION : String = "0.3";
 
-const DEV_MODE : bool = false ;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 16;
 const MAX_CARD_ID : int = 57;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID / 2, 10);
 
-const AUTO_PLAY : bool = true if DEV_MODE else false;
-const AUTO_START : bool = true if DEV_MODE else false;
+const AUTO_PLAY : bool = false if DEV_MODE else false;
+const AUTO_START : bool = false if DEV_MODE else false;
 const AUTO_LEVEL : int = 0 if DEV_MODE else 0;
 const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
 const DEBUG_CARD : int = 0 if DEV_MODE else 0;
 const SPAWNED_CARD : int = 57 if DEV_MODE else 1;
-const GAME_SPEED : float = 3 if DEV_MODE else 1;
+const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 const GUN_CHANCE : int = 1 if DEV_MODE else 1;
 const MIMIC_CHANCE : int = 1 if DEV_MODE else 1;

@@ -131,6 +131,7 @@ var time_stop_goal_velocity2 : float;
 var is_time_stopped : bool;
 var active_player : Player;
 var time_stop_nodes : Array;
+var time_stop_nodes2 : Array;
 var time_stopping_player : Player;
 var time_stopped_bullets : Array;
 var has_been_stopping_turn : bool;

@@ -61,7 +61,9 @@ func init(level_data_ : LevelData) -> void:
 
 func init_time_stop_nodes() -> void:
 	time_stop_nodes = [
-		background_pattern,
+		background_pattern
+	];
+	time_stop_nodes2 = [
 		your_face,
 		opponents_face
 	];
@@ -1018,6 +1020,8 @@ func round_results() -> void:
 	round_end_timer.start();
 
 func stopped_time_results() -> void:
+	if !time_stopping_player:
+		time_stopping_player = player_one;
 	var card : CardData = time_stopping_player.get_field_card();
 	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
 	if time_stopping_player.hand_empty() or (card and (card.is_gun() or card.is_god())):
@@ -1338,8 +1342,11 @@ func _process(delta : float) -> void:
 
 func init_time_stop() -> void:
 	var shader_material : ShaderMaterial = get_time_stop_material();
+	var shader_material2 : ShaderMaterial = get_time_stop_material();
 	for node in get_time_stop_nodes():
 		node.material = shader_material;
+	for node in time_stop_nodes2:
+		node.material = shader_material2;
 	led_wait *= TIME_STOP_LED_ACCELERATION;
 	is_time_stopped = true;
 	play_time_stop_sound();
@@ -1409,6 +1416,10 @@ func update_time_stop_time() -> void:
 		if !node.material:
 			continue;
 		node.material.set_shader_parameter("time", time_stop_shader_time);
+		break;
+	for node in time_stop_nodes2:
+		node.material.set_shader_parameter("time", time_stop_shader_time);
+		break;
 
 func time_stop_effect_in() -> void:
 	init_time_stop();
@@ -1438,6 +1449,8 @@ func update_points_visibility(delta : float) -> void:
 		points_goal_visibility,
 		(POINTS_FADE_IN_SPEED if points_goal_visibility == 1 else POINTS_FADE_OUT_SPEED) * delta * System.game_speed
 	);
+	if your_face.material:
+		your_face.material.set_shader_parameter("opacity", points_layer.modulate.a);
 	cards_shadow.modulate.a = System.Scale.baseline(
 		cards_shadow.modulate.a,
 		shadow_goal_visibility,

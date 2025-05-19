@@ -104,13 +104,21 @@ func _on_button_pressed() -> void:
 func _on_button_released() -> void:
 	emit_signal("released", self);
 
-func dissolve() -> void:
+func get_dissolve_shader_material() -> ShaderMaterial:
 	var shader : Resource = load("res://Shaders/CardEffects/card-dissolve.gdshader");
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
 	shader_material.shader = shader;
 	shader_material.set_shader_parameter("viewport_size", System.Window_);
+	shader_material.set_shader_parameter("opacity", 1);
+	return shader_material;
+
+func dissolve() -> void:
+	var shader_material : ShaderMaterial = get_dissolve_shader_material();
+	var shader_material2 : ShaderMaterial = get_dissolve_shader_material();
+	shader_material2.set_shader_parameter("opacity", 0.32);
 	for node in get_shader_layers():
 		node.material = shader_material;
+	background_pattern.material = shader_material2;
 	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED);
 	is_dissolving = true;
 	is_despawning = true;
@@ -135,3 +143,4 @@ func dissolve_frame(delta : float) -> void:
 		is_dissolving = false;
 		emit_signal("despawned", self);
 	panel.material.set_shader_parameter("threshold", dissolve_value);
+	background_pattern.material.set_shader_parameter("threshold", dissolve_value);

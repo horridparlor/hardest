@@ -72,7 +72,15 @@ func open_nexus() -> void:
 	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);
 	nexus.enter_level.connect(_on_open_gameplay);
 	nexus.page_changed.connect(_on_nexus_page_changed);
+	nexus.death.connect(_on_roguelike_death);
+	System.game_speed = 1;
 	nexus.init(max(0, save_data.tutorial_levels_won), save_data.open_page, save_data.roguelike_data);
+	save_data.roguelike_data.lost_heart = false;
+
+func _on_roguelike_death() -> void:
+	save_data.roguelike_data = RoguelikeData.new();
+	save_data.write();
+	nexus.update_roguelike_data(save_data.roguelike_data);
 
 func _on_nexus_page_changed(open_page : Nexus.NexusPage) -> void:
 	save_data.open_page = open_page;
@@ -174,4 +182,5 @@ func process_victory() -> void:
 
 func process_loss() -> void:
 	save_data.tutorial_levels_won = max(0, save_data.tutorial_levels_won);
+	save_data.roguelike_data.lost_heart = true;
 	save_data.write();

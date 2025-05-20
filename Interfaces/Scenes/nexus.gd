@@ -3,6 +3,7 @@ class_name Nexus
 
 signal enter_level(level_data);
 signal page_changed(open_page);
+signal death;
 
 enum NexusPage {
 	TUTORIAL,
@@ -58,3 +59,6 @@ func instance_background_card(parent : Node) -> GameplayCard:
 
 func toggle_active(value : bool = true) -> void:
 	is_active = value;
+
+func update_roguelike_data(roguelike_data_ : RoguelikeData) -> void:
+	pass;

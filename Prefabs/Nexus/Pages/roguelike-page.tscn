@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dr5fq4v3lflqw"]
+[gd_scene load_steps=7 format=3 uid="uid://dr5fq4v3lflqw"]
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Pages/roguelike-page.gd" id="1_jidoa"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_nkh2h"]
+[ext_resource type="PackedScene" uid="uid://b1448adgu16mm" path="res://Prefabs/Nexus/EyeCandy/heart.tscn" id="3_1mvl7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xocjd"]
 bg_color = Color(0.932638, 0.524259, 3.61943e-05, 1)
@@ -60,7 +61,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_xocjd")
 
 [node name="BasicInfo" type="Node2D" parent="."]
 
-[node name="RedPanel" type="Panel" parent="BasicInfo"]
+[node name="ProgressBar" type="Node2D" parent="BasicInfo"]
+
+[node name="RedPanel" type="Panel" parent="BasicInfo/ProgressBar"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -74,7 +77,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_cjaq0")
 
-[node name="GreenPanel" type="Panel" parent="BasicInfo"]
+[node name="GreenPanel" type="Panel" parent="BasicInfo/ProgressBar"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -87,7 +90,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ht8i6")
 
-[node name="ProgressLabel" type="Label" parent="BasicInfo"]
+[node name="ProgressLabel" type="Label" parent="BasicInfo/ProgressBar"]
 offset_left = -305.0
 offset_top = -523.0
 offset_right = 105.0
@@ -95,5 +98,18 @@ offset_bottom = -444.0
 theme_override_fonts/font = ExtResource("2_nkh2h")
 theme_override_font_sizes/font_size = 64
 text = "0 / 100 cards"
+
+[node name="Hearts" type="Node2D" parent="BasicInfo"]
+position = Vector2(-150, -340)
+
+[node name="Heart" parent="BasicInfo/Hearts" instance=ExtResource("3_1mvl7")]
+position = Vector2(-120, 0)
+
+[node name="Heart2" parent="BasicInfo/Hearts" instance=ExtResource("3_1mvl7")]
+
+[node name="Heart3" parent="BasicInfo/Hearts" instance=ExtResource("3_1mvl7")]
+position = Vector2(120, 0)
+
+[node name="SfxPlayer" type="AudioStreamPlayer2D" parent="BasicInfo/Hearts"]
 
 [node name="ChoiceBox" type="Node2D" parent="."]

@@ -1,6 +1,8 @@
 extends Node2D
 class_name RoguelikePage
 
+signal death
+
 const MIN_IN_VELOCITY : float = 3.2 * Config.GAME_SPEED;
 const MAX_IN_VELOCITY : float = 3.8 * Config.GAME_SPEED;
 const MIN_OUT_VELOCITY : float = 1800 * Config.GAME_SPEED;

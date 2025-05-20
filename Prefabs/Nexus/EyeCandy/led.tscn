@@ -1,0 +1,26 @@
+[gd_scene load_steps=7 format=3 uid="uid://bt0d4w7cj2sfv"]
+
+[ext_resource type="Script" path="res://Scripts/Nexus/EyeCandy/led.gd" id="1_4byo1"]
+[ext_resource type="Texture2D" uid="uid://bhod72u27lwvw" path="res://Assets/Art/EyeCandy/Led/led-off.png" id="2_rfjc8"]
+[ext_resource type="Texture2D" uid="uid://drfkd6xk73t0u" path="res://Assets/Art/EyeCandy/Led/led-blue.png" id="3_at4po"]
+[ext_resource type="Texture2D" uid="uid://bl7jkcql26u3w" path="res://Assets/Art/EyeCandy/Led/led-red.png" id="4_c1jlv"]
+[ext_resource type="Texture2D" uid="uid://cf1ql0ggnhw3c" path="res://Assets/Art/EyeCandy/Led/led-yellow.png" id="5_btoh8"]
+[ext_resource type="Texture2D" uid="uid://bnnk7dsmhjft5" path="res://Assets/Art/EyeCandy/Led/led-white.png" id="6_pb0ji"]
+
+[node name="Led" type="Node2D"]
+script = ExtResource("1_4byo1")
+
+[node name="led-off" type="Sprite2D" parent="."]
+texture = ExtResource("2_rfjc8")
+
+[node name="led-blue" type="Sprite2D" parent="."]
+texture = ExtResource("3_at4po")
+
+[node name="led-red" type="Sprite2D" parent="."]
+texture = ExtResource("4_c1jlv")
+
+[node name="led-yellow" type="Sprite2D" parent="."]
+texture = ExtResource("5_btoh8")
+
+[node name="led-white" type="Sprite2D" parent="."]
+texture = ExtResource("6_pb0ji")

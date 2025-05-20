@@ -24,6 +24,7 @@ func _ready() -> void:
 	spawn_leds();
 	labels_layer.activate_animations();
 	background.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
+	roguelike_page.death.connect(func(): emit_signal("death"));
 
 func spawn_a_background_card() -> void:
 	var is_back : bool = System.Random.boolean();
@@ -215,3 +216,7 @@ func open_tutorial_page() -> void:
 		button.visible = true;
 	roguelike_page.roll_out();
 	open_page = NexusPage.TUTORIAL;
+
+func update_roguelike_data(roguelike_data_ : RoguelikeData) -> void:
+	roguelike_data = roguelike_data_;
+	roguelike_page.init(roguelike_data);

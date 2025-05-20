@@ -18,6 +18,7 @@ var super_rare_opponents : Dictionary;
 #Current choices on nexus
 var card_choices_left : Array;
 var fight_choices : Array;
+var lost_heart : bool;
 
 func _init() -> void:
 	lives_left = System.Rules.STARTING_LIVES;
@@ -34,6 +35,9 @@ func _init() -> void:
 	
 	card_choices_left = get_starting_card_choices();
 	fight_choices = get_starting_fight_choices();
+
+func has_max_life(additional : int = 0) -> bool:
+	return lives_left + additional >= System.Rules.STARTING_LIVES;
 
 func get_starting_fight_choices() -> Array:
 	return get_fight_choices([

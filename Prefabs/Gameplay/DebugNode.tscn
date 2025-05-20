@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfbwuumxtjb7i"]
+
+[ext_resource type="Shader" path="res://Shaders/CardEffects/ocean-shader.gdshader" id="1_sg5j4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qftgu"]
+shader = ExtResource("1_sg5j4")
+shader_parameter/wave_speed = 1.0
+shader_parameter/wave_frequency = 20.0
+shader_parameter/wave_amplitude = 0.02
+shader_parameter/water_color = Color(0, 0.5, 0.7, 1)
+shader_parameter/shine_speed = 1.0
+shader_parameter/shine_color = Vector4(1, 1, 1, 0.4)
+shader_parameter/shine_strength = 0.3
+shader_parameter/opacity = 1.0
+shader_parameter/mix_rate = 0.4
+shader_parameter/wave_center = Vector2(0.5, 0.5)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_qftgu")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = -1440.0
+offset_right = 540.0
+offset_bottom = 1440.0
+grow_horizontal = 2
+grow_vertical = 2

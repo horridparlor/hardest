@@ -55,8 +55,9 @@ func spawn_leds() -> void:
 	led_frame_timer.wait_time = LED_FRAME_WAIT * System.game_speed_multiplier;
 	led_frame_timer.start();
  
-func init(levels_unlocked_ : int, open_page_ : NexusPage) -> void:
+func init(levels_unlocked_ : int, open_page_ : NexusPage, roguelike_data_ : RoguelikeData) -> void:
 	levels_unlocked = levels_unlocked_;
+	roguelike_data = roguelike_data_;
 	is_active = true;
 	open_page = open_page_;
 	spawn_level_buttons(levels_unlocked);
@@ -79,7 +80,7 @@ func init(levels_unlocked_ : int, open_page_ : NexusPage) -> void:
 
 func update_hint_label() -> void:
 	if open_page == NexusPage.ROGUELIKE:
-		hint_label.text = "COLLECT 100 CARDS";
+		hint_label.text = "COLLECT %s CARDS" % roguelike_data.card_goal;
 	else:
 		hint_label.text = "BEAT TUTORIAL LEVELS";
 

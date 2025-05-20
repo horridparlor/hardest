@@ -9,3 +9,14 @@ const MAX_KEYWORDS : int = 3;
 const HYDRA_KEYWORDS : int = 3;
 const STOPPED_TIME_MIN_SHOTS : int = 2;
 const STOPPED_TIME_MAX_SHOTS : int = 5;
+
+#Roguelike
+const STARTING_LIVES : int = 3;
+const STARTING_MONEY : int = 5;
+const EXTRA_STARTING_HOUSE_CHANCE : int = 5;
+const MIN_RARE_CHANCE : int = 2;
+const MAX_RARE_CHANCE : int = 12;
+const DEFAULT_CARDS : Array = [1, 2, 3, 4, 5];
+const CARD_CHOICES : int = 3;
+const FIGHT_CHOICES : int = 3;
+const CARD_GOAL : int = 100;

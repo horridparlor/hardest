@@ -21,7 +21,8 @@ const DEFAULT_SAVE_DATA : Dictionary = {
 	"current_song": 1,
 	"last_played_songs": [],
 	"next_song": 0,
-	"open_page": Nexus.NexusPage.TUTORIAL
+	"open_page": Nexus.NexusPage.TUTORIAL,
+	"roguelike_data": null
 };
 
 const DEFAULT_SONG_DATA : Dictionary = {

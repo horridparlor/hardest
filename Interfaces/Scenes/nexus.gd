@@ -43,8 +43,9 @@ var levels_unlocked : int;
 var is_scrolling : bool;
 var scrolling_origin_point : Vector2;
 var open_page : NexusPage = NexusPage.TUTORIAL;
+var roguelike_data : RoguelikeData;
 
-func init(levels_unlocked_ : int, open_page_ : NexusPage) -> void:
+func init(levels_unlocked_ : int, open_page_ : NexusPage, roguelike_data_ : RoguelikeData) -> void:
 	pass
 
 func instance_background_card(parent : Node) -> GameplayCard:

@@ -6,6 +6,7 @@ var current_song : int;
 var last_played_songs : Array;
 var next_song : int;
 var open_page : Nexus.NexusPage;
+var roguelike_data : RoguelikeData;
 
 static func from_json(data : Dictionary) -> SaveData:
 	var save : SaveData = SaveData.new();
@@ -14,6 +15,9 @@ static func from_json(data : Dictionary) -> SaveData:
 	save.last_played_songs = data.last_played_songs;
 	save.next_song = data.next_song;
 	save.open_page = data.open_page;
+	save.roguelike_data = RoguelikeData.from_json(data.roguelike_data);
+	if !save.roguelike_data:
+		save.roguelike_data = RoguelikeData.new();
 	return save;
 
 func to_json() -> Dictionary:
@@ -22,7 +26,8 @@ func to_json() -> Dictionary:
 		"current_song": current_song,
 		"last_played_songs": last_played_songs,
 		"next_song": next_song,
-		"open_page": open_page
+		"open_page": open_page,
+		"roguelike_data": roguelike_data.to_json()
 	}
 
 func write() -> void:

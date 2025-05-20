@@ -115,7 +115,8 @@ const RANDOM_CARDS : Dictionary = {
 		36,
 		43,
 		47,
-		50
+		50,
+		53
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -132,7 +133,8 @@ const RANDOM_CARDS : Dictionary = {
 		37,
 		44,
 		48,
-		51
+		51,
+		54
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -149,7 +151,9 @@ const RANDOM_CARDS : Dictionary = {
 		41,
 		45,
 		49,
-		52
+		52,
+		55,
+		56
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -157,7 +161,8 @@ const RANDOM_CARDS : Dictionary = {
 		19,
 		27,
 		39,
-		46
+		46,
+		57
 	],
 	CardEnums.CardType.MIMIC: [
 		5,

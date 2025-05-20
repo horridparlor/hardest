@@ -20,7 +20,7 @@ const GUN_CHANCE : int = 1 if DEV_MODE else 1;
 const MIMIC_CHANCE : int = 1 if DEV_MODE else 1;
 const MUSIC_NIGHTCORE_PITCH : float = 1.2;
 
-const MUTE : bool = false if DEV_MODE else false;
+const MUTE : bool = true if DEV_MODE else false;
 const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;
 const MUTE_SFX : bool = (false if DEV_MODE else false) or MUTE;
 const VOLUME : int = 0 if DEV_MODE else 0;

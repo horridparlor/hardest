@@ -71,7 +71,12 @@ func open_nexus() -> void:
 		return;
 	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);
 	nexus.enter_level.connect(_on_open_gameplay);
-	nexus.init(max(0, save_data.tutorial_levels_won));
+	nexus.page_changed.connect(_on_nexus_page_changed);
+	nexus.init(max(0, save_data.tutorial_levels_won), save_data.open_page);
+
+func _on_nexus_page_changed(open_page : Nexus.NexusPage) -> void:
+	save_data.open_page = open_page;
+	save_data.write();
 
 func _on_open_gameplay(level_data_ : LevelData) -> void:
 	level_data = level_data_;

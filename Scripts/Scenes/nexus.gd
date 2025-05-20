@@ -24,9 +24,6 @@ func _ready() -> void:
 	spawn_leds();
 	labels_layer.activate_animations();
 	background.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
-	roguelike_page.visible = false;
-	roguelike_page.init();
-	roguelike_page.roll_out();
 
 func spawn_a_background_card() -> void:
 	var is_back : bool = System.Random.boolean();
@@ -58,18 +55,27 @@ func spawn_leds() -> void:
 	led_frame_timer.wait_time = LED_FRAME_WAIT * System.game_speed_multiplier;
 	led_frame_timer.start();
  
-func init(levels_unlocked_ : int) -> void:
+func init(levels_unlocked_ : int, open_page_ : NexusPage) -> void:
 	levels_unlocked = levels_unlocked_;
 	is_active = true;
+	open_page = open_page_;
 	spawn_level_buttons(levels_unlocked);
 	init_arrow_buttons();
 	spawn_a_background_card();
 	update_hint_label();
 	if open_page == NexusPage.TUTORIAL and levels_unlocked == System.Levels.MAX_TUTORIAL_LEVELS:
-		hint_label.text = "SCROLL DOWN";
+		hint_label.text = "SCROLL UP";
 	if Config.AUTO_START:
 		auto_start_timer.wait_time = AUTO_START_WAIT * System.game_speed_multiplier;
 		auto_start_timer.start();
+	roguelike_page.init();
+	if open_page == NexusPage.TUTORIAL:
+		roguelike_page.visible = false;
+		roguelike_page.roll_out();
+	else:
+		for button in level_buttons:
+			button.visible = false;
+			button.roll_out();
 
 func update_hint_label() -> void:
 	if open_page == NexusPage.ROGUELIKE:
@@ -193,6 +199,7 @@ func switch_page() -> void:
 	else:
 		open_tutorial_page();
 	update_hint_label();
+	emit_signal("page_changed", open_page);
 
 func open_roguelike_page() -> void:
 	for button in level_buttons:
@@ -204,5 +211,6 @@ func open_roguelike_page() -> void:
 func open_tutorial_page() -> void:
 	for button in level_buttons:
 		button.roll_in();
+		button.visible = true;
 	roguelike_page.roll_out();
 	open_page = NexusPage.TUTORIAL;

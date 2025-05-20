@@ -20,7 +20,8 @@ const DEFAULT_SAVE_DATA : Dictionary = {
 	"tutorial_levels_won": -1,
 	"current_song": 1,
 	"last_played_songs": [],
-	"next_song": 0
+	"next_song": 0,
+	"open_page": Nexus.NexusPage.TUTORIAL
 };
 
 const DEFAULT_SONG_DATA : Dictionary = {

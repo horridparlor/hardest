@@ -2,6 +2,7 @@ extends Node2D
 class_name Nexus
 
 signal enter_level(level_data);
+signal page_changed(open_page);
 
 enum NexusPage {
 	TUTORIAL,
@@ -43,7 +44,7 @@ var is_scrolling : bool;
 var scrolling_origin_point : Vector2;
 var open_page : NexusPage = NexusPage.TUTORIAL;
 
-func init(levels_unlocked_ : int) -> void:
+func init(levels_unlocked_ : int, open_page_ : NexusPage) -> void:
 	pass
 
 func instance_background_card(parent : Node) -> GameplayCard:

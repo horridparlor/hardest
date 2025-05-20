@@ -274,7 +274,7 @@ func pack_card() -> void:
 	focused_card.despawn(despawn_position);
 	focused_card = null;
 	play_collection_sound();
-	await System.wait(System.random.randf_range(0.7, 1.2));
+	await System.wait(System.random.randf_range(1.1, 1.5));
 	if data.card_choices_left.size() > 0:
 		show_card_choice();
 	else:

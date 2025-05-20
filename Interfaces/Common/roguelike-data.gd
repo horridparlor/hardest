@@ -356,7 +356,7 @@ func get_starting_houses() -> Array:
 		CollectionEnums.House.HIGHTECH,
 		CollectionEnums.House.KAWAII	
 	];
-	var extra_houses : int;
+	var extra_houses : int = 1;
 	while true:
 		if System.Random.chance(System.Rules.EXTRA_STARTING_HOUSE_CHANCE):
 			extra_houses += 1;

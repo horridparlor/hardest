@@ -27,7 +27,7 @@ func roll_in() -> void:
 
 func _process(delta : float) -> void:
 	if is_rolling_in:
-		position = System.Vectors.slide_towards(position, origin_point, velocity * delta, MAX_IN_VELOCITY);
+		position = System.Vectors.slide_towards(position, origin_point, velocity * delta);
 		if System.Vectors.equal(position, origin_point):
 			position = origin_point;
 			is_rolling_in = false;

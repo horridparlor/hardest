@@ -1,114 +1,105 @@
 extends Node
 
-enum CardRarity {
+enum Rarity {
 	COMMON,
-	RARE,
-	OP_RARE,
-	STUPID_OP_RARE
+	RARE
 }
 
-enum CollectionType {
-	ROCK,
-	PAPER,
-	SCISSORS,
-	SPECIAL
+enum House {
+	CHAMPION,
+	DELUSIONAL,
+	DEMONIC,
+	HIGHTECH,
+	KAWAII,
+	GOD
 }
 
-const RockCollection : Dictionary = {
-	CardRarity.COMMON: [
-		6,
-		9,
-		12,
-		15,
-		25,
-		47,
-		50
-	],
-	CardRarity.RARE: [
-		23,
-		31,
-		35,
-		43
-	],
-	CardRarity.OP_RARE: [
-		36
-	],
-	CardRarity.STUPID_OP_RARE: [
-		
+const CARDS_TO_COLLECT : Dictionary = {
+	House.CHAMPION: {
+		Rarity.COMMON: [
+			15,
+			16,
+			17,
+			20,
+			50,
+			51,
+			52
+		],
+		Rarity.RARE: [
+			53,
+			54,
+			55,
+			56,
+			57
+		]
+	},
+	House.DELUSIONAL: {
+		Rarity.COMMON: [
+			6,
+			7,
+			8,
+			13,
+			28
+		],
+		Rarity.RARE: [
+			14,
+			19,
+			40
+		]
+	},
+	House.DEMONIC: {
+		Rarity.COMMON: [
+			23,
+			24,
+			25,
+			26,
+			29
+		],
+		Rarity.RARE: [
+			37,
+			41,
+			43
+		]
+	},
+	House.HIGHTECH: {
+		Rarity.COMMON: [
+			12,
+			31,
+			32,
+			33,
+			34,
+			36,
+			47,
+			48,
+			49
+		],
+		Rarity.RARE: [
+			27,
+			39,
+			46
+		]
+	},
+	House.KAWAII: {
+		Rarity.COMMON: [
+			9,
+			10,
+			11,
+			21,
+			22,
+			30,
+			44,
+			45
+		],
+		Rarity.RARE: [
+			18,
+			35,
+			38
+		]
+	},
+	House.GOD: [
+		42
 	]
-};
-
-const PaperCollection : Dictionary = {
-	CardRarity.COMMON: [
-		7,
-		10,
-		13,
-		16,
-		22,
-		26,
-		28,
-		44,
-		48,
-		51
-	],
-	CardRarity.RARE: [
-		20,
-		32,
-		37
-	],
-	CardRarity.OP_RARE: [
-		34
-	],
-	CardRarity.STUPID_OP_RARE: [
-		
-	]
-};
-
-const ScissorsCollection : Dictionary = {
-	CardRarity.COMMON: [
-		8,
-		11,
-		17,
-		21,
-		24,
-		30,
-		45,
-		49,
-		52
-	],
-	CardRarity.RARE: [
-		14,
-		29,
-		33,
-		38,
-		41
-	],
-	CardRarity.OP_RARE: [
-		
-	],
-	CardRarity.STUPID_OP_RARE: [
-		
-	]
-};
-
-const SpecialsCollection : Dictionary = {
-	CardRarity.COMMON: [
-		19,
-		27,
-		40
-	],
-	CardRarity.RARE: [
-		18
-	],
-	CardRarity.OP_RARE: [
-		39,
-		42,
-		46
-	],
-	CardRarity.STUPID_OP_RARE: [
-		
-	]
-};
+}
 
 const RANDOM_CARDS : Dictionary = {
 	CardEnums.CardType.ROCK: [

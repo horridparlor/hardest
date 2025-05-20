@@ -62,8 +62,7 @@ func eat_cards(source : Array) -> void:
 			]);
 			starting_cards[starting_type] = card;
 			card_data.queue_free();
-			if card_data.has_salty():
-				continue;
+			continue;
 		card_data.queue_free();
 		cards[card_type].append(card);
 

@@ -251,7 +251,7 @@ func build_hydra(card : CardData) -> void:
 	var keywords : Array = CardEnums.get_hydra_keywords();
 	var keyword : CardEnums.Keyword;
 	card.keywords = [] if Config.DEBUG_KEYWORD == CardEnums.Keyword.NULL else [Config.DEBUG_KEYWORD];
-	for i in range(System.Rules.HYDRA_KEYWORDS):
+	while card.keywords.size() < System.Rules.HYDRA_KEYWORDS:
 		keyword = System.Random.item(keywords);
 		keywords.erase(keyword);
 		card.add_keyword(keyword);

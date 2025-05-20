@@ -118,7 +118,7 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 
 func write_roguelike_decks() -> void:
 	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
-	var gun_chance : int = Decklist.DEFAULT_GUN_CHANCE + 1 if chosen_opponent == GameplayEnums.Character.JUKULIUS else 0;
+	var gun_chance : int = Decklist.DEFAULT_GUN_CHANCE + (1 if chosen_opponent == GameplayEnums.Character.JUKULIUS else 0);
 	System.Data.write_decklist(1000, save_data.roguelike_data.your_cards, gun_chance);
 	System.Data.write_decklist(1000 + chosen_opponent, \
 		save_data.roguelike_data.all_opponents[chosen_opponent].cards, gun_chance);

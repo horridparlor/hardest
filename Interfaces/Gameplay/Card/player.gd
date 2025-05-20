@@ -248,7 +248,7 @@ func get_rainbowed() -> void:
 		card.eat_json(CollectionEnums.get_random_card(card.default_type));
 
 func build_hydra(card : CardData) -> void:
-	var keywords : Array = CardEnums.get_keywords();
+	var keywords : Array = CardEnums.get_hydra_keywords();
 	var keyword : CardEnums.Keyword;
 	card.keywords = [] if Config.DEBUG_KEYWORD == CardEnums.Keyword.NULL else [Config.DEBUG_KEYWORD];
 	for i in range(System.Rules.HYDRA_KEYWORDS):

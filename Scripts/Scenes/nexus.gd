@@ -69,7 +69,7 @@ func init(levels_unlocked_ : int, open_page_ : NexusPage, roguelike_data_ : Rogu
 	if Config.AUTO_START:
 		auto_start_timer.wait_time = AUTO_START_WAIT * System.game_speed_multiplier;
 		auto_start_timer.start();
-	roguelike_page.init();
+	roguelike_page.init(roguelike_data);
 	if open_page == NexusPage.TUTORIAL:
 		roguelike_page.visible = false;
 		roguelike_page.roll_out();

@@ -6,14 +6,17 @@ const MAX_IN_VELOCITY : float = 3.8 * Config.GAME_SPEED;
 const MIN_OUT_VELOCITY : float = 1800 * Config.GAME_SPEED;
 const MAX_OUT_VELOCITY : float = 2600 * Config.GAME_SPEED;
 const SIZE : Vector2 = Vector2(740, 1130);
+const PROGRESS_PANEL_SIZE : Vector2 = Vector2(680, 110);
+const PROGRESS_PANEL_BORDER_WIDTH : int = 4;
 
 var velocity : float
 var is_rolling_in : bool;
 var is_rolling_out : bool;
 var origin_point : Vector2;
+var data : RoguelikeData;
 
-func init() -> void:
-	origin_point = position;
+func init(roguelike_data : RoguelikeData):
+	pass;
 
 func roll_out() -> void:
 	velocity = System.random.randf_range(MIN_OUT_VELOCITY, MAX_OUT_VELOCITY);

@@ -90,10 +90,37 @@ enum Keyword {
 	WRAPPED
 }
 
-func get_keywords() -> Array:
-	var keywords : Array = Keyword.values();
-	keywords.remove_at(0);
-	return keywords;
+func get_hydra_keywords() -> Array:
+	return [
+		Keyword.BURIED,
+		Keyword.CELEBRATE,
+		Keyword.CHAMELEON,
+		Keyword.CHAMPION,
+		Keyword.COOTIES,
+		Keyword.COPYCAT,
+		Keyword.CURSED,
+		Keyword.DEVOUR,
+		Keyword.DIVINE,
+		Keyword.EMP,
+		Keyword.EXTRA_SALTY,
+		Keyword.GREED,
+		Keyword.HIGH_GROUND,
+		Keyword.INFLUENCER,
+		Keyword.MULTI_SPY,
+		Keyword.PAIR,
+		Keyword.PAIR_BREAKER,
+		Keyword.RAINBOW,
+		Keyword.RELOAD,
+		Keyword.RUST,
+		Keyword.SALTY,
+		Keyword.SILVER,
+		Keyword.SOUL_HUNTER,
+		Keyword.SPY,
+		Keyword.TIME_STOP,
+		Keyword.UNDEAD,
+		Keyword.VAMPIRE,
+		Keyword.WRAPPED
+	];
 
 const KeywordNames : Dictionary = {
 	Keyword.BURIED : "Buried",

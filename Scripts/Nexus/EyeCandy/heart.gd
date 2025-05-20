@@ -26,6 +26,7 @@ func off() -> void:
 
 func on(color : HeartColor = HeartColor.RED) -> void:
 	var sprite : Sprite2D;
+	reset();
 	match color:
 		HeartColor.OFF:
 			sprite = off_sprite;

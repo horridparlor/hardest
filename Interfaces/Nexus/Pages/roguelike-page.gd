@@ -10,12 +10,21 @@ const MAX_OUT_VELOCITY : float = 2600 * Config.GAME_SPEED;
 const SIZE : Vector2 = Vector2(740, 1130);
 const PROGRESS_PANEL_SIZE : Vector2 = Vector2(680, 110);
 const PROGRESS_PANEL_BORDER_WIDTH : int = 4;
+const DEATH_MIN_SPEED : float = 0.4 * Config.GAME_SPEED
+const DEATH_MAX_SPEED : float = 0.5 * Config.GAME_SPEED
+const UNDEATH_MIN_SPEED : float = 1.4 * Config.GAME_SPEED
+const UNDEATH_MAX_SPEED : float = 1.8 * Config.GAME_SPEED
+const DEATH_PANEL_SIZE : Vector2 = Vector2(280, 110);
 
 var velocity : float
 var is_rolling_in : bool;
 var is_rolling_out : bool;
 var origin_point : Vector2;
 var data : RoguelikeData;
+var is_dying : bool;
+var death_progress : float;
+var death_speed : float;
+var is_undeathing : bool;
 
 func init(roguelike_data : RoguelikeData):
 	pass;

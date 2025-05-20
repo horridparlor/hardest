@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://dr5fq4v3lflqw"]
+[gd_scene load_steps=12 format=3 uid="uid://dr5fq4v3lflqw"]
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Pages/roguelike-page.gd" id="1_jidoa"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_nkh2h"]
 [ext_resource type="PackedScene" uid="uid://b1448adgu16mm" path="res://Prefabs/Nexus/EyeCandy/heart.tscn" id="3_1mvl7"]
+[ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="4_f4yi1"]
+[ext_resource type="FontFile" uid="uid://cprgttsfluuru" path="res://Assets/FontFiles/Montserrat/Montserrat-Black.ttf" id="4_toc33"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xocjd"]
 bg_color = Color(0.932638, 0.524259, 3.61943e-05, 1)
@@ -41,6 +43,34 @@ corner_radius_top_left = 13
 corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 13
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxs4i"]
+bg_color = Color(0.875034, 0.396859, 0.835719, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.425019, 0.00469679, 0.638304, 1)
+border_blend = true
+corner_radius_top_left = 13
+corner_radius_top_right = 13
+corner_radius_bottom_right = 13
+corner_radius_bottom_left = 13
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_18nvc"]
+bg_color = Color(0.304305, 0.0367113, 0.289343, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_bottom = 4
+border_color = Color(0.444576, 0.414382, 0.968455, 1)
+border_blend = true
+corner_radius_top_left = 13
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 13
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lqn0m"]
+size = Vector2(280, 110)
 
 [node name="RoguelikePage" type="Node2D"]
 script = ExtResource("1_jidoa")
@@ -112,4 +142,59 @@ position = Vector2(120, 0)
 
 [node name="SfxPlayer" type="AudioStreamPlayer2D" parent="BasicInfo/Hearts"]
 
+[node name="ResetButton" type="Node2D" parent="BasicInfo"]
+position = Vector2(200, -340)
+script = ExtResource("4_f4yi1")
+
+[node name="ResetPanel" type="Panel" parent="BasicInfo/ResetButton"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -55.0
+offset_right = 140.0
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxs4i")
+
+[node name="ResetProgress" type="Panel" parent="BasicInfo/ResetButton"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -55.0
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_18nvc")
+
+[node name="Label" type="Label" parent="BasicInfo/ResetButton"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -74.5
+offset_top = -46.5
+offset_right = 58.5
+offset_bottom = 42.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_toc33")
+theme_override_font_sizes/font_size = 72
+text = "DIE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Die" type="TouchScreenButton" parent="BasicInfo/ResetButton"]
+shape = SubResource("RectangleShape2D_lqn0m")
+
 [node name="ChoiceBox" type="Node2D" parent="."]
+
+[connection signal="pressed" from="BasicInfo/ResetButton/Die" to="." method="_on_die_pressed"]
+[connection signal="released" from="BasicInfo/ResetButton/Die" to="." method="_on_die_released"]

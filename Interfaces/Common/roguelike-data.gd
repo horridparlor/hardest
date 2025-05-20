@@ -61,7 +61,7 @@ func get_starting_fight_choices() -> Array:
 
 func get_new_choices() -> void:
 	card_choices_left = [];
-	for i in range(System.random.randi_range(1, 3)):
+	for i in range(System.Rules.CARD_PICKS_PER_ROUND):
 		card_choices_left.append(get_card_choices());
 	fight_choices = get_fight_choices();
 
@@ -124,7 +124,7 @@ func get_starting_card_choices() -> Array:
 			53
 		]));
 		choices.shuffle();
-	return choices;
+	return [choices, get_card_choices(), get_card_choices()];
 
 func get_card_pool(houses : Array) -> Dictionary:
 	var pool : Dictionary = {

@@ -73,9 +73,14 @@ func open_nexus() -> void:
 	nexus.enter_level.connect(_on_open_gameplay);
 	nexus.page_changed.connect(_on_nexus_page_changed);
 	nexus.death.connect(_on_roguelike_death);
+	nexus.save.connect(_on_roguelike_save);
 	System.game_speed = 1;
 	nexus.init(max(0, save_data.tutorial_levels_won), save_data.open_page, save_data.roguelike_data);
 	save_data.roguelike_data.lost_heart = false;
+
+func _on_roguelike_save() -> void:
+	save_data.roguelike_data = nexus.roguelike_page.data;
+	save_data.write();
 
 func _on_roguelike_death() -> void:
 	save_data.roguelike_data = RoguelikeData.new();
@@ -113,9 +118,10 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 
 func write_roguelike_decks() -> void:
 	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
-	System.Data.write_decklist(1000, save_data.roguelike_data.your_cards);
+	var gun_chance : int = Decklist.DEFAULT_GUN_CHANCE + 1 if chosen_opponent == GameplayEnums.Character.JUKULIUS else 0;
+	System.Data.write_decklist(1000, save_data.roguelike_data.your_cards, gun_chance);
 	System.Data.write_decklist(1000 + chosen_opponent, \
-		save_data.roguelike_data.all_opponents[chosen_opponent].cards);
+		save_data.roguelike_data.all_opponents[chosen_opponent].cards, gun_chance);
 
 func _on_stop_music_if_special() -> void:
 	if save_data.current_song < 1000:

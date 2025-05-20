@@ -26,6 +26,7 @@ func _ready() -> void:
 	background.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
 	roguelike_page.death.connect(func(): emit_signal("death"));
 	roguelike_page.enter_level.connect(_on_level_pressed_from_roguelike_page);
+	roguelike_page.save.connect(func(): roguelike_data = roguelike_page.data; emit_signal("save"));
 	roguelike_page.set_origin_point();
 
 func spawn_a_background_card() -> void:
@@ -67,7 +68,7 @@ func init(levels_unlocked_ : int, open_page_ : NexusPage, roguelike_data_ : Rogu
 	init_arrow_buttons();
 	spawn_a_background_card();
 	update_hint_label();
-	if open_page == NexusPage.TUTORIAL and levels_unlocked == System.Levels.MAX_TUTORIAL_LEVELS:
+	if open_page == NexusPage.TUTORIAL and levels_unlocked >= System.Levels.MAX_TUTORIAL_LEVELS:
 		hint_label.text = "SCROLL UP";
 	if Config.AUTO_START:
 		auto_start_timer.wait_time = AUTO_START_WAIT * System.game_speed_multiplier;

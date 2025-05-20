@@ -49,7 +49,6 @@ const MAX_TIME_STOP_PITCH : float = 1.5;
 const YOUR_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/your-point.wav";
 const OPPONENTS_POINT_SOUND_PATH : String = "res://Assets/SFX/Points/opponents-point.wav";
 const TIE_SOUND_PATH : String = "res://Assets/SFX/Points/tie.wav";
-const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 const ACTIVE_CHARACTER_VISIBILITY : float = 1.0;
 const INACTIVE_CHARACTER_VISIBILITY : float = 0.4;
 const LEVEL_THEME_PATH : String = "res://Assets/Music/%s.mp3";

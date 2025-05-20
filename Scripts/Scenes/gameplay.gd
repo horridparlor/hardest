@@ -361,22 +361,7 @@ func toggle_points_visibility(value : bool = true) -> void:
 	is_updating_points_visibility = true;
 
 func update_keywords_hints(card : GameplayCard) -> void:
-	var hints_text : String;
-	var keywords : Array = card.card_data.keywords.duplicate();
-	var gained_keyword : CardEnums.Keyword = card.card_data.controller.gained_keyword;
-	if  gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
-		keywords.append(gained_keyword);
-	for keyword in keywords:
-		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
-		hint_text = enrich_hint(hint_text, card);
-		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?", hint_text];
-	keywords_hints.text = hints_text;
-
-func enrich_hint(message : String, card : GameplayCard, ) -> String:
-	message = message \
-		.replace("SAME_TYPES", CardEnums.CardTypeName[card.card_data.default_type].to_lower() + "s") \
-		.replace("SAME_BASIC", "[b]%s[/b]" % CardEnums.BasicNames[card.card_data.default_type]);
-	return message;
+	keywords_hints.text = card.get_keyword_hints();
 
 func put_other_cards_behind(card : GameplayCard) -> void:
 	for instance_id in cards:

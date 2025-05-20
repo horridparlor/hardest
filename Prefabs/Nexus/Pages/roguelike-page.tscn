@@ -1,13 +1,21 @@
-[gd_scene load_steps=12 format=3 uid="uid://dr5fq4v3lflqw"]
+[gd_scene load_steps=23 format=3 uid="uid://dr5fq4v3lflqw"]
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Pages/roguelike-page.gd" id="1_jidoa"]
+[ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_2t1wj"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_nkh2h"]
 [ext_resource type="PackedScene" uid="uid://b1448adgu16mm" path="res://Prefabs/Nexus/EyeCandy/heart.tscn" id="3_1mvl7"]
+[ext_resource type="Texture2D" uid="uid://c8mcrd3nqf2fq" path="res://Assets/Art/Patterns/RoguelikePattern.png" id="3_8uut3"]
 [ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="4_f4yi1"]
+[ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="4_mra10"]
 [ext_resource type="FontFile" uid="uid://cprgttsfluuru" path="res://Assets/FontFiles/Montserrat/Montserrat-Black.ttf" id="4_toc33"]
+[ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="9_ttcv7"]
+[ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="10_e8r34"]
+[ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_iy5c5"]
+[ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="11_n5jor"]
+[ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="12_lejpt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xocjd"]
-bg_color = Color(0.932638, 0.524259, 3.61943e-05, 1)
+bg_color = Color(0.859158, 0.446326, 0.0347421, 1)
 border_width_left = 10
 border_width_top = 10
 border_width_right = 10
@@ -18,6 +26,13 @@ corner_radius_top_left = 13
 corner_radius_top_right = 13
 corner_radius_bottom_right = 13
 corner_radius_bottom_left = 13
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_flrwm"]
+shader = ExtResource("2_2t1wj")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjaq0"]
 bg_color = Color(0.996999, 0.210579, 0.23255, 1)
@@ -72,6 +87,21 @@ corner_radius_bottom_left = 13
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lqn0m"]
 size = Vector2(280, 110)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mensn"]
+bg_color = Color(0.91932, 0.673682, 0, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(1, 0.971865, 0.909065, 1)
+corner_radius_top_left = 21
+corner_radius_top_right = 21
+corner_radius_bottom_right = 21
+corner_radius_bottom_left = 21
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ia5ba"]
+size = Vector2(600, 180)
+
 [node name="RoguelikePage" type="Node2D"]
 script = ExtResource("1_jidoa")
 
@@ -88,6 +118,11 @@ offset_bottom = 565.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xocjd")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_flrwm")
+texture = ExtResource("3_8uut3")
+script = ExtResource("4_mra10")
 
 [node name="BasicInfo" type="Node2D" parent="."]
 
@@ -130,7 +165,7 @@ theme_override_font_sizes/font_size = 64
 text = "0 / 100 cards"
 
 [node name="Hearts" type="Node2D" parent="BasicInfo"]
-position = Vector2(-150, -325)
+position = Vector2(-150, -340)
 
 [node name="Heart" parent="BasicInfo/Hearts" instance=ExtResource("3_1mvl7")]
 position = Vector2(-120, 0)
@@ -198,10 +233,69 @@ shape = SubResource("RectangleShape2D_lqn0m")
 
 [node name="LevelButtons" type="Node2D" parent="ChoiceBox"]
 
+[node name="ChoiceButton" type="Node2D" parent="ChoiceBox"]
+position = Vector2(0, 450)
+script = ExtResource("4_f4yi1")
+
+[node name="Panel" type="Panel" parent="ChoiceBox/ChoiceButton"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -80.0
+offset_right = 300.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mensn")
+
+[node name="Label" type="Label" parent="ChoiceBox/ChoiceButton"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -132.5
+offset_top = -39.5
+offset_right = 132.5
+offset_bottom = 39.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("12_lejpt")
+theme_override_font_sizes/font_size = 88
+text = "FIGHT"
+
+[node name="PackIt" type="TouchScreenButton" parent="ChoiceBox/ChoiceButton"]
+shape = SubResource("RectangleShape2D_ia5ba")
+script = ExtResource("10_iy5c5")
+
 [node name="CardChoices" type="Node2D" parent="ChoiceBox"]
 
-[node name="ChoiceButton" type="Node2D" parent="ChoiceBox"]
-script = ExtResource("4_f4yi1")
+[node name="KeywordsHints" type="RichTextLabel" parent="ChoiceBox/CardChoices"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = 140.0
+offset_right = 340.0
+offset_bottom = 640.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("9_ttcv7")
+theme_override_fonts/italics_font = ExtResource("10_e8r34")
+theme_override_fonts/bold_italics_font = ExtResource("11_n5jor")
+theme_override_fonts/bold_font = ExtResource("12_lejpt")
+theme_override_font_sizes/bold_italics_font_size = 40
+theme_override_font_sizes/italics_font_size = 40
+theme_override_font_sizes/normal_font_size = 40
+theme_override_font_sizes/bold_font_size = 40
+bbcode_enabled = true
+text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down [b]The Gun[/b]."
 
 [connection signal="pressed" from="BasicInfo/ResetButton/Die" to="." method="_on_die_pressed"]
 [connection signal="released" from="BasicInfo/ResetButton/Die" to="." method="_on_die_released"]
+[connection signal="triggered" from="ChoiceBox/ChoiceButton/PackIt" to="." method="_on_pack_it_triggered"]

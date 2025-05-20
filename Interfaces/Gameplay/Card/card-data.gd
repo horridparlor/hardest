@@ -39,6 +39,8 @@ func add_keyword(keyword : CardEnums.Keyword) -> bool:
 	match keyword:
 		CardEnums.Keyword.NULL:
 			return false;
+		CardEnums.Keyword.EXTRA_SALTY:
+			upgrade_to_keys = [CardEnums.Keyword.SALTY];
 		CardEnums.Keyword.MULTI_SPY:
 			upgrade_to_keys = [CardEnums.Keyword.SPY];
 	for key in upgrade_to_keys:
@@ -53,6 +55,8 @@ func add_keyword(keyword : CardEnums.Keyword) -> bool:
 func has_keyword(keyword : CardEnums.Keyword) -> bool:
 	var duplicate_keys : Array = [keyword];
 	match keyword:
+		CardEnums.Keyword.SALTY:
+			duplicate_keys += [CardEnums.Keyword.EXTRA_SALTY];
 		CardEnums.Keyword.SPY:
 			duplicate_keys += [CardEnums.Keyword.MULTI_SPY];
 	for key in duplicate_keys:

@@ -4,6 +4,7 @@ class_name Nexus
 signal enter_level(level_data);
 signal page_changed(open_page);
 signal death;
+signal save;
 
 enum NexusPage {
 	TUTORIAL,

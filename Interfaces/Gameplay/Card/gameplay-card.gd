@@ -25,6 +25,7 @@ const FOCUS_WAIT : float = 1.8;
 const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
 const MIN_MOVEMENT_SPEED : float = 1.0 * Config.GAME_SPEED;
 const MIN_VISIT_SPEED : float = 4.5 * Config.GAME_SPEED;
+const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 
 const FLOW_SPEED : float = 0.6;
 const MIN_GRAVITY : float = 100;
@@ -260,3 +261,21 @@ func _on_shake_pos_alter_timer_timeout() -> void:
 
 func get_recoil_position() -> Vector2:
 	return position + System.Random.vector(MIN_RECOIL, MAX_RECOIL);
+
+func get_keyword_hints() -> String:
+	var hints_text : String;
+	var keywords : Array = card_data.keywords.duplicate();
+	var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL if !card_data.controller else card_data.controller.gained_keyword;
+	if  gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
+		keywords.append(gained_keyword);
+	for keyword in keywords:
+		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
+		hint_text = enrich_hint(hint_text);
+		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?", hint_text];
+	return hints_text;
+
+func enrich_hint(message : String) -> String:
+	message = message \
+		.replace("SAME_TYPES", CardEnums.CardTypeName[card_data.default_type].to_lower() + "s") \
+		.replace("SAME_BASIC", "[b]%s[/b]" % CardEnums.BasicNames[card_data.default_type]);
+	return message;

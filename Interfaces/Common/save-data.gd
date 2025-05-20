@@ -15,9 +15,10 @@ static func from_json(data : Dictionary) -> SaveData:
 	save.last_played_songs = data.last_played_songs;
 	save.next_song = data.next_song;
 	save.open_page = data.open_page;
-	save.roguelike_data = RoguelikeData.from_json(data.roguelike_data);
-	if !save.roguelike_data:
+	if !data.roguelike_data:
 		save.roguelike_data = RoguelikeData.new();
+	else:
+		save.roguelike_data = RoguelikeData.from_json(data.roguelike_data);
 	return save;
 
 func to_json() -> Dictionary:

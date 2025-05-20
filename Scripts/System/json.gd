@@ -17,7 +17,8 @@ static func create_directory() -> void:
 	for path in [
 		SAVE_WRITE_PATH_PREFIX,
 		SAVE_WRITE_PATH_PREFIX + System.Data.SOUL_BANKS_SAVE_PATH,
-		SCREENSHOTS_PATH
+		SCREENSHOTS_PATH,
+		SAVE_WRITE_PATH_PREFIX + System.Data.DECKLIST_FOLDER_PATH
 	]:
 		dir = DirAccess.open(path);
 		if dir == null:

@@ -130,7 +130,7 @@ theme_override_font_sizes/font_size = 64
 text = "0 / 100 cards"
 
 [node name="Hearts" type="Node2D" parent="BasicInfo"]
-position = Vector2(-150, -340)
+position = Vector2(-150, -325)
 
 [node name="Heart" parent="BasicInfo/Hearts" instance=ExtResource("3_1mvl7")]
 position = Vector2(-120, 0)
@@ -195,6 +195,13 @@ vertical_alignment = 1
 shape = SubResource("RectangleShape2D_lqn0m")
 
 [node name="ChoiceBox" type="Node2D" parent="."]
+
+[node name="LevelButtons" type="Node2D" parent="ChoiceBox"]
+
+[node name="CardChoices" type="Node2D" parent="ChoiceBox"]
+
+[node name="ChoiceButton" type="Node2D" parent="ChoiceBox"]
+script = ExtResource("4_f4yi1")
 
 [connection signal="pressed" from="BasicInfo/ResetButton/Die" to="." method="_on_die_pressed"]
 [connection signal="released" from="BasicInfo/ResetButton/Die" to="." method="_on_die_released"]

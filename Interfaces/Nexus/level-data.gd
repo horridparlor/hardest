@@ -30,21 +30,24 @@ const DEFAULT_DATA : Dictionary = {
 	"variant2": 0
 }
 
-static func eat_json(data : Dictionary) -> LevelData:
+static func from_json(data : Dictionary) -> LevelData:
 	var level_data : LevelData = LevelData.new();
-	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
-	level_data.id = data.id;
-	level_data.title = data.title;
-	level_data.player = translate_character(data.player);
-	level_data.opponent = translate_character(data.opponent);
-	level_data.deck_id = data.deck;
-	level_data.deck2_id = data.deck2;
-	level_data.song_id = data.song;
-	level_data.background_id = data.background;
-	level_data.unlocks_level = data.unlocks;
-	level_data.player_variant = GameplayEnums.CharacterToId[level_data.player] if data.variant2 == 0 else data.variant2;
-	level_data.opponent_variant = GameplayEnums.CharacterToId[level_data.opponent] if data.variant == 0 else data.variant;
+	level_data.eat_json(data);
 	return level_data;
+
+func eat_json(data : Dictionary) -> void:
+	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
+	id = data.id;
+	title = data.title;
+	player = translate_character(data.player);
+	opponent = translate_character(data.opponent);
+	deck_id = data.deck;
+	deck2_id = data.deck2;
+	song_id = data.song;
+	background_id = data.background;
+	unlocks_level = data.unlocks;
+	player_variant = GameplayEnums.CharacterToId[player] if data.variant2 == 0 else data.variant2;
+	opponent_variant = GameplayEnums.CharacterToId[opponent] if data.variant == 0 else data.variant;
 
 static func translate_character(character_name : String) -> GameplayEnums.Character:
 	return GameplayEnums.TranslateCharacter[character_name] \

@@ -1,7 +1,7 @@
 const DECK_SIZE : int = 15;
 const HAND_SIZE : int = 3;
 const MAX_HAND_SIZE : int = 5;
-const VICTORY_POINTS : int = 10;
+const VICTORY_POINTS : int = 1;
 const CLOSE_TO_WINNING_POINTS : int = VICTORY_POINTS - 2;
 const MAX_LEVELS : int = 6;
 const UNDEAD_LIMIT : int = 3;
@@ -20,3 +20,4 @@ const DEFAULT_CARDS : Array = [1, 2, 3, 4, 5];
 const CARD_CHOICES : int = 3;
 const FIGHT_CHOICES : int = 3;
 const CARD_GOAL : int = 100;
+const CHANCE_FOR_RARE_OPPONENT : int = 100;

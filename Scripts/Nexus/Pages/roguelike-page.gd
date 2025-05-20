@@ -8,6 +8,9 @@ extends RoguelikePage
 @onready var sfx_player : AudioStreamPlayer2D = $BasicInfo/Hearts/SfxPlayer;
 @onready var reset_button_layer : GlowNode = $BasicInfo/ResetButton;
 @onready var reset_progress_panel : Panel = $BasicInfo/ResetButton/ResetProgress;
+@onready var level_buttons_layer : Node2D = $ChoiceBox/LevelButtons;
+@onready var card_choices_layer : Node2D = $ChoiceBox/CardChoices;
+@onready var choice_button_layer : GlowNode = $ChoiceBox/ChoiceButton;
 
 func _ready() -> void:
 	sfx_player.finished.connect( func():
@@ -18,18 +21,65 @@ func _ready() -> void:
 		if data.lives_left == 0:
 			emit_signal("death");
 	);
+	spawn_level_buttons();
+
+func spawn_level_buttons() -> void:
+	var level_button : LevelButton;
+	var position : Vector2 = LEVEL_BUTTON_STARTING_POSITION;
+	for i in range(System.Rules.FIGHT_CHOICES):
+		level_button = System.Instance.load_child(System.Paths.LEVEL_BUTTON, level_buttons_layer);
+		level_button.scale *= 0.77;
+		level_button.position = position;
+		position.x += abs(LEVEL_BUTTON_STARTING_POSITION.x);
+		level_buttons.append(level_button);
+		level_button.pressed.connect(_on_level_button_pressed);
+
+func _on_level_button_pressed(level_data : LevelData) -> void:
+	if !is_active:
+		return;
+	is_active = false;
+	data.chosen_opponent = level_data.deck_id - 1000;
+	if data.chosen_opponent == 0:
+		data.chosen_opponent = GameplayEnums.Character.PEITSE;
+	emit_signal("enter_level", level_data);
+
+func update_level_buttons() -> void:
+	var character_id : int;
+	var opponent : Dictionary;
+	var level_data : LevelData;
+	for i in range(System.Rules.FIGHT_CHOICES):
+		character_id = data.fight_choices[i];
+		opponent = data.all_opponents[character_id];
+		level_data = LevelData.from_json({
+			"opponent": GameplayEnums.TranslateCharacterBack[character_id],
+			"song": opponent.song,
+			"background": opponent.background,
+			"deck": 1000 + (0 if character_id == GameplayEnums.Character.PEITSE else character_id),
+			"deck2": 1000
+		})
+		level_buttons[i].init(level_data);
 
 func get_heart_color() -> Heart.HeartColor:
 	return Heart.HeartColor.RED if data.has_max_life() else Heart.HeartColor.PINK;
 
+func set_origin_point() -> void:
+	origin_point = position;
+
 func init(roguelike_data : RoguelikeData):
 	data = roguelike_data;
-	origin_point = position;
 	update_progress_label();
-	update_hearts();
 	death_progress = 0;
-	reset_button_layer.activate_animations();
+	if data.lives_left == 0:
+		reset_button_layer.shutter();
+		choice_button_layer.shutter();
+		is_active = false;
+	else:
+		reset_button_layer.activate_animations();
+		choice_button_layer.activate_animations();
+		is_active = true;
 	update_death_progress_panel();
+	update_level_buttons();
+	update_hearts();
 
 func update_progress_label() -> void:
 	var progress : float = float(data.cards_bought) / float(data.card_goal);
@@ -73,7 +123,7 @@ func update_hearts() -> void:
 
 func heart_losing_effect() -> void:
 	get_hearts()[data.lives_left].on(Heart.HeartColor.RED if data.has_max_life(1) else Heart.HeartColor.PINK);
-	await System.wait(System.random.randf_range(0.5, 0.9));
+	await System.wait(System.random.randf_range(0.3, 0.6));
 	play_heart_lose_sound(false);
 	get_hearts()[data.lives_left].on(Heart.HeartColor.YELLOW);
 
@@ -88,20 +138,20 @@ func play_heart_lose_sound(is_standalone : bool = true) -> void:
 	sfx_player.play();
 
 func _on_die_pressed() -> void:
-	if is_dying:
+	if is_dying or !is_active:
 		return;
 	death_speed = System.random.randf_range(DEATH_MIN_SPEED, DEATH_MAX_SPEED);
 	is_undeathing = false;
 	is_dying = true;
 
 func _on_die_released() -> void:
-	if !is_dying:
+	if !is_dying or !is_active:
 		return;
 	death_speed = System.random.randf_range(UNDEATH_MIN_SPEED, UNDEATH_MAX_SPEED);
 	is_dying = false;
 	is_undeathing = true;
 
-func _process(delta : float) -> void:
+func death_progress_frame(delta : float) -> void:
 	var was_full : bool = death_progress == 1;
 	if !(is_dying or is_undeathing):
 		return;

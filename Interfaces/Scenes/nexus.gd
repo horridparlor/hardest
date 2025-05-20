@@ -10,7 +10,6 @@ enum NexusPage {
 	ROGUELIKE
 }
 
-const LEVEL_BUTTON_PATH : String = "res://Prefabs/Nexus/Buttons/level-button.tscn";
 const LEVEL_BUTTON_X_MARGIN : int = 342;
 const LEVEL_BUTTON_Y_MARGIN : int = 400;
 const LEVEL_BUTTONS_STARTING_POSITION : Vector2 = Vector2(-LEVEL_BUTTON_X_MARGIN * 0.5, -180);

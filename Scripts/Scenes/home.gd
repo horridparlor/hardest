@@ -90,8 +90,13 @@ func _on_open_gameplay(level_data_ : LevelData) -> void:
 	level_data = level_data_;
 	zoom_in(level_data.position);
 
+func in_roguelike_mode() -> bool:
+	return save_data.open_page == Nexus.NexusPage.ROGUELIKE;
+
 func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	level_data = level_data_;
+	if in_roguelike_mode():
+		write_roguelike_decks();
 	gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
 	gameplay.game_over.connect(_on_game_over);
 	gameplay.zoom_to.connect(_on_zoom_to);
@@ -105,6 +110,12 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 		nexus.queue_free();
 	reset_base_rotation();
 	reset_camera();
+
+func write_roguelike_decks() -> void:
+	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
+	System.Data.write_decklist(1000, save_data.roguelike_data.your_cards);
+	System.Data.write_decklist(1000 + chosen_opponent, \
+		save_data.roguelike_data.all_opponents[chosen_opponent].cards);
 
 func _on_stop_music_if_special() -> void:
 	if save_data.current_song < 1000:
@@ -141,10 +152,13 @@ func reset_base_rotation() -> void:
 	base_rotation_right_speed_error = 1;
 
 func _on_game_over(did_win : bool) -> void:
+	save_data.roguelike_data.money += gameplay.player_one.points;
 	if did_win:
 		process_victory();
 	else:
 		process_loss();
+	save_data.roguelike_data.get_new_choices();
+	save_data.write();
 	close_gameplay();
 
 func close_gameplay() -> void:
@@ -175,12 +189,28 @@ func _on_background_music_finished() -> void:
 	load_music();
 
 func process_victory() -> void:
+	give_opponent_card_drop(true);
+	give_opponent_card_drop();
 	if save_data.tutorial_levels_won < level_data.id - 1:
 		save_data.tutorial_levels_won += 1;
 		save_data.tutorial_levels_won = min(System.Levels.MAX_TUTORIAL_LEVELS, save_data.tutorial_levels_won);
-		save_data.write();
 
 func process_loss() -> void:
 	save_data.tutorial_levels_won = max(0, save_data.tutorial_levels_won);
-	save_data.roguelike_data.lost_heart = true;
-	save_data.write();
+	if in_roguelike_mode():
+		save_data.roguelike_data.lives_left -= 1;
+		save_data.roguelike_data.lost_heart = true;
+		give_opponent_card_drop();
+
+func give_opponent_card_drop(confirmed_rare : bool = false) -> void:
+	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
+	var opponent : Dictionary = save_data.roguelike_data.all_opponents[chosen_opponent];
+	var card_pool : Dictionary = opponent.card_pool;
+	if card_pool.keys().is_empty():
+		return;
+	var rare_chance : int = opponent.rare_chance;
+	var source : Array = card_pool[CollectionEnums.Rarity.RARE] if confirmed_rare or System.Random.chance(rare_chance) else card_pool[CollectionEnums.Rarity.COMMON];
+	var card_drop : int = System.Random.item(source);
+	if rare_chance <= 0:
+		return;
+	opponent.cards.append(card_drop);

@@ -25,6 +25,8 @@ func _ready() -> void:
 	labels_layer.activate_animations();
 	background.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
 	roguelike_page.death.connect(func(): emit_signal("death"));
+	roguelike_page.enter_level.connect(_on_level_pressed_from_roguelike_page);
+	roguelike_page.set_origin_point();
 
 func spawn_a_background_card() -> void:
 	var is_back : bool = System.Random.boolean();
@@ -75,6 +77,7 @@ func init(levels_unlocked_ : int, open_page_ : NexusPage, roguelike_data_ : Rogu
 		roguelike_page.visible = false;
 		roguelike_page.roll_out();
 	else:
+		roguelike_page.toggle_active();
 		for button in level_buttons:
 			button.visible = false;
 			button.roll_out();
@@ -111,7 +114,7 @@ func spawn_level_buttons(levels_unlocked : int) -> void:
 	var buttons : int;
 	var level_data : LevelData;
 	for i in range(System.Rules.MAX_LEVELS):
-		button = System.Instance.load_child(LEVEL_BUTTON_PATH, level_buttons_layer);
+		button = System.Instance.load_child(System.Paths.LEVEL_BUTTON, level_buttons_layer);
 		button.position = current_position;
 		current_position.x += LEVEL_BUTTON_X_MARGIN;
 		buttons += 1;
@@ -123,6 +126,10 @@ func spawn_level_buttons(levels_unlocked : int) -> void:
 		if buttons % LEVEL_BUTTONS_PER_ROW == 0:
 			current_position.y += LEVEL_BUTTON_Y_MARGIN;
 			current_position.x = LEVEL_BUTTONS_STARTING_POSITION.x;
+
+func _on_level_pressed_from_roguelike_page(level_data : LevelData) -> void:
+	is_active = false;
+	emit_signal("enter_level", level_data);
 
 func _on_level_pressed(level_data : LevelData) -> void:
 	if !is_active or open_page != NexusPage.TUTORIAL:
@@ -209,6 +216,7 @@ func open_roguelike_page() -> void:
 	roguelike_page.roll_in();
 	roguelike_page.visible = true;
 	open_page = NexusPage.ROGUELIKE;
+	roguelike_page.toggle_active();
 
 func open_tutorial_page() -> void:
 	for button in level_buttons:
@@ -216,6 +224,7 @@ func open_tutorial_page() -> void:
 		button.visible = true;
 	roguelike_page.roll_out();
 	open_page = NexusPage.TUTORIAL;
+	roguelike_page.toggle_active(false);
 
 func update_roguelike_data(roguelike_data_ : RoguelikeData) -> void:
 	roguelike_data = roguelike_data_;

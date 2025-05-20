@@ -27,7 +27,7 @@ var velocity : float;
 var random : RandomNumberGenerator = RandomNumberGenerator.new();
 var base_rotation : float;
 
-func init(level_data_ : LevelData, is_latest_level_ : bool) -> void:
+func init(level_data_ : LevelData, is_latest_level_ : bool = false) -> void:
 	base_rotation = System.random.randf_range(-ROTATION_SPEED, ROTATION_SPEED);
 	rotation_degrees = base_rotation;
 	level_data = level_data_;

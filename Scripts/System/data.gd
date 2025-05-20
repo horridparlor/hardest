@@ -45,13 +45,25 @@ static func get_basic_card(card_type : CardEnums.CardType) -> CardData:
 	return CardData.from_json(read_card(CardEnums.BasicIds[card_type]));
 
 static func read_decklist(decklist_id : int) -> Decklist:
-	var data : Dictionary = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id));
+	var data : Dictionary;
+	if decklist_id >= 1000:
+		data = System.Json.read_save(DECKLIST_FOLDER_PATH + str(decklist_id));
+	else:
+		data = System.Json.read_data(DECKLIST_FOLDER_PATH + str(decklist_id));
 	if System.Json.is_error(data):
 		data = System.Json.read_data(DECKLIST_FOLDER_PATH + str(1));
 	return Decklist.from_json(data);
 
+static func write_decklist(decklist_id : int, cards : Array) -> void:
+	var data : Dictionary = {
+		"id": decklist_id,
+		"title": "Roguelike decklist",
+		"cards": cards
+	};
+	System.Json.write_save(data, DECKLIST_FOLDER_PATH + str(decklist_id));
+
 static func read_level(level_id : int) -> LevelData:
-	return LevelData.eat_json(
+	return LevelData.from_json(
 		System.Json.read_data(LEVEL_FOLDER_PATH + str(level_id))
 	);
 

@@ -48,6 +48,20 @@ const TranslateCharacter : Dictionary = {
 	"Simooni": Character.SIMOONI
 }
 
+const TranslateCharacterBack : Dictionary = {
+	Character.AGENT: "Agent",
+	Character.ERIKA: "Erika",
+	Character.JUKULIUS: "Jukulius",
+	Character.KORVEK: "Korvek",
+	Character.LOTTE: "Lotte",
+	Character.MARK: "Mark",
+	Character.MERITUULI: "Merituuli",
+	Character.PEITSE: "Peitse",
+	Character.PETE: "Pete",
+	Character.RAISEN: "Raisen",
+	Character.SIMOONI: "Simooni"
+}
+
 const CharacterShowcaseName : Dictionary = {
 	Character.AGENT: "Agent 47",
 	Character.ERIKA : "Erika",

@@ -15,10 +15,12 @@ var your_cards : Array;
 var opponents : Dictionary;
 var rare_opponents : Dictionary;
 var super_rare_opponents : Dictionary;
+var all_opponents : Dictionary;
 #Current choices on nexus
 var card_choices_left : Array;
 var fight_choices : Array;
 var lost_heart : bool;
+var chosen_opponent : int;
 
 func _init() -> void:
 	lives_left = System.Rules.STARTING_LIVES;
@@ -32,6 +34,15 @@ func _init() -> void:
 	opponents = get_opponents();
 	rare_opponents = get_rare_opponents();
 	super_rare_opponents #? TODO;
+	all_opponents = opponents.duplicate();
+	for key in rare_opponents:
+		all_opponents[key] = rare_opponents[key];
+	for key in opponents:
+		opponents[key] = null;
+	for key in rare_opponents:
+		rare_opponents[key] = null;
+	for key in super_rare_opponents:
+		super_rare_opponents[key] = null;
 	
 	card_choices_left = get_starting_card_choices();
 	fight_choices = get_starting_fight_choices();
@@ -48,6 +59,12 @@ func get_starting_fight_choices() -> Array:
 		GameplayEnums.Character.RAISEN
 	]);
 
+func get_new_choices() -> void:
+	card_choices_left = [];
+	for i in range(System.random.randi_range(1, 3)):
+		card_choices_left.append(get_card_choices());
+	fight_choices = get_fight_choices();
+
 func get_fight_choices(options : Array = opponents.keys()) -> Array:
 	var choices : Array;
 	var fight_id : int;
@@ -58,6 +75,10 @@ func get_fight_choices(options : Array = opponents.keys()) -> Array:
 				continue;
 			break;
 		choices.append(fight_id);
+	if System.Random.chance(System.Rules.CHANCE_FOR_RARE_OPPONENT):
+		choices.pop_back();
+		choices.append(rare_opponents.keys()[0]);
+		choices.shuffle();
 	return choices;
 
 func get_card_choices() -> Array:
@@ -131,7 +152,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.KAWAII,
 				CollectionEnums.House.CHAMPION
 			]),
-			"rare_chance": 2
+			"rare_chance": 2,
+			"song": 1,
+			"background": 11
 		},
 		GameplayEnums.Character.PETE: {
 			"cards": [
@@ -148,7 +171,9 @@ func get_opponents() -> Dictionary:
 			"card_pool": get_card_pool([
 				CollectionEnums.House.DELUSIONAL
 			]),
-			"rare_chance": 6
+			"rare_chance": 6,
+			"song": 14,
+			"background": 2
 		},
 		GameplayEnums.Character.LOTTE: {
 			"cards": [
@@ -169,7 +194,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.KAWAII,
 				CollectionEnums.House.DELUSIONAL
 			]),
-			"rare_chance": 3
+			"rare_chance": 3,
+			"song": 2,
+			"background": 8
 		},
 		GameplayEnums.Character.MARK: {
 			"cards": [
@@ -187,7 +214,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.DELUSIONAL,
 				CollectionEnums.House.CHAMPION
 			]),
-			"rare_chance": 4
+			"rare_chance": 4,
+			"song": 7,
+			"background": 3
 		},
 		GameplayEnums.Character.KORVEK: {
 			"cards": [
@@ -202,7 +231,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.DEMONIC,
 				CollectionEnums.House.CHAMPION
 			]),
-			"rare_chance": 4
+			"rare_chance": 4,
+			"song": 5,
+			"background": 5
 		},
 		GameplayEnums.Character.RAISEN: {
 			"cards": [
@@ -215,7 +246,9 @@ func get_opponents() -> Dictionary:
 			"card_pool": get_card_pool([
 				CollectionEnums.House.KAWAII
 			]),
-			"rare_chance": 5
+			"rare_chance": 5,
+			"song": 6,
+			"background": 6
 		},
 		GameplayEnums.Character.SIMOONI: {
 			"cards": [
@@ -228,7 +261,9 @@ func get_opponents() -> Dictionary:
 			"card_pool": get_card_pool([
 				CollectionEnums.House.HIGHTECH
 			]),
-			"rare_chance": 5
+			"rare_chance": 5,
+			"song": 10,
+			"background": 7
 		},
 		GameplayEnums.Character.JUKULIUS: {
 			"cards": [
@@ -251,7 +286,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.DELUSIONAL,
 				CollectionEnums.House.DEMONIC
 			]),
-			"rare_chance": 1
+			"rare_chance": 1,
+			"song": 1,
+			"background": 9
 		},
 		GameplayEnums.Character.MERITUULI: {
 			"cards": [
@@ -269,7 +306,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.HIGHTECH,
 				CollectionEnums.House.KAWAII
 			]),
-			"rare_chance": 0
+			"rare_chance": 0,
+			"song": 3,
+			"background": 4
 		},
 		GameplayEnums.Character.AGENT: {
 			"cards": [
@@ -292,7 +331,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.CHAMPION,
 				CollectionEnums.House.HIGHTECH
 			]),
-			"rare_chance": 2
+			"rare_chance": 2,
+			"song": 15,
+			"background": 10
 		}
 	};
 
@@ -301,7 +342,9 @@ func get_rare_opponents() -> Dictionary:
 		GameplayEnums.Character.PEITSE: {
 			"cards": [],
 			"card_pool": [],
-			"rare_chance": 0
+			"rare_chance": 0,
+			"song": 4,
+			"background": 1
 		}
 	};
 
@@ -332,6 +375,7 @@ static func from_json(json : Dictionary) -> RoguelikeData:
 	return data;
 
 func eat_json(data : Dictionary) -> void:
+	data = System.Dictionaries.make_safe(data, {});
 	lives_left = data.lives_left;
 	your_houses = data.your_houses;
 	cards_bought = data.cards_bought;
@@ -340,12 +384,27 @@ func eat_json(data : Dictionary) -> void:
 	rare_chance = data.rare_chance;
 	
 	your_cards = data.your_cards;
-	opponents = data.opponents;
-	rare_opponents = data.rare_opponents;
-	super_rare_opponents = data.super_rare_opponents;
+	for key in data.opponents:
+		opponents[int(key)] = data.opponents[key];
+	for key in data.rare_opponents:
+		rare_opponents[int(key)] = data.rare_opponents[key];
+	for key in data.super_rare_opponents:
+		super_rare_opponents[int(key)] = data.super_rare_opponents[key];
+	for key in data.all_opponents:
+		all_opponents[int(key)] = convert_opponent(data.all_opponents[key]);
 	
 	card_choices_left = data.card_choices_left;
 	fight_choices = data.fight_choices;
+
+func convert_opponent(data : Dictionary) -> Dictionary:
+	var card_pool : Dictionary;
+	if data.card_pool.is_empty():
+		data.card_pool = {};
+		return data;
+	card_pool[CollectionEnums.Rarity.COMMON] = data.card_pool[str(CollectionEnums.Rarity.COMMON)];
+	card_pool[CollectionEnums.Rarity.RARE] = data.card_pool[str(CollectionEnums.Rarity.RARE)];
+	data.card_pool = card_pool;
+	return data;
 
 func to_json() -> Dictionary:
 	return {
@@ -360,6 +419,7 @@ func to_json() -> Dictionary:
 		"opponents": opponents,
 		"rare_opponents": rare_opponents,
 		"super_rare_opponents": super_rare_opponents,
+		"all_opponents": all_opponents,
 		"card_choices_left": card_choices_left,
 		"fight_choices": fight_choices
 	}

@@ -225,7 +225,7 @@ var KeywordHints : Dictionary = {
 	Keyword.SOUL_HUNTER : "You get the cards this defeats at the start of next game.",
 	Keyword.SPY : "Fights a random card in opponent's hand.",
 	Keyword.TIME_STOP : "Extends your turn.",
-	Keyword.UNDEAD : "Takes 3 %s SAME_TYPES from your grave and turns into a gun." % [System.Rules.UNDEAD_LIMIT],
+	Keyword.UNDEAD : "Takes %s SAME_TYPES from your grave and turns into a gun." % [System.Rules.UNDEAD_LIMIT],
 	Keyword.VAMPIRE : "If wins, drains the points from opponent.",
 	Keyword.WRAPPED : "Next card you play, gains buried."
 }

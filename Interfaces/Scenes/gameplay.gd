@@ -14,7 +14,7 @@ const HAND_MARGIN : int = 200;
 const CARD_STARTING_POSITION : Vector2 = Vector2(0, System.Window_.y + GameplayCard.SIZE.y)
 const FIELD_LINES_FADE_IN_SPEED : float = 0.4;
 const FIELD_LINES_FADE_OUT_SPEED : float = 1.2;
-const FIELD_START_LINE : int = -115;
+const FIELD_START_LINE : int = -100;
 const FIELD_END_LINE : int = 445;
 const FIELD_POSITION : Vector2 = Vector2(0, FIELD_START_LINE + (FIELD_END_LINE - FIELD_START_LINE) / 2);
 const ENEMY_FIELD_POSITION : Vector2 = Vector2(0, 2 * FIELD_START_LINE);
@@ -59,7 +59,7 @@ const SHADOW_FADE_IN_SPEED : float = 0.6 * Config.GAME_SPEED;
 const SHADOW_FADE_OUT_SPEED : float = 0.8 * Config.GAME_SPEED;
 const CHARACTER_FULL_ART_PATH : String = "res://Assets/Art/CharacterFull/%s.png";
 
-const LED_STARTING_POSITION : Vector2 = Vector2(-480, -720);
+const LED_STARTING_POSITION : Vector2 = Vector2(-480, -590);
 const LEDS_PER_COLUMN : int = 19;
 const LED_MARGIN : Vector2 = Vector2(60, 120);
 const LED_WAIT : float = 0.2;

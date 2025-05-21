@@ -69,9 +69,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -400.0
-offset_top = -160.0
+offset_top = -64.0
 offset_right = 400.0
-offset_bottom = 640.0
+offset_bottom = 736.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/normal_font = ExtResource("2_7ibue")
@@ -149,7 +149,10 @@ grow_vertical = 2
 
 [node name="CardsLayer2" type="Node2D" parent="."]
 
+[node name="Relics" type="Node2D" parent="."]
+
 [node name="Points" type="Node2D" parent="."]
+position = Vector2(0, 130)
 
 [node name="YourPoints" type="Label" parent="Points"]
 offset_left = -450.0
@@ -236,6 +239,7 @@ text = "Peitse"
 horizontal_alignment = 1
 
 [node name="CardsShadow" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0)
 
 [node name="ColorRect" type="ColorRect" parent="CardsShadow"]
 self_modulate = Color(1, 1, 1, 0.305882)
@@ -245,9 +249,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -540.0
-offset_top = -960.0
+offset_top = -1440.0
 offset_right = 540.0
-offset_bottom = 960.0
+offset_bottom = 1440.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.00820202, 0.00820202, 0.00820202, 1)

@@ -60,8 +60,6 @@ self_modulate = Color(1, 1, 1, 0.6)
 
 [node name="PointStreamer" type="AudioStreamPlayer2D" parent="Background"]
 
-[node name="SfxPlayer" type="AudioStreamPlayer2D" parent="Background"]
-
 [node name="StartingHints" type="RichTextLabel" parent="Background"]
 anchors_preset = 8
 anchor_left = 0.5
@@ -148,6 +146,8 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="CardsLayer2" type="Node2D" parent="."]
+
+[node name="SfxPlayer" type="AudioStreamPlayer2D" parent="."]
 
 [node name="Relics" type="Node2D" parent="."]
 

@@ -1352,6 +1352,8 @@ func after_time_stop() -> void:
 	shader_material.shader = shader;
 	for node in get_time_stop_nodes():
 		node.material = null;
+	for node in time_stop_nodes2:
+		node.material = null;
 	background_pattern.material = shader_material;
 	led_wait /= TIME_STOP_LED_ACCELERATION;
 	System.update_game_speed(1);
@@ -1403,6 +1405,8 @@ func update_time_stop_time() -> void:
 		node.material.set_shader_parameter("time", time_stop_shader_time);
 		break;
 	for node in time_stop_nodes2:
+		if node.material == null:
+			break;
 		node.material.set_shader_parameter("time", time_stop_shader_time);
 		break;
 

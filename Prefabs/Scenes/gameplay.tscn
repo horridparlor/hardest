@@ -273,12 +273,14 @@ text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down [b]The Gun
 [node name="AboveCardsLayer" type="Node2D" parent="."]
 
 [node name="DivineJudgment" parent="AboveCardsLayer" instance=ExtResource("13_kpgfb")]
+visible = false
 
 [node name="TrollingSprite" type="Sprite2D" parent="."]
 rotation = 0.23911
 scale = Vector2(1.3, 1.3)
 
 [node name="VictoryBanner" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("5_sou8c")

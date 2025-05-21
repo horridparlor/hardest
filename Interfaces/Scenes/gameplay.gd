@@ -17,7 +17,7 @@ const FIELD_LINES_FADE_OUT_SPEED : float = 1.2;
 const FIELD_START_LINE : int = -115;
 const FIELD_END_LINE : int = 445;
 const FIELD_POSITION : Vector2 = Vector2(0, FIELD_START_LINE + (FIELD_END_LINE - FIELD_START_LINE) / 2);
-const ENEMY_FIELD_POSITION : Vector2 = Vector2(0, 3 * FIELD_START_LINE);
+const ENEMY_FIELD_POSITION : Vector2 = Vector2(0, 2 * FIELD_START_LINE);
 const VISIT_POSITION : Vector2 = Vector2(-350, 350);
 
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;

@@ -23,6 +23,7 @@ GameplayEnums="*res://Enums/gameplay-enums.gd"
 CardEnums="*res://Enums/card-enums.gd"
 CollectionEnums="*res://Enums/collection-enums.gd"
 Config="*res://Scripts/config.gd"
+RelicEnums="*res://Enums/relic-enums.gd"
 
 [display]
 

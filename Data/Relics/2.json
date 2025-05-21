@@ -1,0 +1,8 @@
+{
+	"id": 2,
+	"name": "Bullet Stash",
+	"duration": 3,
+	"effect": "giveKeyword",
+	"keywords": ["reload"],
+	"targetCards": [1]
+}

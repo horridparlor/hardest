@@ -1,0 +1,8 @@
+{
+	"id": 1,
+	"name": "Winnie's Cave",
+	"duration": -1,
+	"times": 3,
+	"effect": "giveKeyword",
+	"keywords": ["buried"]
+}

@@ -229,3 +229,15 @@ var KeywordHints : Dictionary = {
 	Keyword.VAMPIRE : "If wins, drains the points from opponent.",
 	Keyword.WRAPPED : "Next card you play, gains buried."
 }
+
+static func translate_keywords(source : Array) -> Array:
+	var translated : Array;
+	for keyword in source:
+		translated.append(TranslateKeyword[keyword]);
+	return translated;
+
+static func translate_keywords_back(source : Array) -> Array:
+	var translated : Array;
+	for keyword in source:
+		translated.append(CardEnums.KeywordNames[keyword].to_lower().replace(" ", "-"));
+	return translated;

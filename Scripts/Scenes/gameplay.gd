@@ -24,7 +24,7 @@ extends Gameplay
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
-@onready var sfx_player : AudioStreamPlayer2D = $Background/SfxPlayer;
+@onready var sfx_player : AudioStreamPlayer2D = $SfxPlayer;
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
 @onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;

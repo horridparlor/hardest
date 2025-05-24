@@ -7,7 +7,8 @@ const INFLATE_SPEED : float = 0.2 * Config.GAME_SPEED;
 const DEFLATE_SPEED : float = 0.4;
 const ERROR_CHANCE : float = 0.1;
 const DYING_SPEED : float = 1.5 * Config.GAME_SPEED;
-const FADE_IN_SPEED : float = 0.4 * Config.GAME_SPEED;
+const MIN_FADE_IN_SPEED : float = 0.3 * Config.GAME_SPEED;
+const MAX_FADE_IN_SPEED : float = 0.4 * Config.GAME_SPEED;
 
 var scale_multiplier : float = 1;
 var direction : int = 1;
@@ -18,6 +19,7 @@ var is_stopped : bool;
 var dont_move : bool;
 var override_max_scale : float = 0;
 var override_min_scale : float = 0;
+var fading_speed : float;
 
 func _process(delta: float) -> void:
 	if is_stopped:
@@ -40,7 +42,7 @@ func _process(delta: float) -> void:
 		position *= (scale / starting_scale);
 	error += System.Random.direction() * ERROR_CHANCE * true_delta;
 	if is_fading_in:
-		modulate.a += FADE_IN_SPEED * true_delta;
+		modulate.a += fading_speed * true_delta;
 		if modulate.a >= 1:
 			modulate.a == 0;
 			is_fading_in = false;
@@ -53,9 +55,10 @@ func _process(delta: float) -> void:
 func die() -> void:
 	is_dying = true;
 
-func fade_in() -> void:
+func fade_in(multiplier : float = 1) -> void:
 	visible = true;
 	modulate.a = 0;
+	fading_speed = System.random.randf_range(MIN_FADE_IN_SPEED, MAX_FADE_IN_SPEED) * multiplier;
 	is_fading_in = true;
 	is_stopped = false;
 

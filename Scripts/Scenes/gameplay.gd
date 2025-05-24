@@ -159,8 +159,7 @@ func _on_opponent_wins() -> void:
 	pass;
 
 func start_round() -> void:
-	if have_you_won() or has_opponent_won():
-		start_game_over();
+	if has_game_ended:
 		return;
 	round_number += 1;
 	player_one.draw_hand();
@@ -173,7 +172,8 @@ func start_round() -> void:
 		opponents_turn();
 
 func start_game_over() -> void:
-	victory_banner.fade_in();
+	has_game_ended = true
+	victory_banner.fade_in(2);
 	init_victory_banner_sprite();
 	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_multiplier;
 	game_over_timer.start();
@@ -1043,6 +1043,8 @@ func update_point_visuals() -> void:
 func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	player : Player, opponent : Player, points : int = 1
 ) -> void:
+	if has_game_ended:
+		return;
 	if card and card.has_champion():
 		points *= 2;
 	if enemy and enemy.has_champion():
@@ -1071,6 +1073,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.SALTY:
 					opponent.lose_points(points);
 	update_point_visuals();
+	if have_you_won() or has_opponent_won():
+		start_game_over();
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 	var judgment_position : Vector2;

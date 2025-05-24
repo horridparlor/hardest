@@ -23,7 +23,7 @@ const VISIT_POSITION : Vector2 = Vector2(-350, 350);
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const PRE_RESULTS_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
 const ROUND_END_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
-const GAME_OVER_WAIT : float = 2 * Config.GAME_SPEED_MULTIPLIER;
+const GAME_OVER_WAIT : float = 1.3 * Config.GAME_SPEED_MULTIPLIER;
 const POINTS_CLICK_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const CARD_FOCUS_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const OPPONENTS_PLAY_WAIT : float = 1.2 * Config.GAME_SPEED_MULTIPLIER;
@@ -134,6 +134,7 @@ var time_stop_nodes2 : Array;
 var time_stopping_player : Player;
 var time_stopped_bullets : Array;
 var has_been_stopping_turn : bool;
+var has_game_ended : bool;
 
 func init(level_data_ : LevelData) -> void:
 	pass;

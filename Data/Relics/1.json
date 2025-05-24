@@ -1,8 +1,0 @@
-{
-	"id": 1,
-	"name": "Winnie's Den",
-	"duration": -1,
-	"times": 3,
-	"effect": "giveKeyword",
-	"keywords": ["buried"]
-}

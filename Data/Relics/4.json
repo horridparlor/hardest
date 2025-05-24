@@ -1,7 +1,0 @@
-{
-	"id": 4,
-	"name": "Dorodango",
-	"duration": 3,
-	"effect": "turnGun",
-	"targetKeywords": ["buried"]
-}

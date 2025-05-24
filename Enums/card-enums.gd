@@ -194,6 +194,42 @@ const TranslateKeyword : Dictionary = {
 	"wrapped" : Keyword.WRAPPED
 }
 
+const TranslateKeywordBack: Dictionary = {
+	[Keyword.BURIED]: "buried",
+	[Keyword.CELEBRATE]: "celebrate",
+	[Keyword.CHAMELEON]: "chameleon",
+	[Keyword.CHAMPION]: "champion",
+	[Keyword.COOTIES]: "cooties",
+	[Keyword.COPYCAT]: "copycat",
+	[Keyword.CURSED]: "cursed",
+	[Keyword.DEVOUR]: "devour",
+	[Keyword.DIGITAL]: "digital",
+	[Keyword.DIVINE]: "divine",
+	[Keyword.EMP]: "emp",
+	[Keyword.EXTRA_SALTY]: "extra-salty",
+	[Keyword.GREED]: "greed",
+	[Keyword.HIGH_GROUND]: "high-ground",
+	[Keyword.HORSE_GEAR]: "horse-gear",
+	[Keyword.HYDRA]: "hydra",
+	[Keyword.INFLUENCER]: "influencer",
+	[Keyword.MULTI_SPY]: "multi-spy",
+	[Keyword.PAIR]: "pair",
+	[Keyword.PAIR_BREAKER]: "pair-breaker",
+	[Keyword.PICK_UP]: "pick-up",
+	[Keyword.RAINBOW]: "rainbow",
+	[Keyword.RELOAD]: "reload",
+	[Keyword.RUST]: "rust",
+	[Keyword.SALTY]: "salty",
+	[Keyword.SECRETS]: "secrets",
+	[Keyword.SILVER]: "silver",
+	[Keyword.SOUL_HUNTER]: "soul-hunter",
+	[Keyword.SPY]: "spy",
+	[Keyword.TIME_STOP]: "time-stop",
+	[Keyword.UNDEAD]: "undead",
+	[Keyword.VAMPIRE]: "vampire",
+	[Keyword.WRAPPED]: "wrapped"
+}
+
 var KeywordHints : Dictionary = {
 	Keyword.BURIED : "Played face-down.",
 	Keyword.CELEBRATE : "Discard your hand, then draw 1.",
@@ -239,5 +275,5 @@ static func translate_keywords(source : Array) -> Array:
 static func translate_keywords_back(source : Array) -> Array:
 	var translated : Array;
 	for keyword in source:
-		translated.append(CardEnums.KeywordNames[keyword].to_lower().replace(" ", "-"));
+		translated.append(TranslateKeywordBack[keyword]);
 	return translated;

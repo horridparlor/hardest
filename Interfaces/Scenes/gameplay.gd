@@ -1,7 +1,7 @@
 extends Node2D
 class_name Gameplay
 
-signal game_over(did_win)
+signal game_over
 signal zoom_to(node, do_slow_down)
 signal quick_zoom_to(position)
 signal play_song(song_id)
@@ -76,22 +76,22 @@ const OFF_LED_DIRECTION : int = 0;
 const FAST_LED_SPEED : int = 2;
 const BACKGROUND_OPACITY : float = 0.6;
 
-const TIME_STOP_ACCELERATION_SPEED : float = 0.5;
-const TIME_STOP_LED_ACCELERATION : int = 12;
-const TIME_STOP_GAME_SPEED : float = 0.6;
-const MIN_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.2;
-const MAX_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.3;
+const TIME_STOP_ACCELERATION_SPEED : float = 0.5 * Config.GAME_SPEED;
+const TIME_STOP_LED_ACCELERATION : int = 12 * Config.GAME_SPEED;
+const TIME_STOP_GAME_SPEED : float = 0.6 * Config.GAME_SPEED;
+const MIN_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
+const MAX_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const MIN_STOPPED_TIME_WAIT : float = 0.09;
 const MAX_STOPPED_TIME_WAIT : float = 0.18;
 
-const TIME_STOP_IN_GLITCH_MIN_SPEED : float = 5;
-const TIME_STOP_IN_GLITCH_MAX_SPEED : float = 7.8;
-const TIME_STOP_IN_BW_MIN_SPEED : float = 1.9;
-const TIME_STOP_IN_BW_MAX_SPEED : float = 3.8;
-const TIME_STOP_OUT_BW_MIN_SPEED : float = 0.3;
-const TIME_STOP_OUT_BW_MAX_SPEED : float = 0.9;
-const TIME_STOP_OUT_GLITCH_MIN_SPEED : float = 5;
-const TIME_STOP_OUT_GLITCH_MAX_SPEED : float = 8.9;
+const TIME_STOP_IN_GLITCH_MIN_SPEED : float = 5 * Config.GAME_SPEED;
+const TIME_STOP_IN_GLITCH_MAX_SPEED : float = 7.8 * Config.GAME_SPEED;
+const TIME_STOP_IN_BW_MIN_SPEED : float = 1.9 * Config.GAME_SPEED;
+const TIME_STOP_IN_BW_MAX_SPEED : float = 3.8 * Config.GAME_SPEED;
+const TIME_STOP_OUT_BW_MIN_SPEED : float = 0.3 * Config.GAME_SPEED;
+const TIME_STOP_OUT_BW_MAX_SPEED : float = 0.9 * Config.GAME_SPEED;
+const TIME_STOP_OUT_GLITCH_MIN_SPEED : float = 5 * Config.GAME_SPEED;
+const TIME_STOP_OUT_GLITCH_MAX_SPEED : float = 8.9 * Config.GAME_SPEED;
 
 
 var player_one : Player = Player.new();
@@ -135,6 +135,7 @@ var time_stopping_player : Player;
 var time_stopped_bullets : Array;
 var has_been_stopping_turn : bool;
 var has_game_ended : bool;
+var is_preloaded : bool;
 
-func init(level_data_ : LevelData) -> void:
+func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

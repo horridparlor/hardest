@@ -18,7 +18,7 @@ var super_rare_opponents : Dictionary;
 var all_opponents : Dictionary;
 #Current choices on nexus
 var card_choices_left : Array;
-var fight_choices : Array;
+var next_opponent : int;
 var lost_heart : bool;
 var chosen_opponent : int;
 
@@ -45,13 +45,13 @@ func _init() -> void:
 		super_rare_opponents[key] = null;
 	
 	card_choices_left = get_starting_card_choices();
-	fight_choices = get_starting_fight_choices();
+	next_opponent = get_starting_opponent();
 
 func has_max_life(additional : int = 0) -> bool:
 	return lives_left + additional >= System.Rules.STARTING_LIVES;
 
-func get_starting_fight_choices() -> Array:
-	return get_fight_choices([
+func get_starting_opponent() -> int:
+	return System.Random.item([
 		GameplayEnums.Character.ERIKA,
 		GameplayEnums.Character.PETE,
 		GameplayEnums.Character.LOTTE,
@@ -59,27 +59,20 @@ func get_starting_fight_choices() -> Array:
 		GameplayEnums.Character.RAISEN
 	]);
 
-func get_new_choices() -> void:
+func get_new_choices(current_opponent : int = 0) -> void:
+	var opponent_choices : Array = opponents.keys();
+	opponent_choices.erase(current_opponent);
 	card_choices_left = [];
 	for i in range(System.Rules.CARD_PICKS_PER_ROUND):
 		card_choices_left.append(get_card_choices());
-	fight_choices = get_fight_choices();
+	next_opponent = get_next_opponent(opponent_choices);
 
-func get_fight_choices(options : Array = opponents.keys()) -> Array:
+func get_next_opponent(options : Array = opponents.keys()) -> int:
 	var choices : Array;
-	var fight_id : int;
-	for i in range(System.Rules.FIGHT_CHOICES):
-		while true:
-			fight_id = System.Random.item(options);
-			if choices.has(fight_id):
-				continue;
-			break;
-		choices.append(fight_id);
+	var fight_id : int = System.Random.item(options);
 	if System.Random.chance(System.Rules.CHANCE_FOR_RARE_OPPONENT):
-		choices.pop_back();
-		choices.append(rare_opponents.keys()[0]);
-		choices.shuffle();
-	return choices;
+		fight_id = System.Random.item(rare_opponents.keys());
+	return fight_id;
 
 func get_card_choices() -> Array:
 	var choices : Array;
@@ -124,7 +117,7 @@ func get_starting_card_choices() -> Array:
 			53
 		]));
 		choices.shuffle();
-	return [choices, get_card_choices(), get_card_choices()];
+	return [choices];
 
 func get_card_pool(houses : Array) -> Dictionary:
 	var pool : Dictionary = {
@@ -394,7 +387,7 @@ func eat_json(data : Dictionary) -> void:
 		all_opponents[int(key)] = convert_opponent(data.all_opponents[key]);
 	
 	card_choices_left = data.card_choices_left;
-	fight_choices = data.fight_choices;
+	next_opponent = data.next_opponent;
 
 func convert_opponent(data : Dictionary) -> Dictionary:
 	var card_pool : Dictionary;
@@ -421,5 +414,5 @@ func to_json() -> Dictionary:
 		"super_rare_opponents": super_rare_opponents,
 		"all_opponents": all_opponents,
 		"card_choices_left": card_choices_left,
-		"fight_choices": fight_choices
+		"next_opponent": next_opponent
 	}

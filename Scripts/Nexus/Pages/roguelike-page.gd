@@ -26,17 +26,14 @@ func _ready() -> void:
 	);
 	spawn_level_buttons();
 	panel_sprite.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
+	choice_button_layer.rotation_degrees = System.random.randf_range(-CHOICE_BUTTON_ROTATION, CHOICE_BUTTON_ROTATION);
 
 func spawn_level_buttons() -> void:
 	var level_button : LevelButton;
 	var position : Vector2 = LEVEL_BUTTON_STARTING_POSITION;
-	for i in range(System.Rules.FIGHT_CHOICES):
-		level_button = System.Instance.load_child(System.Paths.LEVEL_BUTTON, level_buttons_layer);
-		level_button.scale *= 0.77;
-		level_button.position = position;
-		position.x += abs(LEVEL_BUTTON_STARTING_POSITION.x);
-		level_buttons.append(level_button);
-		level_button.pressed.connect(_on_level_button_pressed);
+	level_button = System.Instance.load_child(System.Paths.LEVEL_BUTTON, level_buttons_layer);
+	level_button.position = position;
+	level_buttons.append(level_button);
 
 func _on_level_button_pressed(level_data : LevelData) -> void:
 	if !is_active:
@@ -48,29 +45,26 @@ func _on_level_button_pressed(level_data : LevelData) -> void:
 	emit_signal("enter_level", level_data);
 
 func update_level_buttons() -> void:
-	var character_id : int;
-	var opponent : Dictionary;
-	var level_data : LevelData;
-	for i in range(System.Rules.FIGHT_CHOICES):
-		character_id = data.fight_choices[i];
-		opponent = data.all_opponents[character_id];
-		level_data = LevelData.from_json({
-			"opponent": GameplayEnums.TranslateCharacterBack[character_id],
-			"song": opponent.song,
-			"background": opponent.background,
-			"deck": 1000 + (0 if character_id == GameplayEnums.Character.PEITSE else character_id),
-			"deck2": 1000
-		})
-		level_buttons[i].init(level_data);
+	var level_data : LevelData = get_level_data();
+	level_buttons[0].init(level_data);
+
+func get_level_data() -> LevelData:
+	var character_id : int = data.next_opponent;
+	var opponent : Dictionary = data.all_opponents[character_id];
+	return LevelData.from_json({
+		"opponent": GameplayEnums.TranslateCharacterBack[character_id],
+		"song": opponent.song,
+		"background": opponent.background,
+		"deck": 1000 + (0 if character_id == GameplayEnums.Character.PEITSE else character_id),
+		"deck2": 1000
+	});
 
 func get_heart_color() -> Heart.HeartColor:
 	return Heart.HeartColor.RED if data.has_max_life() else Heart.HeartColor.PINK;
 
-func set_origin_point() -> void:
-	origin_point = position;
-
 func init(roguelike_data : RoguelikeData):
 	data = roguelike_data;
+	has_picked = false;
 	update_progress_label();
 	death_progress = 0;
 	if data.lives_left == 0:
@@ -83,7 +77,6 @@ func init(roguelike_data : RoguelikeData):
 		is_active = true;
 	update_death_progress_panel();
 	update_level_buttons();
-	update_hearts();
 	delete_cards();
 	keywords_hints.modulate.a = 0;
 	if data.card_choices_left.size() > 0:
@@ -91,6 +84,8 @@ func init(roguelike_data : RoguelikeData):
 		show_card_choice();
 	else:
 		choice_button_layer.full_shutter();
+		show_fight_choices();
+	update_hearts();
 
 func delete_cards() -> void:
 	for card in cards:
@@ -100,7 +95,7 @@ func delete_cards() -> void:
 func show_card_choice() -> void:
 	var card : GameplayCard;
 	var card_data : CardData;
-	var position : Vector2 = LEVEL_BUTTON_STARTING_POSITION + Vector2(0, 30);
+	var position : Vector2 = LEVEL_BUTTON_STARTING_POSITION + Vector2(-CARD_X_MARGIN, -35);
 	for i in range(System.Rules.CARD_CHOICES):
 		card_data = System.Data.load_card(data.card_choices_left[0][i]);
 		card = System.Instance.load_child(System.Paths.CARD, card_choices_layer);
@@ -108,12 +103,12 @@ func show_card_choice() -> void:
 		card.init();
 		card.scale *= 1.2;
 		card.position = position;
-		position.x += abs(LEVEL_BUTTON_STARTING_POSITION.x);
+		position.x += CARD_X_MARGIN;
 		card.pressed.connect(_on_focus_card);
 		card.despawned.connect(_on_card_despawned);
 		card.full_shutter();
 		cards.append(card);
-	System.Random.item(cards)._on_button_pressed();
+	cards[1]._on_button_pressed();
 	choice_button_layer.glow();
 	card_choice_label.text = System.Random.item([
 		"CHOOSE",
@@ -179,6 +174,9 @@ func get_hearts() -> Array:
 	];
 
 func update_hearts() -> void:
+	if data.lives_left == 0:
+		_on_death();
+		return;
 	for i in range(data.lives_left):
 		get_hearts()[i].on(Heart.HeartColor.RED if data.has_max_life(1 if data.lost_heart else 0) else Heart.HeartColor.PINK);
 	if data.lost_heart and !data.has_max_life():
@@ -189,6 +187,7 @@ func heart_losing_effect() -> void:
 	await System.wait(System.random.randf_range(0.5, 0.8));
 	play_heart_lose_sound(false);
 	get_hearts()[data.lives_left].on(Heart.HeartColor.YELLOW);
+	data.lost_heart = false;
 
 func play_heart_lose_sound(is_standalone : bool = true) -> void:
 	var sound : Resource;
@@ -226,14 +225,17 @@ func death_progress_frame(delta : float) -> void:
 		if death_progress >= 1:
 			death_progress = 1;
 			is_dying = false;
-			play_heart_lose_sound();
-			emit_signal("death");
+			_on_death();
 	if is_undeathing:
 		death_progress -= death_speed * delta * System.game_speed;
 		if death_progress <= 0:
 			death_progress = 0;
 			is_undeathing = false;
 	update_death_progress_panel(was_full);
+
+func _on_death() -> void:
+	play_heart_lose_sound();
+	emit_signal("death");
 
 func update_death_progress_panel(was_full : bool = true) -> void:
 	reset_progress_panel.size.x = death_progress * DEATH_PANEL_SIZE.x;
@@ -274,12 +276,13 @@ func pack_card() -> void:
 	focused_card.despawn(despawn_position);
 	focused_card = null;
 	play_collection_sound();
-	await System.wait(System.random.randf_range(1.1, 1.5));
+	await System.wait(System.random.randf_range(COLLECTING_MIN_WAIT, COLLECTING_MAX_WAIT));
 	if data.card_choices_left.size() > 0:
 		show_card_choice();
 	else:
 		show_fight_choices();
 	emit_signal("save");
+	is_active = false;
 
 func play_collection_sound() -> void:
 	var sound : Resource = load("res://Assets/SFX/Inventory/stashing-sound.wav");
@@ -291,6 +294,7 @@ func show_fight_choices() -> void:
 	level_buttons_layer.modulate.a = 0;
 	level_buttons_reveal_speed = System.random.randf_range(LEVEL_BUTTONS_MIN_REVEAL_SPEED, LEVEL_BUTTONS_MAX_REVEAL_SPEED);
 	is_revealing_level_buttons = true;
+	_on_level_button_pressed(get_level_data());
 
 func reveal_level_buttons_frame(delta : float) -> void:
 	var amount : float = level_buttons_reveal_speed * delta * System.game_speed;

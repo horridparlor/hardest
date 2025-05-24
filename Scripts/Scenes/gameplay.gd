@@ -39,7 +39,7 @@ extends Gameplay
 @onready var leds_layer : Node2D = $Background/Leds;
 @onready var divine_judgment : DivineJudgment = $AboveCardsLayer/DivineJudgment;
 
-func init(level_data_ : LevelData) -> void:
+func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	level_data = level_data_;
 	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id);
 	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id);
@@ -57,6 +57,8 @@ func init(level_data_ : LevelData) -> void:
 	victory_banner.modulate.a = 0;
 	divine_judgment.visible = false;
 	
+	if !do_start:
+		return;
 	start_round();
 
 func init_time_stop_nodes() -> void:
@@ -183,7 +185,7 @@ func init_victory_banner_sprite() -> void:
 	victory_banner_sprite.texture = texture;
 
 func end_game() -> void:
-	emit_signal("game_over", did_win);
+	emit_signal("game_over");
 
 func your_turn() -> void:
 	if is_spying:
@@ -338,7 +340,7 @@ func update_alterations_for_card(card_data : CardData) -> void:
 		card.update_visuals(card.card_data.controller.gained_keyword);
 
 func _on_card_pressed(card : GameplayCard) -> void:
-	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND:
+	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND or has_game_ended:
 		return;
 	if !started_playing:
 		_on_started_playing();
@@ -1109,7 +1111,8 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 		bullets.append(bullet);
 		if do_zoom and i == 0:
 			zoom_to_bullet(bullet);
-	get_card(card).recoil(enemy_position);
+	if get_card(card):
+		get_card(card).recoil(enemy_position);
 	return bullets;
 
 func zoom_to_bullet(bullet : Bullet) -> void:

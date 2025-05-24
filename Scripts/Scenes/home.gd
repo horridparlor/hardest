@@ -2,9 +2,11 @@ extends Home
 
 @onready var scene_layer : Node2D = $SceneLayer;
 @onready var edges : Node2D = $Edges;
+@onready var roguelike_page : RoguelikePage = $RoguelikePage;
 
 func init() -> void:
 	background_music.finished.connect(_on_background_music_finished);
+	init_roguelike_page();
 	open_starting_scene();
 	if save_data.next_song != 0:
 		save_data.current_song = save_data.next_song;
@@ -13,12 +15,17 @@ func init() -> void:
 	else:
 		_on_background_music_finished();
 
+func init_roguelike_page() -> void:
+	roguelike_page.set_origin_point();
+	roguelike_page.visible = false;
+	roguelike_page.roll_out();
+	roguelike_page.death.connect(_on_roguelike_death);
+	roguelike_page.enter_level.connect(func(level_data : LevelData): _on_open_gameplay(level_data));
+	roguelike_page.save.connect(_on_roguelike_save);
+
 func _process(delta : float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
-		if gameplay != null:
-			close_gameplay();
-			return;
-		get_tree().quit();
+		replay_same_level();
 	base_rotation_frame(delta);
 	zoom_frame(delta);
 	scene_layer.rotation_degrees = System.base_rotation;
@@ -57,64 +64,69 @@ func process_dev_mode_shortcut_actions() -> void:
 		pass;
 
 func open_starting_scene() -> void:
-	if save_data.tutorial_levels_won < 0 and Config.SHOWCASE_CARD_ID == 0:
+	if save_data.tutorial_levels_won < 0:
 		spawn_introduction_level();
 		return;
-	open_nexus();
+	if save_data.tutorial_levels_won < System.Levels.MAX_TUTORIAL_LEVELS:
+		open_next_tutorial_level();
+	else:
+		in_roguelike_mode = true;
+		open_roguelike_page_modal();
+		open_roguelike_level_to_background();
+
+func open_roguelike_level_to_background() -> void:
+	gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
+	gameplay.is_preloaded = true;
+	gameplay.init(roguelike_page.get_level_data(), false);
+
+func open_next_tutorial_level() -> void:
+	if save_data.tutorial_levels_won == System.Levels.MAX_TUTORIAL_LEVELS:
+		open_roguelike_page_modal();
+		return;
+	open_gameplay(System.Data.read_level(save_data.tutorial_levels_won + 2));
 
 func spawn_introduction_level(level_index : int = System.Levels.INTRODUCTION_LEVEL) -> void:
 	open_gameplay(System.Data.read_level(level_index));
 
-func open_nexus() -> void:
-	if Config.AUTO_LEVEL != 0:
-		spawn_introduction_level(Config.AUTO_LEVEL);
-		return;
-	nexus = System.Instance.load_child(NEXUS_PATH, scene_layer);
-	nexus.enter_level.connect(_on_open_gameplay);
-	nexus.page_changed.connect(_on_nexus_page_changed);
-	nexus.death.connect(_on_roguelike_death);
-	nexus.save.connect(_on_roguelike_save);
-	System.game_speed = 1;
-	nexus.init(max(0, save_data.tutorial_levels_won), save_data.open_page, save_data.roguelike_data);
-	save_data.roguelike_data.lost_heart = false;
-
 func _on_roguelike_save() -> void:
-	save_data.roguelike_data = nexus.roguelike_page.data;
+	save_data.roguelike_data = roguelike_page.data;
 	save_data.write();
 
 func _on_roguelike_death() -> void:
 	save_data.roguelike_data = RoguelikeData.new();
 	save_data.write();
-	nexus.update_roguelike_data(save_data.roguelike_data);
-
-func _on_nexus_page_changed(open_page : Nexus.NexusPage) -> void:
-	save_data.open_page = open_page;
-	save_data.write();
+	roguelike_page.init(save_data.roguelike_data);
 
 func _on_open_gameplay(level_data_ : LevelData) -> void:
+	old_gameplay = gameplay if System.Instance.exists(gameplay) and !gameplay.is_preloaded else null;
 	level_data = level_data_;
 	zoom_in(level_data.position);
 
-func in_roguelike_mode() -> bool:
-	return save_data.open_page == Nexus.NexusPage.ROGUELIKE;
-
 func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	level_data = level_data_;
-	if in_roguelike_mode():
+	has_game_ended = false;
+	if in_roguelike_mode:
 		write_roguelike_decks();
-	gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
-	gameplay.game_over.connect(_on_game_over);
+	if !System.Instance.exists(gameplay) or !gameplay.is_preloaded:
+		gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
+	gameplay.game_over.connect(_on_game_ended);
 	gameplay.zoom_to.connect(_on_zoom_to);
 	gameplay.quick_zoom_to.connect(_on_quick_zoom_to);
 	gameplay.play_song.connect(_on_play_song);
 	gameplay.stop_music.connect(_on_stop_music);
 	gameplay.stop_music_if_special.connect(_on_stop_music_if_special);
 	gameplay.play_prev_song.connect(_on_play_prev_song);
-	gameplay.init(level_data);
-	if System.Instance.exists(nexus):
-		nexus.queue_free();
+	if gameplay.is_preloaded:
+		gameplay.is_preloaded = false;
+		gameplay.start_round();
+	else:
+		gameplay.init(level_data);
+	for node in [old_gameplay]:
+		if System.Instance.exists(node):
+			node.queue_free();
 	reset_base_rotation();
 	reset_camera();
+	roguelike_page.roll_out();
 
 func write_roguelike_decks() -> void:
 	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
@@ -157,20 +169,37 @@ func reset_base_rotation() -> void:
 	base_rotation_left_speed_error = 1;
 	base_rotation_right_speed_error = 1;
 
+func _on_game_ended() -> void:
+	if is_zooming or is_quick_zooming:
+		gameplay.game_over_timer.start();
+		return;
+	has_game_ended = true;
+	_on_game_over(gameplay.did_win);
+	if in_roguelike_mode:
+		open_roguelike_page_modal();
+	else:
+		if !gameplay.did_win and level_data.id != System.Levels.INTRODUCTION_LEVEL:
+			replay_same_level(); 
+		else:
+			open_next_tutorial_level();
+	save_data.roguelike_data.lost_heart = false;
+
+func replay_same_level() -> void:
+	open_gameplay(level_data);
+
+func open_roguelike_page_modal() -> void:
+	roguelike_page.init(save_data.roguelike_data);
+	roguelike_page.visible = true;
+	roguelike_page.roll_in();
+
 func _on_game_over(did_win : bool) -> void:
 	save_data.roguelike_data.money += gameplay.player_one.points;
 	if did_win:
 		process_victory();
 	else:
 		process_loss();
-	save_data.roguelike_data.get_new_choices();
+	save_data.roguelike_data.get_new_choices(level_data.opponent);
 	save_data.write();
-	close_gameplay();
-
-func close_gameplay() -> void:
-	var old_scene : Gameplay = gameplay;
-	open_nexus();
-	old_scene.queue_free();
 
 func _on_background_music_finished() -> void:
 	var song_id : int;
@@ -195,15 +224,16 @@ func _on_background_music_finished() -> void:
 	load_music();
 
 func process_victory() -> void:
-	give_opponent_card_drop(true);
-	give_opponent_card_drop();
+	if in_roguelike_mode:
+		give_opponent_card_drop(true);
+		give_opponent_card_drop();
 	if save_data.tutorial_levels_won < level_data.id - 1:
 		save_data.tutorial_levels_won += 1;
 		save_data.tutorial_levels_won = min(System.Levels.MAX_TUTORIAL_LEVELS, save_data.tutorial_levels_won);
 
 func process_loss() -> void:
 	save_data.tutorial_levels_won = max(0, save_data.tutorial_levels_won);
-	if in_roguelike_mode():
+	if in_roguelike_mode:
 		save_data.roguelike_data.lives_left -= 1;
 		save_data.roguelike_data.lost_heart = true;
 		give_opponent_card_drop();
@@ -212,7 +242,7 @@ func give_opponent_card_drop(confirmed_rare : bool = false) -> void:
 	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
 	var opponent : Dictionary = save_data.roguelike_data.all_opponents[chosen_opponent];
 	var card_pool : Dictionary = opponent.card_pool;
-	if card_pool.keys().is_empty():
+	if opponent.card_pool.keys().is_empty():
 		return;
 	var rare_chance : int = opponent.rare_chance;
 	var source : Array = card_pool[CollectionEnums.Rarity.RARE] if confirmed_rare or System.Random.chance(rare_chance) else card_pool[CollectionEnums.Rarity.COMMON];

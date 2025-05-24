@@ -2,7 +2,7 @@ extends Node2D
 class_name Home
 
 const GAMEPLAY_PATH : String = "res://Prefabs/Scenes/gameplay.tscn";
-const NEXUS_PATH : String = "res://Prefabs/Scenes/nexus.tscn";
+
 const SAVE_FILE_NAME : String = "save";
 const MAX_BASE_ROTATION : float = 7.2;
 const BASE_ROTATION_EDGE : float = 4.3;
@@ -31,7 +31,6 @@ const QUICK_ZOOM_MULTIPLIER : float = 0.4;
 const AUDIO_SPEED_BACK_GLITCH_CHANCE : int = 3;
 
 var gameplay : Gameplay;
-var nexus : Nexus;
 var save_data : SaveData;
 var level_data : LevelData;
 var base_rotation_direction : int = System.Random.direction();
@@ -60,6 +59,9 @@ var cached_game_speed : float = Config.MUSIC_NIGHTCORE_PITCH;
 var prev_song_position : float;
 var prev_song : int;
 var is_song_locked : bool;
+var old_gameplay : Gameplay;
+var in_roguelike_mode : bool;
+var has_game_ended : bool;
 
 func _ready() -> void:
 	for node in [
@@ -107,12 +109,9 @@ func _on_zoom_out() -> void:
 	goal_zoom = System.Vectors.default_scale();
 	zoom_speed = System.random.randf_range(ZOOM_MIN_OUT_SPEED, ZOOM_MAX_OUT_SPEED) * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
 	zoom_position = System.Vectors.default();
-	if nexus and !gameplay:
-		if !level_data.is_locked:
-			open_gameplay();
-			return;
-		else:
-			nexus.toggle_active();
+	if !gameplay or (gameplay and (has_game_ended or gameplay.is_preloaded)):
+		open_gameplay();
+		return;
 	is_zooming = true;
 	is_moving_camera = true;
 

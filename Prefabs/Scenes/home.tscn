@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bsij7erbum2aw"]
+[gd_scene load_steps=5 format=3 uid="uid://bsij7erbum2aw"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/home.gd" id="1_3c8kg"]
 [ext_resource type="Texture2D" uid="uid://x75pmnom4dx3" path="res://Assets/Art/BackgroundProps/greed-rotated.png" id="2_f6y3p"]
 [ext_resource type="Texture2D" uid="uid://d2cvjf2xdaell" path="res://Assets/Art/BackgroundProps/bubbles-rotated.png" id="3_bgo1n"]
+[ext_resource type="PackedScene" uid="uid://dr5fq4v3lflqw" path="res://Prefabs/Nexus/Pages/roguelike-page.tscn" id="4_mdvi0"]
 
 [node name="Home" type="Node2D"]
 script = ExtResource("1_3c8kg")
@@ -50,3 +51,6 @@ self_modulate = Color(1, 1, 1, 0.388235)
 position = Vector2(-1105, 525)
 scale = Vector2(0.9, 0.9)
 texture = ExtResource("3_bgo1n")
+
+[node name="RoguelikePage" parent="." instance=ExtResource("4_mdvi0")]
+position = Vector2(0, 200)

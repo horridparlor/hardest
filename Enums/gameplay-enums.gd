@@ -21,6 +21,7 @@ func flip_player(controller : Controller) -> Controller:
 	return controller;
 
 enum Character {
+	NULL,
 	AGENT,
 	ERIKA,
 	JUKULIUS,

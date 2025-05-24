@@ -167,6 +167,7 @@ func zoom_camera(delta : float) -> void:
 	if System.Vectors.equal(camera.zoom, goal_zoom):
 		camera.zoom = goal_zoom;
 		is_zooming = false;
+		is_quick_zooming = false;
 
 func _on_zoom_to(node : Node2D, do_slow_down : bool = false) -> void:
 	if is_slowing or System.Instance.exists(zoomed_node) or is_zooming:

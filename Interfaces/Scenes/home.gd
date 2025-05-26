@@ -17,6 +17,9 @@ const MIN_ZOOM_SPEED : float = 0.1;
 const MIN_ZOOM_MULTIPLIER : float = 1.5;
 const MAX_ZOOM_MULTIPLIER : float = 2.4;
 const CAMERA_MOVE_SPEED : float = 0.9;
+const MIN_CARD_SPAWN_WAIT : float = 0.1;
+const MAX_CARD_SPAWN_WAIT : float = 3.0;
+const BACKGROUND_CARDS_SCALE : float = 0.96;
 
 const SLOWING_IN_MIN_SPEED : float = 4.1 * Config.GAME_SPEED;
 const SLOWING_IN_MAX_SPEED : float = 5.2 * Config.GAME_SPEED;
@@ -62,13 +65,16 @@ var is_song_locked : bool;
 var old_gameplay : Gameplay;
 var in_roguelike_mode : bool;
 var has_game_ended : bool;
+var card_spawn_timer : Timer = Timer.new();
+var background_cards : Array;
 
 func _ready() -> void:
 	for node in [
 		camera,
 		zoom_timer,
 		slow_down_timer,
-		background_music
+		background_music,
+		card_spawn_timer
 	]:
 		add_child(node);
 	System.random.randomize();
@@ -82,6 +88,10 @@ func _ready() -> void:
 func init_timers() -> void:
 	zoom_timer.timeout.connect(_on_zoom_out);
 	slow_down_timer.timeout.connect(_on_speed_back_up);
+	card_spawn_timer.timeout.connect(spawn_a_background_card);
+
+func spawn_a_background_card() -> void:
+	pass;
 
 func init() -> void:
 	pass;
@@ -221,3 +231,11 @@ func base_rotation_frame(delta : float) -> void:
 	min_base_rotation_error = max(-BASE_ROTATION_EDGE, min_base_rotation_error);
 	max_base_rotation_error += System.Random.direction() * BASE_ROTATION_ERROR * delta;
 	max_base_rotation_error = min(BASE_ROTATION_EDGE, max_base_rotation_error);
+
+func instance_background_card(parent : Node) -> GameplayCard:
+	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, parent);
+	card.card_data = System.Data.load_card(System.random.randi_range(1, Config.MAX_CARD_ID));
+	card.position = Vector2(System.Random.x(), -System.Window_.y / 2 - GameplayCard.SIZE.y / 2);
+	card.init();
+	card.flow_down();
+	return card;

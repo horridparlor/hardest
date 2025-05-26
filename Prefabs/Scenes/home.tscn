@@ -52,5 +52,15 @@ position = Vector2(-1105, 525)
 scale = Vector2(0.9, 0.9)
 texture = ExtResource("3_bgo1n")
 
+[node name="BackgroundCards" type="Node2D" parent="."]
+
+[node name="CardsBack" type="Node2D" parent="BackgroundCards"]
+
+[node name="CardsBack2" type="Node2D" parent="BackgroundCards"]
+
+[node name="CardsFront" type="Node2D" parent="BackgroundCards"]
+
+[node name="CardsFront2" type="Node2D" parent="BackgroundCards"]
+
 [node name="RoguelikePage" parent="." instance=ExtResource("4_mdvi0")]
 position = Vector2(0, 200)

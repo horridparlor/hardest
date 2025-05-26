@@ -4,6 +4,11 @@ extends Home
 @onready var edges : Node2D = $Edges;
 @onready var roguelike_page : RoguelikePage = $RoguelikePage;
 
+@onready var cards_back_layer : Node2D = $BackgroundCards/CardsBack;
+@onready var cards_back_layer2 : Node2D = $BackgroundCards/CardsBack2;
+@onready var cards_front_layer : Node2D = $BackgroundCards/CardsFront;
+@onready var cards_front_layer2 : Node2D = $BackgroundCards/CardsFront2;
+
 func init() -> void:
 	background_music.finished.connect(_on_background_music_finished);
 	init_roguelike_page();
@@ -124,9 +129,18 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	for node in [old_gameplay]:
 		if System.Instance.exists(node):
 			node.queue_free();
+	stop_background_cards();
 	reset_base_rotation();
 	reset_camera();
 	roguelike_page.roll_out();
+
+func stop_background_cards() -> void:
+	card_spawn_timer.stop();
+	for card in background_cards.duplicate():
+		if !System.Instance.exists(card):
+			background_cards.erase(card);
+			continue;
+		card.dissolve();
 
 func write_roguelike_decks() -> void:
 	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
@@ -191,6 +205,7 @@ func open_roguelike_page_modal() -> void:
 	roguelike_page.init(save_data.roguelike_data);
 	roguelike_page.visible = true;
 	roguelike_page.roll_in();
+	spawn_a_background_card();
 
 func _on_game_over(did_win : bool) -> void:
 	save_data.roguelike_data.money += gameplay.player_one.points;
@@ -250,3 +265,18 @@ func give_opponent_card_drop(confirmed_rare : bool = false) -> void:
 	if rare_chance <= 0:
 		return;
 	opponent.cards.append(card_drop);
+
+func spawn_a_background_card() -> void:
+	var is_back : bool = System.Random.boolean();
+	var layer : Node2D = System.Random.item(
+		[cards_back_layer, cards_back_layer2] if is_back \
+		else [cards_front_layer, cards_front_layer2]	
+	);
+	var card : GameplayCard = instance_background_card(layer);
+	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT) * System.game_speed_multiplier;
+	if is_back:
+		card.scale *= BACKGROUND_CARDS_SCALE;
+	if card.card_data.is_god():
+		card.dissolve();
+	card_spawn_timer.start();
+	background_cards.append(card);

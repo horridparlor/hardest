@@ -54,11 +54,12 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	init_time_stop_nodes();
 	init_audio();
 	victory_banner.stop();
-	victory_banner.modulate.a = 0;
+	victory_banner.visible = true;
 	divine_judgment.visible = false;
 	
 	if !do_start:
 		return;
+	victory_banner.modulate.a = 0;
 	start_round();
 
 func init_time_stop_nodes() -> void:

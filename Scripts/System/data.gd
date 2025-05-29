@@ -7,33 +7,13 @@ const BULLETS_FOLDER_PATH : String = "CardEffects/Bullets/";
 const SAVE_DATA_PATH : String = "save-data";
 const SOUL_BANKS_SAVE_PATH : String = "card-souls/";
 
-const DEFAULT_CARD : Dictionary = {
-	"id": 0,
-	"name": "Name",
-	"type": "Mimic",
-	"override_type": null,
-	"keywords": [],
-	"bullet": 1
-}
-
-const DEFAULT_SAVE_DATA : Dictionary = {
-	"tutorial_levels_won": -1,
-	"current_song": 1,
-	"last_played_songs": [],
-	"next_song": 0,
-	"open_page": Nexus.NexusPage.TUTORIAL,
-	"roguelike_data": null
-};
-
 const DEFAULT_SONG_DATA : Dictionary = {
 	"id": 1,
 	"name": "Beyond Redemption"
 }
 
 static func read_card(card_id : int) -> Dictionary:
-	var data : Dictionary = System.Dictionaries.make_safe(
-		System.Json.read_data(CARDS_FOLDER_PATH + str(card_id)), DEFAULT_CARD
-	);
+	var data : Dictionary = System.Dictionaries.make_safe(System.Json.read_data(CARDS_FOLDER_PATH + str(card_id)), CardData.DEFAULT_DATA);
 	if data.override_type == null:
 		data.override_type = data.type;
 	return data;
@@ -87,8 +67,8 @@ static func fill_decklist(cards : Array) -> Dictionary:
 static func load_save_data() -> SaveData:
 	var json : Dictionary = System.Json.read_save(SAVE_DATA_PATH);
 	if System.Json.is_error(json):
-		write_save_data(DEFAULT_SAVE_DATA);
-	return SaveData.from_json(System.Dictionaries.make_safe(json, DEFAULT_SAVE_DATA));
+		write_save_data(SaveData.DEFAULT_DATA);
+	return SaveData.from_json(json);
 
 static func write_save_data(data : Dictionary) -> void:
 	System.Json.write_save(data, SAVE_DATA_PATH);

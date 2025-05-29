@@ -59,7 +59,6 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	
 	if !do_start:
 		return;
-	victory_banner.modulate.a = 0;
 	start_round();
 
 func init_time_stop_nodes() -> void:
@@ -164,6 +163,7 @@ func _on_opponent_wins() -> void:
 func start_round() -> void:
 	if has_game_ended:
 		return;
+	victory_banner.modulate.a = 0;
 	round_number += 1;
 	player_one.draw_hand();
 	player_two.draw_hand();

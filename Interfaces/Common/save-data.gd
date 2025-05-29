@@ -1,6 +1,15 @@
 extends Node
 class_name SaveData
 
+const DEFAULT_DATA : Dictionary = {
+	"tutorial_levels_won": -1,
+	"current_song": 1,
+	"last_played_songs": [],
+	"next_song": 0,
+	"open_page": Nexus.NexusPage.TUTORIAL,
+	"roguelike_data": null
+};
+
 var tutorial_levels_won : int;
 var current_song : int;
 var last_played_songs : Array;
@@ -10,16 +19,20 @@ var roguelike_data : RoguelikeData;
 
 static func from_json(data : Dictionary) -> SaveData:
 	var save : SaveData = SaveData.new();
-	save.tutorial_levels_won = data.tutorial_levels_won;
-	save.current_song = data.current_song;
-	save.last_played_songs = data.last_played_songs;
-	save.next_song = data.next_song;
-	save.open_page = data.open_page;
-	if !data.roguelike_data:
-		save.roguelike_data = RoguelikeData.new();
-	else:
-		save.roguelike_data = RoguelikeData.from_json(data.roguelike_data);
+	save.eat_json(data);
 	return save;
+
+func eat_json(data : Dictionary) -> void:
+	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
+	tutorial_levels_won = data.tutorial_levels_won;
+	current_song = data.current_song;
+	last_played_songs = data.last_played_songs;
+	next_song = data.next_song;
+	open_page = data.open_page;
+	if !data.roguelike_data:
+		roguelike_data = RoguelikeData.new();
+	else:
+		roguelike_data = RoguelikeData.from_json(data.roguelike_data);
 
 func to_json() -> Dictionary:
 	return {

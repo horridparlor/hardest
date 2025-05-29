@@ -106,6 +106,10 @@ func operate_showcase_layer() -> void:
 		showcase_card.update_visuals();
 		showcase_card.update_card_art(true);
 		showcase_card_layer.visible = true;
+		roguelike_page.visible = false;
+		left_arrow.visible = false;
+		right_arrow.visible = false;
+		background.visible = false;
 	else:
 		showcase_card_layer.visible = false;
 

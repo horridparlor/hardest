@@ -1,6 +1,15 @@
 extends Node
 class_name CardData
 
+const DEFAULT_DATA : Dictionary = {
+	"id": 0,
+	"name": "Name",
+	"type": "mimic",
+	"override_type": null,
+	"keywords": [],
+	"bullet": 1
+}
+
 var default_type : CardEnums.CardType
 
 var card_id : int;
@@ -24,6 +33,7 @@ static func from_json(data : Dictionary) -> CardData:
 	return card;
 
 func eat_json(data : Dictionary) -> void:
+	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	card_id = data.id;
 	card_name = data.name;
 	card_type = CardEnums.TranslateCardType[data.type];
@@ -131,6 +141,9 @@ func has_horse_gear() -> bool:
 func has_high_ground() -> bool:
 	return has_keyword(CardEnums.Keyword.HIGH_GROUND);
 
+func has_high_nut() -> bool:
+	return has_keyword(CardEnums.Keyword.HIGH_NUT);
+
 func has_hydra() -> bool:
 	return has_keyword(CardEnums.Keyword.HYDRA);
 
@@ -139,6 +152,18 @@ func has_influencer() -> bool:
 
 func has_multi_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.MULTI_SPY);
+
+func has_november() -> bool:
+	return has_keyword(CardEnums.Keyword.NOVEMBER);
+	
+func has_nut() -> bool:
+	return has_keyword(CardEnums.Keyword.NUT);
+
+func has_nut_collector() -> bool:
+	return has_keyword(CardEnums.Keyword.NUT_COLLECTOR);
+
+func has_nut_stealer() -> bool:
+	return has_keyword(CardEnums.Keyword.NUT_STEALER);
 
 func has_pair() -> bool:
 	return has_keyword(CardEnums.Keyword.PAIR);
@@ -164,6 +189,9 @@ func has_salty() -> bool:
 func has_secrets() -> bool:
 	return has_keyword(CardEnums.Keyword.SECRETS);
 
+func has_shared_nut() -> bool:
+	return has_keyword(CardEnums.Keyword.SHARED_NUT);
+
 func has_silver() -> bool:
 	return has_keyword(CardEnums.Keyword.SILVER);
 
@@ -185,6 +213,9 @@ func has_undead(needs_to_be_active : bool = false) -> bool:
 
 func has_vampire() -> bool:
 	return has_keyword(CardEnums.Keyword.VAMPIRE);
+
+func has_very_nutty() -> bool:
+	return has_keyword(CardEnums.Keyword.VERY_NUTTY);
 
 func is_vanilla() -> bool:
 	return keywords.is_empty();

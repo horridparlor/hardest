@@ -30,6 +30,9 @@ func init_roguelike_page() -> void:
 
 func _process(delta : float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
+		if !gameplay:
+			get_tree().quit();
+			return;
 		replay_same_level();
 	base_rotation_frame(delta);
 	zoom_frame(delta);
@@ -69,6 +72,11 @@ func process_dev_mode_shortcut_actions() -> void:
 		pass;
 
 func open_starting_scene() -> void:
+	if Config.SHOWCASE_CARD_ID != 0:
+		nexus = System.Instance.load_child(System.Paths.NEXUS, self);
+		nexus.operate_showcase_layer();
+		is_song_locked = true;
+		return;
 	if save_data.tutorial_levels_won < 0:
 		spawn_introduction_level();
 		return;
@@ -101,6 +109,8 @@ func _on_roguelike_death() -> void:
 	save_data.roguelike_data = RoguelikeData.new();
 	save_data.write();
 	roguelike_page.init(save_data.roguelike_data);
+	if System.Instance.exists(gameplay):
+		gameplay.is_preloaded = false;
 
 func _on_open_gameplay(level_data_ : LevelData) -> void:
 	old_gameplay = gameplay if System.Instance.exists(gameplay) and !gameplay.is_preloaded else null;

@@ -67,6 +67,7 @@ var in_roguelike_mode : bool;
 var has_game_ended : bool;
 var card_spawn_timer : Timer = Timer.new();
 var background_cards : Array;
+var nexus : Nexus;
 
 func _ready() -> void:
 	for node in [

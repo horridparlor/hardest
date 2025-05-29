@@ -527,6 +527,7 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = System.Vectors
 	card.despawn(despawn_position);
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
+	var enemy : CardData = opponent.get_field_card();
 	for keyword in card.keywords:
 		match keyword:
 			CardEnums.Keyword.CELEBRATE:
@@ -536,7 +537,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 			CardEnums.Keyword.MULTI_SPY:
 				spy_opponent(card, player, opponent, 3);
 			CardEnums.Keyword.NUT_COLLECTOR:
-				collect_nuts(player);
+				if !enemy or !enemy.has_november():
+					collect_nuts(player);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
 				update_card_alterations();
@@ -547,7 +549,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 			CardEnums.Keyword.TIME_STOP:
 				activate_time_stop(card);
 			CardEnums.Keyword.VERY_NUTTY:
-				player.nut_multiplier *= 2;
+				if !enemy or !enemy.has_november():
+					player.nut_multiplier *= 2;
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
 
@@ -706,10 +709,13 @@ func nut_players_nuts(player : Player, opponent : Player) -> bool:
 	var nut_prevented : bool = enemy and (enemy.has_november() or enemy.has_nut_stealer());
 	if !card:
 		return false;
+	if card.has_copycat() and enemy:
+		card.card_type = enemy.card_type;
+		update_alterations_for_card(card);
 	if can_nut and !nut_prevented and card.can_nut(enemy and enemy.has_shared_nut()):
 		if nut_with_card(card, player):
 			return true;
-	if can_steal_nut and card.nuts_stolen < 2 * max(1, enemy.get_max_nuts()):
+	if can_steal_nut and !nut_prevented and card.nuts_stolen < 2 * max(1, enemy.get_max_nuts()):
 		nut_with_card(card, player);
 		card.nuts -= 1;
 		card.nuts_stolen += 1;
@@ -1303,9 +1309,9 @@ func check_pre_types_keywords(card : CardData, enemy : CardData) -> GameplayEnum
 		return opponent_wins;
 	elif enemy.has_pair() and card.has_pair_breaker():
 		return you_win;
-	if card.get_max_nuts() > 0 and enemy.has_november():
+	if card.is_nut_tied() and enemy.has_november():
 		return opponent_wins;
-	if enemy.get_max_nuts() > 0 and card.has_november():
+	if enemy.is_nut_tied() and card.has_november():
 		return you_win;
 	if card.is_buried and !enemy.is_buried and enemy_type != CardEnums.CardType.MIMIC:
 		return opponent_wins;

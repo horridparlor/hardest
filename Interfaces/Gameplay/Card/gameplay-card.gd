@@ -191,7 +191,7 @@ func despawn(despawn_position : Vector2 = System.Vectors.default()) -> void:
 		* (System.Window_.x / 2 + SIZE.x), goal_position.y);
 	toggle_focus(false);
 
-func dissolve() -> void:
+func dissolve(multiplier : float = 1) -> void:
 	pass;
 
 func dissolve_frame(delta : float) -> void:

@@ -235,7 +235,7 @@ func base_rotation_frame(delta : float) -> void:
 
 func instance_background_card(parent : Node) -> GameplayCard:
 	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, parent);
-	card.card_data = System.Data.load_card(System.random.randi_range(58, Config.MAX_CARD_ID));
+	card.card_data = System.Data.load_card(System.random.randi_range(1, Config.MAX_CARD_ID));
 	card.position = Vector2(System.Random.x(), -System.Window_.y / 2 - GameplayCard.SIZE.y / 2);
 	card.init();
 	card.flow_down();

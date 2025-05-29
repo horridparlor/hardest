@@ -117,7 +117,7 @@ func get_starting_card_choices() -> Array:
 			53
 		]));
 		choices.shuffle();
-	return [choices];
+	return [choices, get_card_choices(), get_card_choices()];
 
 func get_card_pool(houses : Array) -> Dictionary:
 	var pool : Dictionary = {

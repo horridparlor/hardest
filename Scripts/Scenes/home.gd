@@ -113,7 +113,7 @@ func _on_roguelike_death() -> void:
 	save_data.write();
 	roguelike_page.init(save_data.roguelike_data);
 	if System.Instance.exists(gameplay):
-		gameplay.is_preloaded = false;
+		gameplay.init(roguelike_page.get_level_data(), false);
 
 func _on_open_gameplay(level_data_ : LevelData) -> void:
 	old_gameplay = gameplay if System.Instance.exists(gameplay) and !gameplay.is_preloaded else null;
@@ -153,7 +153,7 @@ func stop_background_cards() -> void:
 		if !System.Instance.exists(card):
 			background_cards.erase(card);
 			continue;
-		card.dissolve();
+		card.dissolve(2);
 
 func write_roguelike_decks() -> void:
 	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
@@ -253,8 +253,9 @@ func _on_background_music_finished() -> void:
 
 func process_victory() -> void:
 	if in_roguelike_mode:
-		give_opponent_card_drop(true);
-		give_opponent_card_drop();
+		give_opponent_card_drop(save_data.roguelike_data.chosen_opponent, true);
+		for id in save_data.roguelike_data.all_opponents.keys():
+			give_opponent_card_drop(id);
 	if save_data.tutorial_levels_won < level_data.id - 1:
 		save_data.tutorial_levels_won += 1;
 		save_data.tutorial_levels_won = min(System.Levels.MAX_TUTORIAL_LEVELS, save_data.tutorial_levels_won);
@@ -264,14 +265,13 @@ func process_loss() -> void:
 	if in_roguelike_mode:
 		save_data.roguelike_data.lives_left -= 1;
 		save_data.roguelike_data.lost_heart = true;
-		give_opponent_card_drop();
+		give_opponent_card_drop(save_data.roguelike_data.chosen_opponent);
 
-func give_opponent_card_drop(confirmed_rare : bool = false) -> void:
-	var chosen_opponent : int = save_data.roguelike_data.chosen_opponent;
-	var opponent : Dictionary = save_data.roguelike_data.all_opponents[chosen_opponent];
-	var card_pool : Dictionary = opponent.card_pool;
-	if opponent.card_pool.keys().is_empty():
+func give_opponent_card_drop(opponent_id : int, confirmed_rare : bool = false) -> void:
+	var opponent : Dictionary = save_data.roguelike_data.all_opponents[opponent_id];
+	if typeof(opponent.card_pool) == TYPE_ARRAY or opponent.card_pool.keys().is_empty():
 		return;
+	var card_pool : Dictionary = opponent.card_pool;
 	var rare_chance : int = opponent.rare_chance;
 	var source : Array = card_pool[CollectionEnums.Rarity.RARE] if confirmed_rare or System.Random.chance(rare_chance) else card_pool[CollectionEnums.Rarity.COMMON];
 	var card_drop : int = System.Random.item(source);
@@ -286,6 +286,7 @@ func spawn_a_background_card() -> void:
 		else [cards_front_layer, cards_front_layer2]	
 	);
 	var card : GameplayCard = instance_background_card(layer);
+	card.despawned.connect(_on_card_despawned);
 	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT) * System.game_speed_multiplier;
 	if is_back:
 		card.scale *= BACKGROUND_CARDS_SCALE;
@@ -293,3 +294,9 @@ func spawn_a_background_card() -> void:
 		card.dissolve();
 	card_spawn_timer.start();
 	background_cards.append(card);
+
+func _on_card_despawned(card : GameplayCard) -> void:
+	background_cards.erase(card);
+	if !System.Instance.exists(card):
+		return;
+	card.queue_free();

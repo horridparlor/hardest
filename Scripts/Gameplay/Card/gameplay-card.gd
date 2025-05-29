@@ -123,14 +123,14 @@ func get_dissolve_shader_material() -> ShaderMaterial:
 	shader_material.set_shader_parameter("opacity", 1);
 	return shader_material;
 
-func dissolve() -> void:
+func dissolve(multiplier : float = 1) -> void:
 	var shader_material : ShaderMaterial = get_dissolve_shader_material();
 	var shader_material2 : ShaderMaterial = get_dissolve_shader_material();
 	shader_material2.set_shader_parameter("opacity", 0.32);
 	for node in get_shader_layers():
 		node.material = shader_material;
 	background_pattern.material = shader_material2;
-	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED);
+	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED) * multiplier;
 	is_dissolving = true;
 	is_despawning = true;
 	is_moving = false;

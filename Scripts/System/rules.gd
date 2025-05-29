@@ -21,4 +21,4 @@ const DEFAULT_CARDS : Array = [1, 2, 3, 4, 5];
 const CARD_CHOICES : int = 3;
 const CARD_GOAL : int = 100;
 const CHANCE_FOR_RARE_OPPONENT : int = 100;
-const CARD_PICKS_PER_ROUND : int = 1;
+const CARD_PICKS_PER_ROUND : int = 3;

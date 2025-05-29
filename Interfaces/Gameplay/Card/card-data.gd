@@ -167,6 +167,9 @@ func has_nut_collector() -> bool:
 func has_nut_stealer() -> bool:
 	return has_keyword(CardEnums.Keyword.NUT_STEALER);
 
+func is_nut_tied() -> bool:
+	return has_nut_collector() or has_nut_stealer() or has_very_nutty() or get_max_nuts() > 0;
+
 func has_pair() -> bool:
 	return has_keyword(CardEnums.Keyword.PAIR);
 

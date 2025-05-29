@@ -96,6 +96,7 @@ func show_card_choice() -> void:
 	var card : GameplayCard;
 	var card_data : CardData;
 	var position : Vector2 = LEVEL_BUTTON_STARTING_POSITION + Vector2(-CARD_X_MARGIN, -35);
+	cards = [];
 	for i in range(System.Rules.CARD_CHOICES):
 		card_data = System.Data.load_card(data.card_choices_left[0][i]);
 		card = System.Instance.load_child(System.Paths.CARD, card_choices_layer);
@@ -281,8 +282,8 @@ func pack_card() -> void:
 		show_card_choice();
 	else:
 		show_fight_choices();
+		is_active = false;
 	emit_signal("save");
-	is_active = false;
 
 func play_collection_sound() -> void:
 	var sound : Resource = load("res://Assets/SFX/Inventory/stashing-sound.wav");

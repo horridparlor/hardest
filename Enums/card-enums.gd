@@ -28,6 +28,17 @@ const BasicIds : Dictionary = {
 	CardType.GOD: 42
 }
 
+const NUT_IDS : Array = [
+	58,
+	59,
+	60,
+	61,
+	62,
+	63,
+	64,
+	65
+];
+
 const BasicNames : Dictionary = {
 	CardType.ROCK: "a Pebble",
 	CardType.PAPER: "a Scribble Paper",

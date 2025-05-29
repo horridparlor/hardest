@@ -1,11 +1,10 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 61,
+	"name": "Chest Nut",
+	"type": "mimic",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
+		"nut",
+		"copycat"
 	],
-	"bullet": 10
+	"bullet": 6
 }

@@ -1,11 +1,10 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 68,
+	"name": "Pumpkin Jack",
+	"type": "rock",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
+		"november",
+		"undead"
 	],
-	"bullet": 10
+	"bullet": 4
 }

@@ -1,11 +1,9 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 64,
+	"name": "Palm Nuts",
+	"type": "scissor",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
-	],
-	"bullet": 10
+		"nut",
+		"emp"
+	]
 }

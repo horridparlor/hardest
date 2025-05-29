@@ -1,11 +1,9 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 67,
+	"name": "Mouse",
+	"type": "mimic",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
-	],
-	"bullet": 10
+		"nut-stealer",
+		"very-nutty"
+	]
 }

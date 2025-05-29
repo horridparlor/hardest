@@ -23,6 +23,8 @@ var instance_id : int;
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
 var stopped_time_advantage : int;
+var nuts : int;
+var nuts_stolen : int;
 
 func _init() -> void:
 	instance_id = System.Random.instance_id();
@@ -231,3 +233,19 @@ func is_mimic() -> bool:
 
 func is_god() -> bool:
 	return card_type == CardEnums.CardType.GOD;
+
+func prevents_opponents_reveal() -> bool:
+	return has_high_ground() or has_high_nut();
+
+func can_nut(opponent_shares_a_nut : bool = false) -> bool:
+	return nuts < max(1, get_max_nuts() + (1 if opponent_shares_a_nut else 0));
+
+func get_max_nuts() -> int:
+	var max_nuts : int;
+	if has_nut():
+		max_nuts += 1;
+	if has_high_nut():
+		max_nuts += 1;
+	if has_shared_nut():
+		max_nuts += 1;
+	return max_nuts;

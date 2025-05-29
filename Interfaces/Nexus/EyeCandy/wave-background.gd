@@ -19,6 +19,8 @@ func _process(delta : float) -> void:
 	panel_shader_frame(delta);
 
 func panel_shader_frame(delta : float) -> void:
+	if !material:
+		return;
 	sin += velocity * delta * System.game_speed;
 	velocity += System.Random.direction() * VELOCITY_ERROR * delta * System.game_speed;
 	material.set_shader_parameter("sin_wave", sin);

@@ -1,11 +1,8 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 60,
+	"name": "Breadnut",
+	"type": "rock",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
-	],
-	"bullet": 10
+		"shared-nut"
+	]
 }

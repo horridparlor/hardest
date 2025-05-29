@@ -9,6 +9,7 @@ const MAX_KEYWORDS : int = 3;
 const HYDRA_KEYWORDS : int = 3;
 const STOPPED_TIME_MIN_SHOTS : int = 2;
 const STOPPED_TIME_MAX_SHOTS : int = 5;
+const NUTS_TO_COLLECT : int = 3;
 
 #Roguelike
 const STARTING_LIVES : int = 3;

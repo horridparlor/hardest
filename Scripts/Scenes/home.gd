@@ -77,6 +77,9 @@ func open_starting_scene() -> void:
 		nexus.operate_showcase_layer();
 		is_song_locked = true;
 		return;
+	if Config.AUTO_LEVEL != 0:
+		open_gameplay(System.Data.read_level(Config.AUTO_LEVEL));
+		return;
 	if save_data.tutorial_levels_won < 0:
 		spawn_introduction_level();
 		return;

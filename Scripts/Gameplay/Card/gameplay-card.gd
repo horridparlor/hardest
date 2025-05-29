@@ -21,6 +21,17 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 	update_type_icons(card_data.card_type);
 	update_card_art();
 	update_keywords_text(card_data.keywords.duplicate(), gained_keyword);
+	if card_data.has_emp():
+		update_emp_visuals();
+
+func update_emp_visuals() -> void:
+	if card_art.material:
+		return;
+	var shader : Resource = load("res://Shaders/CardEffects/emp-radiation-shader.gdshader");
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	shader_material.shader = shader;
+	card_art.material = shader_material;
+	card_art.update_shader();
 
 func bury() -> void:
 	card_data.is_buried = true;

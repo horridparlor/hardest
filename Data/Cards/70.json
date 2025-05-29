@@ -1,11 +1,8 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 70,
+	"name": "Evidence",
+	"type": "scissor",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
-	],
-	"bullet": 10
+		"november"
+	]
 }

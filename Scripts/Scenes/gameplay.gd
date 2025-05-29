@@ -535,6 +535,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 				influence_opponent(opponent, card.default_type);
 			CardEnums.Keyword.MULTI_SPY:
 				spy_opponent(card, player, opponent, 3);
+			CardEnums.Keyword.NUT_COLLECTOR:
+				collect_nuts(player);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
 				update_card_alterations();
@@ -544,6 +546,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 				spy_opponent(card, player, opponent);
 			CardEnums.Keyword.TIME_STOP:
 				activate_time_stop(card);
+			CardEnums.Keyword.VERY_NUTTY:
+				player.nut_multiplier *= 2;
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
 
@@ -552,6 +556,11 @@ func activate_time_stop(card : CardData) -> void:
 		return;
 	time_stopping_player = card.controller;
 	time_stop_effect_in();
+
+func collect_nuts(player : Player) -> void:
+	for i in range(System.Rules.NUTS_TO_COLLECT):
+		player.spawn_card(System.Random.item(CardEnums.NUT_IDS));
+	player.shuffle_deck();
 
 func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1) -> bool:
 	var spied_card_data : CardData;
@@ -625,6 +634,9 @@ func go_to_results() -> void:
 		if mimics_phase():
 			return results_wait();
 	if results_phase < 4:
+		if nut_phase():
+			return results_wait(NUT_WAIT_MULTIPLIER - 0.2 * nut_combo);
+	if results_phase < 6:
 		if digitals_phase():
 			return results_wait();
 	start_results();
@@ -654,42 +666,112 @@ func mimics_phase() -> bool:
 				return true;
 	return false;
 
+func nut_phase() -> bool:
+	if going_first:
+		if results_phase < 3:
+			results_phase = 3;
+			if nut_your_nuts():
+				results_phase = 2;
+				return true;
+		if results_phase < 4:
+			results_phase = 4;
+			if nut_opponents_nuts():
+				results_phase = 3;
+				return true;
+	else:
+		if results_phase < 3:
+			results_phase = 3;
+			if nut_opponents_nuts():
+				results_phase = 2;
+				return true;
+		if results_phase < 4:
+			results_phase = 4;
+			if nut_your_nuts():
+				results_phase = 3;
+				return true;
+	nut_combo = 0;
+	return false;
+
+func nut_your_nuts() -> bool:
+	return nut_players_nuts(player_one, player_two);
+
+func nut_opponents_nuts() -> bool:
+	return nut_players_nuts(player_two, player_one);
+
+func nut_players_nuts(player : Player, opponent : Player) -> bool:
+	var card : CardData = player.get_field_card();
+	var enemy : CardData = opponent.get_field_card();
+	var can_nut : bool = (card.get_max_nuts() > 0) or (!card.has_november() and enemy and enemy.has_shared_nut());
+	var can_steal_nut : bool = card.has_nut_stealer() and enemy and enemy.can_nut(card.has_shared_nut());
+	var nut_prevented : bool = enemy and (enemy.has_november() or enemy.has_nut_stealer());
+	if !card:
+		return false;
+	if can_nut and !nut_prevented and card.can_nut(enemy and enemy.has_shared_nut()):
+		if nut_with_card(card, player):
+			return true;
+	if can_steal_nut and card.nuts_stolen < 2 * max(1, enemy.get_max_nuts()):
+		nut_with_card(card, player);
+		card.nuts -= 1;
+		card.nuts_stolen += 1;
+		return true;
+	return false;
+
+func nut_with_card(card : CardData, player : Player) -> bool:
+	var multiplier : int = 1;
+	card.nuts += 1;
+	if card.has_champion():
+		multiplier *= 2;
+	if player.do_nut(multiplier):
+		if get_card(card):
+			get_card(card).recoil(get_card(card).position);
+			var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/bottle-shake.wav");
+			play_sfx(sound, Config.SFX_VOLUME, System.game_speed * pow(1.1, nut_combo));
+			emit_signal("quick_zoom_to", get_card(card).position);
+			nut_combo += 1;
+		gain_points_effect(player);
+		return true;
+	return false;
+
+func gain_points_effect(player : Player) -> void:
+	click_your_points() if player == player_one else click_opponents_points();
+	update_point_visuals();
+
 func digitals_phase() -> bool:
 	var card : CardData = player_one.get_field_card();
 	var enemy : CardData = player_two.get_field_card();
 	if (card and card.has_emp()) or (enemy and enemy.has_emp()):
 		return false;
 	if going_first:
-		if results_phase < 3:
-			results_phase = 3;
+		if results_phase < 5:
+			results_phase = 5;
 			if play_your_digitals():
 				return true;
-		if results_phase < 4:
-			results_phase = 4;
+		if results_phase < 6:
+			results_phase = 6;
 			if play_opponents_digitals():
 				results_phase = 2;
 				return true;
 	else:
-		if results_phase < 3:
-			results_phase = 3;
+		if results_phase < 5:
+			results_phase = 5;
 			if play_opponents_digitals():
 				return true;
-		if results_phase < 4:
-			results_phase = 4;
+		if results_phase < 6:
+			results_phase = 6;
 			if play_your_digitals():
 				results_phase = 2;
 				return true;
 	return false;
 
 func transform_your_mimics() -> bool:
-	var card : CardData = player_two.get_field_card();
-	if card and card.has_high_ground():
+	var enemy : CardData = player_two.get_field_card();
+	if enemy and enemy.prevents_opponents_reveal():
 		return false;
 	return transform_mimics(player_one.cards_on_field, player_one, player_two);
 
 func transform_opponents_mimics() -> bool:
-	var card : CardData = player_one.get_field_card();
-	if card and card.has_high_ground():
+	var enemy : CardData = player_one.get_field_card();
+	if enemy and enemy.prevents_opponents_reveal():
 		return false;
 	return transform_mimics(player_two.cards_on_field, player_two, player_one);
 
@@ -770,8 +852,8 @@ func go_to_pre_results() -> void:
 	results_phase = 0;
 	results_wait();
 
-func results_wait() -> void:
-	pre_results_timer.wait_time = PRE_RESULTS_WAIT * System.game_speed_multiplier;
+func results_wait(multiplier : float = 1) -> void:
+	pre_results_timer.wait_time = PRE_RESULTS_WAIT * System.game_speed_multiplier * multiplier;
 	pre_results_timer.start();
 
 func no_mimics() -> bool:
@@ -855,6 +937,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 10;
 			CardEnums.Keyword.HIGH_GROUND:
 				value += 2;
+			CardEnums.Keyword.HIGH_NUT:
+				value += 2 * player.turns_waited_to_nut * player.nut_multiplier;
 			CardEnums.Keyword.HORSE_GEAR:
 				value += 0;
 			CardEnums.Keyword.HYDRA:
@@ -863,6 +947,14 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value -= 1;
 			CardEnums.Keyword.MULTI_SPY:
 				value += 3;
+			CardEnums.Keyword.NOVEMBER:
+				value += 1;
+			CardEnums.Keyword.NUT:
+				value += 2 * player.turns_waited_to_nut * player.nut_multiplier;
+			CardEnums.Keyword.NUT_COLLECTOR:
+				value += 1;
+			CardEnums.Keyword.NUT_STEALER:
+				value += 1;
 			CardEnums.Keyword.PAIR:
 				value += 3;
 			CardEnums.Keyword.PAIR_BREAKER:
@@ -879,6 +971,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 5 if player.points == 0 else 1;
 			CardEnums.Keyword.SECRETS:
 				value += 0;
+			CardEnums.Keyword.SHARED_NUT:
+				value += 2 * (player.turns_waited_to_nut * player.nut_multiplier - opponent.turns_waited_to_nut * opponent.nut_multiplier);
 			CardEnums.Keyword.SILVER:
 				value += 1;
 			CardEnums.Keyword.SOUL_HUNTER:
@@ -891,6 +985,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value -= 1;
 			CardEnums.Keyword.VAMPIRE:
 				value += 5 if opponent.points > 0 else 0;
+			CardEnums.Keyword.VERY_NUTTY:
+				value += 10 * player.turns_waited_to_nut * player.nut_multiplier;
 			CardEnums.Keyword.WRAPPED:
 				value += 0 if player.going_first else 1;
 	if card.has_champion():
@@ -919,8 +1015,10 @@ func get_result_for_playing(card : CardData, player : Player, opponent : Player)
 		value *= 2;
 	if enemy and enemy.has_champion():
 		value *= 2;
-	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.has_high_ground():
+	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.prevents_opponents_reveal():
 		return value;
+	if card.has_nut_stealer() and enemy and enemy.get_max_nuts() > 0:
+		return value * player.turns_waited_to_nut * player.nut_multiplier * 2;
 	if !enemy:
 		return get_value_to_threaten(card, player, opponent);
 	winner = determine_winner(card, enemy);
@@ -1204,6 +1302,10 @@ func check_pre_types_keywords(card : CardData, enemy : CardData) -> GameplayEnum
 	if card.has_pair() and enemy.has_pair_breaker():
 		return opponent_wins;
 	elif enemy.has_pair() and card.has_pair_breaker():
+		return you_win;
+	if card.get_max_nuts() > 0 and enemy.has_november():
+		return opponent_wins;
+	if enemy.get_max_nuts() > 0 and card.has_november():
 		return you_win;
 	if card.is_buried and !enemy.is_buried and enemy_type != CardEnums.CardType.MIMIC:
 		return opponent_wins;

@@ -23,6 +23,9 @@ var visit_point : Vector2;
 var extra_draws : int;
 var decklist : Decklist;
 var going_first : bool;
+var turns_waited_to_nut : int;
+var did_nut : bool;
+var nut_multiplier : int = 1;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -146,6 +149,9 @@ func find_horse_gear_card(card_type : CardEnums.CardType, do_remove_from_deck : 
 func shuffle_hand() -> void:
 	cards_in_hand.shuffle();
 
+func shuffle_deck() -> void:
+	cards_in_deck.shuffle();
+
 func get_field_card() -> CardData:
 	return cards_on_field[0] if !field_empty() else null;
 
@@ -161,6 +167,11 @@ func end_of_turn_clear(did_win : bool) -> void:
 	clear_field(did_win);
 	clear_pick_ups();
 	cards_played_this_turn = 0;
+	if did_nut:
+		did_nut = false;
+		turns_waited_to_nut = 0;
+		nut_multiplier = 1;
+	turns_waited_to_nut += 1;
 
 func clear_field(did_win : bool = false) -> void:
 	var card : CardData;
@@ -238,7 +249,7 @@ func get_cards() -> Array:
 func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
 	var card : CardData = CardData.from_json(CollectionEnums.get_random_card(card_type));
 	cards_in_deck.append(card);
-	cards_in_deck.shuffle();
+	shuffle_deck();
 	return card; 
 
 func get_rainbowed() -> void:
@@ -304,3 +315,19 @@ func trigger_chameleon(card : CardData) -> void:
 				CardEnums.CardType.SCISSORS
 			]);
 	card.card_type = card_type;
+
+func do_nut(multiplier : int = 1) -> bool:
+	var gained : int = turns_waited_to_nut * multiplier * nut_multiplier;
+	points += gained
+	did_nut = true;
+	return gained > 0;
+
+func log_deck() -> void:
+	var card : CardData;
+	var i : int;
+	print("Cards in deck");
+	for c in cards_in_deck:
+		card = c;
+		i += 1;
+		print("%s: %s – %s" % [i, card.card_id, card.card_name]);
+	print("---");

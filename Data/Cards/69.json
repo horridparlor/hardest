@@ -1,11 +1,9 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 69,
+	"name": "Toilet Paper",
+	"type": "paper",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
-	],
-	"bullet": 10
+		"november",
+		"cooties"
+	]
 }

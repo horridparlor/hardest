@@ -33,6 +33,7 @@ const SPY_WAIT_TIME : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const AUTO_PLAY_MIN_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const AUTO_PLAY_MAX_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
 const GULP_WAIT : float = 0.35 * Config.GAME_SPEED_MULTIPLIER;
+const NUT_WAIT_MULTIPLIER : float = 1.6;
 
 const TROLL_MIN_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
 const TROLL_MAX_WAIT : float = 1.2 * Config.GAME_SPEED_MULTIPLIER;
@@ -136,6 +137,7 @@ var time_stopped_bullets : Array;
 var has_been_stopping_turn : bool;
 var has_game_ended : bool;
 var is_preloaded : bool;
+var nut_combo : int;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

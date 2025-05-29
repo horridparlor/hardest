@@ -1,11 +1,9 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 66,
+	"name": "Tree Goblin",
+	"type": "mimic",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
-	],
-	"bullet": 10
+		"devour",
+		"nut-collector"
+	]
 }

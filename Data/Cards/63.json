@@ -1,11 +1,8 @@
 {
-	"id": 57,
-	"name": "Coltelli di Dio",
-	"type": "gun",
+	"id": 63,
+	"name": "Mongongo",
+	"type": "paper",
 	"keywords": [
-		"champion",
-		"vampire",
-		"time-stop"
-	],
-	"bullet": 10
+		"high-nut"
+	]
 }

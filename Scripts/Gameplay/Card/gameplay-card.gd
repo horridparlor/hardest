@@ -22,6 +22,7 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 	update_card_art();
 	update_keywords_text(card_data.keywords.duplicate(), gained_keyword);
 	if card_data.has_emp():
+		has_emp_visuals = true;
 		update_emp_visuals();
 
 func update_emp_visuals() -> void:

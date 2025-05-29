@@ -329,6 +329,8 @@ func stop_spying() -> void:
 func update_card_alterations() -> void:
 	for card in player_one.get_active_cards() + player_two.get_active_cards():
 		update_alterations_for_card(card);
+		if !is_time_stopped and get_card(card) and get_card(card).has_emp_visuals and !card.has_emp():
+			get_card(card).card_art.material = null;
 
 func update_alterations_for_card(card_data : CardData) -> void:
 	var card : GameplayCard = get_card(card_data);
@@ -713,19 +715,21 @@ func nut_players_nuts(player : Player, opponent : Player) -> bool:
 		card.card_type = enemy.card_type;
 		update_alterations_for_card(card);
 	if can_nut and !nut_prevented and card.can_nut(enemy and enemy.has_shared_nut()):
-		if nut_with_card(card, player):
+		if nut_with_card(card, enemy, player):
 			return true;
 	if can_steal_nut and !nut_prevented and card.nuts_stolen < 2 * max(1, enemy.get_max_nuts()):
-		nut_with_card(card, player);
+		nut_with_card(card, enemy, player);
 		card.nuts -= 1;
 		card.nuts_stolen += 1;
 		return true;
 	return false;
 
-func nut_with_card(card : CardData, player : Player) -> bool:
+func nut_with_card(card : CardData, enemy : CardData, player : Player) -> bool:
 	var multiplier : int = 1;
 	card.nuts += 1;
 	if card.has_champion():
+		multiplier *= 2;
+	if enemy and enemy.has_champion():
 		multiplier *= 2;
 	if player.do_nut(multiplier):
 		if get_card(card):
@@ -1470,6 +1474,11 @@ func after_time_stop() -> void:
 		node.material = null;
 	for node in time_stop_nodes2:
 		node.material = null;
+	for card in cards:
+		if !System.Instance.exists(card):
+			continue;
+		if card.card_data.has_emp():
+			card.update_emp_visuals();
 	background_pattern.material = shader_material;
 	led_wait /= TIME_STOP_LED_ACCELERATION;
 	System.update_game_speed(1);

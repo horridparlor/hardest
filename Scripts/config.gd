@@ -2,7 +2,7 @@ extends Node
 
 const VERSION : String = "0.3";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 19;
 const MAX_CARD_ID : int = 70;
 const MAX_EVENT_ID : int = 7;
@@ -14,7 +14,7 @@ const AUTO_LEVEL : int = 0 if DEV_MODE else 0;
 const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
 const DEBUG_CARD : int = 0 if DEV_MODE else 0;
-const SPAWNED_CARD : int = 61 if DEV_MODE else 1;
+const SPAWNED_CARD : int = 64 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 const GUN_CHANCE : int = 1 if DEV_MODE else 1;

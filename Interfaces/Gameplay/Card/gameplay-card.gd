@@ -86,6 +86,7 @@ var flow_gravity : float;
 var is_flowing : bool;
 var is_shaking : bool;
 var shake_to_position : Vector2;
+var has_emp_visuals : bool;
 
 var dissolve_value : float;
 var is_dissolving : bool;

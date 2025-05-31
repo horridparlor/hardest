@@ -17,6 +17,7 @@ const STARTING_MONEY : int = 5;
 const EXTRA_STARTING_HOUSE_CHANCE : int = 5;
 const MIN_RARE_CHANCE : int = 3;
 const MAX_RARE_CHANCE : int = 7;
+const SCAM_DROP_CHANCE : int = 128;
 const DEFAULT_CARDS : Array = [1, 2, 3, 4, 5];
 const CARD_CHOICES : int = 3;
 const CARD_GOAL : int = 100;

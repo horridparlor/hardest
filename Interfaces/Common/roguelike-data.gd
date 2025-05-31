@@ -81,6 +81,8 @@ func get_card_choices() -> Array:
 	for i in range(System.Rules.CARD_CHOICES):
 		if System.Random.chance(rare_chance):
 			pool = card_pool[CollectionEnums.Rarity.RARE];
+		elif System.Random.chance(System.Rules.SCAM_DROP_CHANCE):
+			pool = CollectionEnums.CARDS_TO_COLLECT[CollectionEnums.House.SCAM];
 		else:
 			pool = card_pool[CollectionEnums.Rarity.COMMON];
 		while true:

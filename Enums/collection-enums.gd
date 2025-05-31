@@ -11,7 +11,8 @@ enum House {
 	DEMONIC,
 	HIGHTECH,
 	KAWAII,
-	GOD
+	GOD,
+	SCAM
 }
 
 const CARDS_TO_COLLECT : Dictionary = {
@@ -104,13 +105,15 @@ const CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.RARE: [
 			18,
-			35,
 			38,
 			67
 		]
 	},
 	House.GOD: [
 		42
+	],
+	House.SCAM: [
+		35
 	]
 }
 

@@ -101,6 +101,9 @@ func clone() -> CardData:
 func has_buried() -> bool:
 	return has_keyword(CardEnums.Keyword.BURIED);
 
+func has_carrot_eater() -> bool:
+	return has_keyword(CardEnums.Keyword.CARROT_EATER);
+
 func has_celebrate() -> bool:
 	return has_keyword(CardEnums.Keyword.CELEBRATE);
 
@@ -127,7 +130,10 @@ func has_digital() -> bool:
 
 func has_divine() -> bool:
 	return has_keyword(CardEnums.Keyword.DIVINE);
-	
+
+func has_electrocute() -> bool:
+	return has_keyword(CardEnums.Keyword.ELECTROCUTE);
+
 func has_emp() -> bool:
 	return has_keyword(CardEnums.Keyword.EMP);
 
@@ -155,6 +161,9 @@ func has_influencer() -> bool:
 func has_multi_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.MULTI_SPY);
 
+func has_mushy() -> bool:
+	return has_keyword(CardEnums.Keyword.MUSHY);
+
 func has_november() -> bool:
 	return has_keyword(CardEnums.Keyword.NOVEMBER);
 	
@@ -169,6 +178,12 @@ func has_nut_stealer() -> bool:
 
 func is_nut_tied() -> bool:
 	return has_nut_collector() or has_nut_stealer() or has_very_nutty() or get_max_nuts() > 0;
+
+func has_ocean() -> bool:
+	return has_keyword(CardEnums.Keyword.OCEAN);
+	
+func has_ocean_dweller() -> bool:
+	return has_keyword(CardEnums.Keyword.OCEAN_DWELLER);
 
 func has_pair() -> bool:
 	return has_keyword(CardEnums.Keyword.PAIR);
@@ -191,6 +206,9 @@ func has_rust() -> bool:
 func has_salty() -> bool:
 	return has_keyword(CardEnums.Keyword.SALTY);
 
+func has_scammer() -> bool:
+	return has_keyword(CardEnums.Keyword.SCAMMER);
+
 func has_secrets() -> bool:
 	return has_keyword(CardEnums.Keyword.SECRETS);
 
@@ -205,6 +223,12 @@ func has_soul_hunter() -> bool:
 
 func has_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.SPY);
+
+func has_tidal() -> bool:
+	return has_keyword(CardEnums.Keyword.TIDAL);
+
+func has_tidal_wave() -> bool:
+	return has_keyword(CardEnums.Keyword.TIDAL_WAVE);
 
 func has_time_stop() -> bool:
 	return has_keyword(CardEnums.Keyword.TIME_STOP);

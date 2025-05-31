@@ -336,7 +336,7 @@ func get_rare_opponents() -> Dictionary:
 			"cards": [],
 			"card_pool": [],
 			"rare_chance": 0,
-			"song": 4,
+			"song": 20,
 			"background": 1
 		}
 	};

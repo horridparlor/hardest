@@ -2,7 +2,7 @@ extends Node
 
 const VERSION : String = "0.3";
 
-const DEV_MODE : bool = true;
+const DEV_MODE : bool = false;
 const MAX_SONG_ID : int = 19;
 const MAX_CARD_ID : int = 70;
 const MAX_EVENT_ID : int = 7;

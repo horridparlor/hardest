@@ -117,6 +117,8 @@ script = ExtResource("5_sou8c")
 
 [node name="AutoPlayTimer" type="Timer" parent="Timers"]
 
+[node name="StartNextRoundTimer" type="Timer" parent="Timers"]
+
 [node name="FieldLines" type="Node2D" parent="."]
 
 [node name="Top" type="ColorRect" parent="FieldLines"]
@@ -320,3 +322,4 @@ scale = Vector2(0.72, 0.72)
 [connection signal="timeout" from="Timers/TrollingTimer" to="." method="_on_trolling_timer_timeout"]
 [connection signal="timeout" from="Timers/LedTimer" to="." method="_on_led_wait_timeout"]
 [connection signal="timeout" from="Timers/AutoPlayTimer" to="." method="_on_auto_play_timer_timeout"]
+[connection signal="timeout" from="Timers/StartNextRoundTimer" to="." method="_on_start_next_round_timer_timeout"]

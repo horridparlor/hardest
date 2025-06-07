@@ -20,6 +20,7 @@ extends Gameplay
 @onready var troll_timer : Timer = $Timers/TrollingTimer;
 @onready var led_timer : Timer = $Timers/LedTimer;
 @onready var auto_play_timer : Timer = $Timers/AutoPlayTimer;
+@onready var start_next_round_timer : Timer = $Timers/StartNextRoundTimer;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
@@ -1402,17 +1403,28 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 	return not_determined;
 
 func end_round() -> void:
-	clear_field();
+	if clear_field():
+		start_next_round_timer.wait_time = OCEAN_POINTS_WAIT * System.game_speed_multiplier;
+		start_next_round_timer.start();
+	else:
+		start_next_round();
+
+func start_next_round() -> void:
 	set_going_first(!going_first);
 	start_round();
 
-func clear_field() -> void:
-	clear_players_field(player_one, round_winner == GameplayEnums.Controller.PLAYER_ONE, round_winner == GameplayEnums.Controller.PLAYER_TWO);
-	clear_players_field(player_two, round_winner == GameplayEnums.Controller.PLAYER_TWO, round_winner == GameplayEnums.Controller.PLAYER_ONE);
+func clear_field() -> bool:
+	var did_trigger_clear_field_effects : bool;
+	if clear_players_field(player_one, round_winner == GameplayEnums.Controller.PLAYER_ONE, round_winner == GameplayEnums.Controller.PLAYER_TWO):
+		did_trigger_clear_field_effects = true;
+	if clear_players_field(player_two, round_winner == GameplayEnums.Controller.PLAYER_TWO, round_winner == GameplayEnums.Controller.PLAYER_ONE):
+		did_trigger_clear_field_effects = true;
+	return did_trigger_clear_field_effects;
 
-func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> void:
+func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bool:
 	var card : CardData;
 	var gameplay_card : GameplayCard;
+	var starting_points : int = player.points;
 	for c in player.cards_on_field:
 		card = c;
 		gameplay_card = get_card(card);
@@ -1426,6 +1438,10 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> vo
 		if gameplay_card:
 			gameplay_card.despawn();
 	player.end_of_turn_clear(did_win);
+	if player.points > starting_points:
+		gain_points_effect(player);
+		return true;
+	return false;
 
 func show_opponents_field() -> void:
 	var card : GameplayCard;
@@ -1675,3 +1691,7 @@ func _on_auto_play_timer_timeout() -> void:
 	card = player_one.cards_in_hand.back();
 	spawn_card(card)
 	play_card(get_card(card), player_one, player_two);
+
+func _on_start_next_round_timer_timeout() -> void:
+	start_next_round_timer.stop();
+	start_next_round();

@@ -1,7 +1,9 @@
 {
-	"id": 71,
-	"name": "Rock",
-	"type": "rock",
+	"id": 77,
+	"name": "Trident",
+	"type": "gun",
 	"keywords": [
+		"ocean",
+		"tidal"
 	]
 }

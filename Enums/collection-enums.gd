@@ -30,8 +30,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			53,
 			54,
 			55,
-			56,
-			57,
 			58,
 			59,
 			60,
@@ -69,6 +67,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			37,
 			41,
 			43,
+			56,
+			57,
 			62,
 			65
 		]

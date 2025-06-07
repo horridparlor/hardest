@@ -119,6 +119,7 @@ enum Keyword {
 func get_hydra_keywords() -> Array:
 	return [
 		Keyword.BURIED,
+		Keyword.CARROT_EATER,
 		Keyword.CELEBRATE,
 		Keyword.CHAMELEON,
 		Keyword.CHAMPION,
@@ -321,7 +322,7 @@ var KeywordHints : Dictionary = {
 	Keyword.COPYCAT : "Copies opponent's card type.",
 	Keyword.CURSED : "Cannot be replaced or destroyed.",
 	Keyword.DEVOUR : "Eats the first card opponent plays.",
-	Keyword.DIGITAL : "Counterspell from hand.",
+	Keyword.DIGITAL : "Counterspell from hand. [i](Replaces the card you played.)[/i]",
 	Keyword.DIVINE : "Defeats any undead.",
 	Keyword.ELECTROCUTE : "Defeats any wet card.",
 	Keyword.EMP : "Negates digital.",
@@ -339,7 +340,7 @@ var KeywordHints : Dictionary = {
 	Keyword.NUT_COLLECTOR : "Shuffle 3 nuts into your deck.",
 	Keyword.NUT_STEALER : "If opponent would nut, you nut twice instead.",
 	Keyword.OCEAN : "Scissors gain rust rust, papers gain mushy.",
-	Keyword.OCEAN_DWELLER : "If becomes wet, gain a point.",
+	Keyword.OCEAN_DWELLER : "After every 2 turns in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
 	Keyword.PICK_UP : "End of turn, discard this card from your hand.",

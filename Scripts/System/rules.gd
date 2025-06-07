@@ -4,12 +4,15 @@ const MAX_HAND_SIZE : int = 5;
 const VICTORY_POINTS : int = 10;
 const CLOSE_TO_WINNING_POINTS : int = VICTORY_POINTS - 2;
 const MAX_LEVELS : int = 6;
-const UNDEAD_LIMIT : int = 3;
 const MAX_KEYWORDS : int = 3;
+
+#Keyword specific
+const UNDEAD_LIMIT : int = 3;
 const HYDRA_KEYWORDS : int = 3;
 const STOPPED_TIME_MIN_SHOTS : int = 2;
 const STOPPED_TIME_MAX_SHOTS : int = 5;
 const NUTS_TO_COLLECT : int = 3;
+const OCEAN_DWELLER_TURNS_WAIT : int = 2;
 
 #Roguelike
 const STARTING_LIVES : int = 3;

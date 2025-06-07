@@ -25,6 +25,7 @@ var is_buried : bool;
 var stopped_time_advantage : int;
 var nuts : int;
 var nuts_stolen : int;
+var turns_in_hand : int;
 
 func _init() -> void:
 	instance_id = System.Random.instance_id();

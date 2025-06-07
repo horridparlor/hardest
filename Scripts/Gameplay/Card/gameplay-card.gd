@@ -1,6 +1,6 @@
 extends GameplayCard
 
-@onready var name_label : Label = $NameLabel;
+@onready var name_label : RichTextLabel = $NameLabel;
 @onready var type_label : Label = $TypeLabel;
 @onready var panel : Panel = $Panel;
 @onready var left_type_icon : Sprite2D = $TypeIcons/LeftIcon;
@@ -44,8 +44,11 @@ func bury() -> void:
 	update_type_icons(CardEnums.CardType.MIMIC);
 
 func update_name_label(message : String) -> void:
-	name_label.text = message;
-	name_label.add_theme_font_size_override("font_size", 88 if message.length() > 12 else 104);
+	var name_length : int = message.length();
+	if message.contains("[i]"):
+		name_length -= "[i][/i]".length();
+	name_label.text = "[center]" + message + "[/center]";
+	name_label.add_theme_font_size_override("font_size", 88 if name_length > 12 else 104);
 
 func update_panel(card_type : CardEnums.CardType) -> void:
 	var style : StyleBoxFlat = StyleBoxFlat.new();

@@ -81,13 +81,13 @@ theme_override_font_sizes/normal_font_size = 56
 theme_override_font_sizes/bold_font_size = 56
 bbcode_enabled = true
 text = "[center]
-[i]Get [/i][b]10 points[/b] [i]to[/i] win!
+Rock-Paper-Scissors!
+[i]Get [/i][b]5 points[/b] [i]to[/i] win!
 [b][i]​[/i][/b]
-Play a card [i]from
-your hand. (RPS)[/i]
+Move a card forward.
 [b][i]​[/i][/b]
-[i]Hold a card in hand
-to read its effects.[/i]
+[i](Hold a card in hand
+to read its effects.)[/i]
 [/center]"
 script = ExtResource("5_sou8c")
 

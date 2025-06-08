@@ -128,6 +128,8 @@ func _on_zoom_out() -> void:
 
 func load_music(pitch : float = cached_game_speed) -> void:
 	var song : Resource = System.Data.load_song(save_data.current_song);
+	if !song:
+		song = System.Data.load_song(System.random.randi_range(1, Config.MAX_SONG_ID));
 	background_music.stream = song;
 	if Config.MUTE_MUSIC:
 		return;

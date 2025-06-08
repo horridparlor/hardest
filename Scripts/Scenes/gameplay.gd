@@ -707,11 +707,11 @@ func nut_opponents_nuts() -> bool:
 func nut_players_nuts(player : Player, opponent : Player) -> bool:
 	var card : CardData = player.get_field_card();
 	var enemy : CardData = opponent.get_field_card();
+	if !card:
+		return false;
 	var can_nut : bool = (card.get_max_nuts() > 0) or (!card.has_november() and enemy and enemy.has_shared_nut());
 	var can_steal_nut : bool = card.has_nut_stealer() and enemy and enemy.can_nut(card.has_shared_nut());
 	var nut_prevented : bool = enemy and (enemy.has_november() or enemy.has_nut_stealer());
-	if !card:
-		return false;
 	if card.has_copycat() and enemy:
 		card.card_type = enemy.card_type;
 		update_alterations_for_card(card);

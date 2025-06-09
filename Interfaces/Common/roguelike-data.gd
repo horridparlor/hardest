@@ -61,9 +61,10 @@ func get_starting_opponent() -> int:
 
 func get_new_choices(current_opponent : int = 0) -> void:
 	var opponent_choices : Array = opponents.keys();
+	var picks : int = System.random.randi_range(System.Rules.CARD_PICKS_PER_ROUND - 1, System.Rules.CARD_PICKS_PER_ROUND);
 	opponent_choices.erase(current_opponent);
 	card_choices_left = [];
-	for i in range(System.Rules.CARD_PICKS_PER_ROUND):
+	for i in range(picks):
 		card_choices_left.append(get_card_choices());
 	next_opponent = get_next_opponent(opponent_choices);
 

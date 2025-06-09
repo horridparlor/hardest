@@ -82,7 +82,7 @@ theme_override_font_sizes/bold_font_size = 56
 bbcode_enabled = true
 text = "[center]
 Rock-Paper-Scissors!
-[i]Get [/i][b]5 points[/b] [i]to[/i] win!
+[b]5 points[/b] [i]to[/i] win!
 [b][i]​[/i][/b]
 Move a card forward.
 [b][i]​[/i][/b]

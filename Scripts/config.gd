@@ -2,8 +2,8 @@ extends Node
 
 const VERSION : String = "0.3";
 
-const DEV_MODE : bool = false;
-const MAX_SONG_ID : int = 8;
+const DEV_MODE : bool = true;
+const MAX_SONG_ID : int = 21;
 const MAX_CARD_ID : int = 70; #120
 const MAX_EVENT_ID : int = 7; #40
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID / 2, 10);

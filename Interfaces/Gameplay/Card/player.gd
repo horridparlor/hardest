@@ -26,6 +26,7 @@ var going_first : bool;
 var turns_waited_to_nut : int;
 var did_nut : bool;
 var nut_multiplier : int = 1;
+var point_goal : int;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -72,8 +73,22 @@ func draw() -> bool:
 	card = cards_in_deck.pop_back();
 	cards_in_hand.append(card);
 	card.zone = CardEnums.Zone.HAND;
-	generate_deck();
+	if deck_empty():
+		generate_deck();
 	return true;
+
+func refill_deck() -> void:
+	var ids : Array;
+	for i in range(12):
+		ids.append(CardEnums.BasicIds[CardEnums.CardType.ROCK]);
+		ids.append(CardEnums.BasicIds[CardEnums.CardType.PAPER]);
+		ids.append(CardEnums.BasicIds[CardEnums.CardType.SCISSORS]);
+	for i in range(3):
+		ids.append(CardEnums.BasicIds[CardEnums.CardType.GUN]);
+	ids.append(CardEnums.BasicIds[CardEnums.CardType.MIMIC]);
+	ids.shuffle();
+	for id in ids:
+		spawn_card(System.Data.load_card(id));
 
 func celebrate() -> void:
 	discard_hand();
@@ -100,43 +115,35 @@ func eat_decklist(decklist_id : int = 0,
 	decklist = System.Data.read_decklist(decklist_id);
 	character = character_id;
 	generate_deck();
-	add_always_start_cards();
+	add_start_cards();
 
 func generate_deck() -> void:
-	var amount = System.Rules.DECK_SIZE - count_deck();
-	if amount <= 0:
+	var cards : Array = decklist.get_deck();
+	if cards.is_empty():
+		refill_deck();
 		return;
-	for card_id in decklist.generate_cards(amount):
-		spawn_card(card_id);
+	cards_in_deck = [];
+	for card in cards:
+		spawn_card(card);
 
-func spawn_card(card_id : int) -> void:
-	var card_data : Dictionary;
-	var card : CardData;
-	card_data = System.Data.read_card(card_id);
-	card = CardData.from_json(card_data)
+func spawn_card(card_data : CardData) -> void:
+	var card : CardData = CardData.from_json(card_data.to_json());
 	card.controller = self;
 	cards_in_deck.append(card);
 
-func add_always_start_cards() -> void:
-	var horse_gear_rock : CardData = find_horse_gear_card(CardEnums.CardType.ROCK, true);
-	var horse_gear_paper : CardData = find_horse_gear_card(CardEnums.CardType.PAPER, true);
-	var horse_gear_scissor : CardData = find_horse_gear_card(CardEnums.CardType.SCISSORS, true);
-	var rock_card : CardData = System.Data.get_basic_card(CardEnums.CardType.ROCK) \
-		if horse_gear_rock == null else horse_gear_rock;
-	var paper_card : CardData = System.Data.get_basic_card(CardEnums.CardType.PAPER) \
-		if horse_gear_paper == null else horse_gear_paper;
-	var scissor_card : CardData = System.Data.get_basic_card(CardEnums.CardType.SCISSORS) \
-		if horse_gear_scissor == null else horse_gear_scissor;
+func spawn_card_from_id(card_id : int) -> void:
+	spawn_card(System.Data.load_card(card_id));
+
+func add_start_cards() -> void:
 	var card_souls : Array = System.Data.load_card_souls_for_character(character);
-	var always_cards : Array = [
-		rock_card,
-		paper_card,
-		scissor_card
-	] + card_souls;
-	if Config.DEBUG_CARD != 0:
-		return;
-	always_cards.reverse();
-	for card in always_cards:
+	var start_cards : Array = decklist.start_with;
+	if decklist.cards.size() > 0:
+		start_cards = [];
+		for i in range(System.Rules.HAND_SIZE):
+			start_cards.append(cards_in_deck.pop_back());
+	start_cards += card_souls;
+	start_cards.reverse();
+	for card in start_cards:
 		cards_in_deck.append(card);
 	extra_draws = card_souls.size();
 
@@ -159,9 +166,13 @@ func gain_points(amount : int = 1) -> void:
 	points += amount;
 
 func lose_points(amount : int = 1) -> void:
+	var original_points : int = points;
 	points -= amount;
-	if points < 0 or amount < 0:
-		points = 0;
+	if amount < 0:
+		points = min(0, original_points);
+		return;
+	if points < 0 and points < original_points:
+		points = min(0, original_points);
 
 func end_of_turn_clear(did_win : bool) -> void:
 	clear_field(did_win);
@@ -243,7 +254,7 @@ func purge_from_grave(card : CardData) -> void:
 	card.queue_free();
 
 func is_close_to_winning() -> bool:
-	return points >= System.Rules.CLOSE_TO_WINNING_POINTS;
+	return points >= System.Rules.CLOSE_TO_WINNING_POINTS * point_goal;
 
 func count_grave_type(card_type : CardEnums.CardType, instance_id_of_replacement : int = 0) -> int:
 	var added_count : int = get_added_count_from_replacing_field(instance_id_of_replacement, card_type);

@@ -113,7 +113,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 		42
 	],
 	House.SCAM: [
-		35
+		76
 	]
 }
 

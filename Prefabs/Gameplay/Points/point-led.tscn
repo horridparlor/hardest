@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://wi84ri1dphvt"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Points/point-led.gd" id="1_7nse2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g5r74"]
+bg_color = Color(0.540268, 0.844503, 3.85046e-07, 1)
+border_width_left = 3
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 2
+border_color = Color(0.910666, 0.998772, 0.90889, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_laarf"]
+bg_color = Color(0.601087, 0.0676591, 0.206172, 1)
+border_width_left = 3
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 2
+border_color = Color(0.996387, 0.948, 0.945151, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 1
+
+[node name="PointLed" type="Node2D"]
+script = ExtResource("1_7nse2")
+
+[node name="GreenPanel" type="Panel" parent="."]
+offset_left = -20.0
+offset_top = -5.0
+offset_right = 20.0
+offset_bottom = 5.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_g5r74")
+
+[node name="RedPanel" type="Panel" parent="."]
+offset_left = -20.0
+offset_top = -5.0
+offset_right = 20.0
+offset_bottom = 5.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_laarf")

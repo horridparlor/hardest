@@ -34,12 +34,11 @@ static func read_decklist(decklist_id : int) -> Decklist:
 		data = System.Json.read_data(DECKLIST_FOLDER_PATH + str(1));
 	return Decklist.from_json(data);
 
-static func write_decklist(decklist_id : int, cards : Array, gun_chance : int = Decklist.DEFAULT_GUN_CHANCE) -> void:
+static func write_decklist(decklist_id : int, cards : Array) -> void:
 	var data : Dictionary = {
 		"id": decklist_id,
 		"title": "Roguelike decklist",
-		"cards": cards,
-		"gunChance": gun_chance
+		"cards": cards
 	};
 	System.Json.write_save(data, DECKLIST_FOLDER_PATH + str(decklist_id));
 

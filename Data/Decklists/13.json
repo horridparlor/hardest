@@ -1,0 +1,13 @@
+{
+	"id": 13,
+	"title": "Decklists test deck",
+	"cards": [
+		60,
+		60,
+		60,
+		60,
+		60,
+		60
+	],
+	"isRoguelike": true
+}

@@ -21,9 +21,11 @@ var card_choices_left : Array;
 var next_opponent : int;
 var lost_heart : bool;
 var chosen_opponent : int;
+var point_goal : int;
 
 func _init() -> void:
 	lives_left = System.Rules.STARTING_LIVES;
+	point_goal = System.Rules.VICTORY_POINTS;
 	your_houses = get_starting_houses();
 	card_goal = System.Rules.CARD_GOAL;
 	money = System.Rules.STARTING_MONEY;
@@ -75,12 +77,12 @@ func get_next_opponent(options : Array = opponents.keys()) -> int:
 		fight_id = System.Random.item(rare_opponents.keys());
 	return fight_id;
 
-func get_card_choices() -> Array:
+func get_card_choices(confirmed_rare : bool = false) -> Array:
 	var choices : Array;
 	var pool : Array;
 	var card_id : int;
 	for i in range(System.Rules.CARD_CHOICES):
-		if System.Random.chance(rare_chance):
+		if confirmed_rare or System.Random.chance(rare_chance):
 			pool = card_pool[CollectionEnums.Rarity.RARE];
 		elif System.Random.chance(System.Rules.SCAM_DROP_CHANCE):
 			pool = CollectionEnums.CARDS_TO_COLLECT[CollectionEnums.House.SCAM];
@@ -95,32 +97,7 @@ func get_card_choices() -> Array:
 	return choices;
 
 func get_starting_card_choices() -> Array:
-	var choices = [6, 7, 8];
-	choices.shuffle();
-	if System.Random.chance(rare_chance):
-		choices.pop_back();
-		choices.append(System.Random.item([
-			12,
-			14,
-			15,
-			18,
-			19,
-			20,
-			22,
-			23,
-			27,
-			28,
-			30,
-			32,
-			37,
-			40,
-			41,
-			46,
-			47,
-			53
-		]));
-		choices.shuffle();
-	return [choices, get_card_choices(), get_card_choices()];
+	return [get_card_choices(true), get_card_choices(), get_card_choices()];
 
 func get_card_pool(houses : Array) -> Dictionary:
 	var pool : Dictionary = {
@@ -291,12 +268,19 @@ func get_opponents() -> Dictionary:
 				31,
 				32,
 				33,
+				31,
+				32,
+				33,
+				31,
+				32,
+				33,
+				
+				34,
 				34,
 				
 				39,
 				
-				40,
-				35
+				40
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.HIGHTECH,
@@ -345,24 +329,17 @@ func get_rare_opponents() -> Dictionary:
 	};
 
 func get_starting_houses() -> Array:
-	var houses : Array = [CollectionEnums.House.DELUSIONAL];
-	var other_houses : Array = [
+	var houses : Array;
+	var all_houses : Array = [
+		CollectionEnums.House.DELUSIONAL,
 		CollectionEnums.House.CHAMPION,
 		CollectionEnums.House.DEMONIC,
 		CollectionEnums.House.HIGHTECH,
 		CollectionEnums.House.KAWAII	
 	];
-	var extra_houses : int = 1;
-	while true:
-		if System.Random.chance(System.Rules.EXTRA_STARTING_HOUSE_CHANCE):
-			extra_houses += 1;
-			if extra_houses == 4:
-				break;
-		else:
-			break;
-	other_houses.shuffle();
-	for i in range(extra_houses):
-		houses.append(other_houses.pop_back());
+	all_houses.shuffle();
+	for i in range(System.Rules.STARTING_HOUSES_COUNT):
+		houses.append(all_houses.pop_back());
 	return houses;
 
 static func from_json(json : Dictionary) -> RoguelikeData:
@@ -373,6 +350,7 @@ static func from_json(json : Dictionary) -> RoguelikeData:
 func eat_json(data : Dictionary) -> void:
 	data = System.Dictionaries.make_safe(data, {});
 	lives_left = data.lives_left;
+	point_goal = data.point_goal;
 	your_houses = data.your_houses;
 	cards_bought = data.cards_bought;
 	money = data.money;
@@ -405,6 +383,7 @@ func convert_opponent(data : Dictionary) -> Dictionary:
 func to_json() -> Dictionary:
 	return {
 		"lives_left": lives_left,
+		"point_goal": point_goal,
 		"your_houses": your_houses,
 		"cards_bought": cards_bought,
 		"card_goal": card_goal,

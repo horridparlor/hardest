@@ -60,9 +60,9 @@ const SHADOW_FADE_IN_SPEED : float = 0.6 * Config.GAME_SPEED;
 const SHADOW_FADE_OUT_SPEED : float = 0.8 * Config.GAME_SPEED;
 const CHARACTER_FULL_ART_PATH : String = "res://Assets/Art/CharacterFull/%s.png";
 
-const LED_STARTING_POSITION : Vector2 = Vector2(-480, -590);
+const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);
 const LEDS_PER_COLUMN : int = 19;
-const LED_MARGIN : Vector2 = Vector2(60, 120);
+const LED_MARGIN : Vector2 = Vector2(60, 112);
 const LED_WAIT : float = 0.2;
 const LED_BURSTS : int = LEDS_PER_COLUMN / 3;
 const YOUR_LED_COLOR : Led.LedColor = Led.LedColor.BLUE;
@@ -76,6 +76,7 @@ const WARNING_LED_DIRECTION : int = 0;
 const OFF_LED_DIRECTION : int = 0;
 const FAST_LED_SPEED : int = 2;
 const BACKGROUND_OPACITY : float = 0.6;
+const DIE_BUTTON_ROTATION : float = 5.6;
 
 const TIME_STOP_ACCELERATION_SPEED : float = 0.5 * Config.GAME_SPEED;
 const TIME_STOP_LED_ACCELERATION : int = 12 * Config.GAME_SPEED;

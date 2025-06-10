@@ -56,7 +56,9 @@ func get_level_data() -> LevelData:
 		"song": opponent.song,
 		"background": opponent.background,
 		"deck": 1000 + (0 if character_id == GameplayEnums.Character.PEITSE else character_id),
-		"deck2": 1000
+		"deck2": 1000,
+		"isRoguelike": true,
+		"pointGoal": data.point_goal
 	});
 
 func get_heart_color() -> Heart.HeartColor:
@@ -192,8 +194,6 @@ func heart_losing_effect() -> void:
 
 func play_heart_lose_sound(is_standalone : bool = true) -> void:
 	var sound : Resource;
-	if Config.MUTE_SFX:
-		return;
 	sound = load("res://Assets/SFX/LifeLoss/live-loss%s.wav" % System.random.randi_range(1, 3));
 	play_sound(sound, Config.GUN_VOLUME);
 
@@ -270,7 +270,7 @@ func pack_card() -> void:
 		if card != focused_card:
 			card.pressed.disconnect(_on_focus_card);
 			card.dissolve();
-	data.your_cards = data.your_cards + [focused_card.card_data.card_id];
+	data.your_cards = data.your_cards + [focused_card.card_data.to_json()];
 	data.card_choices_left.remove_at(0);
 	data.cards_bought += 1;
 	update_progress_label();

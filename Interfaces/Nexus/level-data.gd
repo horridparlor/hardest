@@ -12,6 +12,8 @@ var deck2_id : int;
 var song_id : int;
 var background_id : int;
 var unlocks_level : int;
+var is_roguelike : bool;
+var point_goal : int;
 
 var position : Vector2;
 var is_locked : bool;
@@ -27,7 +29,9 @@ const DEFAULT_DATA : Dictionary = {
 	"background": 1,
 	"unlocks": 1,
 	"variant": 0,
-	"variant2": 0
+	"variant2": 0,
+	"isRoguelike": false,
+	"pointGoal": System.Rules.VICTORY_POINTS
 }
 
 static func from_json(data : Dictionary) -> LevelData:
@@ -48,6 +52,8 @@ func eat_json(data : Dictionary) -> void:
 	unlocks_level = data.unlocks;
 	player_variant = GameplayEnums.CharacterToId[player] if data.variant2 == 0 else data.variant2;
 	opponent_variant = GameplayEnums.CharacterToId[opponent] if data.variant == 0 else data.variant;
+	is_roguelike = data.isRoguelike;
+	point_goal = data.pointGoal;
 
 static func translate_character(character_name : String) -> GameplayEnums.Character:
 	return GameplayEnums.TranslateCharacter[character_name] \

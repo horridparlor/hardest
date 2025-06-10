@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=27 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
@@ -13,7 +13,12 @@
 [ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="5_r3tby"]
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="5_sou8c"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
+[ext_resource type="PackedScene" uid="uid://d2pcdxfdj8xu2" path="res://Prefabs/Gameplay/Points/point-meter.tscn" id="8_fw0v1"]
+[ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="8_p6f1f"]
 [ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="9_vl4hw"]
+[ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_fu2mi"]
+[ext_resource type="Texture2D" uid="uid://bmru5jdqkcg22" path="res://Assets/Art/Patterns/YourPointsPattern.png" id="11_gn7mr"]
+[ext_resource type="Texture2D" uid="uid://dm7cyoefu2mt1" path="res://Assets/Art/Patterns/OpponentsPointsPattern.png" id="13_6d7w6"]
 [ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
@@ -31,6 +36,45 @@ shader_parameter/amplitude = 10.0
 shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 0.0
 shader_parameter/opacity = 0.6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u01cp"]
+bg_color = Color(0.6955, 0, 0.121143, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.992892, 0.903066, 0.884806, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 21
+corner_radius_bottom_left = 21
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ewi27"]
+size = Vector2(200, 100)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cw3h6"]
+bg_color = Color(0.309804, 0.580392, 0.886275, 1)
+border_width_left = 12
+border_width_top = 10
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_right = 30
+corner_radius_bottom_right = 60
+corner_radius_bottom_left = 30
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r6psl"]
+bg_color = Color(0.960757, 0.252307, 0.518855, 1)
+border_width_left = 8
+border_width_top = 10
+border_width_right = 12
+border_width_bottom = 8
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 60
+corner_detail = 1
 
 [node name="Gameplay" type="Node2D"]
 script = ExtResource("1_5y1xe")
@@ -67,9 +111,8 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -400.0
-offset_top = -64.0
 offset_right = 400.0
-offset_bottom = 736.0
+offset_bottom = 800.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/normal_font = ExtResource("2_7ibue")
@@ -151,31 +194,113 @@ grow_vertical = 2
 
 [node name="SfxPlayer" type="AudioStreamPlayer2D" parent="."]
 
-[node name="Relics" type="Node2D" parent="."]
-
 [node name="Points" type="Node2D" parent="."]
 position = Vector2(0, 130)
 
-[node name="YourPoints" type="Label" parent="Points"]
-offset_left = -450.0
-offset_top = -920.0
-offset_right = -363.0
-offset_bottom = -763.0
+[node name="Relics" type="Node2D" parent="Points"]
+position = Vector2(0, -130)
+script = ExtResource("8_p6f1f")
+
+[node name="DieButton" type="Control" parent="Points/Relics"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 380.0
+offset_top = -870.0
+offset_right = 380.0
+offset_bottom = -870.0
+
+[node name="Panel" type="Panel" parent="Points/Relics/DieButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_u01cp")
+
+[node name="Label" type="Label" parent="Points/Relics/DieButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -59.0
+offset_top = -42.0
+offset_right = 58.0
+offset_bottom = 37.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_0nx3a")
-theme_override_font_sizes/font_size = 120
-text = "0"
+theme_override_font_sizes/font_size = 64
+text = "DIE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OpponentsPoints" type="Label" parent="Points"]
-offset_left = 363.0
-offset_top = -920.0
-offset_right = 450.0
-offset_bottom = -763.0
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Points/Relics/DieButton"]
+shape = SubResource("RectangleShape2D_ewi27")
+script = ExtResource("10_fu2mi")
+
+[node name="PointPanels" type="Node2D" parent="Points"]
+position = Vector2(0, -130)
+
+[node name="YourPointsPanel" type="Node2D" parent="Points/PointPanels"]
+
+[node name="Panel" type="Panel" parent="Points/PointPanels/YourPointsPanel"]
+offset_left = -520.0
+offset_top = -800.0
+offset_right = -50.0
+offset_bottom = -610.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cw3h6")
+
+[node name="Sprite2D" type="Sprite2D" parent="Points/PointPanels/YourPointsPanel"]
+position = Vector2(-285, -705)
+texture = ExtResource("11_gn7mr")
+
+[node name="PointMeter" parent="Points/PointPanels/YourPointsPanel" instance=ExtResource("8_fw0v1")]
+position = Vector2(-473, -702)
+
+[node name="OpponentsPointsPanel" type="Node2D" parent="Points/PointPanels"]
+
+[node name="Panel" type="Panel" parent="Points/PointPanels/OpponentsPointsPanel"]
+offset_left = 50.0
+offset_top = -800.0
+offset_right = 520.0
+offset_bottom = -610.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_r6psl")
+
+[node name="Sprite2D" type="Sprite2D" parent="Points/PointPanels/OpponentsPointsPanel"]
+position = Vector2(285, -705)
+texture = ExtResource("13_6d7w6")
+
+[node name="PointMeter" parent="Points/PointPanels/OpponentsPointsPanel" instance=ExtResource("8_fw0v1")]
+position = Vector2(473, -702)
+
+[node name="YourPoints" type="Label" parent="Points"]
+offset_left = -420.0
+offset_top = -917.0
+offset_right = -120.0
+offset_bottom = -760.0
 theme_override_fonts/font = ExtResource("2_0nx3a")
 theme_override_font_sizes/font_size = 120
 text = "0"
-horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OpponentsPoints" type="Label" parent="Points"]
+offset_left = 120.0
+offset_top = -917.0
+offset_right = 420.0
+offset_bottom = -760.0
+theme_override_fonts/font = ExtResource("2_0nx3a")
+theme_override_font_sizes/font_size = 120
+text = "0"
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="OpponentsCharacter" type="Control" parent="Points"]
@@ -323,3 +448,4 @@ scale = Vector2(0.72, 0.72)
 [connection signal="timeout" from="Timers/LedTimer" to="." method="_on_led_wait_timeout"]
 [connection signal="timeout" from="Timers/AutoPlayTimer" to="." method="_on_auto_play_timer_timeout"]
 [connection signal="timeout" from="Timers/StartNextRoundTimer" to="." method="_on_start_next_round_timer_timeout"]
+[connection signal="triggered" from="Points/Relics/DieButton/TouchScreenButton" to="." method="_on_touch_screen_button_triggered"]

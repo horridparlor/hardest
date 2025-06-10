@@ -1,8 +1,8 @@
 const DECK_SIZE : int = 15;
 const HAND_SIZE : int = 3;
 const MAX_HAND_SIZE : int = 5;
-const VICTORY_POINTS : int = 5;
-const CLOSE_TO_WINNING_POINTS : int = VICTORY_POINTS - 2;
+const VICTORY_POINTS : int = 3;
+const CLOSE_TO_WINNING_POINTS : float = 0.8;
 const MAX_LEVELS : int = 6;
 const MAX_KEYWORDS : int = 3;
 
@@ -17,12 +17,14 @@ const OCEAN_DWELLER_TURNS_WAIT : int = 2;
 #Roguelike
 const STARTING_LIVES : int = 3;
 const STARTING_MONEY : int = 5;
-const EXTRA_STARTING_HOUSE_CHANCE : int = 5;
+const STARTING_HOUSES_COUNT : int = 2;
 const MIN_RARE_CHANCE : int = 3;
 const MAX_RARE_CHANCE : int = 7;
 const SCAM_DROP_CHANCE : int = 128;
-const DEFAULT_CARDS : Array = [1, 2, 3, 4, 5];
+const DEFAULT_CARDS : Array = [];
 const CARD_CHOICES : int = 3;
-const CARD_GOAL : int = 100;
+const CARD_GOAL : int = 30;
 const CHANCE_FOR_RARE_OPPONENT : int = 32;
 const CARD_PICKS_PER_ROUND : int = 3;
+const POINT_GOAL_MULTIPLIER : float = 1.2;
+const OPPONENT_MAX_POINT_GOAL : float = 10;

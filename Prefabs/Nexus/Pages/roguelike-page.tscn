@@ -112,9 +112,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -370.0
-offset_top = -565.0
+offset_top = -625.0
 offset_right = 370.0
-offset_bottom = 565.0
+offset_bottom = 625.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xocjd")
@@ -125,6 +125,7 @@ texture = ExtResource("3_8uut3")
 script = ExtResource("4_mra10")
 
 [node name="BasicInfo" type="Node2D" parent="."]
+position = Vector2(0, -60)
 
 [node name="ProgressBar" type="Node2D" parent="BasicInfo"]
 
@@ -230,11 +231,12 @@ vertical_alignment = 1
 shape = SubResource("RectangleShape2D_lqn0m")
 
 [node name="ChoiceBox" type="Node2D" parent="."]
+position = Vector2(0, -45)
 
 [node name="LevelButtons" type="Node2D" parent="ChoiceBox"]
 
 [node name="ChoiceButton" type="Node2D" parent="ChoiceBox"]
-position = Vector2(0, 450)
+position = Vector2(0, 540)
 script = ExtResource("4_f4yi1")
 
 [node name="Panel" type="Panel" parent="ChoiceBox/ChoiceButton"]

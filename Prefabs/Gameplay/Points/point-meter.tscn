@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3 uid="uid://d2pcdxfdj8xu2"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Points/point-meter.gd" id="1_6sp0h"]
+[ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="1_01157"]
+[ext_resource type="PackedScene" uid="uid://wi84ri1dphvt" path="res://Prefabs/Gameplay/Points/point-led.tscn" id="3_32aiq"]
+
+[node name="PointMeter" type="Node2D"]
+script = ExtResource("1_6sp0h")
+
+[node name="GoalPoints" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -85.0
+offset_right = 20.0
+offset_bottom = -45.0
+theme_override_fonts/font = ExtResource("1_01157")
+theme_override_font_sizes/font_size = 32
+text = "10"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartingPoints" type="Label" parent="."]
+offset_left = -20.0
+offset_top = 41.0
+offset_right = 20.0
+offset_bottom = 81.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_fonts/font = ExtResource("1_01157")
+theme_override_font_sizes/font_size = 32
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PointLed6" parent="." instance=ExtResource("3_32aiq")]
+position = Vector2(0, -42)
+
+[node name="PointLed5" parent="." instance=ExtResource("3_32aiq")]
+position = Vector2(0, -27)
+
+[node name="PointLed4" parent="." instance=ExtResource("3_32aiq")]
+position = Vector2(0, -12)
+
+[node name="PointLed3" parent="." instance=ExtResource("3_32aiq")]
+position = Vector2(0, 4)
+
+[node name="PointLed2" parent="." instance=ExtResource("3_32aiq")]
+position = Vector2(0, 20)
+
+[node name="PointLed1" parent="." instance=ExtResource("3_32aiq")]
+position = Vector2(0, 36)
+
+[node name="Timers" type="Node2D" parent="."]
+
+[node name="ExtraLedTimer" type="Timer" parent="Timers"]
+
+[node name="NegativeLedTimer" type="Timer" parent="Timers"]
+
+[connection signal="timeout" from="Timers/ExtraLedTimer" to="." method="_on_extra_led_timer_timeout"]
+[connection signal="timeout" from="Timers/NegativeLedTimer" to="." method="_on_negative_led_timer_timeout"]

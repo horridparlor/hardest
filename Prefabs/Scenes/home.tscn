@@ -63,4 +63,4 @@ texture = ExtResource("3_bgo1n")
 [node name="CardsFront2" type="Node2D" parent="BackgroundCards"]
 
 [node name="RoguelikePage" parent="." instance=ExtResource("4_mdvi0")]
-position = Vector2(0, 200)
+position = Vector2(0, 260)

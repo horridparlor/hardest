@@ -28,6 +28,9 @@ var nuts_stolen : int;
 var turns_in_hand : int;
 
 func _init() -> void:
+	update_instance_id();
+
+func update_instance_id() -> void:
 	instance_id = System.Random.instance_id();
 
 static func from_json(data : Dictionary) -> CardData:
@@ -263,17 +266,19 @@ func is_god() -> bool:
 	return card_type == CardEnums.CardType.GOD;
 
 func prevents_opponents_reveal() -> bool:
-	return has_high_ground() or has_high_nut();
+	return !is_buried and (has_high_ground() or has_high_nut() or stopped_time_advantage > 0);
 
 func can_nut(opponent_shares_a_nut : bool = false) -> bool:
-	return nuts < max(1, get_max_nuts() + (1 if opponent_shares_a_nut else 0));
+	return get_max_nuts(opponent_shares_a_nut) > 0 and nuts < max(1, get_max_nuts(opponent_shares_a_nut));
 
-func get_max_nuts() -> int:
+func get_max_nuts(opponent_shares_a_nut : bool = false) -> int:
 	var max_nuts : int;
 	if has_nut():
 		max_nuts += 1;
 	if has_high_nut():
 		max_nuts += 1;
 	if has_shared_nut():
+		max_nuts += 1;
+	if opponent_shares_a_nut:
 		max_nuts += 1;
 	return max_nuts;

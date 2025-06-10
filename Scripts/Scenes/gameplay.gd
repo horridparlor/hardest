@@ -7,6 +7,14 @@ extends Gameplay
 @onready var starting_hints : JumpingText = $Background/StartingHints;
 @onready var victory_banner : JumpingText = $VictoryBanner;
 @onready var victory_banner_sprite : Sprite2D = $VictoryBanner/Sprite2D;
+@onready var relics_layer : GlowNode = $Points/Relics;
+@onready var die_button : Control = $Points/Relics/DieButton;
+
+@onready var die_panel : Panel = $Points/Relics/Panel;
+@onready var your_point_panel : Panel = $Points/PointPanels/YourPointsPanel/Panel;
+@onready var opponents_point_panel : Panel = $Points/PointPanels/OpponentsPointsPanel/Panel;
+@onready var your_point_pattern : Sprite2D = $Points/PointPanels/YourPointsPanel/Sprite2D;
+@onready var opponents_point_pattern : Sprite2D = $Points/PointPanels/OpponentsPointsPanel/Sprite2D;
 
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
@@ -24,6 +32,8 @@ extends Gameplay
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
+@onready var your_point_meter : PointMeter = $Points/PointPanels/YourPointsPanel/PointMeter;
+@onready var opponents_point_meter : PointMeter = $Points/PointPanels/OpponentsPointsPanel/PointMeter;
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
 @onready var sfx_player : AudioStreamPlayer2D = $SfxPlayer;
 @onready var cards_shadow : Node2D = $CardsShadow;
@@ -57,10 +67,15 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	victory_banner.stop();
 	victory_banner.visible = true;
 	divine_judgment.visible = false;
+	die_button.rotation_degrees = System.random.randf_range(-DIE_BUTTON_ROTATION, DIE_BUTTON_ROTATION);
 	
 	if !do_start:
+		_on_points_click_timer_timeout();
 		return;
-	start_round();
+	start_first_round();
+
+func init_starting_hints() -> void:
+	starting_hints.text = "[center]Rock-Paper-Scissors!\n[b]%s points[/b] [i]to[/i] win!\n[b][i]​[/i][/b]\nMove a card forward.\n[b][i]​[/i][/b]\n[i](Hold a card in hand to read its effects.)[/i][/center]" % [level_data.point_goal];
 
 func init_time_stop_nodes() -> void:
 	time_stop_nodes = [
@@ -68,7 +83,12 @@ func init_time_stop_nodes() -> void:
 	];
 	time_stop_nodes2 = [
 		your_face,
-		opponents_face
+		opponents_face,
+		die_panel,
+		your_point_panel,
+		opponents_point_panel,
+		your_point_pattern,
+		opponents_point_pattern
 	];
 	for led in leds_left + leds_right:
 		time_stop_nodes += led.get_shader_layers();
@@ -109,7 +129,12 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 	var card : CardData;
 	var character_id : GameplayEnums.Character = \
 		level_data.player if controller == GameplayEnums.Controller.PLAYER_ONE else level_data.opponent;
+	var point_meter : PointMeter = your_point_meter if player == player_one else opponents_point_meter;
+	var point_goal : int = level_data.point_goal if player == player_one \
+		else min(System.Rules.OPPONENT_MAX_POINT_GOAL, level_data.point_goal);
 	player.controller = controller;
+	player.point_goal = point_goal;
+	point_meter.set_max_points(point_goal);
 	player.eat_decklist(deck_id, character_id);
 	for c in player.cards_in_deck:
 		card = c;
@@ -144,7 +169,7 @@ func get_troll_wait() -> void:
 	troll_timer.wait_time = System.random.randf_range(TROLL_MIN_WAIT, TROLL_MAX_WAIT) * System.game_speed_multiplier;
 
 func have_you_won() -> bool:
-	var result : bool = player_one.points >= System.Rules.VICTORY_POINTS;
+	var result : bool = player_one.points >= player_one.point_goal;
 	if result:
 		_on_you_won();
 	return result;
@@ -153,7 +178,7 @@ func _on_you_won() -> void:
 	highlight_face();
 
 func has_opponent_won() -> bool:
-	var result : bool = player_two.points >= System.Rules.VICTORY_POINTS;
+	var result : bool = player_two.points >= player_two.point_goal;
 	if result:
 		_on_opponent_wins();
 	return result;
@@ -161,8 +186,17 @@ func has_opponent_won() -> bool:
 func _on_opponent_wins() -> void:
 	pass;
 
+func start_first_round() -> void:
+	init_starting_hints();
+	start_round();
+	update_point_visuals();
+	relics_layer.activate_animations();
+	
 func start_round() -> void:
 	if has_game_ended:
+		return;
+	if have_you_won() or has_opponent_won():
+		start_game_over();
 		return;
 	victory_banner.modulate.a = 0;
 	round_number += 1;
@@ -176,7 +210,9 @@ func start_round() -> void:
 		opponents_turn();
 
 func start_game_over() -> void:
-	has_game_ended = true
+	if has_game_ended:
+		return;
+	has_game_ended = true;
 	victory_banner.fade_in(2);
 	init_victory_banner_sprite();
 	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_multiplier;
@@ -218,16 +254,17 @@ func show_hand() -> void:
 	order_hand_positions();
 	reorder_hand();
 
-#Spawned cards have random positions, so we change positions
-#after spawning hand to keep the cards in order. For the
-#first starting hand for example should be Rock-Paper-Scissors in order.
 func order_hand_positions() -> void:
 	var positions : Array;
 	for card in player_one.cards_in_hand:
+		if System.Vectors.is_inside_window(get_card(card).position, GameplayCard.SIZE * GameplayCard.MIN_SCALE):
+			continue;
 		positions.append(get_card(card).position);
 	positions.sort_custom(func(vector_a : Vector2, vector_b : Vector2): return vector_a.x < vector_b.x);
 	positions.reverse();
 	for card in player_one.cards_in_hand:
+		if System.Vectors.is_inside_window(get_card(card).position, GameplayCard.SIZE * GameplayCard.MIN_SCALE):
+			continue;
 		get_card(card).position = positions.pop_back();
 
 func get_card(card : CardData) -> GameplayCard:
@@ -444,7 +481,8 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 		if !is_digital_speed:
 			card.bury();
 	else:
-		trigger_play_effects(card.card_data, player, opponent);
+		if time_stopping_player == null:
+			trigger_play_effects(card.card_data, player, opponent);
 	opponent.trigger_opponent_placed_effects();
 	update_card_alterations();
 	if check_for_devoured(card, player, opponent):
@@ -493,7 +531,7 @@ func check_for_devoured(card : GameplayCard, player : Player, opponent : Player,
 			trigger_play_effects(enemy, opponent, player);
 		update_alterations_for_card(enemy);
 		spawn_tongue(card, get_card(enemy));
-		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * (2.85/4.0) \
+		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * 0.1 \
 			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));
 		return true;
 	return false;
@@ -560,6 +598,9 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 				update_card_alterations();
 			CardEnums.Keyword.RELOAD:
 				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
+			CardEnums.Keyword.SCAMMER:
+				player.points = -100;
+				gain_points_effect(player);
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
 			CardEnums.Keyword.TIME_STOP:
@@ -578,7 +619,7 @@ func activate_time_stop(card : CardData) -> void:
 
 func collect_nuts(player : Player) -> void:
 	for i in range(System.Rules.NUTS_TO_COLLECT):
-		player.spawn_card(System.Random.item(CardEnums.NUT_IDS));
+		player.spawn_card_from_id(System.Random.item(CardEnums.NUT_IDS));
 	player.shuffle_deck();
 
 func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1) -> bool:
@@ -720,7 +761,7 @@ func nut_opponents_nuts() -> bool:
 func nut_players_nuts(player : Player, opponent : Player) -> bool:
 	var card : CardData = player.get_field_card();
 	var enemy : CardData = opponent.get_field_card();
-	if !card:
+	if !card or (enemy and enemy.stopped_time_advantage > 0):
 		return false;
 	var can_nut : bool = (card.get_max_nuts() > 0) or (!card.has_november() and enemy and enemy.has_shared_nut());
 	var can_steal_nut : bool = card.has_nut_stealer() and enemy and enemy.can_nut(card.has_shared_nut());
@@ -731,11 +772,11 @@ func nut_players_nuts(player : Player, opponent : Player) -> bool:
 	if can_nut and !nut_prevented and card.can_nut(enemy and enemy.has_shared_nut()):
 		if nut_with_card(card, enemy, player):
 			return true;
-	if can_steal_nut and !nut_prevented and card.nuts_stolen < 2 * max(1, enemy.get_max_nuts()):
-		nut_with_card(card, enemy, player);
-		card.nuts -= 1;
-		card.nuts_stolen += 1;
-		return true;
+	if can_steal_nut and !nut_prevented and card.nuts_stolen < 2 * max(1, enemy.get_max_nuts(card.has_shared_nut())):
+		if nut_with_card(card, enemy, player):
+			card.nuts -= 1;
+			card.nuts_stolen += 1;
+			return true;
 	return false;
 
 func nut_with_card(card : CardData, enemy : CardData, player : Player) -> bool:
@@ -882,7 +923,8 @@ func results_wait(multiplier : float = 1) -> void:
 
 func no_mimics() -> bool:
 	var card_data : CardData;
-	if player_one.get_field_card().has_high_ground() or player_two.get_field_card().has_high_ground():
+	if (player_one.get_field_card() and player_one.get_field_card().prevents_opponents_reveal()) \
+	or (player_two.get_field_card() and player_two.get_field_card().prevents_opponents_reveal()):
 		return true;
 	for card in cards:
 		card_data = cards[card].card_data;
@@ -971,6 +1013,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value -= 1;
 			CardEnums.Keyword.MULTI_SPY:
 				value += 3;
+			CardEnums.Keyword.MUSHY:
+				value -= 1;
 			CardEnums.Keyword.NOVEMBER:
 				value += 1;
 			CardEnums.Keyword.NUT:
@@ -993,6 +1037,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.SALTY:
 				value += 5 if player.points == 0 else 1;
+			CardEnums.Keyword.SCAMMER:
+				value -= 100;
 			CardEnums.Keyword.SECRETS:
 				value += 0;
 			CardEnums.Keyword.SHARED_NUT:
@@ -1015,7 +1061,7 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 0 if player.going_first else 1;
 	if card.has_champion():
 		value *= 2;
-	if card.is_gun and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
+	if card.is_gun and !card.has_buried() and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
 		value *= card.stopped_time_advantage;
 	return value;
 
@@ -1104,7 +1150,7 @@ func round_results() -> void:
 	if round_winner == GameplayEnums.Controller.PLAYER_TWO:
 		led_direction = OPPONENTS_LED_DIRECTION;
 		led_color = OPPONENTS_LED_COLOR;
-		if !is_motion_shooting and (System.Random.chance(TROLL_CHANCE) or player_two.points >= System.Rules.VICTORY_POINTS - 1):
+		if !is_motion_shooting and (System.Random.chance(TROLL_CHANCE) or player_two.points >= player_two.point_goal - 1):
 			opponent_trolling_effect();
 			led_direction = WARNING_LED_DIRECTION;
 			led_color = WARNING_LED_COLOR;
@@ -1134,7 +1180,7 @@ func stopped_time_results() -> void:
 		time_stopping_player = player_one;
 	var card : CardData = time_stopping_player.get_field_card();
 	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
-	if time_stopping_player.hand_empty() or (card and (card.is_gun() or card.is_god())):
+	if time_stopping_player.hand_empty() or (card and !card.has_buried() and (card.is_gun() or card.is_god())):
 		if card and card.is_gun():
 			await stopped_time_shooting(card, get_opponent(card).get_field_card());
 		time_stop_effect_out();
@@ -1164,6 +1210,8 @@ func play_tie_sound() -> void:
 func update_point_visuals() -> void:
 	your_points.text = str(player_one.points);
 	opponents_points.text = str(player_two.points);
+	update_point_meter(player_one);
+	update_point_meter(player_two);
  
 func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	player : Player, opponent : Player, points : int = 1
@@ -1177,9 +1225,6 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	if card.stopped_time_advantage:
 		points *= card.stopped_time_advantage;
 	player.gain_points(points);
-	click_your_points() \
-		if player.controller == GameplayEnums.Controller.PLAYER_ONE \
-		else click_opponents_points();
 	check_lose_effects(enemy, opponent);
 	if card:
 		for keyword in card.keywords:
@@ -1197,7 +1242,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 					opponent.lose_points(-1);
 				CardEnums.Keyword.SALTY:
 					opponent.lose_points(points);
-	update_point_visuals();
+	gain_points_effect(player);
 	if have_you_won() or has_opponent_won():
 		start_game_over();
 
@@ -1253,6 +1298,10 @@ func click_your_points() -> void:
 		return;
 	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_multiplier;
 	points_click_timer.start();
+
+func update_point_meter(player : Player) -> void:
+	var point_meter : PointMeter = your_point_meter if player == player_one else opponents_point_meter;
+	point_meter.set_points(player.points);
 
 func play_point_sfx(file_path : String) -> void:
 	var sound_file : Resource = load(file_path);
@@ -1364,8 +1413,13 @@ func check_type_results(card : CardData, enemy : CardData) -> GameplayEnums.Cont
 		CardEnums.CardType.GOD:
 			if card_type != CardEnums.CardType.GOD:
 				return opponent_wins;
+		CardEnums.CardType.ROCK:
+			if card.has_mushy():
+				return opponent_wins;
 	match card_type:
 		CardEnums.CardType.ROCK:
+			if enemy.has_mushy():
+				return you_win;
 			match enemy_type:
 				CardEnums.CardType.SCISSORS:
 					return you_win;
@@ -1479,11 +1533,14 @@ func init_time_stop() -> void:
 	var shader_material2 : ShaderMaterial = get_time_stop_material();
 	for node in get_time_stop_nodes():
 		node.material = shader_material;
-	for node in time_stop_nodes2:
+	for node in get_time_stop_nodes2():
 		node.material = shader_material2;
 	led_wait *= TIME_STOP_LED_ACCELERATION;
 	is_time_stopped = true;
 	play_time_stop_sound();
+
+func get_time_stop_nodes2() -> Array:
+	return time_stop_nodes2 + your_point_meter.get_nodes() + opponents_point_meter.get_nodes();
 
 func get_time_stop_material() -> ShaderMaterial:
 	var shader : Resource = load("res://Shaders/CardEffects/za-warudo-shader.gdshader");
@@ -1501,7 +1558,7 @@ func after_time_stop() -> void:
 	shader_material.shader = shader;
 	for node in get_time_stop_nodes():
 		node.material = null;
-	for node in time_stop_nodes2:
+	for node in get_time_stop_nodes2():
 		node.material = null;
 	for card in cards:
 		if !System.Instance.exists(card):
@@ -1708,3 +1765,8 @@ func _on_auto_play_timer_timeout() -> void:
 func _on_start_next_round_timer_timeout() -> void:
 	start_next_round_timer.stop();
 	start_next_round();
+
+func _on_touch_screen_button_triggered() -> void:
+	if is_preloaded:
+		return;
+	start_game_over();

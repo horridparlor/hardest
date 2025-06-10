@@ -120,7 +120,7 @@ func _on_zoom_out() -> void:
 	goal_zoom = System.Vectors.default_scale();
 	zoom_speed = System.random.randf_range(ZOOM_MIN_OUT_SPEED, ZOOM_MAX_OUT_SPEED) * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
 	zoom_position = System.Vectors.default();
-	if !gameplay or (gameplay and (has_game_ended or gameplay.is_preloaded)):
+	if !gameplay or (gameplay and !gameplay.has_game_ended and (has_game_ended or gameplay.is_preloaded)):
 		open_gameplay();
 		return;
 	is_zooming = true;

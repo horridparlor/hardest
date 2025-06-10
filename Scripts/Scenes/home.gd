@@ -224,7 +224,7 @@ func open_roguelike_page_modal() -> void:
 
 func _on_game_over(did_win : bool) -> void:
 	save_data.roguelike_data.money += gameplay.player_one.points;
-	save_data.roguelike_data.point_goal = max(save_data.roguelike_data.point_goal + 2, System.Rules.POINT_GOAL_MULTIPLIER * save_data.roguelike_data.point_goal);
+	save_data.roguelike_data.point_goal = max(save_data.roguelike_data.point_goal + System.Rules.MIN_POINT_INCREASE, System.Rules.POINT_GOAL_MULTIPLIER * save_data.roguelike_data.point_goal);
 	if did_win:
 		process_victory();
 	else:

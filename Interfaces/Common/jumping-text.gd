@@ -28,7 +28,7 @@ func _process(delta: float) -> void:
 	var max : float = MAX_SCALE if override_max_scale <= 0 else override_max_scale;
 	var min : float = MIN_SCALE if override_min_scale <= 0 else override_min_scale;
 	var true_delta : float = delta * System.game_speed;
-	scale_multiplier += direction * (INFLATE_SPEED if direction == 1 else DEFLATE_SPEED) * true_delta * error;
+	scale_multiplier += direction * (INFLATE_SPEED if direction == 1 else DEFLATE_SPEED) * true_delta * abs(error);
 	if direction == 1:
 		if scale_multiplier >= max:
 			scale_multiplier = max;

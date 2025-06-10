@@ -1179,9 +1179,10 @@ func stopped_time_results() -> void:
 	if !time_stopping_player:
 		time_stopping_player = player_one;
 	var card : CardData = time_stopping_player.get_field_card();
+	var enemy : CardData = get_opponent(card).get_field_card() if card else null;
 	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
 	if time_stopping_player.hand_empty() or (card and !card.has_buried() and (card.is_gun() or card.is_god())):
-		if card and card.is_gun():
+		if card and card.is_gun() and (!enemy or check_type_results(card, enemy) == GameplayEnums.Controller.PLAYER_ONE):
 			await stopped_time_shooting(card, get_opponent(card).get_field_card());
 		time_stop_effect_out();
 		return;
@@ -1534,6 +1535,8 @@ func init_time_stop() -> void:
 	for node in get_time_stop_nodes():
 		node.material = shader_material;
 	for node in get_time_stop_nodes2():
+		if !System.Instance.exists(node):
+			continue;
 		node.material = shader_material2;
 	led_wait *= TIME_STOP_LED_ACCELERATION;
 	is_time_stopped = true;
@@ -1559,6 +1562,8 @@ func after_time_stop() -> void:
 	for node in get_time_stop_nodes():
 		node.material = null;
 	for node in get_time_stop_nodes2():
+		if !System.Instance.exists(node):
+			continue;
 		node.material = null;
 	for card in cards:
 		if !System.Instance.exists(card):

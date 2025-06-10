@@ -75,7 +75,7 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	start_first_round();
 
 func init_starting_hints() -> void:
-	starting_hints.text = "[center]Rock-Paper-Scissors!\n[b]%s points[/b] [i]to[/i] win!\n[b][i]​[/i][/b]\nMove a card forward.\n[b][i]​[/i][/b]\n[i](Hold a card in hand to read its effects.)[/i][/center]" % [level_data.point_goal];
+	starting_hints.text = "[center]Rock-Paper-Scissors!\n[b]%s points[/b] [i]to[/i] win!\n[b][i]​[/i][/b]\nDrag a card forward.\n[b][i]​[/i][/b]\n[i](Hold a card in hand\nto read its effects.)[/i][/center]" % [level_data.point_goal];
 
 func init_time_stop_nodes() -> void:
 	time_stop_nodes = [

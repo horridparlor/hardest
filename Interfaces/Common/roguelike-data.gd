@@ -81,11 +81,13 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 	var choices : Array;
 	var pool : Array;
 	var card_id : int;
+	var includes_scam : bool;
 	for i in range(System.Rules.CARD_CHOICES):
 		if confirmed_rare or System.Random.chance(rare_chance):
 			pool = card_pool[CollectionEnums.Rarity.RARE];
-		elif System.Random.chance(System.Rules.SCAM_DROP_CHANCE):
+		elif !includes_scam and System.Random.chance(System.Rules.SCAM_DROP_CHANCE):
 			pool = CollectionEnums.CARDS_TO_COLLECT[CollectionEnums.House.SCAM];
+			includes_scam = true;
 		else:
 			pool = card_pool[CollectionEnums.Rarity.COMMON];
 		while true:

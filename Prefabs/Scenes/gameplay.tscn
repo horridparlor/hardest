@@ -119,9 +119,9 @@ theme_override_fonts/normal_font = ExtResource("2_7ibue")
 theme_override_fonts/italics_font = ExtResource("3_0gad1")
 theme_override_fonts/bold_font = ExtResource("4_04fvt")
 theme_override_font_sizes/bold_italics_font_size = 24
-theme_override_font_sizes/italics_font_size = 56
-theme_override_font_sizes/normal_font_size = 56
-theme_override_font_sizes/bold_font_size = 56
+theme_override_font_sizes/italics_font_size = 52
+theme_override_font_sizes/normal_font_size = 52
+theme_override_font_sizes/bold_font_size = 52
 bbcode_enabled = true
 text = "[center]
 Rock-Paper-Scissors!

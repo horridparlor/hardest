@@ -26,6 +26,6 @@ const CARD_CHOICES : int = 3;
 const CARD_GOAL : int = 30;
 const CHANCE_FOR_RARE_OPPONENT : int = 32;
 const CARD_PICKS_PER_ROUND : int = 2;
-const POINT_GOAL_MULTIPLIER : float = 1.2;
+const POINT_GOAL_MULTIPLIER : float = 1.5;
 const MIN_POINT_INCREASE : int = 3;
 const OPPONENT_MAX_POINT_GOAL : float = 10;

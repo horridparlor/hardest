@@ -177,6 +177,8 @@ func _on_play_prev_song() -> void:
 	save_data.current_song = prev_song;
 	is_song_locked = true;
 	load_music();
+	if Config.MUTE_MUSIC:
+		return;
 	background_music.play(prev_song_position);
 	await System.wait(0.2);
 	is_song_locked = false;

@@ -19,6 +19,9 @@ const FIELD_END_LINE : int = 445;
 const FIELD_POSITION : Vector2 = Vector2(0, FIELD_START_LINE + (FIELD_END_LINE - FIELD_START_LINE) / 2);
 const ENEMY_FIELD_POSITION : Vector2 = Vector2(0, 2 * FIELD_START_LINE);
 const VISIT_POSITION : Vector2 = Vector2(-350, 350);
+const DEATH_PANEL_SIZE : Vector2 = Vector2(200, 100);
+const DYING_SPEED : float = 1.2;
+const UNDYING_SPEED : float = 4.8;
 
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const PRE_RESULTS_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
@@ -140,6 +143,36 @@ var has_been_stopping_turn : bool;
 var has_game_ended : bool;
 var is_preloaded : bool;
 var nut_combo : int;
+var death_progress : float;
+var is_dying : bool;
+var is_undying : bool;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
+	pass;
+
+func death_frame(delta : float):
+	death_progress += delta * DYING_SPEED;
+	update_death_progress_panel(false);
+	if death_progress >= 1:
+		death_progress = 0;
+		is_dying = false;
+		_on_die();
+		
+func _on_die() -> void:
+	if is_preloaded:
+		return;
+	start_game_over();
+	is_undying = true;
+
+func undying_frame(delta : float):
+	death_progress -= delta * UNDYING_SPEED;
+	update_death_progress_panel();
+	if death_progress <= 0:
+		death_progress = 0;
+		is_undying = false;
+
+func start_game_over() -> void:
+	pass;
+	
+func update_death_progress_panel(was_full : bool = true) -> void:
 	pass;

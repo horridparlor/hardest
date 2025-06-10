@@ -1,15 +1,13 @@
-[gd_scene load_steps=27 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=28 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_7ibue"]
 [ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_fmyns"]
 [ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="3_0gad1"]
-[ext_resource type="Texture2D" uid="uid://cthlduqrfhvr3" path="res://Assets/Art/CharacterFace/2.png" id="3_d4hyf"]
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="3_ixfah"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="4_04fvt"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
-[ext_resource type="Texture2D" uid="uid://dm15bo5qcxwt3" path="res://Assets/Art/CharacterFace/1.png" id="5_10ocq"]
 [ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="5_r3tby"]
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="5_sou8c"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
@@ -17,8 +15,6 @@
 [ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="8_p6f1f"]
 [ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="9_vl4hw"]
 [ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_fu2mi"]
-[ext_resource type="Texture2D" uid="uid://bmru5jdqkcg22" path="res://Assets/Art/Patterns/YourPointsPattern.png" id="11_gn7mr"]
-[ext_resource type="Texture2D" uid="uid://dm7cyoefu2mt1" path="res://Assets/Art/Patterns/OpponentsPointsPattern.png" id="13_6d7w6"]
 [ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
@@ -44,6 +40,19 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 4
 border_color = Color(0.992892, 0.903066, 0.884806, 1)
+border_blend = true
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 21
+corner_radius_bottom_left = 21
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_df3vt"]
+bg_color = Color(0.52388, 0, 0.0808597, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.990178, 0.862474, 0.836625, 1)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 21
@@ -64,6 +73,9 @@ corner_radius_bottom_right = 60
 corner_radius_bottom_left = 30
 corner_detail = 1
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_64e62"]
+load_path = "res://.godot/imported/YourPointsPattern.png-30915eb26f5e9229f43893f816b5405a.ctex"
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r6psl"]
 bg_color = Color(0.960757, 0.252307, 0.518855, 1)
 border_width_left = 8
@@ -75,6 +87,15 @@ corner_radius_top_left = 30
 corner_radius_bottom_right = 30
 corner_radius_bottom_left = 60
 corner_detail = 1
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_gh5e6"]
+load_path = "res://.godot/imported/OpponentsPointsPattern.png-f36fac462755b9f85fe0de73ccc613b4.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_fp1j2"]
+load_path = "res://.godot/imported/2.png-4e1f09fc41d34b106cb2f89d1400e5cd.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_8itmb"]
+load_path = "res://.godot/imported/1.png-29526ef40120d13386527986843503df.ctex"
 
 [node name="Gameplay" type="Node2D"]
 script = ExtResource("1_5y1xe")
@@ -224,6 +245,21 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_u01cp")
 
+[node name="DeathProgress" type="Panel" parent="Points/Relics/DieButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_df3vt")
+
 [node name="Label" type="Label" parent="Points/Relics/DieButton"]
 layout_mode = 1
 anchors_preset = 8
@@ -243,7 +279,7 @@ text = "DIE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TouchScreenButton" type="TouchScreenButton" parent="Points/Relics/DieButton"]
+[node name="Die" type="TouchScreenButton" parent="Points/Relics/DieButton"]
 shape = SubResource("RectangleShape2D_ewi27")
 script = ExtResource("10_fu2mi")
 
@@ -261,7 +297,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_cw3h6")
 
 [node name="Sprite2D" type="Sprite2D" parent="Points/PointPanels/YourPointsPanel"]
 position = Vector2(-285, -705)
-texture = ExtResource("11_gn7mr")
+texture = SubResource("CompressedTexture2D_64e62")
 
 [node name="PointMeter" parent="Points/PointPanels/YourPointsPanel" instance=ExtResource("8_fw0v1")]
 position = Vector2(-473, -702)
@@ -277,7 +313,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_r6psl")
 
 [node name="Sprite2D" type="Sprite2D" parent="Points/PointPanels/OpponentsPointsPanel"]
 position = Vector2(285, -705)
-texture = ExtResource("13_6d7w6")
+texture = SubResource("CompressedTexture2D_gh5e6")
 
 [node name="PointMeter" parent="Points/PointPanels/OpponentsPointsPanel" instance=ExtResource("8_fw0v1")]
 position = Vector2(473, -702)
@@ -314,7 +350,7 @@ script = ExtResource("5_sou8c")
 
 [node name="OpponentsFace" type="Sprite2D" parent="Points/OpponentsCharacter"]
 position = Vector2(20, 20)
-texture = ExtResource("3_d4hyf")
+texture = SubResource("CompressedTexture2D_fp1j2")
 
 [node name="EnemyName" type="Label" parent="Points"]
 modulate = Color(1, 1, 1, 0.8)
@@ -345,7 +381,7 @@ script = ExtResource("5_sou8c")
 
 [node name="YourFace" type="Sprite2D" parent="Points/YourCharacter"]
 position = Vector2(20, 20)
-texture = ExtResource("5_10ocq")
+texture = SubResource("CompressedTexture2D_8itmb")
 
 [node name="YourName" type="Label" parent="Points"]
 modulate = Color(1, 1, 1, 0.8)
@@ -448,4 +484,5 @@ scale = Vector2(0.72, 0.72)
 [connection signal="timeout" from="Timers/LedTimer" to="." method="_on_led_wait_timeout"]
 [connection signal="timeout" from="Timers/AutoPlayTimer" to="." method="_on_auto_play_timer_timeout"]
 [connection signal="timeout" from="Timers/StartNextRoundTimer" to="." method="_on_start_next_round_timer_timeout"]
-[connection signal="triggered" from="Points/Relics/DieButton/TouchScreenButton" to="." method="_on_touch_screen_button_triggered"]
+[connection signal="pressed" from="Points/Relics/DieButton/Die" to="." method="_on_die_pressed"]
+[connection signal="released" from="Points/Relics/DieButton/Die" to="." method="_on_die_released"]

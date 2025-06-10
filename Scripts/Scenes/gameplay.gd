@@ -9,6 +9,7 @@ extends Gameplay
 @onready var victory_banner_sprite : Sprite2D = $VictoryBanner/Sprite2D;
 @onready var relics_layer : GlowNode = $Points/Relics;
 @onready var die_button : Control = $Points/Relics/DieButton;
+@onready var reset_progress_panel : Panel = $Points/Relics/DieButton/DeathProgress;
 
 @onready var die_panel : Panel = $Points/Relics/Panel;
 @onready var your_point_panel : Panel = $Points/PointPanels/YourPointsPanel/Panel;
@@ -1528,6 +1529,10 @@ func _process(delta : float) -> void:
 	if is_trolling:
 		move_troll_layer(delta);
 	time_stop_frame(delta);
+	if is_dying:
+		death_frame(delta);
+	if is_undying:
+		undying_frame(delta);
 
 func init_time_stop() -> void:
 	var shader_material : ShaderMaterial = get_time_stop_material();
@@ -1771,7 +1776,42 @@ func _on_start_next_round_timer_timeout() -> void:
 	start_next_round_timer.stop();
 	start_next_round();
 
-func _on_touch_screen_button_triggered() -> void:
-	if is_preloaded:
+func update_death_progress_panel(was_full : bool = true) -> void:
+	reset_progress_panel.size.x = death_progress * DEATH_PANEL_SIZE.x;
+	if death_progress == 1:
+		reset_progress_panel.add_theme_stylebox_override("panel", get_full_death_progress_style());
+	elif was_full:
+		reset_progress_panel.add_theme_stylebox_override("panel", get_nonfull_death_progress_style());
+
+func get_full_progress_style(bg_color : String, border_color : String, is_nonfull : bool = false) -> StyleBoxFlat:
+	var style : StyleBoxFlat = StyleBoxFlat.new();
+	style.bg_color = bg_color;
+	style.border_width_bottom = 4;
+	style.border_width_left = 2;
+	style.border_width_right = 0 if is_nonfull else 2;
+	style.border_width_top = 2;
+	style.border_color = border_color;
+	style.border_blend = true;
+	style.corner_radius_bottom_left = 21;
+	style.corner_radius_bottom_right = 10 if is_nonfull else 21;
+	style.corner_radius_top_left = 16;
+	style.corner_radius_top_right = 8 if is_nonfull else 16;
+	return style;
+
+func get_full_death_progress_style() -> StyleBoxFlat:
+	return get_full_progress_style("#860015", "fcdcd5");
+
+func get_nonfull_death_progress_style() -> StyleBoxFlat:
+	return get_full_progress_style("#860015", "fcdcd5", true);
+
+func _on_die_pressed() -> void:
+	if has_game_ended or is_preloaded:
 		return;
-	start_game_over();
+	is_dying = true;
+	is_undying = false;
+
+func _on_die_released() -> void:
+	if has_game_ended or is_preloaded:
+		return;
+	is_undying = true;
+	is_dying = false;

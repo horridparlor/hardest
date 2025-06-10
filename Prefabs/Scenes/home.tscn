@@ -1,9 +1,13 @@
 [gd_scene load_steps=5 format=3 uid="uid://bsij7erbum2aw"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/home.gd" id="1_3c8kg"]
-[ext_resource type="Texture2D" uid="uid://x75pmnom4dx3" path="res://Assets/Art/BackgroundProps/greed-rotated.png" id="2_f6y3p"]
-[ext_resource type="Texture2D" uid="uid://d2cvjf2xdaell" path="res://Assets/Art/BackgroundProps/bubbles-rotated.png" id="3_bgo1n"]
 [ext_resource type="PackedScene" uid="uid://dr5fq4v3lflqw" path="res://Prefabs/Nexus/Pages/roguelike-page.tscn" id="4_mdvi0"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_5bhxe"]
+load_path = "res://.godot/imported/greed-rotated.png-5ffd4e5fa47bab8f4c4c62d332f71463.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_gxbpd"]
+load_path = "res://.godot/imported/bubbles-rotated.png-bad574ae107422c2e71d844c7268f8b0.ctex"
 
 [node name="Home" type="Node2D"]
 script = ExtResource("1_3c8kg")
@@ -44,13 +48,13 @@ color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 self_modulate = Color(1, 1, 1, 0.568627)
 position = Vector2(1155, 6)
 scale = Vector2(1.6, 1.6)
-texture = ExtResource("2_f6y3p")
+texture = SubResource("CompressedTexture2D_5bhxe")
 
 [node name="Bubbles-rotated" type="Sprite2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.388235)
 position = Vector2(-1105, 525)
 scale = Vector2(0.9, 0.9)
-texture = ExtResource("3_bgo1n")
+texture = SubResource("CompressedTexture2D_gxbpd")
 
 [node name="BackgroundCards" type="Node2D" parent="."]
 

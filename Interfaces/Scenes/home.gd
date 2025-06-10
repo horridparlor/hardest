@@ -132,6 +132,7 @@ func load_music(pitch : float = cached_game_speed) -> void:
 		song = System.Data.load_song(System.random.randi_range(1, Config.MAX_SONG_ID));
 	background_music.stream = song;
 	if Config.MUTE_MUSIC:
+		background_music.stop();
 		return;
 	background_music.pitch_scale = pitch * System.game_speed;
 	background_music.play();

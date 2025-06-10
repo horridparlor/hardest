@@ -4,7 +4,6 @@
 [ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_2t1wj"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_nkh2h"]
 [ext_resource type="PackedScene" uid="uid://b1448adgu16mm" path="res://Prefabs/Nexus/EyeCandy/heart.tscn" id="3_1mvl7"]
-[ext_resource type="Texture2D" uid="uid://c8mcrd3nqf2fq" path="res://Assets/Art/Patterns/RoguelikePattern.png" id="3_8uut3"]
 [ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="4_f4yi1"]
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="4_mra10"]
 [ext_resource type="FontFile" uid="uid://cprgttsfluuru" path="res://Assets/FontFiles/Montserrat/Montserrat-Black.ttf" id="4_toc33"]
@@ -33,6 +32,9 @@ shader_parameter/amplitude = 10.0
 shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 0.0
 shader_parameter/opacity = 1.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ytmcd"]
+load_path = "res://.godot/imported/RoguelikePattern.png-b4c933deec1654454815c0df5aeee52a.ctex"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjaq0"]
 bg_color = Color(0.996999, 0.210579, 0.23255, 1)
@@ -121,7 +123,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_xocjd")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_flrwm")
-texture = ExtResource("3_8uut3")
+texture = SubResource("CompressedTexture2D_ytmcd")
 script = ExtResource("4_mra10")
 
 [node name="BasicInfo" type="Node2D" parent="."]

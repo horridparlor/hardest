@@ -215,7 +215,20 @@ func show_hand() -> void:
 	for c in player_one.cards_in_hand:
 		card = c;
 		spawn_card(card);
+	order_hand_positions();
 	reorder_hand();
+
+#Spawned cards have random positions, so we change positions
+#after spawning hand to keep the cards in order. For the
+#first starting hand for example should be Rock-Paper-Scissors in order.
+func order_hand_positions() -> void:
+	var positions : Array;
+	for card in player_one.cards_in_hand:
+		positions.append(get_card(card).position);
+	positions.sort_custom(func(vector_a : Vector2, vector_b : Vector2): return vector_a.x < vector_b.x);
+	positions.reverse();
+	for card in player_one.cards_in_hand:
+		get_card(card).position = positions.pop_back();
 
 func get_card(card : CardData) -> GameplayCard:
 	return cards[card.instance_id] if card and cards.has(card.instance_id) else null;

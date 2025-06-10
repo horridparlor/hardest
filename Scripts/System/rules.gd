@@ -24,5 +24,5 @@ const SCAM_DROP_CHANCE : int = 128;
 const DEFAULT_CARDS : Array = [1, 2, 3, 4, 5];
 const CARD_CHOICES : int = 3;
 const CARD_GOAL : int = 100;
-const CHANCE_FOR_RARE_OPPONENT : int = 16;
+const CHANCE_FOR_RARE_OPPONENT : int = 32;
 const CARD_PICKS_PER_ROUND : int = 3;

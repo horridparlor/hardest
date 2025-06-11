@@ -185,7 +185,7 @@ func toggle_follow_mouse(value : bool = true) -> void:
 	starting_position.y = (starting_position.y + GameplayCard.SIZE.y) / 2;
 	toggle_focus(value);
 	
-func despawn(despawn_position : Vector2 = System.Vectors.default()) -> void:
+func despawn(despawn_position : Vector2 = Vector2.ZERO) -> void:
 	is_despawning = true;
 	goal_position = despawn_position \
 		if !System.Vectors.is_default(despawn_position) \

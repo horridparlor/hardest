@@ -626,7 +626,7 @@ func play_sfx(sound : Resource, volume : int = Config.SFX_VOLUME, pitch : float 
 	sfx_player.stream = sound;
 	sfx_player.play();
 
-func erase_card(card : GameplayCard, despawn_position : Vector2 = System.Vectors.default()) -> void:
+func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) -> void:
 	cards.erase(card.instance_id);
 	cards_layer.remove_child(card);
 	cards_layer2.add_child(card);
@@ -1338,7 +1338,7 @@ func spawn_poppet_for_card(card : CardData, player : Player, color : Poppet.Popp
 	var goal_position : Vector2
 	if !get_card(card):
 		return;
-	goal_position = your_point_panel.position if player == player_one else opponents_point_panel.position + Vector2(235, 95) + Vector2(System.random.randf_range(-150, 150), System.random.randf_range(-50, 50));
+	goal_position = (your_point_panel.position if player == player_one else opponents_point_panel.position) + Vector2(235, 95) + Vector2(System.random.randf_range(-130, 130), System.random.randf_range(-50, 50));
 	spawn_poppet(get_card(card).position + System.Random.vector(0, 50), goal_position, color);
 
 func spawn_poppet(spawn_position : Vector2, goal_position : Vector2, color : Poppet.PoppetColor) -> Poppet:
@@ -1382,7 +1382,7 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
 		if slow_down:
 			bullet.slow_down();
-		bullet.init(enemy_position - (get_card(card).get_recoil_position() if get_card(card) else System.Vectors.default()), i < 2);
+		bullet.init(enemy_position - (get_card(card).get_recoil_position() if get_card(card) else Vector2.ZERO), i < 2);
 		bullets.append(bullet);
 		if do_zoom and i == 0:
 			zoom_to_bullet(bullet);
@@ -1427,7 +1427,7 @@ func click_opponents_points() -> void:
 	points_click_timer.start();
 
 func opponent_trolling_effect() -> void:
-	trolling_sprite.position = System.Vectors.default();
+	trolling_sprite.position = Vector2.ZERO;
 	trolling_sprite.visible = true;
 	trolling_sprite.rotation_degrees *= System.Random.direction();
 	is_trolling = true;

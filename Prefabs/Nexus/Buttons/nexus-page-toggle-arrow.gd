@@ -24,11 +24,11 @@ func randomize_arrow2_scale() -> void:
 	velocity = random.randf_range(MIN_VELOCITY, MAX_VELOCITY);
 
 func _process(delta : float) -> void:
-	var goal_position : Vector2 = System.Vectors.default() + GOAL_POSITION;
+	var goal_position : Vector2 = Vector2.ZERO + GOAL_POSITION;
 	sprite2.position = System.Vectors.slide_towards(sprite2.position, goal_position, velocity * delta, MIN_SPEED);
-	sprite2.modulate.a = sprite2.position.distance_to(goal_position) / System.Vectors.default().distance_to(goal_position) * ANIMATION_OPACITY;
+	sprite2.modulate.a = sprite2.position.distance_to(goal_position) / Vector2.ZERO.distance_to(goal_position) * ANIMATION_OPACITY;
 	if System.Vectors.equal(sprite2.position, goal_position):
-		sprite2.position = System.Vectors.default();
+		sprite2.position = Vector2.ZERO;
 		sprite2.modulate.a = ANIMATION_OPACITY;
 		randomize_arrow2_scale();
 

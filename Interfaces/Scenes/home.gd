@@ -97,7 +97,7 @@ func spawn_a_background_card() -> void:
 func init() -> void:
 	pass;
 
-func zoom_in(point : Vector2 = System.Vectors.default(), is_quick : bool = false) -> void:
+func zoom_in(point : Vector2 = Vector2.ZERO, is_quick : bool = false) -> void:
 	var zoom_multiplier : float = System.random.randf_range(MIN_ZOOM_MULTIPLIER, MAX_ZOOM_MULTIPLIER);
 	zoom_timer.stop();
 	slow_down_timer.stop();
@@ -113,13 +113,13 @@ func zoom_in(point : Vector2 = System.Vectors.default(), is_quick : bool = false
 
 func reset_camera() -> void:
 	camera.zoom = System.Vectors.default_scale();
-	camera.position = System.Vectors.default();
+	camera.position = Vector2.ZERO;
 
 func _on_zoom_out() -> void:
 	zoom_timer.stop();
 	goal_zoom = System.Vectors.default_scale();
 	zoom_speed = System.random.randf_range(ZOOM_MIN_OUT_SPEED, ZOOM_MAX_OUT_SPEED) * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
-	zoom_position = System.Vectors.default();
+	zoom_position = Vector2.ZERO;
 	if !gameplay or (gameplay and !gameplay.has_game_ended and (has_game_ended or gameplay.is_preloaded)):
 		open_gameplay();
 		return;

@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 			queue_free();
 			return;
 		is_moving = false;
-		position = System.Vectors.default();
+		position = Vector2.ZERO;
 		visible = false;
 
 func slowing_frame(delta : float):

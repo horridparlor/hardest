@@ -24,7 +24,7 @@ const MAX_ROTATION_SPEED : float = 0.03;
 const MIN_REVEAL_SPEED : float = 2.5;
 const MAX_REVEAL_SPEED : float = 3.9;
 const MIN_WIND_FORCE : float = 400;
-const MAX_WIND_FORCE : float = 600;
+const MAX_WIND_FORCE : float = 800;
 const MIN_UNWIND_SPEED : float = 0.1 * Config.GAME_SPEED;
 const MAX_UNWIND_SPEED : float = 0.4 * Config.GAME_SPEED;
 const MAX_SIZE : Vector2 = Vector2(180, 180);
@@ -63,6 +63,7 @@ func on(color_ : PoppetColor = color) -> void:
 func _process(delta : float) -> void:
 	var original_position : Vector2;
 	var real_goal_position : Vector2 = goal_position + Vector2(wind_force, 0);
+	real_goal_position.x = System.Vectors.put_inside_window(real_goal_position).x;
 	wind_force = System.Scale.baseline(wind_force, 0, delta * unwind_speed);
 	position = System.Vectors.slide_towards(position, real_goal_position, speed * delta);
 	if !is_despawning and position.distance_to(goal_position) < DESPAWN_DISTANCE:

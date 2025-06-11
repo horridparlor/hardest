@@ -240,12 +240,38 @@ func start_game_over() -> void:
 	has_game_ended = true;
 	victory_banner.fade_in(2);
 	init_victory_banner_sprite();
+	if did_win:
+		spawn_victory_poppets();
 	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_multiplier;
 	game_over_timer.start();
 
 func init_victory_banner_sprite() -> void:
 	var texture : Resource = load("res://Assets/Art/VictoryBanners/%s.png" % ["champion" if did_win else "loser"]);
 	victory_pattern.texture = texture;
+
+func spawn_victory_poppets() -> void:
+	var colors : Array = get_victory_poppet_colors();
+	var count : int = min(MAX_VICTORY_POPPETS, MIN_VICTORY_POPPETS + player_one.points) + System.random.randi_range(0, POPPETS_RANDOM_ADDITION);
+	for i in range(count):
+		spawn_victory_poppet(System.Random.item(colors));
+
+func get_victory_poppet_colors() -> Array:
+	var colors : Array = [Poppet.PoppetColor.BLUE];
+	var points : int = player_one.points;
+	if points >= 10:
+		colors.append(Poppet.PoppetColor.RED);
+	if points >= 50:
+		colors.append(Poppet.PoppetColor.GOLD);
+	if points >= 100:
+		colors.append(Poppet.PoppetColor.RAINBOW);
+	return colors;
+
+func spawn_victory_poppet(color : Poppet.PoppetColor) -> void:
+	var y_margin : float = System.Window_.y / 2 + 2 * Poppet.MAX_SIZE.y / 2;
+	var spawn_point : Vector2 = Vector2(System.random.randf_range(-System.Window_.x / 2, System.Window_.x / 2), y_margin);
+	var goal_point : Vector2 = Vector2(System.random.randf_range(-System.Window_.x / 2, System.Window_.x / 2), -y_margin);
+	var poppet : Poppet = spawn_poppet(spawn_point, goal_point, color);
+	poppet.speed *= VICTORY_POPPET_SPEED;
 
 func end_game() -> void:
 	emit_signal("game_over");
@@ -1304,20 +1330,25 @@ func spawn_poppets(points : int, card : CardData, player : Player) -> void:
 		count /= 2;
 		extra_count = points - 2 * count + System.random.randi_range(0, 1);
 	for i in range(count):
-		spawn_poppet(card, player, color);
+		spawn_poppet_for_card(card, player, color);
 	for i in range(extra_count):
-		spawn_poppet(card, player, Poppet.PoppetColor.BLUE);
+		spawn_poppet_for_card(card, player, Poppet.PoppetColor.BLUE);
 
-func spawn_poppet(card : CardData, player : Player, color : Poppet.PoppetColor) -> void:
-	var poppet : Poppet;
-	var goal_position : Vector2 = (your_point_panel.position if player == player_one else opponents_point_panel.position) + Vector2(235, 95) + Vector2(System.random.randf_range(-150, 150), System.random.randf_range(-50, 50));
+func spawn_poppet_for_card(card : CardData, player : Player, color : Poppet.PoppetColor) -> void:
+	var goal_position : Vector2
 	if !get_card(card):
 		return;
+	goal_position = your_point_panel.position if player == player_one else opponents_point_panel.position + Vector2(235, 95) + Vector2(System.random.randf_range(-150, 150), System.random.randf_range(-50, 50));
+	spawn_poppet(get_card(card).position + System.Random.vector(0, 50), goal_position, color);
+
+func spawn_poppet(spawn_position : Vector2, goal_position : Vector2, color : Poppet.PoppetColor) -> Poppet:
+	var poppet : Poppet;
 	poppet = System.Instance.load_child(System.Paths.POPPET, above_cards_layer);
-	poppet.position = get_card(card).position + System.Random.vector(0, 50);
+	poppet.position = spawn_position;
 	poppet.rotation_degrees = System.random.randf_range(-40, 40);
 	poppet.move_to(goal_position, color);
 	poppets[poppet.instance_id] = poppet;
+	return poppet;
 		
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:

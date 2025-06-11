@@ -2,6 +2,7 @@ extends Nexus
 
 @onready var level_buttons_layer : Node2D = $LevelButtons;
 @onready var showcase_card : GameplayCard = $ShowcaseCard/Card;
+@onready var showcase_hints : RichTextLabel = $ShowcaseCard/ShowcaseHints;
 @onready var showcase_card_layer : Node2D = $ShowcaseCard;
 @onready var cards_back_layer : Node2D = $BackgroundCards/CardsBack;
 @onready var cards_back_layer2 : Node2D = $BackgroundCards/CardsBack2;
@@ -103,6 +104,8 @@ func auto_start_level() -> void:
 func operate_showcase_layer() -> void:
 	if Config.SHOWCASE_CARD_ID != 0:	
 		showcase_card.card_data = System.Data.load_card(Config.SHOWCASE_CARD_ID);
+		showcase_card.card_data.stamp = Config.SHOWCASE_STAMP;
+		showcase_hints.text = showcase_card.get_keyword_hints();
 		showcase_card.update_visuals();
 		showcase_card.update_card_art(true);
 		showcase_card_layer.visible = true;

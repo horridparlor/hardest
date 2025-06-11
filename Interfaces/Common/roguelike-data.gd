@@ -206,7 +206,7 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 3,
 			"song": 2,
-			"background": 8
+			"background": 15
 		},
 		GameplayEnums.Character.MARK: {
 			"cards": [
@@ -291,7 +291,7 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 5,
 			"song": 10,
-			"background": 7
+			"background": 18
 		},
 		GameplayEnums.Character.JUKULIUS: {
 			"cards": [

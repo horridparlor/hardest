@@ -147,6 +147,7 @@ var nut_combo : int;
 var death_progress : float;
 var is_dying : bool;
 var is_undying : bool;
+var poppets : Dictionary;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

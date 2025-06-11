@@ -6,17 +6,23 @@ extends Gameplay
 @onready var field_lines : Node2D = $FieldLines;
 @onready var starting_hints : JumpingText = $Background/StartingHints;
 @onready var victory_banner : JumpingText = $VictoryBanner;
-@onready var victory_banner_sprite : Sprite2D = $VictoryBanner/Sprite2D;
+@onready var victory_pattern : Sprite2D = $VictoryBanner/VictoryPattern;
 @onready var relics_layer : GlowNode = $Points/Relics;
 @onready var die_button : Control = $Points/Relics/DieButton;
 @onready var reset_progress_panel : Panel = $Points/Relics/DieButton/DeathProgress;
 
 @onready var die_panel : Panel = $Points/Relics/DieButton/Panel;
+@onready var die_pattern : Sprite2D = $Points/Relics/DieButton/GameplayDeathPattern;
 @onready var your_point_panel : Panel = $Points/PointPanels/YourPointsPanel/Panel;
+@onready var your_point_panel_top_margin : Panel = $Points/PointPanels/YourPointsPanel/TopMargin;
+@onready var your_point_panel_right_margin : Panel = $Points/PointPanels/YourPointsPanel/RightMargin;
 @onready var opponents_point_panel : Panel = $Points/PointPanels/OpponentsPointsPanel/Panel;
-@onready var your_point_pattern : Sprite2D = $Points/PointPanels/YourPointsPanel/Sprite2D;
-@onready var opponents_point_pattern : Sprite2D = $Points/PointPanels/OpponentsPointsPanel/Sprite2D;
-@onready var gameplay_title : Sprite2D = $Points/GameplayTitle;
+@onready var opponents_point_panel_top_margin : Panel = $Points/PointPanels/OpponentsPointsPanel/TopMargin;
+@onready var opponents_point_panel_left_margin : Panel = $Points/PointPanels/OpponentsPointsPanel/LeftMargin;
+@onready var your_point_pattern : Sprite2D = $Points/PointPanels/YourPointsPanel/YourPointPattern;
+@onready var opponents_point_pattern : Sprite2D = $Points/PointPanels/OpponentsPointsPanel/OpponentsPointPattern;
+@onready var gameplay_title : Sprite2D = $Points/TitleLayer/GameplayTitle;
+@onready var title_layer : GlowNode = $Points/TitleLayer;
 
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
@@ -80,6 +86,7 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 func init_title() -> void:
 	var tutorial_texture : Resource;
 	gameplay_title.rotation_degrees = System.random.randf_range(-TITLE_ROTATION, TITLE_ROTATION);
+	title_layer.activate_animations();
 	if level_data.is_roguelike:
 		return;
 	tutorial_texture = load("res://Assets/Art/BackgroundProps/TutorialTitle.png");
@@ -96,11 +103,16 @@ func init_time_stop_nodes() -> void:
 		your_face,
 		opponents_face,
 		die_panel,
+		die_pattern,
 		reset_progress_panel,
 		your_point_panel,
+		your_point_panel_top_margin,
+		your_point_panel_right_margin,
 		opponents_point_panel,
 		your_point_pattern,
 		opponents_point_pattern,
+		opponents_point_panel_top_margin,
+		opponents_point_panel_left_margin,
 		gameplay_title
 	];
 	for led in leds_left + leds_right:
@@ -233,7 +245,7 @@ func start_game_over() -> void:
 
 func init_victory_banner_sprite() -> void:
 	var texture : Resource = load("res://Assets/Art/VictoryBanners/%s.png" % ["champion" if did_win else "loser"]);
-	victory_banner_sprite.texture = texture;
+	victory_pattern.texture = texture;
 
 func end_game() -> void:
 	emit_signal("game_over");
@@ -1305,6 +1317,7 @@ func spawn_poppet(card : CardData, player : Player, color : Poppet.PoppetColor) 
 	poppet.position = get_card(card).position + System.Random.vector(0, 50);
 	poppet.rotation_degrees = System.random.randf_range(-40, 40);
 	poppet.move_to(goal_position, color);
+	poppets[poppet.instance_id] = poppet;
 		
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
@@ -1603,6 +1616,8 @@ func _process(delta : float) -> void:
 		death_frame(delta);
 	if is_undying:
 		undying_frame(delta);
+	if has_game_ended:
+		victory_pattern.material.set_shader_parameter("opacity", victory_banner.modulate.a);
 
 func init_time_stop() -> void:
 	var shader_material : ShaderMaterial = get_time_stop_material();
@@ -1618,7 +1633,16 @@ func init_time_stop() -> void:
 	play_time_stop_sound();
 
 func get_time_stop_nodes2() -> Array:
-	return time_stop_nodes2 + your_point_meter.get_nodes() + opponents_point_meter.get_nodes();
+	return time_stop_nodes2 + your_point_meter.get_nodes() + opponents_point_meter.get_nodes() + get_poppet_nodes();
+
+func get_poppet_nodes() -> Array:
+	var nodes : Array;
+	for instance_id in poppets:
+		if !System.Instance.exists(poppets[instance_id]):
+			poppets.erase(instance_id);
+		else:
+			nodes += poppets[instance_id].get_shader_nodes();
+	return nodes;
 
 func get_time_stop_material() -> ShaderMaterial:
 	var shader : Resource = load("res://Shaders/CardEffects/za-warudo-shader.gdshader");
@@ -1645,7 +1669,13 @@ func after_time_stop() -> void:
 			continue;
 		if card.card_data.has_emp():
 			card.update_emp_visuals();
-	background_pattern.material = shader_material;
+	for node in [
+		background_pattern,
+		die_pattern,
+		your_point_pattern,
+		opponents_point_pattern
+	]:
+		node.material = shader_material;
 	led_wait /= TIME_STOP_LED_ACCELERATION;
 	System.update_game_speed(1);
 	is_time_stopped = false;

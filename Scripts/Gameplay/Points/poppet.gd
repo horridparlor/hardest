@@ -30,3 +30,6 @@ func get_sprites() -> Array:
 		gold_sprite,
 		rainbow_sprite	
 	];
+
+func get_shader_nodes() -> Array:
+	return get_sprites();

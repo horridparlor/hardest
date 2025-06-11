@@ -1,12 +1,16 @@
-[gd_scene load_steps=23 format=3 uid="uid://dr5fq4v3lflqw"]
+[gd_scene load_steps=29 format=3 uid="uid://dr5fq4v3lflqw"]
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Pages/roguelike-page.gd" id="1_jidoa"]
 [ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_2t1wj"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_nkh2h"]
 [ext_resource type="PackedScene" uid="uid://b1448adgu16mm" path="res://Prefabs/Nexus/EyeCandy/heart.tscn" id="3_1mvl7"]
+[ext_resource type="Texture2D" uid="uid://c8mcrd3nqf2fq" path="res://Assets/Art/SpecialPatterns/roguelike-pattern.png" id="3_2ub3v"]
 [ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="4_f4yi1"]
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="4_mra10"]
 [ext_resource type="FontFile" uid="uid://cprgttsfluuru" path="res://Assets/FontFiles/Montserrat/Montserrat-Black.ttf" id="4_toc33"]
+[ext_resource type="Texture2D" uid="uid://10w4sc0npbt4" path="res://Assets/Art/SpecialPatterns/life-bar-pattern.png" id="5_r6q4g"]
+[ext_resource type="Texture2D" uid="uid://b0pw54jybqsfv" path="res://Assets/Art/SpecialPatterns/roguelike-death-pattern.png" id="8_fam7p"]
+[ext_resource type="Texture2D" uid="uid://b0h704raf3koh" path="res://Assets/Art/SpecialPatterns/pack-button-pattern.png" id="9_ol40b"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="9_ttcv7"]
 [ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_iy5c5"]
 [ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="11_1woyl"]
@@ -33,9 +37,6 @@ shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 0.0
 shader_parameter/opacity = 1.0
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ytmcd"]
-load_path = "res://.godot/imported/RoguelikePattern.png-b4c933deec1654454815c0df5aeee52a.ctex"
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjaq0"]
 bg_color = Color(0.996999, 0.210579, 0.23255, 1)
 border_width_left = 4
@@ -60,6 +61,13 @@ corner_radius_top_left = 13
 corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 13
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ygsf7"]
+shader = ExtResource("2_2t1wj")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxs4i"]
 bg_color = Color(0.875034, 0.396859, 0.835719, 1)
@@ -86,6 +94,13 @@ corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 13
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hbxjb"]
+shader = ExtResource("2_2t1wj")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 1.0
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lqn0m"]
 size = Vector2(280, 110)
 
@@ -100,6 +115,13 @@ corner_radius_top_left = 21
 corner_radius_top_right = 21
 corner_radius_bottom_right = 21
 corner_radius_bottom_left = 21
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_emwca"]
+shader = ExtResource("2_2t1wj")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 1.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ia5ba"]
 size = Vector2(600, 180)
@@ -121,9 +143,9 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xocjd")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="RoguelikePattern" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_flrwm")
-texture = SubResource("CompressedTexture2D_ytmcd")
+texture = ExtResource("3_2ub3v")
 script = ExtResource("4_mra10")
 
 [node name="BasicInfo" type="Node2D" parent="."]
@@ -158,11 +180,18 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ht8i6")
 
+[node name="ProgressBarPattern" type="Sprite2D" parent="BasicInfo/ProgressBar"]
+self_modulate = Color(1, 1, 1, 0.117647)
+material = SubResource("ShaderMaterial_ygsf7")
+position = Vector2(0, -480)
+texture = ExtResource("5_r6q4g")
+script = ExtResource("4_mra10")
+
 [node name="ProgressLabel" type="Label" parent="BasicInfo/ProgressBar"]
 offset_left = -305.0
-offset_top = -523.0
+offset_top = -521.0
 offset_right = 105.0
-offset_bottom = -444.0
+offset_bottom = -442.0
 theme_override_fonts/font = ExtResource("2_nkh2h")
 theme_override_font_sizes/font_size = 64
 text = "0 / 100 cards"
@@ -211,6 +240,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_18nvc")
 
+[node name="RoguelikeDeathPattern" type="Sprite2D" parent="BasicInfo/ResetButton"]
+self_modulate = Color(1, 1, 1, 0.231373)
+material = SubResource("ShaderMaterial_hbxjb")
+texture = ExtResource("8_fam7p")
+script = ExtResource("4_mra10")
+
 [node name="Label" type="Label" parent="BasicInfo/ResetButton"]
 anchors_preset = 8
 anchor_left = 0.5
@@ -233,12 +268,12 @@ vertical_alignment = 1
 shape = SubResource("RectangleShape2D_lqn0m")
 
 [node name="ChoiceBox" type="Node2D" parent="."]
-position = Vector2(0, -45)
+position = Vector2(0, -55)
 
 [node name="LevelButtons" type="Node2D" parent="ChoiceBox"]
 
 [node name="ChoiceButton" type="Node2D" parent="ChoiceBox"]
-position = Vector2(0, 540)
+position = Vector2(0, 570)
 script = ExtResource("4_f4yi1")
 
 [node name="Panel" type="Panel" parent="ChoiceBox/ChoiceButton"]
@@ -254,6 +289,12 @@ offset_bottom = 80.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_mensn")
+
+[node name="PackButtonPattern" type="Sprite2D" parent="ChoiceBox/ChoiceButton"]
+self_modulate = Color(1, 1, 1, 0.329412)
+material = SubResource("ShaderMaterial_emwca")
+texture = ExtResource("9_ol40b")
+script = ExtResource("4_mra10")
 
 [node name="Label" type="Label" parent="ChoiceBox/ChoiceButton"]
 anchors_preset = 8

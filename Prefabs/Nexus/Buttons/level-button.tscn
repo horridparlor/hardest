@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://b1wbtgu0xgjx5"]
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Buttons/level_button.gd" id="1_5eg2m"]
-[ext_resource type="Texture2D" uid="uid://cytmdwnsx1g3" path="res://Assets/Art/Patterns/LevelButtonPattern.png" id="2_rgvvm"]
+[ext_resource type="Texture2D" uid="uid://cytmdwnsx1g3" path="res://Assets/Art/SpecialPatterns/LevelButtonPattern.png" id="2_rgvvm"]
 [ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="2_ubrkm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmmwt"]

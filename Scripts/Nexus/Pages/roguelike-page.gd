@@ -11,9 +11,13 @@ extends RoguelikePage
 @onready var level_buttons_layer : Node2D = $ChoiceBox/LevelButtons;
 @onready var card_choices_layer : Node2D = $ChoiceBox/CardChoices;
 @onready var choice_button_layer : GlowNode = $ChoiceBox/ChoiceButton;
-@onready var panel_sprite : Sprite2D = $Sprite2D;
 @onready var keywords_hints : RichTextLabel = $ChoiceBox/CardChoices/KeywordsHints;
 @onready var card_choice_label : Label = $ChoiceBox/ChoiceButton/Label;
+
+@onready var panel_pattern : Sprite2D = $RoguelikePattern;
+@onready var progress_bar_pattern : Sprite2D = $BasicInfo/ProgressBar/ProgressBarPattern;
+@onready var roguelike_death_pattern : Sprite2D = $BasicInfo/ResetButton/RoguelikeDeathPattern;
+@onready var pack_button_pattern : Sprite2D = $ChoiceBox/ChoiceButton/PackButtonPattern;
 
 func _ready() -> void:
 	sfx_player.finished.connect( func():
@@ -25,7 +29,10 @@ func _ready() -> void:
 			emit_signal("death");
 	);
 	spawn_level_buttons();
-	panel_sprite.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
+	panel_pattern.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
+	progress_bar_pattern.material.set_shader_parameter("opacity", PROGRESS_BAR_PATTERN_OPACITY);
+	roguelike_death_pattern.material.set_shader_parameter("opacity", ROGUELIKE_DEATH_PATTERN_OPACITY);
+	pack_button_pattern.material.set_shader_parameter("opacity", PACK_BUTTON_PATTERN_OPACITY);
 	choice_button_layer.rotation_degrees = System.random.randf_range(-CHOICE_BUTTON_ROTATION, CHOICE_BUTTON_ROTATION);
 
 func spawn_level_buttons() -> void:

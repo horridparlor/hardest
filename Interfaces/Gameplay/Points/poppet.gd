@@ -24,6 +24,7 @@ const MAX_ROTATION_SPEED : float = 0.03;
 const MIN_REVEAL_SPEED : float = 2.5;
 const MAX_REVEAL_SPEED : float = 3.9;
 
+var instance_id : int;
 var goal_position : Vector2;
 var is_moving : bool;
 var speed : float;
@@ -32,7 +33,10 @@ var despawn_speed : float;
 var rotation_speed : float;
 var is_revealing : float;
 var reveal_speed : float;
-var color : PoppetColor
+var color : PoppetColor;
+
+func _ready() -> void:
+	instance_id = System.Random.instance_id();
 
 func move_to(goal_position_ : Vector2, color_ : PoppetColor = PoppetColor.BLUE) -> void:
 	color = color_;
@@ -67,3 +71,6 @@ func _process(delta : float) -> void:
 
 func rotate_frame(original_position : Vector2) -> void:
 	rotation_degrees += (position.x - original_position.x) * rotation_speed * SPEED_MULTIPLIER_BY_COLOR[color];
+
+func get_shader_nodes() -> Array:
+	return [];

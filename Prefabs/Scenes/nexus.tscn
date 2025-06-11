@@ -1,8 +1,8 @@
-[gd_scene load_steps=17 format=3 uid="uid://nuaxpp7us5en"]
+[gd_scene load_steps=20 format=3 uid="uid://nuaxpp7us5en"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/nexus.gd" id="1_wr5g5"]
 [ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_0aihb"]
-[ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/Patterns/NexusPattern.png" id="2_q58k7"]
+[ext_resource type="Texture2D" uid="uid://cscattwmgn4rj" path="res://Assets/Art/SpecialPatterns/NexusPattern.png" id="2_q58k7"]
 [ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="3_u5q2p"]
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="4_tn2cr"]
 [ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="6_4dgit"]
@@ -11,8 +11,11 @@
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="6_wxdwb"]
 [ext_resource type="PackedScene" uid="uid://du74m1788wbjd" path="res://Prefabs/Gameplay/Card/gameplay-card.tscn" id="8_iwnol"]
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="8_lmh8j"]
+[ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="12_blvc4"]
 [ext_resource type="PackedScene" uid="uid://c7fcloc41ve0j" path="res://Prefabs/Nexus/Buttons/nexus-page-toggle-arrow.tscn" id="12_hieps"]
 [ext_resource type="PackedScene" uid="uid://dr5fq4v3lflqw" path="res://Prefabs/Nexus/Pages/roguelike-page.tscn" id="13_252js"]
+[ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="13_v7gbh"]
+[ext_resource type="FontFile" uid="uid://bfftslsh0wafs" path="res://Assets/FontFiles/Montserrat/Montserrat-BlackItalic.ttf" id="14_ovuog"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fkb73"]
 bg_color = Color(0.611381, 0.0337919, 0.238643, 1)
@@ -149,6 +152,31 @@ grow_vertical = 2
 color = Color(0.00784314, 0.00784314, 0.00784314, 1)
 
 [node name="Card" parent="ShowcaseCard" instance=ExtResource("8_iwnol")]
+position = Vector2(0, -150)
+
+[node name="ShowcaseHints" type="RichTextLabel" parent="ShowcaseCard"]
+self_modulate = Color(1, 1, 1, 0.8)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = 620.0
+offset_right = 500.0
+offset_bottom = 1020.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("6_wxdwb")
+theme_override_fonts/italics_font = ExtResource("12_blvc4")
+theme_override_fonts/bold_italics_font = ExtResource("13_v7gbh")
+theme_override_fonts/bold_font = ExtResource("14_ovuog")
+theme_override_font_sizes/bold_italics_font_size = 48
+theme_override_font_sizes/italics_font_size = 48
+theme_override_font_sizes/normal_font_size = 48
+theme_override_font_sizes/bold_font_size = 48
+bbcode_enabled = true
+text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down [b]The Gun[/b]."
 
 [node name="Timers" type="Node2D" parent="."]
 
@@ -172,6 +200,7 @@ rotation = 3.14159
 shape = SubResource("RectangleShape2D_3j4h8")
 
 [node name="RoguelikePage" parent="." instance=ExtResource("13_252js")]
+visible = false
 position = Vector2(0, 200)
 
 [connection signal="timeout" from="Timers/LedFrameTimer" to="." method="_on_led_frame_timer_timeout"]

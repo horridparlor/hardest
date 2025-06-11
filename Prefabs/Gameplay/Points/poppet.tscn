@@ -1,0 +1,22 @@
+[gd_scene load_steps=6 format=3 uid="uid://ce8areql1jm8j"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Points/poppet.gd" id="1_bwxr2"]
+[ext_resource type="Texture2D" uid="uid://tcappw8dub73" path="res://Assets/Art/Poppets/blue-poppet.png" id="2_kff2p"]
+[ext_resource type="Texture2D" uid="uid://bji7ceyqgh0cr" path="res://Assets/Art/Poppets/red-poppet.png" id="3_g1m33"]
+[ext_resource type="Texture2D" uid="uid://dlu25rl7hwak0" path="res://Assets/Art/Poppets/gold-poppet.png" id="4_7gcft"]
+[ext_resource type="Texture2D" uid="uid://ckh4yfnue1aai" path="res://Assets/Art/Poppets/rainbow-poppet.png" id="5_wv2en"]
+
+[node name="Poppet" type="Node2D"]
+script = ExtResource("1_bwxr2")
+
+[node name="BlueSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_kff2p")
+
+[node name="RedSprite" type="Sprite2D" parent="."]
+texture = ExtResource("3_g1m33")
+
+[node name="GoldSprite" type="Sprite2D" parent="."]
+texture = ExtResource("4_7gcft")
+
+[node name="RainbowSprite" type="Sprite2D" parent="."]
+texture = ExtResource("5_wv2en")

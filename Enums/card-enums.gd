@@ -367,7 +367,7 @@ var KeywordHints : Dictionary = {
 	Keyword.NUT_COLLECTOR : "Shuffle 3 nuts into your deck.",
 	Keyword.NUT_STEALER : "If opponent would nut, you nut twice instead.",
 	Keyword.OCEAN : "Scissors gain rust rust, papers gain mushy.",
-	Keyword.OCEAN_DWELLER : "After every 2 turns in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
+	Keyword.OCEAN_DWELLER : "If stays in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair or a rare stamp",
 	Keyword.PICK_UP : "End of turn, discard this card from your hand.",

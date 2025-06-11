@@ -229,7 +229,7 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 4,
 			"song": 7,
-			"background": 3
+			"background": 14
 		},
 		GameplayEnums.Character.KORVEK: {
 			"cards": [

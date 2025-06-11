@@ -60,7 +60,6 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	set_going_first(System.Random.boolean());
 	highlight_face(false);
 	update_character_faces();
-	update_point_visuals();
 	initialize_background_pattern();
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
@@ -97,6 +96,7 @@ func init_time_stop_nodes() -> void:
 		your_face,
 		opponents_face,
 		die_panel,
+		reset_progress_panel,
 		your_point_panel,
 		opponents_point_panel,
 		your_point_pattern,
@@ -795,6 +795,7 @@ func nut_players_nuts(player : Player, opponent : Player) -> bool:
 
 func nut_with_card(card : CardData, enemy : CardData, player : Player) -> bool:
 	var multiplier : int = 1;
+	var points : int = player.points;
 	card.nuts += 1;
 	if card.has_champion():
 		multiplier *= 2;
@@ -803,6 +804,8 @@ func nut_with_card(card : CardData, enemy : CardData, player : Player) -> bool:
 	if enemy and enemy.has_champion():
 		multiplier *= 2;
 	if player.do_nut(multiplier):
+		points = player.points - points;
+		spawn_poppets(points, card, player);
 		if get_card(card):
 			get_card(card).recoil(get_card(card).position);
 			var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/bottle-shake.wav");
@@ -912,9 +915,9 @@ func get_lose_points(card : CardData, enemy : CardData) -> int:
 
 func calculate_base_points(card : CardData, enemy : CardData) -> int:
 	var points : int = 1;
-	if card.has_champion():
+	if card and card.has_champion():
 		points *= 2;
-	if enemy.has_champion():
+	if enemy and enemy.has_champion():
 		points *= 2;
 	points *= card.stopped_time_advantage;
 	return points;
@@ -1250,6 +1253,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	if card.stopped_time_advantage:
 		points *= card.stopped_time_advantage;
 	player.gain_points(points);
+	spawn_poppets(points, card, player);
 	check_lose_effects(enemy, opponent);
 	if card:
 		for keyword in card.keywords:
@@ -1270,6 +1274,38 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	gain_points_effect(player);
 	if have_you_won() or has_opponent_won():
 		start_game_over();
+
+func spawn_poppets(points : int, card : CardData, player : Player) -> void:
+	var color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE;
+	var count : int = points;
+	var extra_count : int;
+	if points > 12:
+		color = Poppet.PoppetColor.RAINBOW;
+		count /= 6;
+		extra_count = points - 5 * count + System.random.randi_range(0, 5);
+	elif points > 4:
+		color = Poppet.PoppetColor.GOLD;
+		count /= 4;
+		extra_count = points - 4 * count + System.random.randi_range(0, 3);
+	elif points > 1:
+		color = Poppet.PoppetColor.RED;
+		count /= 2;
+		extra_count = points - 2 * count + System.random.randi_range(0, 1);
+	for i in range(count):
+		spawn_poppet(card, player, color);
+	for i in range(extra_count):
+		spawn_poppet(card, player, Poppet.PoppetColor.BLUE);
+
+func spawn_poppet(card : CardData, player : Player, color : Poppet.PoppetColor) -> void:
+	var poppet : Poppet;
+	var goal_position : Vector2 = (your_point_panel.position if player == player_one else opponents_point_panel.position) + Vector2(235, 95) + Vector2(System.random.randf_range(-150, 150), System.random.randf_range(-50, 50));
+	if !get_card(card):
+		return;
+	poppet = System.Instance.load_child(System.Paths.POPPET, above_cards_layer);
+	poppet.position = get_card(card).position + System.Random.vector(0, 50);
+	poppet.rotation_degrees = System.random.randf_range(-40, 40);
+	poppet.move_to(goal_position, color);
+		
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 	var judgment_position : Vector2;
@@ -1526,6 +1562,8 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 			gameplay_card.despawn();
 	for c in player.cards_in_hand:
 		card = c;
+		if card.has_ocean_dweller():
+			spawn_poppets(trigger_ocean_dweller(card, player), card, player);
 		if !card.has_pick_up():
 			continue;
 		gameplay_card = get_card(card);
@@ -1536,6 +1574,13 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 		gain_points_effect(player);
 		return true;
 	return false;
+
+func trigger_ocean_dweller(card : CardData, player : Player) -> int:
+	var points : int = calculate_base_points(card, null);
+	if card.has_rare_stamp():
+		points *= 2;
+	player.gain_points(points);
+	return points;
 
 func show_opponents_field() -> void:
 	var card : GameplayCard;

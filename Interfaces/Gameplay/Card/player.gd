@@ -182,19 +182,6 @@ func end_of_turn_clear(did_win : bool) -> void:
 	
 func end_of_turn_updates() -> void:
 	end_of_turn_nut_update();
-	end_of_turn_ocean_update();
-
-func end_of_turn_ocean_update() -> void:
-	var card : CardData;
-	var points : int = 1;
-	for c in cards_in_hand:
-		card = c;
-		card.turns_in_hand += 1;
-		if card.has_ocean_dweller() and card.turns_in_hand >= System.Rules.OCEAN_DWELLER_TURNS_WAIT:
-			card.turns_in_hand = 0;
-			if card.has_champion():
-				points *= 2;
-			gain_points(points);
 
 func end_of_turn_nut_update() -> void:
 	if did_nut:

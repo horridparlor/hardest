@@ -11,7 +11,7 @@ extends Gameplay
 @onready var die_button : Control = $Points/Relics/DieButton;
 @onready var reset_progress_panel : Panel = $Points/Relics/DieButton/DeathProgress;
 
-@onready var die_panel : Panel = $Points/Relics/Panel;
+@onready var die_panel : Panel = $Points/Relics/DieButton/Panel;
 @onready var your_point_panel : Panel = $Points/PointPanels/YourPointsPanel/Panel;
 @onready var opponents_point_panel : Panel = $Points/PointPanels/OpponentsPointsPanel/Panel;
 @onready var your_point_pattern : Sprite2D = $Points/PointPanels/YourPointsPanel/Sprite2D;

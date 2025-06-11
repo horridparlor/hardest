@@ -60,6 +60,15 @@ func eat_spawn_json(data : Dictionary) -> void:
 func add_keyword(keyword : CardEnums.Keyword) -> bool:
 	var upgrade_to_keys : Array;
 	match keyword:
+		CardEnums.Keyword.BURIED:
+			if stamp == CardEnums.Stamp.MOLE:
+				return false;
+		CardEnums.Keyword.DIGITAL:
+			if stamp == CardEnums.Stamp.BLUETOOTH:
+				return false;
+		CardEnums.Keyword.PAIR:
+			if stamp == CardEnums.Stamp.DOUBLE:
+				return false;
 		CardEnums.Keyword.NULL:
 			return false;
 		CardEnums.Keyword.EXTRA_SALTY:

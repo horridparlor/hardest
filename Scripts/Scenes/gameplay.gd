@@ -176,8 +176,10 @@ func update_character_faces() -> void:
 	var your_face_texture : Resource = load_face_texture(level_data.player_variant);
 	var opponent_face_texture : Resource = load_face_texture(level_data.opponent_variant);
 	var troll_texture : Resource = load(CHARACTER_FULL_ART_PATH % level_data.opponent_variant);
+	var opponents_point_texture : Resource = load(OPPONENT_POINT_PATTERN_PATH % level_data.opponent_variant);
 	your_face.texture = your_face_texture;
 	opponents_face.texture = opponent_face_texture;
+	opponents_point_pattern.texture = opponents_point_texture;
 	your_name.text = translate_character_name(level_data.player);
 	enemy_name.text = translate_character_name(level_data.opponent);
 	trolling_sprite.texture = troll_texture;

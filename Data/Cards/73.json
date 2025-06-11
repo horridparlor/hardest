@@ -3,6 +3,7 @@
 	"name": "Crab Claws",
 	"type": "scissor",
 	"keywords": [
-		"ocean-dweller"
+		"ocean-dweller",
+		"pick-up"
 	]
 }

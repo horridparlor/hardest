@@ -17,6 +17,7 @@ const OCEAN_DWELLER_TURNS_WAIT : int = 2;
 #Roguelike
 const STARTING_LIVES : int = 3;
 const STARTING_MONEY : int = 5;
+const HOUSES_COUNT : int = 5;
 const STARTING_HOUSES_COUNT : int = 2;
 const MIN_RARE_CHANCE : int = 3;
 const MAX_RARE_CHANCE : int = 7;
@@ -33,3 +34,4 @@ const STAMP_CHANCE : int = 8;
 const RARE_STAMP_CHANCE_MULTIPLIER : int = 2;
 const RARE_STAMP_BECOMES_COMMON_AFTER_ROUND : int = 8;
 const STAMP_CHANCE_LESSENS_BY_ROUND : int = 1;
+const CHANCE_FOR_EXTRA_HOUSE : int = 20;

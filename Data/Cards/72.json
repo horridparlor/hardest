@@ -1,8 +1,9 @@
 {
 	"id": 72,
-	"name": "Sea Star",
+	"name": "Chocolate Chip",
 	"type": "paper",
 	"keywords": [
-		"ocean-dweller"
+		"ocean-dweller",
+		"pick-up"
 	]
 }

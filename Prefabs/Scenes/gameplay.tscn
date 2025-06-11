@@ -8,7 +8,6 @@
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="3_ixfah"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="4_04fvt"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
-[ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="5_r3tby"]
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="5_sou8c"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
 [ext_resource type="Texture2D" uid="uid://dpqiewl2lc35o" path="res://Assets/Art/BackgroundProps/GameplayTitle.png" id="8_b3g7l"]
@@ -18,6 +17,7 @@
 [ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_fu2mi"]
 [ext_resource type="Texture2D" uid="uid://0nxqjjkgg16k" path="res://Assets/Art/SpecialPatterns/gameplay-death-pattern.png" id="10_trm33"]
 [ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
+[ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="15_ht6r6"]
 [ext_resource type="Shader" path="res://Shaders/Background/bump-wave.gdshader" id="19_n6e1l"]
 [ext_resource type="Texture2D" uid="uid://dr4fcniar43c6" path="res://Assets/Art/VictoryBanners/loser.png" id="20_1t5ev"]
 
@@ -537,7 +537,7 @@ offset_top = -930.0
 offset_right = 500.0
 offset_bottom = -243.0
 theme_override_fonts/normal_font = ExtResource("4_4owwf")
-theme_override_fonts/italics_font = ExtResource("5_r3tby")
+theme_override_fonts/italics_font = ExtResource("15_ht6r6")
 theme_override_fonts/bold_italics_font = ExtResource("6_xsnuj")
 theme_override_fonts/bold_font = ExtResource("9_vl4hw")
 theme_override_font_sizes/bold_italics_font_size = 64

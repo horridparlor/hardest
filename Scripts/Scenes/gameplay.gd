@@ -87,7 +87,7 @@ func init_title() -> void:
 	var tutorial_texture : Resource;
 	gameplay_title.rotation_degrees = System.random.randf_range(-TITLE_ROTATION, TITLE_ROTATION);
 	title_layer.activate_animations();
-	if level_data.is_roguelike:
+	if level_data.is_roguelike or level_data.id - 1 > System.Levels.MAX_TUTORIAL_LEVELS:
 		return;
 	tutorial_texture = load("res://Assets/Art/BackgroundProps/TutorialTitle.png");
 	gameplay_title.texture = tutorial_texture;
@@ -156,7 +156,7 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 		level_data.player if controller == GameplayEnums.Controller.PLAYER_ONE else level_data.opponent;
 	var point_meter : PointMeter = your_point_meter if player == player_one else opponents_point_meter;
 	var point_goal : int = level_data.point_goal if player == player_one \
-		else min(System.Rules.OPPONENT_MAX_POINT_GOAL, level_data.point_goal);
+		else min(System.Rules.OPPONENT_MAX_POINT_GOAL + round(level_data.point_goal / 3 / 1.5) - 3, level_data.point_goal);
 	player.controller = controller;
 	player.point_goal = point_goal;
 	point_meter.set_max_points(point_goal);
@@ -251,7 +251,7 @@ func init_victory_banner_sprite() -> void:
 
 func spawn_victory_poppets() -> void:
 	var colors : Array = get_victory_poppet_colors();
-	var count : int = min(MAX_VICTORY_POPPETS, MIN_VICTORY_POPPETS + player_one.points) + System.random.randi_range(0, POPPETS_RANDOM_ADDITION);
+	var count : int = min(MAX_VICTORY_POPPETS, MIN_VICTORY_POPPETS + player_one.points) + System.random.randi_range(-POPPETS_RANDOM_ADDITION, POPPETS_RANDOM_ADDITION);
 	for i in range(count):
 		spawn_victory_poppet(System.Random.item(colors));
 
@@ -260,7 +260,7 @@ func get_victory_poppet_colors() -> Array:
 	var points : int = player_one.points;
 	if points >= 10:
 		colors.append(Poppet.PoppetColor.RED);
-	if points >= 50:
+	if points >= 40:
 		colors.append(Poppet.PoppetColor.GOLD);
 	if points >= 100:
 		colors.append(Poppet.PoppetColor.RAINBOW);
@@ -1123,7 +1123,7 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 		return value;
 	if card.has_rare_stamp():
 		value *= 2;
-	if card.is_gun and !card.has_buried() and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
+	if card.is_gun and !card.is_buried and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
 		value *= card.stopped_time_advantage;
 	return value;
 

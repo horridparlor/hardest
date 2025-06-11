@@ -404,8 +404,13 @@ func get_starting_houses() -> Array:
 		CollectionEnums.House.HIGHTECH,
 		CollectionEnums.House.KAWAII	
 	];
+	var extra_houses : int = 0;
+	while System.Random.chance(System.Rules.CHANCE_FOR_EXTRA_HOUSE):
+		extra_houses += 1;
+		if extra_houses == System.Rules.HOUSES_COUNT - System.Rules.STARTING_HOUSES_COUNT:
+			break;
 	all_houses.shuffle();
-	for i in range(System.Rules.STARTING_HOUSES_COUNT):
+	for i in range(System.Rules.STARTING_HOUSES_COUNT + extra_houses):
 		houses.append(all_houses.pop_back());
 	return houses;
 

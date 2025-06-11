@@ -227,6 +227,7 @@ func open_roguelike_page_modal() -> void:
 func _on_game_over(did_win : bool) -> void:
 	save_data.roguelike_data.money += gameplay.player_one.points;
 	save_data.roguelike_data.point_goal = max(save_data.roguelike_data.point_goal + System.Rules.MIN_POINT_INCREASE, System.Rules.POINT_GOAL_MULTIPLIER * save_data.roguelike_data.point_goal);
+	save_data.roguelike_data.rounds_played += 1;
 	if did_win:
 		process_victory();
 	else:
@@ -279,7 +280,14 @@ func give_opponent_card_drop(opponent_id : int, confirmed_rare : bool = false) -
 	var card_pool : Dictionary = opponent.card_pool;
 	var rare_chance : int = opponent.rare_chance;
 	var source : Array = card_pool[CollectionEnums.Rarity.RARE] if confirmed_rare or System.Random.chance(rare_chance) else card_pool[CollectionEnums.Rarity.COMMON];
-	var card_drop : int = System.Random.item(source);
+	var card_id : int = System.Random.item(source);
+	var card_data : CardData = System.Data.load_card(card_id);
+	var card_drop : Dictionary = {
+		"id": card_id,
+		"stamp": CardEnums.TranslateStampBack[save_data.roguelike_data.get_stamp_for_spawned_card(card_data, opponent.rare_chance)]
+	};
+	if opponent_id == GameplayEnums.Character.MERITUULI and !card_data.has_digital():
+		card_drop.stamp = CardEnums.TranslateStampBack[CardEnums.Stamp.BLUETOOTH];
 	if rare_chance <= 0:
 		return;
 	opponent.cards.append(card_drop);

@@ -2,7 +2,10 @@
 	"id": 3,
 	"title": "Raisen's tutorial deck",
 	"cards": [
-		1,
+		{
+			"id": 1,
+			"stamp": "double"
+		},
 		2,
 		3,
 		
@@ -15,12 +18,16 @@
 		11,
 		
 		9,
-		10,
+		{
+			"id": 10,
+			"stamp": "mole"
+		},
 		11,
 		
-		4,
+		5,
 		18,
 		19,
+		13,
 		
 		22
 	]

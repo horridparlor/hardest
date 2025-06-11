@@ -26,6 +26,7 @@ const BACKGROUND_PATTERN_PATH : String = "res://Assets/Art/Patterns/%s.png";
 const MIN_MOVEMENT_SPEED : float = 1.0 * Config.GAME_SPEED;
 const MIN_VISIT_SPEED : float = 4.5 * Config.GAME_SPEED;
 const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
+const STAMP_HINT_LINE : String = "[b]%s Stamp[/b] [i]–[/i] %s\n";
 
 const FLOW_SPEED : float = 0.6;
 const MIN_GRAVITY : float = 100;
@@ -273,6 +274,10 @@ func get_keyword_hints() -> String:
 		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
 		hint_text = enrich_hint(hint_text);
 		hints_text += KEYWORD_HINT_LINE % [CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?", hint_text];
+	if card_data.stamp != CardEnums.Stamp.NULL:
+		var hint_text : String = CardEnums.StampHints[card_data.stamp] if CardEnums.StampHints.has(card_data.stamp) else "";
+		var stamp_name : String = CardEnums.TranslateStampBack[card_data.stamp] if CardEnums.TranslateStampBack.has(card_data.stamp) else "?";
+		hints_text += STAMP_HINT_LINE % [stamp_name[0].to_upper() + stamp_name.substr(1), hint_text];
 	return hints_text;
 
 func enrich_hint(message : String) -> String:

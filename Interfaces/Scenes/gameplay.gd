@@ -80,6 +80,7 @@ const OFF_LED_DIRECTION : int = 0;
 const FAST_LED_SPEED : int = 2;
 const BACKGROUND_OPACITY : float = 0.6;
 const DIE_BUTTON_ROTATION : float = 5.6;
+const TITLE_ROTATION : float = 2.1;
 
 const TIME_STOP_ACCELERATION_SPEED : float = 0.5 * Config.GAME_SPEED;
 const TIME_STOP_LED_ACCELERATION : int = 12 * Config.GAME_SPEED;

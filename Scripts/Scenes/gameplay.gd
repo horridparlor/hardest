@@ -16,6 +16,7 @@ extends Gameplay
 @onready var opponents_point_panel : Panel = $Points/PointPanels/OpponentsPointsPanel/Panel;
 @onready var your_point_pattern : Sprite2D = $Points/PointPanels/YourPointsPanel/Sprite2D;
 @onready var opponents_point_pattern : Sprite2D = $Points/PointPanels/OpponentsPointsPanel/Sprite2D;
+@onready var gameplay_title : Sprite2D = $Points/GameplayTitle;
 
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
@@ -59,12 +60,14 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	set_going_first(System.Random.boolean());
 	highlight_face(false);
 	update_character_faces();
+	update_point_visuals();
 	initialize_background_pattern();
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
 	spawn_leds();
 	init_time_stop_nodes();
 	init_audio();
+	init_title();
 	victory_banner.stop();
 	victory_banner.visible = true;
 	divine_judgment.visible = false;
@@ -74,6 +77,14 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 		_on_points_click_timer_timeout();
 		return;
 	start_first_round();
+
+func init_title() -> void:
+	var tutorial_texture : Resource;
+	gameplay_title.rotation_degrees = System.random.randf_range(-TITLE_ROTATION, TITLE_ROTATION);
+	if level_data.is_roguelike:
+		return;
+	tutorial_texture = load("res://Assets/Art/BackgroundProps/TutorialTitle.png");
+	gameplay_title.texture = tutorial_texture;
 
 func init_starting_hints() -> void:
 	starting_hints.text = "[center]Rock-Paper-Scissors!\n[b]%s points[/b] [i]to[/i] win!\n[b][i]​[/i][/b]\nDrag a card forward.\n[b][i]​[/i][/b]\n[i](Hold a card in hand\nto read its effects.)[/i][/center]" % [level_data.point_goal];
@@ -89,7 +100,8 @@ func init_time_stop_nodes() -> void:
 		your_point_panel,
 		opponents_point_panel,
 		your_point_pattern,
-		opponents_point_pattern
+		opponents_point_pattern,
+		gameplay_title
 	];
 	for led in leds_left + leds_right:
 		time_stop_nodes += led.get_shader_layers();
@@ -469,8 +481,9 @@ func replace_played_card(card : CardData) -> void:
 	var player : Player = card.controller;
 	var opponent : Player = get_opponent(card);
 	var card_to_replace : GameplayCard = get_card(player.get_field_card());
-	card_to_replace.despawn();
-	card_to_replace.move();
+	if card_to_replace:
+		card_to_replace.despawn();
+		card_to_replace.move();
 	player.clear_field();
 	play_card(spawn_card(card), player, opponent, true);
 
@@ -785,6 +798,8 @@ func nut_with_card(card : CardData, enemy : CardData, player : Player) -> bool:
 	card.nuts += 1;
 	if card.has_champion():
 		multiplier *= 2;
+	if card.has_rare_stamp():
+		multiplier *= 2;
 	if enemy and enemy.has_champion():
 		multiplier *= 2;
 	if player.do_nut(multiplier):
@@ -887,7 +902,8 @@ func determine_points_result(card : CardData, enemy : CardData) -> int:
 func get_win_points(card : CardData, enemy : CardData) -> int:
 	var points : int = calculate_base_points(card, enemy);
 	var points_to_steal : int = calculate_points_to_steal(card, enemy);
-	return points + points_to_steal;
+	var multiplier : int = 2 if card.has_rare_stamp() else 1;
+	return (points + points_to_steal) * multiplier;
 
 func get_lose_points(card : CardData, enemy : CardData) -> int:
 	var points : int = calculate_base_points(card, enemy);
@@ -1062,6 +1078,10 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 0 if player.going_first else 1;
 	if card.has_champion():
 		value *= 2;
+	if value < 0:
+		return value;
+	if card.has_rare_stamp():
+		value *= 2;
 	if card.is_gun and !card.has_buried() and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
 		value *= card.stopped_time_advantage;
 	return value;
@@ -1082,14 +1102,15 @@ func get_result_for_playing(card : CardData, player : Player, opponent : Player)
 	var winner : GameplayEnums.Controller;
 	var enemy : CardData = get_enemy_card_truth(opponent);
 	var value : int = 1;
+	var multiplier : int = 2 if card.has_rare_stamp() else 1;
 	if card.has_champion():
 		value *= 2;
 	if enemy and enemy.has_champion():
 		value *= 2;
 	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.prevents_opponents_reveal():
-		return value;
+		return value * multiplier;
 	if card.has_nut_stealer() and enemy and enemy.get_max_nuts() > 0:
-		return value * player.turns_waited_to_nut * player.nut_multiplier * 2;
+		return value * multiplier * player.turns_waited_to_nut * player.nut_multiplier * 2;
 	if !enemy:
 		return get_value_to_threaten(card, player, opponent);
 	winner = determine_winner(card, enemy);
@@ -1097,7 +1118,7 @@ func get_result_for_playing(card : CardData, player : Player, opponent : Player)
 		GameplayEnums.Controller.PLAYER_ONE:
 			if enemy.has_greed() and !player.is_close_to_winning():
 				return -2;
-			return value;
+			return value * multiplier;
 		GameplayEnums.Controller.PLAYER_TWO:
 			if card.has_greed() and !opponent.is_close_to_winning():
 				return 2;
@@ -1183,7 +1204,7 @@ func stopped_time_results() -> void:
 	var enemy : CardData = get_opponent(card).get_field_card() if card else null;
 	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
 	if time_stopping_player.hand_empty() or (card and !card.has_buried() and (card.is_gun() or card.is_god())):
-		if card and card.is_gun() and (!enemy or check_type_results(card, enemy) == GameplayEnums.Controller.PLAYER_ONE):
+		if card and card.is_gun() and (!enemy or check_type_results(card, enemy) != GameplayEnums.Controller.PLAYER_TWO):
 			await stopped_time_shooting(card, get_opponent(card).get_field_card());
 		time_stop_effect_out();
 		return;
@@ -1221,6 +1242,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	if has_game_ended:
 		return;
 	if card and card.has_champion():
+		points *= 2;
+	if card and card.has_rare_stamp():
 		points *= 2;
 	if enemy and enemy.has_champion():
 		points *= 2;
@@ -1268,7 +1291,9 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 	if card.stopped_time_advantage > 0:
 		return bullets;
 	if card.has_champion():
-		count = System.random.randi_range(3, 5)
+		count = System.random.randi_range(3, 5);
+		if card.has_rare_stamp():
+			count *= 2;
 	elif card.has_pair():
 		count = 2;
 	for i in range(count):

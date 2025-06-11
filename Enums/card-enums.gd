@@ -64,6 +64,37 @@ enum Zone {
 	GRAVE
 }
 
+enum Stamp {
+	NULL,
+	BLUETOOTH,
+	DOUBLE,
+	MOLE,
+	RARE
+}
+
+const TranslateStampBack : Dictionary = {
+	Stamp.NULL : "null",
+	Stamp.BLUETOOTH : "bluetooth",
+	Stamp.DOUBLE : "double",
+	Stamp.MOLE : "mole",
+	Stamp.RARE : "rare"
+};
+
+const StampHints : Dictionary = {
+	Stamp.BLUETOOTH : "Counterspell from hand. [i](Replaces the card.)[/i]",
+	Stamp.DOUBLE : "Wins in a tie.",
+	Stamp.MOLE : "Played face-down.",
+	Stamp.RARE : "Scores double."
+}
+
+const TranslateStamp : Dictionary = {
+	"null" : Stamp.NULL,
+	"bluetooth" : Stamp.BLUETOOTH,
+	"double" : Stamp.DOUBLE,
+	"mole" : Stamp.MOLE,
+	"rare" : Stamp.RARE
+};
+
 enum Keyword {
 	NULL,
 	BURIED,
@@ -321,7 +352,7 @@ var KeywordHints : Dictionary = {
 	Keyword.DIGITAL : "Counterspell from hand. [i](Replaces the card you played.)[/i]",
 	Keyword.DIVINE : "Defeats any undead.",
 	Keyword.ELECTROCUTE : "Defeats any wet card.",
-	Keyword.EMP : "Negates digital.",
+	Keyword.EMP : "Negates digital and bluetooth stamp",
 	Keyword.EXTRA_SALTY : "If loses, lose all your points.",
 	Keyword.GREED : "If loses, draw 2.",
 	Keyword.HIGH_GROUND : "Automatically defeats any face-down card.",
@@ -338,7 +369,7 @@ var KeywordHints : Dictionary = {
 	Keyword.OCEAN : "Scissors gain rust rust, papers gain mushy.",
 	Keyword.OCEAN_DWELLER : "After every 2 turns in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
 	Keyword.PAIR : "Wins in a tie.",
-	Keyword.PAIR_BREAKER : "Defeats any card with pair.",
+	Keyword.PAIR_BREAKER : "Defeats any card with pair or a rare stamp",
 	Keyword.PICK_UP : "End of turn, discard this card from your hand.",
 	Keyword.RAINBOW : "Each card in opponent's hand becomes a random card of same type.",
 	Keyword.RELOAD : "Shuffle a random gun into your deck.",

@@ -7,7 +7,8 @@ const DEFAULT_DATA : Dictionary = {
 	"type": "mimic",
 	"override_type": null,
 	"keywords": [],
-	"bullet": 1
+	"bullet": 1,
+	"stamp": "null"
 }
 
 var default_type : CardEnums.CardType
@@ -17,6 +18,7 @@ var card_name : String;
 var card_type : CardEnums.CardType = CardEnums.CardType.ROCK;
 var keywords : Array;
 var bullet_id : int;
+var stamp : CardEnums.Stamp;
 
 var controller : Player;
 var instance_id : int;
@@ -43,12 +45,17 @@ func eat_json(data : Dictionary) -> void:
 	card_id = data.id;
 	card_name = data.name;
 	card_type = CardEnums.TranslateCardType[data.type];
-	default_type = CardEnums.TranslateCardType[data.override_type];
+	default_type = card_type if data.override_type == null else CardEnums.TranslateCardType[data.override_type];
 	keywords = [];
 	for key in data.keywords:
 		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else CardEnums.Keyword.NULL);
 	add_keyword(Config.DEBUG_KEYWORD);
 	bullet_id = data.bullet;
+	eat_spawn_json(data);
+
+func eat_spawn_json(data : Dictionary) -> void:
+	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
+	stamp = CardEnums.TranslateStamp[data.stamp];
 
 func add_keyword(keyword : CardEnums.Keyword) -> bool:
 	var upgrade_to_keys : Array;
@@ -87,7 +94,8 @@ func to_json() -> Dictionary:
 		"type": CardEnums.CardTypeName[default_type].to_lower(),
 		"override_type": CardEnums.CardTypeName[card_type].to_lower(),
 		"keywords": get_keywords_json(),
-		"bullet": bullet_id
+		"bullet": bullet_id,
+		"stamp": CardEnums.TranslateStampBack[stamp]
 	};
 
 func get_keywords_json() -> Array:
@@ -103,7 +111,7 @@ func clone() -> CardData:
 	return card_data;
 
 func has_buried() -> bool:
-	return has_keyword(CardEnums.Keyword.BURIED);
+	return has_keyword(CardEnums.Keyword.BURIED) or stamp == CardEnums.Stamp.MOLE;
 
 func has_carrot_eater() -> bool:
 	return has_keyword(CardEnums.Keyword.CARROT_EATER);
@@ -129,8 +137,11 @@ func has_cursed() -> bool:
 func has_devour() -> bool:
 	return has_keyword(CardEnums.Keyword.DEVOUR);
 
+func has_rare_stamp() -> bool:
+	return stamp == CardEnums.Stamp.RARE;
+
 func has_digital() -> bool:
-	return has_keyword(CardEnums.Keyword.DIGITAL);
+	return has_keyword(CardEnums.Keyword.DIGITAL) or stamp == CardEnums.Stamp.BLUETOOTH;
 
 func has_divine() -> bool:
 	return has_keyword(CardEnums.Keyword.DIVINE);
@@ -190,7 +201,7 @@ func has_ocean_dweller() -> bool:
 	return has_keyword(CardEnums.Keyword.OCEAN_DWELLER);
 
 func has_pair() -> bool:
-	return has_keyword(CardEnums.Keyword.PAIR);
+	return has_keyword(CardEnums.Keyword.PAIR) or stamp == CardEnums.Stamp.DOUBLE;
 
 func has_pair_breaker() -> bool:
 	return has_keyword(CardEnums.Keyword.PAIR_BREAKER);

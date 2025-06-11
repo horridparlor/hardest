@@ -9,6 +9,7 @@ extends GameplayCard
 @onready var art_background : Panel = $ArtLayer/Panel;
 @onready var keywords_label : Label = $KeywordsLabel;
 @onready var background_pattern : Sprite2D = $Pattern;
+@onready var stamp : Sprite2D = $Stamp;
 
 func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	if card_data.is_buried:
@@ -21,9 +22,18 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 	update_type_icons(card_data.card_type);
 	update_card_art();
 	update_keywords_text(card_data.keywords.duplicate(), gained_keyword);
+	update_stamp();
 	if card_data.has_emp():
 		has_emp_visuals = true;
 		update_emp_visuals();
+
+func update_stamp() -> void:
+	var texture : Resource;
+	if is_dissolving or card_data.stamp == CardEnums.Stamp.NULL:
+		stamp.texture = null;
+		return;
+	texture = load("res://Assets/Art/Stamps/%s.png" % CardEnums.TranslateStampBack[card_data.stamp]);
+	stamp.texture = texture;
 
 func update_emp_visuals() -> void:
 	if card_art.material:
@@ -42,6 +52,7 @@ func bury() -> void:
 	card_art.texture = null;
 	update_panel(CardEnums.CardType.MIMIC);
 	update_type_icons(CardEnums.CardType.MIMIC);
+	stamp.texture = null;
 
 func update_name_label(message : String) -> void:
 	var name_length : int = message.length();
@@ -139,6 +150,7 @@ func dissolve(multiplier : float = 1) -> void:
 		node.material = shader_material;
 	background_pattern.material = shader_material2;
 	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED) * multiplier;
+	stamp.texture = null;
 	is_dissolving = true;
 	is_despawning = true;
 	is_moving = false;
@@ -153,7 +165,8 @@ func get_shader_layers() -> Array:
 		art_background,
 		left_type_icon,
 		right_type_icon,
-		panel
+		panel,
+		stamp
 	];
 
 func dissolve_frame(delta : float) -> void:

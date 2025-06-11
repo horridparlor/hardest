@@ -8,8 +8,8 @@
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="4_mra10"]
 [ext_resource type="FontFile" uid="uid://cprgttsfluuru" path="res://Assets/FontFiles/Montserrat/Montserrat-Black.ttf" id="4_toc33"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="9_ttcv7"]
-[ext_resource type="FontFile" uid="uid://d1yqah22sjqki" path="res://Assets/FontFiles/Montserrat/Montserrat-Light.ttf" id="10_e8r34"]
 [ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_iy5c5"]
+[ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="11_1woyl"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="11_n5jor"]
 [ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="12_lejpt"]
 
@@ -290,7 +290,7 @@ offset_bottom = 630.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/normal_font = ExtResource("9_ttcv7")
-theme_override_fonts/italics_font = ExtResource("10_e8r34")
+theme_override_fonts/italics_font = ExtResource("11_1woyl")
 theme_override_fonts/bold_italics_font = ExtResource("11_n5jor")
 theme_override_fonts/bold_font = ExtResource("12_lejpt")
 theme_override_font_sizes/bold_italics_font_size = 40

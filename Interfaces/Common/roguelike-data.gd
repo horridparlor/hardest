@@ -22,6 +22,7 @@ var next_opponent : int;
 var lost_heart : bool;
 var chosen_opponent : int;
 var point_goal : int;
+var rounds_played : int;
 
 func _init() -> void:
 	lives_left = System.Rules.STARTING_LIVES;
@@ -63,7 +64,9 @@ func get_starting_opponent() -> int:
 
 func get_new_choices(current_opponent : int = 0) -> void:
 	var opponent_choices : Array = opponents.keys();
-	var picks : int = System.random.randi_range(System.Rules.CARD_PICKS_PER_ROUND - 1, System.Rules.CARD_PICKS_PER_ROUND);
+	var picks : int = System.Rules.CARD_PICKS_PER_ROUND;
+	if System.Random.chance(3):
+		picks -= 1;
 	opponent_choices.erase(current_opponent);
 	card_choices_left = [];
 	for i in range(picks):
@@ -82,6 +85,8 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 	var pool : Array;
 	var card_id : int;
 	var includes_scam : bool;
+	var card_data : CardData;
+	var chosen_ids : Dictionary;
 	for i in range(System.Rules.CARD_CHOICES):
 		if confirmed_rare or System.Random.chance(rare_chance):
 			pool = card_pool[CollectionEnums.Rarity.RARE];
@@ -92,11 +97,32 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 			pool = card_pool[CollectionEnums.Rarity.COMMON];
 		while true:
 			card_id = System.Random.item(pool);
-			if choices.has(card_id):
+			if chosen_ids.has(card_id):
 				continue;
+			chosen_ids[card_id] = null;
 			break;
-		choices.append(card_id);
+		card_data = System.Data.load_card(card_id);
+		choices.append({
+			"id": card_id,
+			"stamp": CardEnums.TranslateStampBack[get_stamp_for_spawned_card(card_data)]
+		});
+		card_data.queue_free();
 	return choices;
+
+func get_stamp_for_spawned_card(card_data : CardData, rare_stamp_chance : int = rare_chance) -> CardEnums.Stamp:
+	var possible_stamps : Array;
+	if rounds_played >= System.Rules.RARE_STAMP_BECOMES_COMMON_AFTER_ROUND \
+	or System.Random.chance(System.Rules.RARE_STAMP_CHANCE_MULTIPLIER):
+		possible_stamps.append(CardEnums.Stamp.RARE);
+	if !card_data.has_digital():
+		possible_stamps.append(CardEnums.Stamp.BLUETOOTH);
+	if !card_data.has_pair():
+		possible_stamps.append(CardEnums.Stamp.DOUBLE);
+	if !card_data.has_buried():
+		possible_stamps.append(CardEnums.Stamp.MOLE);
+	if possible_stamps.size() and System.Random.chance(System.Rules.STAMP_CHANCE + rare_stamp_chance - (rounds_played * System.Rules.STAMP_CHANCE_LESSENS_BY_ROUND)):
+		return System.Random.item(possible_stamps);
+	return CardEnums.Stamp.NULL;
 
 func get_starting_card_choices() -> Array:
 	return [get_card_choices(true), get_card_choices(), get_card_choices()];
@@ -120,6 +146,9 @@ func get_opponents() -> Dictionary:
 				1,
 				2,
 				3,
+				1,
+				2,
+				3,
 				4,
 				5
 			],
@@ -133,6 +162,9 @@ func get_opponents() -> Dictionary:
 		},
 		GameplayEnums.Character.PETE: {
 			"cards": [
+				1,
+				2,
+				3,
 				1,
 				2,
 				3,
@@ -152,6 +184,9 @@ func get_opponents() -> Dictionary:
 		},
 		GameplayEnums.Character.LOTTE: {
 			"cards": [
+				1,
+				2,
+				3,
 				1,
 				2,
 				3,
@@ -178,6 +213,9 @@ func get_opponents() -> Dictionary:
 				9,
 				10,
 				11,
+				9,
+				10,
+				11,
 				
 				15,
 				16,
@@ -198,6 +236,9 @@ func get_opponents() -> Dictionary:
 				24,
 				25,
 				26,
+				24,
+				25,
+				26,
 				
 				23,
 				27
@@ -212,6 +253,12 @@ func get_opponents() -> Dictionary:
 		},
 		GameplayEnums.Character.RAISEN: {
 			"cards": [
+				41,
+				44,
+				45,
+				41,
+				44,
+				45,
 				41,
 				44,
 				45,
@@ -230,6 +277,12 @@ func get_opponents() -> Dictionary:
 				47,
 				48,
 				49,
+				47,
+				48,
+				49,
+				47,
+				48,
+				49,
 				
 				46
 			],
@@ -242,6 +295,13 @@ func get_opponents() -> Dictionary:
 		},
 		GameplayEnums.Character.JUKULIUS: {
 			"cards": [
+				36,
+				37,
+				38,
+				31,
+				32,
+				33,
+				
 				36,
 				37,
 				38,
@@ -270,9 +330,11 @@ func get_opponents() -> Dictionary:
 				31,
 				32,
 				33,
+				
 				31,
 				32,
 				33,
+				
 				31,
 				32,
 				33,
@@ -288,12 +350,15 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.HIGHTECH,
 				CollectionEnums.House.KAWAII
 			]),
-			"rare_chance": 0,
+			"rare_chance": 4,
 			"song": 3,
 			"background": 4
 		},
 		GameplayEnums.Character.AGENT: {
 			"cards": [
+				1,
+				2,
+				3,
 				1,
 				2,
 				3,
@@ -350,9 +415,12 @@ static func from_json(json : Dictionary) -> RoguelikeData:
 	return data;
 
 func eat_json(data : Dictionary) -> void:
-	data = System.Dictionaries.make_safe(data, {});
+	data = System.Dictionaries.make_safe(data, {
+		"rounds_played": 0
+	});
 	lives_left = data.lives_left;
 	point_goal = data.point_goal;
+	rounds_played = data.rounds_played;
 	your_houses = data.your_houses;
 	cards_bought = data.cards_bought;
 	money = data.money;
@@ -386,6 +454,7 @@ func to_json() -> Dictionary:
 	return {
 		"lives_left": lives_left,
 		"point_goal": point_goal,
+		"rounds_played": rounds_played,
 		"your_houses": your_houses,
 		"cards_bought": cards_bought,
 		"card_goal": card_goal,

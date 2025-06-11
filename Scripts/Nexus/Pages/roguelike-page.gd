@@ -98,9 +98,12 @@ func show_card_choice() -> void:
 	var card : GameplayCard;
 	var card_data : CardData;
 	var position : Vector2 = LEVEL_BUTTON_STARTING_POSITION + Vector2(-CARD_X_MARGIN, -35);
+	var spawn_data : Dictionary;
 	cards = [];
 	for i in range(System.Rules.CARD_CHOICES):
-		card_data = System.Data.load_card(data.card_choices_left[0][i]);
+		spawn_data = data.card_choices_left[0][i];
+		card_data = System.Data.load_card(spawn_data.id);
+		card_data.eat_spawn_json(spawn_data);
 		card = System.Instance.load_child(System.Paths.CARD, card_choices_layer);
 		card.card_data = card_data;
 		card.init();

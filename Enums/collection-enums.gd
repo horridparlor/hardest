@@ -33,7 +33,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			58,
 			59,
 			60,
-			61
+			61,
+			77
 		]
 	},
 	House.DELUSIONAL: {
@@ -229,7 +230,8 @@ const RANDOM_CARDS : Dictionary = {
 		46,
 		57,
 		65,
-		74
+		74,
+		77
 	],
 	CardEnums.CardType.MIMIC: [
 		5,

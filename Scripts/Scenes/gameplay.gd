@@ -697,6 +697,10 @@ func trigger_ocean(card : CardData) -> void:
 	wait_per_card_trigger = ocean_timer.wait_time / (triggers + 2);
 	await System.wait(wait_per_card_trigger * 1.9);
 	for c in cards_to_wet:
+		if is_time_stopped:
+			ocean_streamer.stop();
+			_on_ocean_timer_timeout();
+			return;
 		if make_card_wet(c):
 			await System.wait(wait_per_card_trigger);
 
@@ -2097,4 +2101,6 @@ func _on_ocean_timer_timeout() -> void:
 	is_ocean_in_progress = false;
 	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;
 	is_low_tiding = true;
+	if is_time_stopped:
+		return;
 	emit_signal("play_prev_song");

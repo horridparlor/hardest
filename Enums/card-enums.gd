@@ -398,6 +398,5 @@ static func translate_keywords_back(source : Array) -> Array:
 	return translated;
 
 const WET_BULLETS : Dictionary = {
-	3: null,
-	15: null
+	3: null
 }

@@ -2,7 +2,6 @@
 	"id": 13,
 	"title": "Decklists test deck",
 	"cards": [
-		18,
 		71,
 		72,
 		73,
@@ -23,12 +22,6 @@
 		72,
 		73,
 		
-		71,
-		72,
-		73,
-		74,
-		40,
-		40
-	],
-	"isRoguelike": true
+		77
+	]
 }

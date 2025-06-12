@@ -78,6 +78,7 @@ func open_starting_scene() -> void:
 		is_song_locked = true;
 		return;
 	if Config.AUTO_LEVEL != 0:
+		in_roguelike_mode = false;
 		open_gameplay(System.Data.read_level(Config.AUTO_LEVEL));
 		return;
 	if save_data.tutorial_levels_won < 0:

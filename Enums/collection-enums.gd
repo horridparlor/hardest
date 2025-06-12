@@ -44,8 +44,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			8,
 			13,
 			28,
-			70,
-			83
+			70
 		],
 		Rarity.RARE: [
 			14,
@@ -53,7 +52,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			40,
 			63,
 			64,
-			66
+			66,
+			83
 		]
 	},
 	House.DEMONIC: {

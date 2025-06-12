@@ -67,7 +67,7 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id);
 	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id);
 	init_layers();
-	set_going_first(System.Random.boolean());
+	set_going_first(0 if level_data.id == System.Levels.INTRODUCTION_LEVEL else System.Random.boolean());
 	highlight_face(false);
 	update_character_faces();
 	initialize_background_pattern();
@@ -165,6 +165,7 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 		else min(System.Rules.OPPONENT_MAX_POINT_GOAL + round(level_data.point_goal / 3 / 1.5) - 3, level_data.point_goal);
 	player.controller = controller;
 	player.point_goal = point_goal;
+	player.is_roguelike = level_data.is_roguelike;
 	point_meter.set_max_points(point_goal);
 	player.eat_decklist(deck_id, character_id);
 	for c in player.cards_in_deck:

@@ -151,6 +151,11 @@ func dissolve(multiplier : float = 1) -> void:
 	for node in get_shader_layers():
 		node.material = shader_material;
 	background_pattern.material = shader_material2;
+	for node in [
+		left_type_icon,
+		right_type_icon
+	]:
+		node.visible = false;
 	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED) * multiplier;
 	stamp.texture = null;
 	is_dissolving = true;

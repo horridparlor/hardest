@@ -130,6 +130,9 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	level_data = level_data_;
 	has_game_ended = false;
 	if !System.Instance.exists(gameplay) or !gameplay.is_preloaded:
+		if System.Instance.exists(gameplay):
+			gameplay.queue_free();
+			print(444);
 		gameplay = System.Instance.load_child(GAMEPLAY_PATH, scene_layer);
 	gameplay.game_over.connect(_on_game_ended);
 	gameplay.zoom_to.connect(_on_zoom_to);

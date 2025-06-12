@@ -27,6 +27,7 @@ var turns_waited_to_nut : int;
 var did_nut : bool;
 var nut_multiplier : int = 1;
 var point_goal : int;
+var is_roguelike : bool;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -85,9 +86,10 @@ func refill_deck() -> void:
 		ids.append(CardEnums.BasicIds[CardEnums.CardType.ROCK]);
 		ids.append(CardEnums.BasicIds[CardEnums.CardType.PAPER]);
 		ids.append(CardEnums.BasicIds[CardEnums.CardType.SCISSORS]);
-	for i in range(3):
-		ids.append(CardEnums.BasicIds[CardEnums.CardType.GUN]);
-	ids.append(CardEnums.BasicIds[CardEnums.CardType.MIMIC]);
+	if is_roguelike:
+		for i in range(3):
+			ids.append(CardEnums.BasicIds[CardEnums.CardType.GUN]);
+		ids.append(CardEnums.BasicIds[CardEnums.CardType.MIMIC]);
 	ids.shuffle();
 	for id in ids:
 		spawn_card(System.Data.load_card(id));

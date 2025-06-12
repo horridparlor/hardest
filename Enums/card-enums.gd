@@ -139,7 +139,6 @@ enum Keyword {
 	SOUL_HUNTER,
 	SPY,
 	TIDAL,
-	TIDAL_WAVE,
 	TIME_STOP,
 	UNDEAD,
 	VAMPIRE,
@@ -230,7 +229,6 @@ const KeywordNames : Dictionary = {
 	Keyword.SOUL_HUNTER : "Soul Hunter",
 	Keyword.SPY : "Spy",
 	Keyword.TIDAL : "Tidal",
-	Keyword.TIDAL_WAVE : "Tidal Wave",
 	Keyword.TIME_STOP : "Time-stop",
 	Keyword.UNDEAD : "Undead",
 	Keyword.VAMPIRE : "Vampire",
@@ -281,7 +279,6 @@ const TranslateKeyword : Dictionary = {
 	"soul-hunter" : Keyword.SOUL_HUNTER,
 	"spy" : Keyword.SPY,
 	"tidal" : Keyword.TIDAL,
-	"tidal-wave" : Keyword.TIDAL_WAVE,
 	"time-stop" : Keyword.TIME_STOP,
 	"undead" : Keyword.UNDEAD,
 	"vampire" : Keyword.VAMPIRE,
@@ -332,7 +329,6 @@ const TranslateKeywordBack: Dictionary = {
 	Keyword.SOUL_HUNTER : "soul-hunter",
 	Keyword.SPY : "spy",
 	Keyword.TIDAL : "tidal",
-	Keyword.TIDAL_WAVE : "tidal-wave",
 	Keyword.TIME_STOP : "time-stop",
 	Keyword.UNDEAD : "undead",
 	Keyword.VAMPIRE : "vampire",
@@ -367,7 +363,7 @@ var KeywordHints : Dictionary = {
 	Keyword.NUT : "Point for every turn since your last nut.",
 	Keyword.NUT_COLLECTOR : "Shuffle 3 nuts into your deck.",
 	Keyword.NUT_STEALER : "If opponent would nut, you nut twice instead.",
-	Keyword.OCEAN : "Scissors gain rust, papers gain mushy.",
+	Keyword.OCEAN : "[i]When wet, scissors gain rust, papers gain mushy.[/i]",
 	Keyword.OCEAN_DWELLER : "If stays in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair or a rare stamp",
@@ -382,8 +378,7 @@ var KeywordHints : Dictionary = {
 	Keyword.SILVER : "Defeats any werewolf.",
 	Keyword.SOUL_HUNTER : "You get the cards this defeats at the start of next game.",
 	Keyword.SPY : "Fights a random card in opponent's hand.",
-	Keyword.TIDAL : "If becomes wet, gains tidal wave.",
-	Keyword.TIDAL_WAVE : "Summons a zunami.",
+	Keyword.TIDAL : "If wet, turns into a gun.",
 	Keyword.TIME_STOP : "Extends your turn.",
 	Keyword.UNDEAD : "Takes %s SAME_TYPES from your grave and turns into a gun." % [System.Rules.UNDEAD_LIMIT],
 	Keyword.VAMPIRE : "If wins, drains the points from opponent.",
@@ -405,7 +400,5 @@ static func translate_keywords_back(source : Array) -> Array:
 
 const WET_BULLETS : Dictionary = {
 	3: null,
-	13: null,
-	14: null,
 	15: null
 }

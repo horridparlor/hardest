@@ -1,10 +1,9 @@
 {
 	"id": 77,
 	"name": "Trident",
-	"type": "gun",
+	"type": "scissor",
 	"keywords": [
 		"ocean",
 		"tidal"
-	],
-	"bullet": 15
+	]
 }

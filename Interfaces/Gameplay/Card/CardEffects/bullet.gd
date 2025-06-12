@@ -84,7 +84,7 @@ func set_sound(pitch : float = System.game_speed) -> void:
 	var sound : Resource = load(BULLET_SOUND_PATH % bullet_data.sound_name);
 	sfx_player.stream = sound;
 	await randf_range(SOUND_MIN_DELAY, SOUND_MAX_DELAY);
-	sfx_player.pitch_scale = max(Config.MIN_PITCH, pitch);
+	sfx_player.pitch_scale = max(Config.MIN_BULLET_PITCH, pitch);
 	sfx_player.play();
 
 func speed_up() -> void:

@@ -27,5 +27,6 @@ const SFX_VOLUME : int = -10 if DEV_MODE else -10;
 const GUN_VOLUME : int = 10;
 const NO_VOLUME : int = -80;
 const MIN_PITCH : float = 0.1;
+const MIN_BULLET_PITCH : float = 1;
 const MIN_GAME_SPEED : float = 0.1;
 const MUSIC_NIGHTCORE_PITCH : float = 1.2;

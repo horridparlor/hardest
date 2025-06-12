@@ -1,13 +1,15 @@
-[gd_scene load_steps=41 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=44 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_7ibue"]
+[ext_resource type="Shader" path="res://Shaders/CardEffects/ocean-shader.gdshader" id="2_8s402"]
 [ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_fmyns"]
 [ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="3_0gad1"]
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="3_ixfah"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="4_04fvt"]
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
+[ext_resource type="Texture2D" uid="uid://cgocym8x2sy5a" path="res://Assets/Art/Patterns/14.png" id="4_j6pyd"]
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="5_sou8c"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
 [ext_resource type="Texture2D" uid="uid://dpqiewl2lc35o" path="res://Assets/Art/BackgroundProps/GameplayTitle.png" id="8_b3g7l"]
@@ -30,12 +32,25 @@ border_width_bottom = 8
 border_color = Color(0.255382, 0.0595813, 0.335234, 1)
 border_blend = true
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1o3qo"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hanut"]
 shader = ExtResource("2_fmyns")
 shader_parameter/amplitude = 10.0
 shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 0.0
 shader_parameter/opacity = 0.6
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1o3qo"]
+shader = ExtResource("2_8s402")
+shader_parameter/wave_speed = 1.0
+shader_parameter/wave_frequency = 20.0
+shader_parameter/wave_amplitude = 0.02
+shader_parameter/water_color = Color(0, 0.4, 0.8, 1)
+shader_parameter/shine_speed = 5.0
+shader_parameter/shine_color = Vector4(1, 1, 1, 0.4)
+shader_parameter/shine_strength = 0.3
+shader_parameter/opacity = 0.6
+shader_parameter/mix_rate = 1.0
+shader_parameter/wave_center = Vector2(0.5, 0.5)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ewqwb"]
 shader = ExtResource("2_fmyns")
@@ -183,8 +198,13 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0s264")
 
 [node name="Pattern" type="Sprite2D" parent="Background"]
-material = SubResource("ShaderMaterial_1o3qo")
+material = SubResource("ShaderMaterial_hanut")
 script = ExtResource("3_ixfah")
+
+[node name="OceanPattern" type="Sprite2D" parent="Background"]
+visible = false
+material = SubResource("ShaderMaterial_1o3qo")
+texture = ExtResource("4_j6pyd")
 
 [node name="Leds" type="Sprite2D" parent="Background"]
 self_modulate = Color(1, 1, 1, 0.6)
@@ -248,6 +268,10 @@ script = ExtResource("5_sou8c")
 [node name="AutoPlayTimer" type="Timer" parent="Timers"]
 
 [node name="StartNextRoundTimer" type="Timer" parent="Timers"]
+
+[node name="OceanTimer" type="Timer" parent="Timers"]
+
+[node name="WetWaitTimer" type="Timer" parent="Timers"]
 
 [node name="FieldLines" type="Node2D" parent="."]
 
@@ -599,5 +623,7 @@ script = ExtResource("3_ixfah")
 [connection signal="timeout" from="Timers/LedTimer" to="." method="_on_led_wait_timeout"]
 [connection signal="timeout" from="Timers/AutoPlayTimer" to="." method="_on_auto_play_timer_timeout"]
 [connection signal="timeout" from="Timers/StartNextRoundTimer" to="." method="_on_start_next_round_timer_timeout"]
+[connection signal="timeout" from="Timers/OceanTimer" to="." method="_on_ocean_timer_timeout"]
+[connection signal="timeout" from="Timers/WetWaitTimer" to="." method="_on_wet_wait_timer_timeout"]
 [connection signal="pressed" from="Points/Relics/DieButton/Die" to="." method="_on_die_pressed"]
 [connection signal="released" from="Points/Relics/DieButton/Die" to="." method="_on_die_released"]

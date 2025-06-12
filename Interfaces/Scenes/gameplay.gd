@@ -96,6 +96,15 @@ const MIN_STOPPED_TIME_WAIT : float = 0.09;
 const MAX_STOPPED_TIME_WAIT : float = 0.18;
 const OCEAN_POINTS_MIN_WAIT : float = 0.42 * Config.GAME_SPEED_MULTIPLIER;
 const OCEAN_POINTS_MAX_WAIT : float = 0.76 * Config.GAME_SPEED_MULTIPLIER;
+const OCEAN_MIN_WAIT : float = 0.97 * Config.GAME_SPEED_MULTIPLIER;
+const OCEAN_MAX_WAIT : float = 1.58 * Config.GAME_SPEED_MULTIPLIER;
+const WET_MIN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
+const WET_MAX_WAIT : float = 0.67 * Config.GAME_SPEED_MULTIPLIER;
+const HIGH_TIDE_MIN_SPEED : float = 0.24 * Config.GAME_SPEED;
+const HIGH_TIDE_MAX_SPEED : float = 0.31 * Config.GAME_SPEED;
+const LOW_TIDE_MIN_SPEED : float = 0.35 * Config.GAME_SPEED;
+const LOW_TIDE_MAX_SPEED : float = 0.42 * Config.GAME_SPEED;
+const OCEAN_PATTERN_MAX_OPACITY : float = 0.35;
 
 const TIME_STOP_IN_GLITCH_MIN_SPEED : float = 5 * Config.GAME_SPEED;
 const TIME_STOP_IN_GLITCH_MAX_SPEED : float = 7.8 * Config.GAME_SPEED;
@@ -154,6 +163,12 @@ var death_progress : float;
 var is_dying : bool;
 var is_undying : bool;
 var poppets : Dictionary;
+var is_ocean_in_progress : bool;
+var is_wet_wait_on : bool;
+var high_tide_speed : float;
+var is_low_tiding : bool;
+var low_tide_speed : float;
+var ocean_card : GameplayCard;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

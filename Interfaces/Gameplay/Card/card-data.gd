@@ -56,7 +56,7 @@ func eat_spawn_json(data : Dictionary) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	stamp = CardEnums.TranslateStamp[data.stamp];
 
-func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false) -> bool:
+func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false, do_add : bool = true) -> bool:
 	var upgrade_to_keys : Array;
 	match keyword:
 		CardEnums.Keyword.BURIED:
@@ -77,10 +77,11 @@ func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false
 	for key in upgrade_to_keys:
 		if keywords.has(key):
 			keywords[keywords.find(key)] = keyword;
-	if keyword == CardEnums.Keyword.NULL or (keywords.size() == System.Rules.MAX_KEYWORDS and !ignore_max_keywords) or \
+	if keyword == CardEnums.Keyword.NULL or (has_max_keywords() and !ignore_max_keywords) or \
 	has_keyword(keyword):
 		return false;
-	keywords.append(keyword);
+	if do_add:
+		keywords.append(keyword);
 	return true;
 
 func has_keyword(keyword : CardEnums.Keyword, may_have_buried : bool = false) -> bool:
@@ -183,6 +184,9 @@ func has_hydra() -> bool:
 func has_influencer() -> bool:
 	return has_keyword(CardEnums.Keyword.INFLUENCER);
 
+func has_max_keywords() -> bool:
+	return keywords.size() == System.Rules.MAX_KEYWORDS;
+
 func has_multi_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.MULTI_SPY);
 
@@ -252,9 +256,6 @@ func has_spy() -> bool:
 func has_tidal() -> bool:
 	return has_keyword(CardEnums.Keyword.TIDAL);
 
-func has_tidal_wave() -> bool:
-	return has_keyword(CardEnums.Keyword.TIDAL_WAVE);
-
 func has_time_stop() -> bool:
 	return has_keyword(CardEnums.Keyword.TIME_STOP);
 
@@ -276,6 +277,15 @@ func is_vanilla() -> bool:
 
 func has_wrapped() -> bool:
 	return has_keyword(CardEnums.Keyword.WRAPPED);
+
+func is_rock() -> bool:
+	return card_type == CardEnums.CardType.ROCK;
+	
+func is_paper() -> bool:
+	return card_type == CardEnums.CardType.PAPER;
+	
+func is_scissor() -> bool:
+	return card_type == CardEnums.CardType.SCISSORS;
 
 func is_gun() -> bool:
 	return card_type == CardEnums.CardType.GUN;
@@ -303,3 +313,6 @@ func get_max_nuts(opponent_shares_a_nut : bool = false) -> int:
 	if opponent_shares_a_nut:
 		max_nuts += 1;
 	return max_nuts;
+
+func shoots_wet_bullets() -> bool:
+	return is_gun() and CardEnums.WET_BULLETS.has(bullet_id);

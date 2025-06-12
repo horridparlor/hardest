@@ -23,6 +23,7 @@ extends Gameplay
 @onready var opponents_point_pattern : Sprite2D = $Points/PointPanels/OpponentsPointsPanel/OpponentsPointPattern;
 @onready var gameplay_title : Sprite2D = $Points/TitleLayer/GameplayTitle;
 @onready var title_layer : GlowNode = $Points/TitleLayer;
+@onready var ocean_pattern : Sprite2D = $Background/OceanPattern;
 
 @onready var round_results_timer : Timer = $Timers/RoundResultsTimer;
 @onready var pre_results_timer : Timer = $Timers/PreResultsTimer;
@@ -37,6 +38,8 @@ extends Gameplay
 @onready var led_timer : Timer = $Timers/LedTimer;
 @onready var auto_play_timer : Timer = $Timers/AutoPlayTimer;
 @onready var start_next_round_timer : Timer = $Timers/StartNextRoundTimer;
+@onready var ocean_timer : Timer = $Timers/OceanTimer;
+@onready var wet_wait_timer : Timer = $Timers/WetWaitTimer;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
@@ -69,6 +72,8 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	initialize_background_pattern();
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
+	ocean_pattern.visible = false;
+	ocean_pattern.modulate.a = 0;
 	spawn_leds();
 	init_time_stop_nodes();
 	init_audio();
@@ -383,8 +388,10 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		points = 3;
 	if card and card.is_gun() and winner != GameplayEnums.Controller.PLAYER_TWO:
 		play_shooting_animation(card, enemy);
+		winner = determine_winner(card, enemy);
 	if enemy and enemy.is_gun() and winner != GameplayEnums.Controller.PLAYER_ONE:
 		play_shooting_animation(enemy, card);
+		winner = determine_winner(card, enemy);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player, opponent, points);
@@ -651,6 +658,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 			CardEnums.Keyword.NUT_COLLECTOR:
 				if !enemy or !enemy.has_november():
 					collect_nuts(player);
+			CardEnums.Keyword.OCEAN:
+				trigger_ocean(card);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
 				update_card_alterations();
@@ -668,6 +677,33 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 					player.nut_multiplier *= 2;
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
+
+func trigger_ocean(card : CardData) -> void:
+	var enemy : CardData = get_opponent(card).get_field_card();
+	var cards_to_wet : Array = [card] + player_one.cards_in_hand + player_two.cards_in_hand + ([enemy] if enemy else []);
+	var wait_per_card_trigger : float;
+	var triggers : int;
+	for c in cards_to_wet:
+		if make_card_wet(c, false):
+			triggers += 1;
+	is_low_tiding = false;
+	is_ocean_in_progress = true;
+	if get_card(card):
+		ocean_card = get_card(card);
+	summon_ocean_effect(card);
+	ocean_pattern.visible = true;
+	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED) * System.game_speed_multiplier;
+	ocean_timer.wait_time = System.random.randf_range(OCEAN_MIN_WAIT, OCEAN_MAX_WAIT) * System.game_speed_additive_multiplier;
+	ocean_timer.start();
+	emit_signal("stop_music");
+	wait_per_card_trigger = ocean_timer.wait_time / (triggers + 2);
+	await System.wait(wait_per_card_trigger);
+	for c in cards_to_wet:
+		if make_card_wet(c):
+			await System.wait(wait_per_card_trigger);
+
+func summon_ocean_effect(card : CardData) -> void:
+	pass;
 
 func eat_carrot(card : CardData) -> void:
 	var enemy : CardData = get_opponent(card).get_field_card();
@@ -754,6 +790,9 @@ func wait_opponent_playing() -> void:
 	opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_additive_multiplier;
 	opponents_play_wait.start();
 
+func cannot_go_to_results() -> bool:
+	return is_spying or is_ocean_in_progress or is_wet_wait_on;
+
 func go_to_results() -> void:
 	#This structure waits and comes back everytime some action is done
 	#So that player has time to see animation and react mentally.
@@ -762,7 +801,7 @@ func go_to_results() -> void:
 	#Let's say 100 lines :D
 	if is_time_stopped:
 		return start_results();
-	if is_spying:
+	if cannot_go_to_results():
 		return results_wait();
 	if results_phase < 2:
 		if mimics_phase():
@@ -1236,9 +1275,11 @@ func round_results() -> void:
 	if card and card.is_gun() and round_winner != GameplayEnums.Controller.PLAYER_TWO:
 		is_motion_shooting = true;
 		play_shooting_animation(card, enemy, round_winner != GameplayEnums.Controller.NULL or System.Random.chance(2));
+		round_winner = determine_winner(card, enemy);
 	if enemy and enemy.is_gun() and round_winner != GameplayEnums.Controller.PLAYER_ONE:
 		is_motion_shooting = true;
 		play_shooting_animation(enemy, card, true);
+		round_winner = determine_winner(card, enemy);
 	if round_winner == GameplayEnums.Controller.PLAYER_TWO:
 		led_direction = OPPONENTS_LED_DIRECTION;
 		led_color = OPPONENTS_LED_COLOR;
@@ -1417,17 +1458,42 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 			zoom_to_bullet(bullet);
 	if get_card(card):
 		get_card(card).recoil(enemy_position);
-	if enemy and enemy.has_ocean_dweller() and CardEnums.WET_BULLETS.has(card.bullet_id):
-		did_wet_card(enemy, get_opponent(card));
+	if card.shoots_wet_bullets():
+		make_card_wet(enemy);
 	return bullets;
 
-func did_wet_card(card : CardData, player : Player) -> void:
-	var points : int = calculate_base_points(card, null, true);
-	player.gain_points(points);
-	gain_points_effect(player);
-	if get_card(card):
-		get_card(card).wet_effect();
-	spawn_poppet_for_card(card, player);
+func make_card_wet(card : CardData, do_trigger : bool = true) -> bool:
+	var player : Player;
+	var would_trigger : bool;
+	if !card:
+		return would_trigger;
+	player = card.controller;
+	if card.has_ocean_dweller() and (card.controller == player_one or card.zone == CardEnums.Zone.FIELD):
+		if do_trigger:
+			trigger_ocean_dweller(card, player);
+		would_trigger = true;
+	if card.has_tidal() and !card.is_gun():
+		if do_trigger:
+			card.card_type = CardEnums.CardType.GUN;
+			update_alterations_for_card(card);
+			if get_card(card):
+				get_card(card).wet_effect();
+			start_wet_wait()
+		would_trigger = true;
+	if (card.is_paper() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)) \
+	or (card.is_scissor() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
+		if do_trigger:
+			update_alterations_for_card(card);
+			if get_card(card):
+				get_card(card).wet_effect();
+			start_wet_wait();
+		would_trigger = true;
+	return would_trigger;
+
+func start_wet_wait() -> void:
+	is_wet_wait_on = true;
+	wet_wait_timer.wait_time = System.random.randf_range(WET_MIN_WAIT, WET_MAX_WAIT) * System.game_speed_additive_multiplier;
+	wet_wait_timer.start();
 
 func zoom_to_bullet(bullet : Bullet) -> void:
 	emit_signal("zoom_to", bullet, true);
@@ -1454,7 +1520,7 @@ func play_point_sfx(file_path : String) -> void:
 	point_streamer.stream = sound_file;
 	if Config.MUTE_SFX:
 		return;
-	point_streamer.pitch_scale = max(Config.MIN_PITCH, System.game_speed);
+	point_streamer.pitch_scale = max(Config.MIN_BULLET_PITCH, System.game_speed);
 	point_streamer.play();
 
 func click_opponents_points() -> void:
@@ -1648,11 +1714,9 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 		card = c;
 		gameplay_card = get_card(card);
 		if player == player_one and card.has_ocean_dweller():
-			spawn_poppets(trigger_ocean_dweller(card, player), card, player);
+			trigger_ocean_dweller(card, player)
 			if gameplay_card:
 				gameplay_card.recoil();
-				gameplay_card.wet_effect();
-			gain_points_effect(player);
 			did_trigger_ocean = true;
 		if !card.has_pick_up():
 			continue;
@@ -1661,10 +1725,13 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	player.end_of_turn_clear(did_win);
 	return true;
 
-func trigger_ocean_dweller(card : CardData, player : Player) -> int:
+func trigger_ocean_dweller(card : CardData, player : Player) -> void:
 	var points : int = calculate_base_points(card, null, true);
 	player.gain_points(points);
-	return points;
+	gain_points_effect(player);
+	if get_card(card):
+		get_card(card).wet_effect();
+	spawn_poppets(points, card, player);
 
 func show_opponents_field() -> void:
 	var card : GameplayCard;
@@ -1689,6 +1756,27 @@ func _process(delta : float) -> void:
 		undying_frame(delta);
 	if has_game_ended:
 		victory_pattern.material.set_shader_parameter("opacity", victory_banner.modulate.a);
+	if is_ocean_in_progress:
+		high_tide_frame(delta);
+	if is_low_tiding:
+		low_tide_frame(delta);
+
+func high_tide_frame(delta : float) -> void:
+	ocean_pattern.modulate.a += high_tide_speed * delta;
+	update_ocean_pattern();
+
+func low_tide_frame(delta : float) -> void:
+	ocean_pattern.modulate.a -= low_tide_speed * delta;
+	update_ocean_pattern();
+	if ocean_pattern.modulate.a <= 0:
+		ocean_pattern.modulate.a = 0;
+		is_low_tiding = false;
+
+func update_ocean_pattern() -> void:
+	ocean_pattern.material.set_shader_parameter("opacity", min(OCEAN_PATTERN_MAX_OPACITY, ocean_pattern.modulate.a));
+	if !System.Instance.exists(ocean_card):
+		return;
+	ocean_pattern.material.set_shader_parameter("wave_center", System.Vectors.get_scale_position(ocean_card.position));
 
 func init_time_stop() -> void:
 	var shader_material : ShaderMaterial = get_time_stop_material();
@@ -1986,3 +2074,14 @@ func _on_die_released() -> void:
 		return;
 	is_undying = true;
 	is_dying = false;
+
+func _on_wet_wait_timer_timeout() -> void:
+	wet_wait_timer.stop();
+	is_wet_wait_on = false;
+
+func _on_ocean_timer_timeout() -> void:
+	ocean_timer.stop();
+	is_ocean_in_progress = false;
+	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;
+	is_low_tiding = true;
+	emit_signal("play_prev_song");

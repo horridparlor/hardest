@@ -53,5 +53,4 @@ static func to_fraction(vector : Vector2) -> String:
 	return "0/%s,0/%s" % [vector.x, vector.y];
 
 static func get_scale_position(position : Vector2) -> Vector2:
-	print(position);
 	return (position + System.Window_ / 2) / System.Window_;

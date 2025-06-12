@@ -121,6 +121,9 @@ func clone() -> CardData:
 	card_data.controller = controller;
 	return card_data;
 
+func is_aquatic() -> bool:
+	return has_ocean() or has_ocean_dweller() or has_tidal() or has_mushy();
+
 func has_buried() -> bool:
 	return has_keyword(CardEnums.Keyword.BURIED) or stamp == CardEnums.Stamp.MOLE;
 

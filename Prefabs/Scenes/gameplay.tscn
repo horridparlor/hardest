@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=45 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
@@ -11,6 +11,7 @@
 [ext_resource type="FontFile" uid="uid://3kkavvgbrq0y" path="res://Assets/FontFiles/Montserrat/Montserrat-Medium.ttf" id="4_4owwf"]
 [ext_resource type="Texture2D" uid="uid://cgocym8x2sy5a" path="res://Assets/Art/Patterns/14.png" id="4_j6pyd"]
 [ext_resource type="Script" path="res://Scripts/Common/jumping-text.gd" id="5_sou8c"]
+[ext_resource type="AudioStream" uid="uid://ddvx4hd8l58wf" path="res://Assets/SFX/CardSounds/Bursts/ocean.wav" id="6_a0acr"]
 [ext_resource type="FontFile" uid="uid://blgr74hnsnmp3" path="res://Assets/FontFiles/Montserrat/Montserrat-BoldItalic.ttf" id="6_xsnuj"]
 [ext_resource type="Texture2D" uid="uid://dpqiewl2lc35o" path="res://Assets/Art/BackgroundProps/GameplayTitle.png" id="8_b3g7l"]
 [ext_resource type="PackedScene" uid="uid://d2pcdxfdj8xu2" path="res://Prefabs/Gameplay/Points/point-meter.tscn" id="8_fw0v1"]
@@ -210,6 +211,9 @@ texture = ExtResource("4_j6pyd")
 self_modulate = Color(1, 1, 1, 0.6)
 
 [node name="PointStreamer" type="AudioStreamPlayer2D" parent="Background"]
+
+[node name="OceanStreamer" type="AudioStreamPlayer2D" parent="Background"]
+stream = ExtResource("6_a0acr")
 
 [node name="StartingHints" type="RichTextLabel" parent="Background"]
 anchors_preset = 8

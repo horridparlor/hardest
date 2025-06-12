@@ -46,6 +46,7 @@ extends Gameplay
 @onready var your_point_meter : PointMeter = $Points/PointPanels/YourPointsPanel/PointMeter;
 @onready var opponents_point_meter : PointMeter = $Points/PointPanels/OpponentsPointsPanel/PointMeter;
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
+@onready var ocean_streamer : AudioStreamPlayer2D = $Background/OceanStreamer;
 @onready var sfx_player : AudioStreamPlayer2D = $SfxPlayer;
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
@@ -641,11 +642,12 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 	cards_layer2.add_child(card);
 	card.despawn(despawn_position);
 
-func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
+func trigger_play_effects(card : CardData, player : Player, opponent : Player, only_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var enemy : CardData = opponent.get_field_card();
+	var keywords : Array = [only_keyword] if only_keyword != CardEnums.Keyword.NULL else card.keywords;
 	if enemy and enemy.has_carrot_eater():
 		eat_carrot(enemy);
-	for keyword in card.keywords:
+	for keyword in keywords:
 		match keyword:
 			CardEnums.Keyword.CARROT_EATER:
 				eat_carrot(card);
@@ -680,30 +682,36 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 
 func trigger_ocean(card : CardData) -> void:
 	var enemy : CardData = get_opponent(card).get_field_card();
-	var cards_to_wet : Array = [card] + player_one.cards_in_hand + player_two.cards_in_hand + ([enemy] if enemy else []);
+	var cards_to_wet : Array = player_one.cards_in_hand + player_two.cards_in_hand + ([enemy] if enemy else []) + [card];
 	var wait_per_card_trigger : float;
 	var triggers : int;
+	if get_card(card):
+		ocean_card = get_card(card);
 	for c in cards_to_wet:
-		if make_card_wet(c, false):
+		if make_card_wet(c, false) and (c.controller == player_one or c.zone == CardEnums.Zone.FIELD):
 			triggers += 1;
 	is_low_tiding = false;
 	is_ocean_in_progress = true;
-	if get_card(card):
-		ocean_card = get_card(card);
 	summon_ocean_effect(card);
-	ocean_pattern.visible = true;
-	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED) * System.game_speed_multiplier;
-	ocean_timer.wait_time = System.random.randf_range(OCEAN_MIN_WAIT, OCEAN_MAX_WAIT) * System.game_speed_additive_multiplier;
 	ocean_timer.start();
-	emit_signal("stop_music");
 	wait_per_card_trigger = ocean_timer.wait_time / (triggers + 2);
-	await System.wait(wait_per_card_trigger);
+	await System.wait(wait_per_card_trigger * 1.9);
 	for c in cards_to_wet:
 		if make_card_wet(c):
 			await System.wait(wait_per_card_trigger);
 
 func summon_ocean_effect(card : CardData) -> void:
-	pass;
+	ocean_pattern.visible = true;
+	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED) * System.game_speed_multiplier;
+	ocean_timer.wait_time = System.random.randf_range(OCEAN_MIN_WAIT, OCEAN_MAX_WAIT) * System.game_speed_additive_multiplier;
+	emit_signal("stop_music");
+	play_ocean_sound();
+
+func play_ocean_sound() -> void:
+	if Config.MUTE_SFX:
+		return;
+	ocean_streamer.volume_db = Config.SFX_VOLUME + Config.GUN_VOLUME;
+	ocean_streamer.play();
 
 func eat_carrot(card : CardData) -> void:
 	var enemy : CardData = get_opponent(card).get_field_card();
@@ -719,6 +727,7 @@ func eat_carrot(card : CardData) -> void:
 			enemy.keywords.erase(keyword);
 			sound = load("res://Assets/SFX/CardSounds/Transformations/puffer-fish.wav");
 			play_sfx(sound);
+			trigger_play_effects(card, card.controller, get_opponent(card), keyword);
 			break;
 
 func activate_time_stop(card : CardData) -> void:
@@ -1147,6 +1156,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.NUT_STEALER:
 				value += 1;
+			CardEnums.Keyword.OCEAN:
+				value += 0;
 			CardEnums.Keyword.OCEAN_DWELLER:
 				value += 0;
 			CardEnums.Keyword.PAIR:
@@ -1175,6 +1186,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.SPY:
 				value += 2;
+			CardEnums.Keyword.TIDAL:
+				value += 0;
 			CardEnums.Keyword.TIME_STOP:
 				value += 10;
 			CardEnums.Keyword.UNDEAD:
@@ -1480,8 +1493,8 @@ func make_card_wet(card : CardData, do_trigger : bool = true) -> bool:
 				get_card(card).wet_effect();
 			start_wet_wait()
 		would_trigger = true;
-	if (card.is_paper() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)) \
-	or (card.is_scissor() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
+	if (card.is_paper() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)) \
+	or (card.is_scissor() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
 		if do_trigger:
 			update_alterations_for_card(card);
 			if get_card(card):
@@ -1508,7 +1521,7 @@ func click_your_points() -> void:
 	if have_you_won():
 		did_win = true;
 		return;
-	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_multiplier;
+	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_additive_multiplier;
 	points_click_timer.start();
 
 func update_point_meter(player : Player) -> void:
@@ -1528,7 +1541,7 @@ func click_opponents_points() -> void:
 	play_point_sfx(OPPONENTS_POINT_SOUND_PATH);
 	if has_opponent_won():
 		return;
-	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_multiplier;
+	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_additive_multiplier;
 	points_click_timer.start();
 
 func opponent_trolling_effect() -> void:
@@ -1713,7 +1726,7 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	for c in player.cards_in_hand.duplicate():
 		card = c;
 		gameplay_card = get_card(card);
-		if player == player_one and card.has_ocean_dweller():
+		if card.has_ocean_dweller():
 			trigger_ocean_dweller(card, player)
 			if gameplay_card:
 				gameplay_card.recoil();

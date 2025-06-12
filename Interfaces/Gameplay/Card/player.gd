@@ -271,9 +271,11 @@ func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
 
 func get_rainbowed() -> void:
 	var card : CardData;
+	var card_type : CardEnums.CardType = card.default_type;
 	for c in cards_in_hand:
 		card = c;
-		card.eat_json(CollectionEnums.get_random_card(card.default_type));
+		card.eat_json(CollectionEnums.get_random_card(card_type));
+		card.card_type = card_type;
 
 func build_hydra(card : CardData) -> void:
 	var keywords : Array = CardEnums.get_hydra_keywords();

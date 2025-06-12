@@ -56,7 +56,7 @@ func eat_spawn_json(data : Dictionary) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	stamp = CardEnums.TranslateStamp[data.stamp];
 
-func add_keyword(keyword : CardEnums.Keyword) -> bool:
+func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false) -> bool:
 	var upgrade_to_keys : Array;
 	match keyword:
 		CardEnums.Keyword.BURIED:
@@ -77,7 +77,7 @@ func add_keyword(keyword : CardEnums.Keyword) -> bool:
 	for key in upgrade_to_keys:
 		if keywords.has(key):
 			keywords[keywords.find(key)] = keyword;
-	if keyword == CardEnums.Keyword.NULL or keywords.size() == System.Rules.MAX_KEYWORDS or \
+	if keyword == CardEnums.Keyword.NULL or (keywords.size() == System.Rules.MAX_KEYWORDS and !ignore_max_keywords) or \
 	has_keyword(keyword):
 		return false;
 	keywords.append(keyword);
@@ -85,6 +85,8 @@ func add_keyword(keyword : CardEnums.Keyword) -> bool:
 
 func has_keyword(keyword : CardEnums.Keyword) -> bool:
 	var duplicate_keys : Array = [keyword];
+	if is_buried:
+		return false;
 	match keyword:
 		CardEnums.Keyword.SALTY:
 			duplicate_keys += [CardEnums.Keyword.EXTRA_SALTY];

@@ -150,6 +150,7 @@ enum Keyword {
 func get_hydra_keywords() -> Array:
 	return [
 		Keyword.BURIED,
+		Keyword.CARROT_EATER,
 		Keyword.CELEBRATE,
 		Keyword.CHAMELEON,
 		Keyword.CHAMPION,
@@ -341,7 +342,7 @@ const TranslateKeywordBack: Dictionary = {
 
 var KeywordHints : Dictionary = {
 	Keyword.BURIED : "Played face-down.",
-	Keyword.CARROT_EATER : "Eats a random keyword from opponent.",
+	Keyword.CARROT_EATER : "Eats a random keyword from enemy.",
 	Keyword.CELEBRATE : "Discard your hand, then draw 1.",
 	Keyword.CHAMELEON : "Whenever opponent gets a card, changes color.",
 	Keyword.CHAMPION : "Games with this card give double points.",
@@ -366,7 +367,7 @@ var KeywordHints : Dictionary = {
 	Keyword.NUT : "Point for every turn since your last nut.",
 	Keyword.NUT_COLLECTOR : "Shuffle 3 nuts into your deck.",
 	Keyword.NUT_STEALER : "If opponent would nut, you nut twice instead.",
-	Keyword.OCEAN : "Scissors gain rust rust, papers gain mushy.",
+	Keyword.OCEAN : "Scissors gain rust, papers gain mushy.",
 	Keyword.OCEAN_DWELLER : "If stays in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair or a rare stamp",
@@ -401,3 +402,10 @@ static func translate_keywords_back(source : Array) -> Array:
 	for keyword in source:
 		translated.append(TranslateKeywordBack[keyword]);
 	return translated;
+
+const WET_BULLETS : Dictionary = {
+	3: null,
+	13: null,
+	14: null,
+	15: null
+}

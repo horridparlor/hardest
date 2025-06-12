@@ -38,6 +38,10 @@ const MIN_DISSOLVE_SPEED : float = 1.1;
 const MAX_DISSOLVE_SPEED : float = 1.6;
 const MAX_DISSOLVE_VALUE : float = 2;
 const FLOW_DISSOLVE_MULTIPLIER : float = 0.21;
+const BACKGROUND_PATTERN_OPACITY : float = 0.32;
+const OCEAN_IN_SPEED : float = 3.7 * Config.GAME_SPEED;
+const OCEAN_OUT_SPEED : float = 0.3 * Config.GAME_SPEED;
+const OCEAN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
 
 const MIN_RECOIL_DISTANCE : int = 400;
 const MAX_RECOIL_DISTANCE : int = 600;
@@ -80,6 +84,7 @@ var is_despawning : bool;
 var is_scaling : bool;
 var focus_timer : Timer = Timer.new();
 var recoil_timer : Timer = Timer.new();
+var ocean_timer : Timer = Timer.new();
 var shake_pos_alter_timer : Timer = Timer.new();
 var is_visiting : bool;
 var flow_x : float;
@@ -88,6 +93,8 @@ var is_flowing : bool;
 var is_shaking : bool;
 var shake_to_position : Vector2;
 var has_emp_visuals : bool;
+var is_in_ocean : bool;
+var is_out_ocean : bool;
 
 var dissolve_value : float;
 var is_dissolving : bool;
@@ -115,6 +122,9 @@ func initialize_timers() -> void:
 	add_child(shake_pos_alter_timer);
 	shake_pos_alter_timer.wait_time = SHAKE_POS_WAIT;
 	shake_pos_alter_timer.timeout.connect(_on_shake_pos_alter_timer_timeout);
+	add_child(ocean_timer);
+	ocean_timer.wait_time = OCEAN_WAIT;
+	ocean_timer.timeout.connect(_on_out_ocean);
 
 func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	pass;
@@ -127,11 +137,21 @@ func rescale(is_instant : bool = false) -> void:
 func _process(delta: float) -> void:
 	if is_dissolving:
 		dissolve_frame(delta);
+	if is_in_ocean:
+		in_ocean_frame(delta);
+	if is_out_ocean:
+		out_ocean_frame(delta);
 	if !(is_moving or following_mouse or is_flowing):
 		baseline_rotation(delta);
 		return;
 	move_card(delta);
 	update_scale(delta);
+
+func in_ocean_frame(delta : float) -> void:
+	pass;
+
+func out_ocean_frame(delta : float) -> void:
+	pass;
 
 func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
@@ -241,7 +261,7 @@ func flow_down() -> void:
 	flow_gravity = System.random.randf_range(MIN_GRAVITY, MAX_GRAVITY);
 	is_flowing = true;
 
-func recoil(target_position : Vector2) -> void:
+func recoil(target_position : Vector2 = position) -> void:
 	visit_point = System.Vectors.move_away(position, target_position, \
 		System.random.randf_range(MIN_RECOIL_DISTANCE, MAX_RECOIL_DISTANCE));
 	is_moving = true;
@@ -285,3 +305,11 @@ func enrich_hint(message : String) -> String:
 		.replace("SAME_TYPES", CardEnums.CardTypeName[card_data.default_type].to_lower() + "s") \
 		.replace("SAME_BASIC", "[b]%s[/b]" % CardEnums.BasicNames[card_data.default_type]);
 	return message;
+
+func wet_effect() -> void:
+	pass;
+
+func _on_out_ocean() -> void:
+	ocean_timer.stop();
+	is_in_ocean = false;
+	is_out_ocean = true;

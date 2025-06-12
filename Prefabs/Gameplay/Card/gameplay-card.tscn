@@ -57,6 +57,10 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_u7vep")
 [node name="Pattern" type="Sprite2D" parent="."]
 self_modulate = Color(1, 1, 1, 0.313726)
 
+[node name="Pattern2" type="Sprite2D" parent="."]
+visible = false
+self_modulate = Color(1, 1, 1, 0.313726)
+
 [node name="NameLabel" type="RichTextLabel" parent="."]
 anchors_preset = 8
 anchor_left = 0.5

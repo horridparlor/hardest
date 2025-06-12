@@ -31,7 +31,7 @@ func _init() -> void:
 	card_goal = System.Rules.CARD_GOAL;
 	money = System.Rules.STARTING_MONEY;
 	rare_chance = System.random.randi_range(System.Rules.MIN_RARE_CHANCE, System.Rules.MAX_RARE_CHANCE);
-	card_pool = get_card_pool(your_houses);
+	card_pool = get_card_pool(your_houses, true);
 	
 	your_cards = System.Rules.DEFAULT_CARDS;
 	opponents = get_opponents();
@@ -91,7 +91,7 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 		if confirmed_rare or System.Random.chance(rare_chance):
 			pool = card_pool[CollectionEnums.Rarity.RARE];
 		elif !includes_scam and System.Random.chance(System.Rules.SCAM_DROP_CHANCE):
-			pool = CollectionEnums.CARDS_TO_COLLECT[CollectionEnums.House.SCAM];
+			pool = CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[CollectionEnums.House.SCAM];
 			includes_scam = true;
 		else:
 			pool = card_pool[CollectionEnums.Rarity.COMMON];
@@ -127,15 +127,17 @@ func get_stamp_for_spawned_card(card_data : CardData, rare_stamp_chance : int = 
 func get_starting_card_choices() -> Array:
 	return [get_card_choices(true), get_card_choices(), get_card_choices()];
 
-func get_card_pool(houses : Array) -> Dictionary:
+func get_card_pool(houses : Array, is_player : bool = false) -> Dictionary:
 	var pool : Dictionary = {
 		CollectionEnums.Rarity.COMMON: [],
 		CollectionEnums.Rarity.RARE: []
 	};
 	for house in houses:
-		for common in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON]:
+		for common in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON] + \
+		(CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON] if is_player else []):
 			pool[CollectionEnums.Rarity.COMMON].append(common);
-		for rare in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.RARE]:
+		for rare in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.RARE] + \
+		(CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[house][CollectionEnums.Rarity.RARE] if is_player else []):
 			pool[CollectionEnums.Rarity.RARE].append(rare);
 	return pool;
 

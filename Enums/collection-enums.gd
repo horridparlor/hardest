@@ -112,6 +112,43 @@ const CARDS_TO_COLLECT : Dictionary = {
 	House.GOD: [
 		42
 	],
+}
+const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
+	House.CHAMPION: {
+		Rarity.COMMON: [
+		],
+		Rarity.RARE: [
+		]
+	},
+	House.DELUSIONAL: {
+		Rarity.COMMON: [
+		],
+		Rarity.RARE: [
+		]
+	},
+	House.DEMONIC: {
+		Rarity.COMMON: [
+			72
+		],
+		Rarity.RARE: [
+		]
+	},
+	House.HIGHTECH: {
+		Rarity.COMMON: [
+		],
+		Rarity.RARE: [
+		]
+	},
+	House.KAWAII: {
+		Rarity.COMMON: [
+			73
+		],
+		Rarity.RARE: [
+			71,
+			74,
+			75
+		]
+	},
 	House.SCAM: [
 		76
 	]
@@ -135,7 +172,8 @@ const RANDOM_CARDS : Dictionary = {
 		53,
 		60,
 		62,
-		68
+		68,
+		71
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -156,7 +194,8 @@ const RANDOM_CARDS : Dictionary = {
 		54,
 		58,
 		63,
-		69
+		69,
+		72
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -178,7 +217,8 @@ const RANDOM_CARDS : Dictionary = {
 		56,
 		59,
 		64,
-		70
+		70,
+		73
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -188,14 +228,16 @@ const RANDOM_CARDS : Dictionary = {
 		39,
 		46,
 		57,
-		65
+		65,
+		74
 	],
 	CardEnums.CardType.MIMIC: [
 		5,
 		40,
 		61,
 		66,
-		67
+		67,
+		75
 	],
 	CardEnums.CardType.GOD: [
 		42

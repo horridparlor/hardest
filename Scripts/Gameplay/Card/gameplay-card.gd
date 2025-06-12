@@ -9,6 +9,7 @@ extends GameplayCard
 @onready var art_background : Panel = $ArtLayer/Panel;
 @onready var keywords_label : Label = $KeywordsLabel;
 @onready var background_pattern : Sprite2D = $Pattern;
+@onready var top_pattern : Sprite2D = $Pattern2;
 @onready var stamp : Sprite2D = $Stamp;
 
 func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
@@ -80,6 +81,7 @@ func update_panel(card_type : CardEnums.CardType) -> void:
 	style.corner_radius_bottom_right = BORDER_RADIUS;
 	panel.add_theme_stylebox_override("panel", style);
 	background_pattern.texture = pattern;
+	top_pattern.texture = pattern;
 
 func update_type_icons(card_type : CardEnums.CardType) -> void:
 	var sprite_texture : Resource = load(TYPE_ICON_PATH % [CardEnums.CardTypeName[card_type].to_lower()]);
@@ -145,7 +147,7 @@ func get_dissolve_shader_material() -> ShaderMaterial:
 func dissolve(multiplier : float = 1) -> void:
 	var shader_material : ShaderMaterial = get_dissolve_shader_material();
 	var shader_material2 : ShaderMaterial = get_dissolve_shader_material();
-	shader_material2.set_shader_parameter("opacity", 0.32);
+	shader_material2.set_shader_parameter("opacity", BACKGROUND_PATTERN_OPACITY);
 	for node in get_shader_layers():
 		node.material = shader_material;
 	background_pattern.material = shader_material2;
@@ -176,3 +178,34 @@ func dissolve_frame(delta : float) -> void:
 		emit_signal("despawned", self);
 	panel.material.set_shader_parameter("threshold", dissolve_value);
 	background_pattern.material.set_shader_parameter("threshold", dissolve_value);
+
+func wet_effect() -> void:
+	var shader : Resource = load(System.Paths.OCEAN_SHADER);
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	shader_material.shader = shader;
+	top_pattern.material = shader_material;
+	top_pattern.visible = true;
+	top_pattern.modulate.a = 0;
+	update_top_pattern_shader_opacity();
+	is_out_ocean = false;
+	is_in_ocean = true;
+
+func update_top_pattern_shader_opacity() -> void:
+	top_pattern.material.set_shader_parameter("opacity", top_pattern.modulate.a);
+
+func in_ocean_frame(delta : float) -> void:
+	top_pattern.modulate.a += delta * OCEAN_IN_SPEED * System.game_speed;
+	update_top_pattern_shader_opacity()
+	if top_pattern.modulate.a >= BACKGROUND_PATTERN_OPACITY:
+		top_pattern.modulate.a = BACKGROUND_PATTERN_OPACITY;
+		is_in_ocean = false;
+		ocean_timer.start();
+
+func out_ocean_frame(delta : float) -> void:
+	top_pattern.modulate.a -= delta * OCEAN_OUT_SPEED * System.game_speed;
+	update_top_pattern_shader_opacity()
+	if top_pattern.modulate.a <= 0:
+		top_pattern.modulate.a = 0;
+		is_out_ocean = false;
+		top_pattern.material = null;
+		top_pattern.visible = false;

@@ -636,8 +636,12 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player) -> void:
 	var enemy : CardData = opponent.get_field_card();
+	if enemy and enemy.has_carrot_eater():
+		eat_carrot(enemy);
 	for keyword in card.keywords:
 		match keyword:
+			CardEnums.Keyword.CARROT_EATER:
+				eat_carrot(card);
 			CardEnums.Keyword.CELEBRATE:
 				celebrate(player);
 			CardEnums.Keyword.INFLUENCER:
@@ -664,6 +668,22 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player) -
 					player.nut_multiplier *= 2;
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
+
+func eat_carrot(card : CardData) -> void:
+	var enemy : CardData = get_opponent(card).get_field_card();
+	var keywords : Array;
+	var sound : Resource;
+	if !enemy or enemy.is_buried:
+		return;
+	keywords = enemy.keywords.duplicate();
+	keywords.shuffle();
+	for keyword in keywords:
+		if card.add_keyword(keyword):
+			card.keywords.erase(CardEnums.Keyword.CARROT_EATER);
+			enemy.keywords.erase(keyword);
+			sound = load("res://Assets/SFX/CardSounds/Transformations/puffer-fish.wav");
+			play_sfx(sound);
+			break;
 
 func activate_time_stop(card : CardData) -> void:
 	if time_stopping_player != null:
@@ -953,13 +973,18 @@ func get_lose_points(card : CardData, enemy : CardData) -> int:
 	var points_to_lose : int = calculate_points_to_steal(enemy, card);
 	return -(points + points_to_lose);
 
-func calculate_base_points(card : CardData, enemy : CardData) -> int:
+func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false) -> int:
 	var points : int = 1;
 	if card and card.has_champion():
 		points *= 2;
 	if enemy and enemy.has_champion():
 		points *= 2;
-	points *= card.stopped_time_advantage;
+	if card.stopped_time_advantage > 0:
+		points *= card.stopped_time_advantage;
+	if !did_win:
+		return points;
+	if card.has_rare_stamp():
+		points *= 2;
 	return points;
 
 func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
@@ -1083,6 +1108,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.NUT_STEALER:
 				value += 1;
+			CardEnums.Keyword.OCEAN_DWELLER:
+				value += 0;
 			CardEnums.Keyword.PAIR:
 				value += 3;
 			CardEnums.Keyword.PAIR_BREAKER:
@@ -1290,7 +1317,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 		points *= 2;
 	if enemy and enemy.has_champion():
 		points *= 2;
-	if card.stopped_time_advantage:
+	if card.stopped_time_advantage > 0:
 		points *= card.stopped_time_advantage;
 	player.gain_points(points);
 	spawn_poppets(points, card, player);
@@ -1334,9 +1361,9 @@ func spawn_poppets(points : int, card : CardData, player : Player) -> void:
 	for i in range(count):
 		spawn_poppet_for_card(card, player, color);
 	for i in range(extra_count):
-		spawn_poppet_for_card(card, player, Poppet.PoppetColor.BLUE);
+		spawn_poppet_for_card(card, player);
 
-func spawn_poppet_for_card(card : CardData, player : Player, color : Poppet.PoppetColor) -> void:
+func spawn_poppet_for_card(card : CardData, player : Player, color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE) -> void:
 	var goal_position : Vector2
 	if !get_card(card):
 		return;
@@ -1390,7 +1417,17 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 			zoom_to_bullet(bullet);
 	if get_card(card):
 		get_card(card).recoil(enemy_position);
+	if enemy and enemy.has_ocean_dweller() and CardEnums.WET_BULLETS.has(card.bullet_id):
+		did_wet_card(enemy, get_opponent(card));
 	return bullets;
+
+func did_wet_card(card : CardData, player : Player) -> void:
+	var points : int = calculate_base_points(card, null, true);
+	player.gain_points(points);
+	gain_points_effect(player);
+	if get_card(card):
+		get_card(card).wet_effect();
+	spawn_poppet_for_card(card, player);
 
 func zoom_to_bullet(bullet : Bullet) -> void:
 	emit_signal("zoom_to", bullet, true);
@@ -1580,7 +1617,7 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 
 func end_round() -> void:
 	if clear_field():
-		start_next_round_timer.wait_time = OCEAN_POINTS_WAIT * System.game_speed_multiplier;
+		start_next_round_timer.wait_time = System.random.randf_range(OCEAN_POINTS_MIN_WAIT, OCEAN_POINTS_MAX_WAIT) * System.game_speed_multiplier;
 		start_next_round_timer.start();
 	else:
 		start_next_round();
@@ -1601,30 +1638,31 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	var card : CardData;
 	var gameplay_card : GameplayCard;
 	var starting_points : int = player.points;
+	var did_trigger_ocean : bool;
 	for c in player.cards_on_field:
 		card = c;
 		gameplay_card = get_card(card);
 		if gameplay_card:
 			gameplay_card.despawn();
-	for c in player.cards_in_hand:
+	for c in player.cards_in_hand.duplicate():
 		card = c;
-		if card.has_ocean_dweller():
+		gameplay_card = get_card(card);
+		if player == player_one and card.has_ocean_dweller():
 			spawn_poppets(trigger_ocean_dweller(card, player), card, player);
+			if gameplay_card:
+				gameplay_card.recoil();
+				gameplay_card.wet_effect();
+			gain_points_effect(player);
+			did_trigger_ocean = true;
 		if !card.has_pick_up():
 			continue;
-		gameplay_card = get_card(card);
 		if gameplay_card:
 			gameplay_card.despawn();
 	player.end_of_turn_clear(did_win);
-	if player.points > starting_points:
-		gain_points_effect(player);
-		return true;
-	return false;
+	return true;
 
 func trigger_ocean_dweller(card : CardData, player : Player) -> int:
-	var points : int = calculate_base_points(card, null);
-	if card.has_rare_stamp():
-		points *= 2;
+	var points : int = calculate_base_points(card, null, true);
 	player.gain_points(points);
 	return points;
 

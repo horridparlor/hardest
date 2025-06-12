@@ -193,7 +193,7 @@ func translate_character_name(character_id : GameplayEnums.Character) -> String:
 		else "?";
 
 func get_troll_wait() -> void:
-	troll_timer.wait_time = System.random.randf_range(TROLL_MIN_WAIT, TROLL_MAX_WAIT) * System.game_speed_multiplier;
+	troll_timer.wait_time = System.random.randf_range(TROLL_MIN_WAIT, TROLL_MAX_WAIT) * System.game_speed_additive_multiplier;
 
 func have_you_won() -> bool:
 	var result : bool = player_one.points >= player_one.point_goal;
@@ -244,7 +244,7 @@ func start_game_over() -> void:
 	init_victory_banner_sprite();
 	if did_win:
 		spawn_victory_poppets();
-	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_multiplier;
+	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_additive_multiplier;
 	game_over_timer.start();
 
 func init_victory_banner_sprite() -> void:
@@ -280,7 +280,7 @@ func end_game() -> void:
 
 func your_turn() -> void:
 	if is_spying:
-		you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_multiplier;
+		you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_additive_multiplier;
 		return you_play_wait.start();
 	active_player = player_one;
 	led_direction = YOUR_LED_DIRECTION if started_playing else OFF_LED_DIRECTION;
@@ -293,7 +293,7 @@ func your_turn() -> void:
 	can_play_card = true;
 	if !System.auto_play:
 		return;
-	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_multiplier;
+	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_additive_multiplier;
 	auto_play_timer.start()
 
 func init_layers() -> void:
@@ -407,7 +407,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 						opponents_play_wait.stop();
 						pre_results_timer.stop();
 						stop_spying();
-						you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_multiplier;
+						you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_additive_multiplier;
 						you_play_wait.start();
 						return;
 				GameplayEnums.Controller.PLAYER_TWO:
@@ -415,7 +415,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 					if !opponent.hand_empty():
 						you_play_wait.stop();
 						stop_spying();
-						opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_multiplier;
+						opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_additive_multiplier;
 						opponents_play_wait.start();
 						return;
 		GameplayEnums.Controller.NULL:
@@ -424,7 +424,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				spy_target.despawn(-CARD_STARTING_POSITION)
 			else:
 				reorder_hand();
-	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_multiplier;
+	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
 	spying_timer.start();
 
 func stop_spying() -> void:
@@ -454,7 +454,7 @@ func _on_card_pressed(card : GameplayCard) -> void:
 	active_card = card;
 	card.toggle_follow_mouse();
 	update_keywords_hints(card);
-	card_focus_timer.wait_time = CARD_FOCUS_WAIT * System.game_speed_multiplier;
+	card_focus_timer.wait_time = CARD_FOCUS_WAIT * System.game_speed_additive_multiplier;
 	card_focus_timer.start();
 	put_other_cards_behind(card);
 
@@ -542,7 +542,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	if check_for_devoured(card, player, opponent):
 		reorder_hand();
 		if player == player_one and System.auto_play:
-			auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_multiplier;
+			auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_additive_multiplier;
 			auto_play_timer.start();
 		return false;
 	if player == player_two:
@@ -558,12 +558,12 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	can_play_card = false;
 	highlight_face(false);
 	if going_first:
-		_on_your_turn_end(card.card_data.has_devour());
+		_on_your_turn_end();
 	else:
 		_on_opponent_turns_end();
 	return true;
 
-func _on_your_turn_end(do_extend_wait : bool = false) -> void:
+func _on_your_turn_end() -> void:
 	if has_been_stopping_turn:
 		stopped_time_results();
 		return;
@@ -577,7 +577,7 @@ func check_for_devoured(card : GameplayCard, player : Player, opponent : Player,
 	var eater_was_face_down : bool;
 	if is_digital_speed:
 		return false;
-	if enemy and enemy.has_devour() and player.cards_played_this_turn == 1:
+	if enemy and enemy.has_devour(true) and player.cards_played_this_turn == 1:
 		eater_was_face_down = enemy.is_buried;
 		opponent.devour_card(enemy, card.card_data);
 		player.send_from_field_to_grave(card.card_data);
@@ -747,11 +747,11 @@ func opponents_turn() -> void:
 		your_turn();
 
 func wait_opponent_to_play(do_extend : bool = false) -> void:
-	opponents_play_wait.wait_time = OPPONENT_TO_PLAY_WAIT * (2 if do_extend else 1) * System.game_speed_multiplier;
+	opponents_play_wait.wait_time = OPPONENT_TO_PLAY_WAIT * (2 if do_extend else 1) * System.game_speed_additive_multiplier;
 	opponents_play_wait.start();
 
 func wait_opponent_playing() -> void:
-	opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_multiplier;
+	opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_additive_multiplier;
 	opponents_play_wait.start();
 
 func go_to_results() -> void:
@@ -776,7 +776,7 @@ func go_to_results() -> void:
 	start_results();
 
 func start_results() -> void:
-	round_results_timer.wait_time = ROUND_RESULTS_WAIT * System.game_speed_multiplier;
+	round_results_timer.wait_time = ROUND_RESULTS_WAIT * System.game_speed_additive_multiplier;
 	round_results_timer.start();
 
 func mimics_phase() -> bool:
@@ -1003,7 +1003,7 @@ func go_to_pre_results() -> void:
 	results_wait();
 
 func results_wait(multiplier : float = 1) -> void:
-	pre_results_timer.wait_time = PRE_RESULTS_WAIT * System.game_speed_multiplier * multiplier;
+	pre_results_timer.wait_time = PRE_RESULTS_WAIT * System.game_speed_additive_multiplier * multiplier;
 	pre_results_timer.start();
 
 func no_mimics() -> bool:
@@ -1264,7 +1264,7 @@ func round_results() -> void:
 	if round_winner == GameplayEnums.Controller.NULL:
 		end_round();
 		return;
-	round_end_timer.wait_time = ROUND_END_WAIT * System.game_speed_multiplier;
+	round_end_timer.wait_time = ROUND_END_WAIT * System.game_speed_additive_multiplier;
 	round_end_timer.start();
 
 func stopped_time_results() -> void:
@@ -1617,7 +1617,7 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 
 func end_round() -> void:
 	if clear_field():
-		start_next_round_timer.wait_time = System.random.randf_range(OCEAN_POINTS_MIN_WAIT, OCEAN_POINTS_MAX_WAIT) * System.game_speed_multiplier;
+		start_next_round_timer.wait_time = System.random.randf_range(OCEAN_POINTS_MIN_WAIT, OCEAN_POINTS_MAX_WAIT) * System.game_speed_additive_multiplier;
 		start_next_round_timer.start();
 	else:
 		start_next_round();

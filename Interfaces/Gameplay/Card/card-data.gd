@@ -83,9 +83,9 @@ func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false
 	keywords.append(keyword);
 	return true;
 
-func has_keyword(keyword : CardEnums.Keyword) -> bool:
+func has_keyword(keyword : CardEnums.Keyword, may_have_buried : bool = false) -> bool:
 	var duplicate_keys : Array = [keyword];
-	if is_buried:
+	if is_buried and !may_have_buried:
 		return false;
 	match keyword:
 		CardEnums.Keyword.SALTY:
@@ -144,8 +144,8 @@ func has_copycat() -> bool:
 func has_cursed() -> bool:
 	return has_keyword(CardEnums.Keyword.CURSED);
 
-func has_devour() -> bool:
-	return has_keyword(CardEnums.Keyword.DEVOUR);
+func has_devour(may_have_devour : bool = false) -> bool:
+	return has_keyword(CardEnums.Keyword.DEVOUR, may_have_devour);
 
 func has_rare_stamp() -> bool:
 	return stamp == CardEnums.Stamp.RARE;

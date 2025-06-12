@@ -107,6 +107,7 @@ func show_card_choice() -> void:
 	var position : Vector2 = LEVEL_BUTTON_STARTING_POSITION + Vector2(-CARD_X_MARGIN, -35);
 	var spawn_data : Dictionary;
 	cards = [];
+	has_picked = false;
 	for i in range(System.Rules.CARD_CHOICES):
 		spawn_data = data.card_choices_left[0][i];
 		card_data = System.Data.load_card(spawn_data.id);

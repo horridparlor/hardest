@@ -25,7 +25,7 @@ const UNDYING_SPEED : float = 4.8;
 
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const PRE_RESULTS_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
-const ROUND_END_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
+const ROUND_END_WAIT : float = 0.6 * Config.GAME_SPEED_MULTIPLIER;
 const GAME_OVER_WAIT : float = 1.3 * Config.GAME_SPEED_MULTIPLIER;
 const POINTS_CLICK_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const CARD_FOCUS_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;

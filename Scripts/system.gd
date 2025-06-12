@@ -19,12 +19,14 @@ var random : RandomNumberGenerator = RandomNumberGenerator.new();
 var base_rotation : float = 0;
 var game_speed : float = 1;
 var game_speed_multiplier : float = 1 / game_speed;
+var game_speed_additive_multiplier : float = min(1, game_speed_multiplier);
 var running_instance_id : int;
 var auto_play : bool = Config.AUTO_PLAY;
 
 func update_game_speed(speed : float) -> void:
 	game_speed = speed;
 	game_speed_multiplier = 1 / game_speed;
+	game_speed_additive_multiplier = min(1, game_speed_multiplier);
 
 static func create_directories() -> void:
 	Json.create_directory();

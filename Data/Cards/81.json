@@ -1,7 +1,9 @@
 {
 	"id": 81,
-	"name": "Rock",
-	"type": "rock",
+	"name": "Wiper Trojan",
+	"type": "gun",
 	"keywords": [
+		"digital",
+		"incinerate"
 	]
 }

@@ -1,7 +1,9 @@
 {
 	"id": 78,
-	"name": "Rock",
-	"type": "rock",
+	"name": "Sharp Fold",
+	"type": "gun",
 	"keywords": [
-	]
+		"auto-hydra"
+	],
+	"bullet": 16
 }

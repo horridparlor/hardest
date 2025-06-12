@@ -1132,6 +1132,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 5;
 			CardEnums.Keyword.DIVINE:
 				value += 0;
+			CardEnums.Keyword.ELECTROCUTE:
+				value += 1;
 			CardEnums.Keyword.EMP:
 				value += 2;
 			CardEnums.Keyword.EXTRA_SALTY:

@@ -1,7 +1,9 @@
 {
 	"id": 79,
-	"name": "Rock",
-	"type": "rock",
+	"name": "Stallion",
+	"type": "mimic",
 	"keywords": [
+		"pair-breaker",
+		"devour"
 	]
 }

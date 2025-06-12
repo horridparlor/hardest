@@ -97,6 +97,7 @@ const TranslateStamp : Dictionary = {
 
 enum Keyword {
 	NULL,
+	AUTO_HYDRA,
 	BURIED,
 	CARROT_EATER,
 	CELEBRATE,
@@ -186,6 +187,7 @@ func get_hydra_keywords() -> Array:
 	];
 
 const KeywordNames : Dictionary = {
+	Keyword.AUTO_HYDRA : "Auto-hydra",
 	Keyword.BURIED : "Buried",
 	Keyword.CARROT_EATER : "Carrot-eater",
 	Keyword.CELEBRATE : "Celebrate",
@@ -236,6 +238,7 @@ const KeywordNames : Dictionary = {
 }
 
 const TranslateKeyword : Dictionary = {
+	"auto-hydra" : Keyword.AUTO_HYDRA,
 	"buried" : Keyword.BURIED,
 	"carrot-eater" : Keyword.CARROT_EATER,
 	"celebrate" : Keyword.CELEBRATE,
@@ -286,6 +289,7 @@ const TranslateKeyword : Dictionary = {
 }
 
 const TranslateKeywordBack: Dictionary = {
+	Keyword.AUTO_HYDRA : "auto-hydra",
 	Keyword.BURIED : "buried",
 	Keyword.CARROT_EATER : "carrot-eater",
 	Keyword.CELEBRATE : "celebrate",
@@ -336,6 +340,7 @@ const TranslateKeywordBack: Dictionary = {
 }
 
 var KeywordHints : Dictionary = {
+	Keyword.AUTO_HYDRA : "When drawn, gains 3 random keywords.",
 	Keyword.BURIED : "Played face-down.",
 	Keyword.CARROT_EATER : "Eats a random keyword from enemy.",
 	Keyword.CELEBRATE : "Discard your hand, then draw 1.",
@@ -365,7 +370,7 @@ var KeywordHints : Dictionary = {
 	Keyword.OCEAN : "[i]When wet, scissors gain rust, papers gain mushy.[/i]",
 	Keyword.OCEAN_DWELLER : "If stays in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
 	Keyword.PAIR : "Wins in a tie.",
-	Keyword.PAIR_BREAKER : "Defeats any card with pair or a rare stamp",
+	Keyword.PAIR_BREAKER : "Defeats any card with pair or a double stamp.",
 	Keyword.PICK_UP : "End of turn, discard this card from your hand.",
 	Keyword.RAINBOW : "Each card in opponent's hand becomes a random card of same type.",
 	Keyword.RELOAD : "Shuffle a random gun into your deck.",

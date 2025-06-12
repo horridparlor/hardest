@@ -44,7 +44,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			8,
 			13,
 			28,
-			70
+			70,
+			83
 		],
 		Rarity.RARE: [
 			14,
@@ -62,7 +63,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			25,
 			26,
 			29,
-			68
+			68,
+			72
 		],
 		Rarity.RARE: [
 			37,
@@ -71,7 +73,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			56,
 			57,
 			62,
-			65
+			65,
+			78
 		]
 	},
 	House.HIGHTECH: {
@@ -102,12 +105,15 @@ const CARDS_TO_COLLECT : Dictionary = {
 			30,
 			44,
 			45,
-			69
+			69,
+			73
 		],
 		Rarity.RARE: [
 			18,
 			38,
-			67
+			67,
+			74,
+			75
 		]
 	},
 	House.GOD: [
@@ -129,7 +135,6 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 	},
 	House.DEMONIC: {
 		Rarity.COMMON: [
-			72
 		],
 		Rarity.RARE: [
 		]
@@ -142,12 +147,9 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 	},
 	House.KAWAII: {
 		Rarity.COMMON: [
-			73
 		],
 		Rarity.RARE: [
-			71,
-			74,
-			75
+			71
 		]
 	},
 	House.SCAM: [
@@ -196,7 +198,9 @@ const RANDOM_CARDS : Dictionary = {
 		58,
 		63,
 		69,
-		72
+		72,
+		78,
+		83
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,

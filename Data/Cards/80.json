@@ -1,7 +1,8 @@
 {
 	"id": 80,
-	"name": "Rock",
-	"type": "rock",
+	"name": "Wire Cutters",
+	"type": "scissor",
 	"keywords": [
+		"electrocute"
 	]
 }

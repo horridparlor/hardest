@@ -51,7 +51,17 @@ func count_grave() -> int:
 	return cards_in_grave.size();
 
 func hand_size_reached() -> bool:
-	return cards_in_hand.size() >= System.Rules.HAND_SIZE;
+	return cards_in_hand.size() == System.Rules.MAX_HAND_SIZE \
+	or cards_in_hand.size() - count_negatives_in_hand() >= System.Rules.HAND_SIZE;
+
+func count_negatives_in_hand() -> int:
+	var count : int;
+	var card : CardData;
+	for c in cards_in_hand:
+		card = c
+		if card.is_negative_variant():
+			count += 1;
+	return count;
 
 func draw_hand() -> void:
 	while true:
@@ -296,7 +306,8 @@ func build_hydra(card : CardData) -> void:
 		keywords.erase(keyword);
 		card.add_keyword(keyword);
 
-func devour_card(eater : CardData, card : CardData) -> void:
+func devour_card(eater : CardData, card : CardData) -> Array:
+	var devoured_keywords : Array;
 	if eater.is_buried:
 		eater.is_buried = false;
 	eater.card_type = card.card_type;
@@ -313,8 +324,10 @@ func devour_card(eater : CardData, card : CardData) -> void:
 			elif eater.keywords.has(CardEnums.Keyword.DEVOUR):
 				eater.keywords.erase(CardEnums.Keyword.DEVOUR);
 			else:
-				return;
-		eater.add_keyword(keyword);
+				return devoured_keywords;
+		if eater.add_keyword(keyword):
+			devoured_keywords.append(keyword);
+	return devoured_keywords;
 
 func steal_card_soul(card : CardData) -> void:
 	System.Data.add_card_soul_to_character(character, controller, card);

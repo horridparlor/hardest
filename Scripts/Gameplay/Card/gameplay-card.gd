@@ -27,6 +27,14 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 	if card_data.has_emp():
 		has_emp_visuals = true;
 		update_emp_visuals();
+	elif card_data.is_negative_variant():
+		has_negative_visuals = true;
+		make_negative();
+
+func make_negative() -> void:
+	if card_art.material:
+		return;
+	card_art.material = System.Shaders.negative();
 
 func update_stamp() -> void:
 	var texture : Resource;
@@ -42,6 +50,7 @@ func update_emp_visuals() -> void:
 	var shader : Resource = load("res://Shaders/CardEffects/emp-radiation-shader.gdshader");
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
 	shader_material.shader = shader;
+	shader_material.set_shader_parameter("is_negative", 1 if card_data.is_negative_variant() else 0);
 	card_art.material = shader_material;
 	card_art.update_shader();
 
@@ -147,9 +156,13 @@ func get_dissolve_shader_material() -> ShaderMaterial:
 func dissolve(multiplier : float = 1) -> void:
 	var shader_material : ShaderMaterial = get_dissolve_shader_material();
 	var shader_material2 : ShaderMaterial = get_dissolve_shader_material();
+	var negative_shader_material : ShaderMaterial = get_dissolve_shader_material();
+	negative_shader_material.set_shader_parameter("is_negative", 1);
 	shader_material2.set_shader_parameter("opacity", BACKGROUND_PATTERN_OPACITY);
 	for node in get_shader_layers():
 		node.material = shader_material;
+	if card_data.is_negative_variant():
+		card_art.material = negative_shader_material;
 	background_pattern.material = shader_material2;
 	for node in [
 		left_type_icon,
@@ -168,13 +181,15 @@ func get_shader_layers() -> Array:
 		name_label,
 		type_label,
 		keywords_label,
-		card_art,
 		art_background,
 		left_type_icon,
 		right_type_icon,
 		panel,
 		stamp
-	];
+	] + ([] if card_data.is_negative_variant() else [card_art]);
+
+func get_negative_shader_layers() -> Array:
+	return [card_art] if card_data.is_negative_variant() else [];
 
 func dissolve_frame(delta : float) -> void:
 	dissolve_value += dissolve_speed * delta * (FLOW_DISSOLVE_MULTIPLIER if is_flowing else 1);
@@ -183,6 +198,7 @@ func dissolve_frame(delta : float) -> void:
 		emit_signal("despawned", self);
 	panel.material.set_shader_parameter("threshold", dissolve_value);
 	background_pattern.material.set_shader_parameter("threshold", dissolve_value);
+	card_art.material.set_shader_parameter("threshold", dissolve_value);
 
 func wet_effect() -> void:
 	var shader : Resource = load(System.Paths.OCEAN_SHADER);

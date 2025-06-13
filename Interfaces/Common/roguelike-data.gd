@@ -104,7 +104,8 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 		card_data = System.Data.load_card(card_id);
 		choices.append({
 			"id": card_id,
-			"stamp": CardEnums.TranslateStampBack[get_stamp_for_spawned_card(card_data)]
+			"stamp": CardEnums.TranslateStampBack[get_stamp_for_spawned_card(card_data)],
+			"variant": CardEnums.TranslateVariantBack[get_variant_for_spawned_card(card_data)]
 		});
 		card_data.queue_free();
 	return choices;
@@ -123,6 +124,11 @@ func get_stamp_for_spawned_card(card_data : CardData, rare_stamp_chance : int = 
 	if possible_stamps.size() and System.Random.chance(System.Rules.STAMP_CHANCE + rare_stamp_chance - (rounds_played * System.Rules.STAMP_CHANCE_LESSENS_BY_ROUND)):
 		return System.Random.item(possible_stamps);
 	return CardEnums.Stamp.NULL;
+
+func get_variant_for_spawned_card(card_data : CardData, variant_chance : int = rare_chance) -> CardEnums.CardVariant:
+	if System.Random.chance(System.Rules.BASE_NEGATIVE_CARD_CHANCE + variant_chance * System.Rules.NEGATIVE_CARD_CHANCE_MULTIPLIER):
+		return CardEnums.CardVariant.NEGATIVE;
+	return CardEnums.CardVariant.REGULAR;
 
 func get_starting_card_choices() -> Array:
 	return [get_card_choices(true), get_card_choices(), get_card_choices()];

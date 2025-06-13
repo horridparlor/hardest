@@ -7,6 +7,7 @@ uniform float radius : hint_range(0.0, 100.0) = 56.0;
 uniform vec2 size = vec2(700.0, 500.0);
 
 const float base_block_size = 4.0;
+uniform int is_negative = 0;
 
 float random(vec2 uv) {
     return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453123);
@@ -39,5 +40,9 @@ void fragment() {
     uv.x += wave_offset;
     uv.y += chaos;
     uv.x += chaos * 0.5;
-    COLOR = texture(TEXTURE, uv);
+	vec4 tex_color = texture(TEXTURE, uv);
+    if (is_negative == 1) {
+        tex_color.rgb = vec3(1.0) - tex_color.rgb;
+    }
+    COLOR = tex_color;
 }

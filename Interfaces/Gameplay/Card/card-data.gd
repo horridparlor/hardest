@@ -8,7 +8,8 @@ const DEFAULT_DATA : Dictionary = {
 	"override_type": null,
 	"keywords": [],
 	"bullet": 1,
-	"stamp": "null"
+	"stamp": "null",
+	"variant": "regular"
 }
 
 var default_type : CardEnums.CardType
@@ -19,6 +20,7 @@ var card_type : CardEnums.CardType = CardEnums.CardType.ROCK;
 var keywords : Array;
 var bullet_id : int;
 var stamp : CardEnums.Stamp;
+var variant : CardEnums.CardVariant;
 
 var controller : Player;
 var instance_id : int;
@@ -55,6 +57,7 @@ func eat_json(data : Dictionary) -> void:
 func eat_spawn_json(data : Dictionary) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	stamp = CardEnums.TranslateStamp[data.stamp];
+	variant = CardEnums.TranslateVariant[data.variant];
 
 func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false, do_add : bool = true) -> bool:
 	var upgrade_to_keys : Array;
@@ -106,7 +109,8 @@ func to_json() -> Dictionary:
 		"override_type": CardEnums.CardTypeName[card_type].to_lower(),
 		"keywords": get_keywords_json(),
 		"bullet": bullet_id,
-		"stamp": CardEnums.TranslateStampBack[stamp]
+		"stamp": CardEnums.TranslateStampBack[stamp],
+		"variant": CardEnums.TranslateVariantBack[variant]
 	};
 
 func get_keywords_json() -> Array:
@@ -198,6 +202,9 @@ func has_multi_spy() -> bool:
 
 func has_mushy() -> bool:
 	return has_keyword(CardEnums.Keyword.MUSHY);
+
+func is_negative_variant() -> bool:
+	return variant == CardEnums.CardVariant.NEGATIVE;
 
 func has_november() -> bool:
 	return has_keyword(CardEnums.Keyword.NOVEMBER);

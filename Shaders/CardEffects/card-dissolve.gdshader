@@ -3,6 +3,7 @@ shader_type canvas_item;
 uniform float threshold : hint_range(0.0, 2.0);
 uniform vec2 viewport_size;
 uniform float opacity : hint_range(0.0, 1.0);
+uniform int is_negative = 0;
 
 const float MAX_CHUNK_SIZE = 200.0;
 
@@ -23,5 +24,8 @@ void fragment() {
     vec3 random_color = vec3(r, g, b);
 
     vec3 mixed_color = mix(original_color, random_color, pow(threshold, 1.3) / 2.6);
+	if (is_negative == 1) {
+    	mixed_color = vec3(1.0) - mixed_color;
+	}
     COLOR = vec4(mixed_color, (1.0 - pow(threshold, 0.9) / 1.8) * opacity);
 }

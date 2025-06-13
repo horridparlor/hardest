@@ -27,6 +27,7 @@ const MIN_MOVEMENT_SPEED : float = 1.0 * Config.GAME_SPEED;
 const MIN_VISIT_SPEED : float = 4.5 * Config.GAME_SPEED;
 const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 const STAMP_HINT_LINE : String = "[b]%s Stamp[/b] [i]–[/i] %s\n";
+const VARIANT_HINT_LINE : String = "[b]%s Variant[/b] [i]–[/i] %s\n";
 
 const FLOW_SPEED : float = 0.6;
 const MIN_GRAVITY : float = 100;
@@ -93,6 +94,7 @@ var is_flowing : bool;
 var is_shaking : bool;
 var shake_to_position : Vector2;
 var has_emp_visuals : bool;
+var has_negative_visuals : bool;
 var is_in_ocean : bool;
 var is_out_ocean : bool;
 
@@ -299,6 +301,10 @@ func get_keyword_hints() -> String:
 		var hint_text : String = CardEnums.StampHints[card_data.stamp] if CardEnums.StampHints.has(card_data.stamp) else "";
 		var stamp_name : String = CardEnums.TranslateStampBack[card_data.stamp] if CardEnums.TranslateStampBack.has(card_data.stamp) else "?";
 		hints_text += STAMP_HINT_LINE % [stamp_name[0].to_upper() + stamp_name.substr(1), hint_text];
+	if card_data.variant != CardEnums.CardVariant.REGULAR:
+		var hint_text : String = CardEnums.VariantHints[card_data.variant] if CardEnums.VariantHints.has(card_data.variant) else "";
+		var variant_name : String = CardEnums.TranslateVariantBack[card_data.variant] if CardEnums.TranslateVariantBack.has(card_data.variant) else "?";
+		hints_text += VARIANT_HINT_LINE % [variant_name[0].to_upper() + variant_name.substr(1), hint_text];
 	return hints_text;
 
 func enrich_hint(message : String) -> String:
@@ -314,3 +320,9 @@ func _on_out_ocean() -> void:
 	ocean_timer.stop();
 	is_in_ocean = false;
 	is_out_ocean = true;
+
+func get_shader_layers() -> Array:
+	return [];
+
+func get_negative_shader_layers() -> Array:
+	return [];

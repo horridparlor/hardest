@@ -374,6 +374,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	if is_time_stopped:
 		add_time_stop_shader(card);
 	time_stop_nodes += card.get_shader_layers();
+	negative_time_stop_nodes += card.get_negative_shader_layers();
 	return card;
 
 func add_time_stop_shader(card : GameplayCard) -> void:
@@ -449,8 +450,10 @@ func stop_spying() -> void:
 func update_card_alterations() -> void:
 	for card in player_one.get_active_cards() + player_two.get_active_cards():
 		update_alterations_for_card(card);
-		if !is_time_stopped and get_card(card) and get_card(card).has_emp_visuals and !card.has_emp():
-			get_card(card).card_art.material = null;
+		if !is_time_stopped and get_card(card):
+			if (get_card(card).has_emp_visuals and !card.has_emp()) \
+			or (get_card(card).has_negative_visuals and !card.is_negative_variant()):
+				get_card(card).card_art.material = null;
 
 func update_alterations_for_card(card_data : CardData) -> void:
 	var card : GameplayCard = get_card(card_data);
@@ -556,9 +559,6 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	if card.card_data.has_buried():
 		if !is_digital_speed:
 			card.bury();
-	else:
-		if time_stopping_player == null:
-			trigger_play_effects(card.card_data, player, opponent);
 	opponent.trigger_opponent_placed_effects();
 	update_card_alterations();
 	if check_for_devoured(card, player, opponent):
@@ -567,6 +567,8 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 			auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_additive_multiplier;
 			auto_play_timer.start();
 		return false;
+	elif !card.card_data.is_buried and time_stopping_player == null:
+		trigger_play_effects(card.card_data, player, opponent);
 	if player == player_two:
 		show_opponents_field();
 		return true;
@@ -597,18 +599,23 @@ func _on_opponent_turns_end() -> void:
 func check_for_devoured(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> bool:
 	var enemy : CardData = opponent.get_field_card();
 	var eater_was_face_down : bool;
+	var devoured_keywords : Array;
 	if is_digital_speed:
 		return false;
 	if enemy and enemy.has_devour(true) and player.cards_played_this_turn == 1:
 		eater_was_face_down = enemy.is_buried;
-		opponent.devour_card(enemy, card.card_data);
+		devoured_keywords = opponent.devour_card(enemy, card.card_data);
 		player.send_from_field_to_grave(card.card_data);
 		if eater_was_face_down:
 			trigger_play_effects(enemy, opponent, player);
+		else:
+			for keyword in devoured_keywords:
+				trigger_play_effects(enemy, opponent, player, keyword);
 		update_alterations_for_card(enemy);
 		spawn_tongue(card, get_card(enemy));
 		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * 0.1 \
 			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));
+		
 		return true;
 	return false;
 
@@ -1827,9 +1834,13 @@ func update_ocean_pattern() -> void:
 
 func init_time_stop() -> void:
 	var shader_material : ShaderMaterial = get_time_stop_material();
+	var negative_shader_material : ShaderMaterial = get_time_stop_material();
 	var shader_material2 : ShaderMaterial = get_time_stop_material();
+	negative_shader_material.set_shader_parameter("is_negative", 1);
 	for node in get_time_stop_nodes():
 		node.material = shader_material;
+	for node in get_negative_time_stop_nodes():
+		node.material = negative_shader_material;
 	for node in get_time_stop_nodes2():
 		if !System.Instance.exists(node):
 			continue;
@@ -1863,9 +1874,12 @@ func get_time_stop_material() -> ShaderMaterial:
 func after_time_stop() -> void:
 	var shader : Resource = load("res://Shaders/Background/background-wave.gdshader");
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	var common_negative_material : ShaderMaterial = System.Shaders.negative();
 	shader_material.shader = shader;
 	for node in get_time_stop_nodes():
 		node.material = null;
+	for node in get_negative_time_stop_nodes():
+		node.material = common_negative_material;
 	for node in get_time_stop_nodes2():
 		if !System.Instance.exists(node):
 			continue;
@@ -1925,8 +1939,19 @@ func get_time_stop_nodes() -> Array:
 			time_stop_nodes.erase(node);
 	return time_stop_nodes;
 
+func get_negative_time_stop_nodes() -> Array:
+	for node in negative_time_stop_nodes.duplicate():
+		if !System.Instance.exists(node):
+			negative_time_stop_nodes.erase(node);
+	return negative_time_stop_nodes;
+
 func update_time_stop_time() -> void:
 	for node in get_time_stop_nodes():
+		if !node.material:
+			continue;
+		node.material.set_shader_parameter("time", time_stop_shader_time);
+		break;
+	for node in get_negative_time_stop_nodes():
 		if !node.material:
 			continue;
 		node.material.set_shader_parameter("time", time_stop_shader_time);

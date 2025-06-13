@@ -64,6 +64,26 @@ enum Zone {
 	GRAVE
 }
 
+enum CardVariant {
+	REGULAR,
+	NEGATIVE
+}
+
+const TranslateVariant : Dictionary = {
+	"regular": CardVariant.REGULAR,
+	"negative": CardVariant.NEGATIVE	
+}
+
+const TranslateVariantBack : Dictionary = {
+	CardVariant.REGULAR : "regular",
+	CardVariant.NEGATIVE : "negative"	
+}
+
+const VariantHints : Dictionary = {
+	CardVariant.REGULAR : "Normal version",
+	CardVariant.NEGATIVE : "While in hand, increases hand size by 1."
+}
+
 enum Stamp {
 	NULL,
 	BLUETOOTH,

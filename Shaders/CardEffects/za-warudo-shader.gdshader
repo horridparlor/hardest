@@ -6,6 +6,7 @@ uniform float bw_mix : hint_range(0.0, 1.0) = 1.0;
 uniform vec2 screen_center = vec2(0.5, 0.5);
 uniform float pulse_width = 0.15;
 uniform float opacity : hint_range(0.0, 1.0) = 1.0;
+uniform int is_negative = 0;
 
 vec3 rgb2gray(vec3 color) {
     float gray = dot(color, vec3(0.299, 0.587, 0.114));
@@ -24,6 +25,9 @@ vec3 glitch_color(vec2 uv, float t) {
 
 void fragment() {
     vec4 original = texture(TEXTURE, UV);
+	if (is_negative == 1) {
+        original.rgb = vec3(1.0) - original.rgb;
+    }
     vec2 screen_uv = SCREEN_UV;
     float dist = distance(screen_uv, screen_center);
     float pulse_radius;

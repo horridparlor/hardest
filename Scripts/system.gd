@@ -12,6 +12,7 @@ const Paths : GDScript = preload("res://Scripts/System/paths.gd");
 const Random : GDScript = preload("res://Scripts/System/random.gd");
 const Rules : GDScript = preload("res://Scripts/System/rules.gd");
 const Scale : GDScript = preload("res://Scripts/System/scale.gd");
+const Shaders : GDScript = preload("res://Scripts/System/shaders.gd");
 const Vectors : GDScript = preload("res://Scripts/System/vectors.gd");
 const Window_ : Vector2 = Vector2(1080, 1920);
 

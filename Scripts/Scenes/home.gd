@@ -287,7 +287,8 @@ func give_opponent_card_drop(opponent_id : int, confirmed_rare : bool = false) -
 	var card_data : CardData = System.Data.load_card(card_id);
 	var card_drop : Dictionary = {
 		"id": card_id,
-		"stamp": CardEnums.TranslateStampBack[save_data.roguelike_data.get_stamp_for_spawned_card(card_data, opponent.rare_chance)]
+		"stamp": CardEnums.TranslateStampBack[save_data.roguelike_data.get_stamp_for_spawned_card(card_data, opponent.rare_chance)],
+		"variant": CardEnums.TranslateVariantBack[save_data.roguelike_data.get_variant_for_spawned_card(card_data, opponent.rare_chance)]
 	};
 	if opponent_id == GameplayEnums.Character.MERITUULI and !card_data.has_digital():
 		card_drop.stamp = CardEnums.TranslateStampBack[CardEnums.Stamp.BLUETOOTH];

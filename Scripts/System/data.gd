@@ -72,30 +72,30 @@ static func load_save_data() -> SaveData:
 static func write_save_data(data : Dictionary) -> void:
 	System.Json.write_save(data, SAVE_DATA_PATH);
 
-static func add_card_soul_to_character(character_id : GameplayEnums.Character, card : CardData) -> void:
-	var soul_bank : CardSoulBank = get_soul_bank(character_id);
+static func add_card_soul_to_character(character_id : GameplayEnums.Character, controller : GameplayEnums.Controller, card : CardData) -> void:
+	var soul_bank : CardSoulBank = get_soul_bank(character_id, controller);
 	soul_bank.add_card(card);
 	soul_bank.save();
 
-static func get_soul_bank(character_id : GameplayEnums.Character) -> CardSoulBank:
+static func get_soul_bank(character_id : GameplayEnums.Character, controller : GameplayEnums.Controller) -> CardSoulBank:
 	var soul_bank : CardSoulBank;
-	var json : Dictionary = System.Json.read_save(SOUL_BANKS_SAVE_PATH + str(character_id));
+	var json : Dictionary = System.Json.read_save(SOUL_BANKS_SAVE_PATH + ("0" if controller == GameplayEnums.Controller.PLAYER_ONE else str(character_id)));
 	if System.Json.is_error(json):
-		soul_bank = CardSoulBank.new(character_id);
+		soul_bank = CardSoulBank.new(character_id, controller);
 	else:
 		soul_bank = CardSoulBank.from_json(json);
 	return soul_bank;
 
-static func load_card_souls_for_character(character_id : int,
+static func load_card_souls_for_character(character_id : int, controller : GameplayEnums.Controller,
 	amount : int = System.Rules.MAX_HAND_SIZE - System.Rules.HAND_SIZE
 ) -> Array:
-	var soul_bank : CardSoulBank = get_soul_bank(character_id);
+	var soul_bank : CardSoulBank = get_soul_bank(character_id, controller);
 	var card_souls : Array = soul_bank.pull_cards(amount);
 	soul_bank.save();
 	return card_souls;
 
 static func save_soul_bank(soul_bank : CardSoulBank) -> void:
-	System.Json.write_save(soul_bank.to_json(), SOUL_BANKS_SAVE_PATH + str(soul_bank.character_id));
+	System.Json.write_save(soul_bank.to_json(), SOUL_BANKS_SAVE_PATH + str("0" if soul_bank.controller == GameplayEnums.Controller.PLAYER_ONE else soul_bank.character_id));
 
 static func load_song(song_id : int) -> Resource:
 	var song_data : Dictionary = System.Json.read_data(SONGS_FOLDER_PATH + str(song_id));

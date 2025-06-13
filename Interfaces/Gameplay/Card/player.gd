@@ -139,7 +139,7 @@ func spawn_card_from_id(card_id : int) -> void:
 	spawn_card(System.Data.load_card(card_id));
 
 func add_start_cards() -> void:
-	var card_souls : Array = System.Data.load_card_souls_for_character(character);
+	var card_souls : Array = System.Data.load_card_souls_for_character(character, controller);
 	var start_cards : Array = decklist.start_with;
 	if decklist.cards.size() > 0:
 		start_cards = [];
@@ -314,7 +314,7 @@ func devour_card(eater : CardData, card : CardData) -> void:
 		eater.add_keyword(keyword);
 
 func steal_card_soul(card : CardData) -> void:
-	System.Data.add_card_soul_to_character(character, card);
+	System.Data.add_card_soul_to_character(character, controller, card);
 
 func trigger_opponent_placed_effects() -> void:
 	var card : CardData = get_field_card();

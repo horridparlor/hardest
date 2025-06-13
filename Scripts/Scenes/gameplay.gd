@@ -64,8 +64,8 @@ extends Gameplay
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	level_data = level_data_;
-	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id);
-	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id);
+	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id, do_start);
+	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id, do_start);
 	init_layers();
 	set_going_first(0 if level_data.id == System.Levels.INTRODUCTION_LEVEL else System.Random.boolean());
 	highlight_face(false);
@@ -156,7 +156,7 @@ func spawn_leds() -> void:
 	led_timer.wait_time = LED_WAIT * System.game_speed_multiplier;
 	led_timer.start();
 
-func init_player(player : Player, controller : GameplayEnums.Controller, deck_id : int) -> void:
+func init_player(player : Player, controller : GameplayEnums.Controller, deck_id : int, do_start : bool = true) -> void:
 	var card : CardData;
 	var character_id : GameplayEnums.Character = \
 		level_data.player if controller == GameplayEnums.Controller.PLAYER_ONE else level_data.opponent;
@@ -167,7 +167,8 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 	player.point_goal = point_goal;
 	player.is_roguelike = level_data.is_roguelike;
 	point_meter.set_max_points(point_goal);
-	player.eat_decklist(deck_id, character_id);
+	if do_start:
+		player.eat_decklist(deck_id, character_id);
 	for c in player.cards_in_deck:
 		card = c;
 		card.controller = player;

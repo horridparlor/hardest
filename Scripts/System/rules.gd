@@ -13,6 +13,7 @@ const STOPPED_TIME_MIN_SHOTS : int = 2;
 const STOPPED_TIME_MAX_SHOTS : int = 5;
 const NUTS_TO_COLLECT : int = 3;
 const OCEAN_DWELLER_TURNS_WAIT : int = 2;
+const EXTRA_SALTY_POINTS_LOST : int = 3;
 
 #Roguelike
 const STARTING_LIVES : int = 3;

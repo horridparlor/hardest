@@ -1439,7 +1439,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 		points *= 2;
 	if enemy and enemy.has_champion():
 		points *= 2;
-	if card.stopped_time_advantage > 0:
+	if card and card.stopped_time_advantage > 0:
 		points *= card.stopped_time_advantage;
 	player.gain_points(points);
 	spawn_poppets(points, card, player);
@@ -1450,14 +1450,15 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.DIVINE:
 					summon_divine_judgment(card, enemy);
 				CardEnums.Keyword.SOUL_HUNTER:
-					player.steal_card_soul(enemy);
+					if enemy:
+						player.steal_card_soul(enemy);
 				CardEnums.Keyword.VAMPIRE:
 					opponent.lose_points(points);
 	if enemy:
 		for keyword in enemy.keywords:
 			match keyword:
 				CardEnums.Keyword.EXTRA_SALTY:
-					opponent.lose_points(-1);
+					opponent.lose_points(System.Rules.EXTRA_SALTY_POINTS_LOST);
 				CardEnums.Keyword.SALTY:
 					opponent.lose_points(points);
 	gain_points_effect(player);
@@ -1517,7 +1518,9 @@ func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false) -> Array:
 	var bullets : Array;
 	var bullet : Bullet;
-	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if enemy and get_card(enemy) else -get_card(card).get_recoil_position();
+	if !get_card(card):
+		return bullets;
+	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if (enemy and get_card(enemy)) else -get_card(card).get_recoil_position();
 	var count : int = 1;
 	if card.stopped_time_advantage > 0:
 		return bullets;

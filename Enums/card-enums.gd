@@ -383,7 +383,7 @@ var KeywordHints : Dictionary = {
 	Keyword.DIVINE : "Defeats any undead.",
 	Keyword.ELECTROCUTE : "Defeats any wet card.",
 	Keyword.EMP : "Negates digital and bluetooth stamp",
-	Keyword.EXTRA_SALTY : "If loses, lose all your points.",
+	Keyword.EXTRA_SALTY : "If loses, lose 3 points.",
 	Keyword.GREED : "If loses, draw 2.",
 	Keyword.HIGH_GROUND : "Automatically defeats any face-down card.",
 	Keyword.HIGH_NUT : "Nuts on any face-down card.",

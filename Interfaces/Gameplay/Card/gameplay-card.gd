@@ -234,6 +234,7 @@ func move() -> void:
 
 func go_visit_point(position : Vector2) -> void:
 	visit_point = position;
+	is_shaking = false;
 	is_visiting = true;
 	move();
 

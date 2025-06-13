@@ -489,7 +489,7 @@ func put_other_cards_behind(card : GameplayCard) -> void:
 		cards_layer.remove_child(cards[instance_id]);
 		cards_layer2.add_child(cards[instance_id]);
 
-func _on_card_released(card : GameplayCard) -> void:
+func _on_card_released(card : GameplayCard, auto_action : bool = false) -> void:
 	if !System.Instance.exists(active_card) or card != active_card:
 		return;
 	card.toggle_follow_mouse(false);
@@ -500,6 +500,8 @@ func _on_card_released(card : GameplayCard) -> void:
 	field_lines_visible = false;
 	fading_field_lines = true;
 	reorder_hand();
+	if auto_action:
+		return;
 	check_if_played(card);
 
 func return_other_cards_front(card : GameplayCard) -> void:
@@ -539,6 +541,10 @@ func replace_played_card(card : CardData) -> void:
 
 func play_card(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> bool:
 	player.play_card(card.card_data, is_digital_speed);
+	if player == player_two:
+		if System.Instance.exists(opponents_field_card) and opponents_field_card != card:
+			erase_card(opponents_field_card);
+		opponents_field_card = card;
 	if card.card_data.has_hydra() and !card.card_data.has_buried():
 		player.build_hydra(card.card_data);
 	if card.card_data.has_buried():
@@ -755,6 +761,10 @@ func spy_opponent(card : CardData, player : Player, opponent : Player, chain : i
 	spied_card_data = determine_spied_card(opponent);
 	spawn_card(spied_card_data);
 	spied_card = get_card(spied_card_data);
+	match opponent.controller:
+		GameplayEnums.Controller.PLAYER_ONE:
+			if System.Instance.exists(active_card) and spied_card == active_card:
+				_on_card_released(spied_card, true);
 	spied_card.go_visit_point(opponent.visit_point);
 	cards_to_spy = chain - 1;
 	is_spying = true;
@@ -1480,13 +1490,13 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 	if get_card(card):
 		get_card(card).recoil(enemy_position);
 	if card.shoots_wet_bullets():
-		make_card_wet(enemy);
+		make_card_wet(enemy, true, false);
 	return bullets;
 
-func make_card_wet(card : CardData, do_trigger : bool = true) -> bool:
+func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool = true) -> bool:
 	var player : Player;
 	var would_trigger : bool;
-	if !card:
+	if !card or card.is_buried:
 		return would_trigger;
 	player = card.controller;
 	if card.has_ocean_dweller() and (card.controller == player_one or card.zone == CardEnums.Zone.FIELD):
@@ -1501,6 +1511,8 @@ func make_card_wet(card : CardData, do_trigger : bool = true) -> bool:
 				get_card(card).wet_effect();
 			start_wet_wait()
 		would_trigger = true;
+	if !fully_moist:
+		return would_trigger;
 	if (card.is_paper() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)) \
 	or (card.is_scissor() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
 		if do_trigger:
@@ -1736,7 +1748,7 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 		gameplay_card = get_card(card);
 		if card.has_ocean_dweller():
 			trigger_ocean_dweller(card, player)
-			if gameplay_card:
+			if gameplay_card and !gameplay_card.is_visiting:
 				gameplay_card.recoil();
 			did_trigger_ocean = true;
 		if !card.has_pick_up():
@@ -1757,7 +1769,9 @@ func trigger_ocean_dweller(card : CardData, player : Player) -> void:
 func show_opponents_field() -> void:
 	var card : GameplayCard;
 	for card_data in player_two.cards_on_field:
-		card = cards[card_data.instance_id];
+		card = get_card(card_data);
+		if !card:
+			return;
 		card.goal_position = ENEMY_FIELD_POSITION;
 		card.move();
 

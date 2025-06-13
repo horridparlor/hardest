@@ -53,6 +53,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			63,
 			64,
 			66,
+			79,
 			83
 		]
 	},
@@ -110,6 +111,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.RARE: [
 			18,
+			35,
 			38,
 			67,
 			74,
@@ -243,7 +245,8 @@ const RANDOM_CARDS : Dictionary = {
 		61,
 		66,
 		67,
-		75
+		75,
+		79
 	],
 	CardEnums.CardType.GOD: [
 		42

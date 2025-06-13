@@ -163,6 +163,7 @@ func get_hydra_keywords() -> Array:
 		Keyword.GREED,
 		Keyword.HIGH_GROUND,
 		Keyword.HIGH_NUT,
+		Keyword.HORSE_GEAR,
 		Keyword.INFLUENCER,
 		Keyword.MULTI_SPY,
 		Keyword.NOVEMBER,
@@ -405,3 +406,7 @@ static func translate_keywords_back(source : Array) -> Array:
 const WET_BULLETS : Dictionary = {
 	3: null
 }
+
+const HORSE_CARD_IDS : Array = [
+	79
+]

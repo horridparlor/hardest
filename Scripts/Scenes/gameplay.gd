@@ -661,6 +661,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				eat_carrot(card);
 			CardEnums.Keyword.CELEBRATE:
 				celebrate(player);
+			CardEnums.Keyword.HORSE_GEAR:
+				draw_horse_card(player);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.default_type);
 			CardEnums.Keyword.MULTI_SPY:
@@ -687,6 +689,10 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 					player.nut_multiplier *= 2;
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
+
+func draw_horse_card(player : Player) -> void:
+	if player.draw_horse():
+		show_hand();
 
 func trigger_ocean(card : CardData) -> void:
 	var enemy : CardData = get_opponent(card).get_field_card();
@@ -1157,7 +1163,7 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 			CardEnums.Keyword.HIGH_NUT:
 				value += 2 * player.turns_waited_to_nut * player.nut_multiplier;
 			CardEnums.Keyword.HORSE_GEAR:
-				value += 0;
+				value += 4;
 			CardEnums.Keyword.HYDRA:
 				value += 2;
 			CardEnums.Keyword.INFLUENCER:

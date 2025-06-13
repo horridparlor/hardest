@@ -67,9 +67,12 @@ func draw_cards(amount : int = 1) -> void:
 		if !draw():
 			return;
 
+func hand_full() -> bool:
+	return count_hand() == System.Rules.MAX_HAND_SIZE;
+
 func draw() -> bool:
 	var card : CardData;
-	if count_hand() == System.Rules.MAX_HAND_SIZE:
+	if hand_full():
 		return false;
 	card = cards_in_deck.pop_back();
 	cards_in_hand.append(card);
@@ -357,3 +360,12 @@ func log_deck() -> void:
 		i += 1;
 		print("%s: %s – %s" % [i, card.card_id, card.card_name]);
 	print("---");
+
+func draw_horse() -> bool:
+	var horse_id : int;
+	if hand_full():
+		return false;
+	horse_id = System.Random.item(CardEnums.HORSE_CARD_IDS);
+	spawn_card(System.Data.load_card(horse_id));
+	draw();
+	return true;

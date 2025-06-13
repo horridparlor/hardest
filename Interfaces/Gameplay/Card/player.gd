@@ -294,7 +294,7 @@ func get_rainbowed() -> void:
 	for c in cards_in_hand:
 		card = c;
 		card_type = card.default_type;
-		card.eat_json(CollectionEnums.get_random_card(card_type));
+		card.eat_json(CollectionEnums.get_random_card(card_type), false);
 		card.card_type = card_type;
 		if card.has_auto_hydra():
 			build_hydra(card);

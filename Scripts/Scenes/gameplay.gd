@@ -360,6 +360,10 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	update_alterations_for_card(card_data);
 	if cards.has(card_data.instance_id):
 		return cards[card_data.instance_id];
+	elif card_data.controller == player_two and System.Instance.exists(opponents_field_card) and card_data.instance_id == opponents_field_card.card_data.instance_id:
+		opponents_field_card.is_despawning = false;
+		print(222);
+		return opponents_field_card;
 	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, cards_layer if active_card == null else cards_layer2);
 	card.card_data = card_data;
 	card.instance_id = card_data.instance_id;
@@ -411,6 +415,10 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			if cards_to_spy > 0:
 				if spy_opponent(card, player, opponent, cards_to_spy):
 					return;
+			if player != active_player and active_player.hand_empty():
+				stop_spying();
+				continue_play();
+				return;
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, opponent, player);
 			player.send_from_field_to_grave(card);
@@ -420,7 +428,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
 					spy_target.despawn(-CARD_STARTING_POSITION);
-					if !player.hand_empty():
+					if !player_one.hand_empty():
 						opponents_play_wait.stop();
 						pre_results_timer.stop();
 						stop_spying();
@@ -429,7 +437,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 						return;
 				GameplayEnums.Controller.PLAYER_TWO:
 					reorder_hand();
-					if !opponent.hand_empty():
+					if !player_two.hand_empty():
 						you_play_wait.stop();
 						stop_spying();
 						opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_additive_multiplier;
@@ -443,6 +451,9 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				reorder_hand();
 	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
 	spying_timer.start();
+
+func continue_play() -> void:
+	your_turn() if active_player == player_one else opponents_turn();
 
 func stop_spying() -> void:
 	is_spying = false;
@@ -1368,7 +1379,7 @@ func round_results() -> void:
 			trigger_winner_loser_effects(enemy, card, player_two, player_one);
 			if !player_two.is_close_to_winning() and !System.Random.chance(OPPONENTS_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", opponents_points.position);
-			if card:
+			if get_card(card):
 				get_card(card).dissolve();
 		GameplayEnums.Controller.NULL:
 			play_tie_sound()

@@ -41,7 +41,7 @@ static func from_json(data : Dictionary) -> CardData:
 	card.eat_json(data);
 	return card;
 
-func eat_json(data : Dictionary) -> void:
+func eat_json(data : Dictionary, do_eat_spawn_json : bool = true) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	card_id = data.id;
 	card_name = data.name;
@@ -52,6 +52,8 @@ func eat_json(data : Dictionary) -> void:
 		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else CardEnums.Keyword.NULL);
 	add_keyword(Config.DEBUG_KEYWORD);
 	bullet_id = data.bullet;
+	if !do_eat_spawn_json:
+		return;
 	eat_spawn_json(data);
 
 func eat_spawn_json(data : Dictionary) -> void:

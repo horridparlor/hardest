@@ -334,21 +334,27 @@ func get_card(card : CardData) -> GameplayCard:
 func reorder_hand(do_shuffle : bool = false) -> void:
 	var card : GameplayCard;
 	var position : Vector2 = HAND_POSITION;
+	var cards_count : int = player_one.count_hand();
+	var margin : float = HAND_MARGIN * (1 if cards_count <= round(HAND_FITS_CARDS) else HAND_FITS_CARDS / cards_count);
+	var layer : Node2D;
 	if do_shuffle:
 		player_one.cards_in_hand.shuffle()
 	else:
 		player_one.cards_in_hand.sort_custom(sort_by_card_position);
-	position.x -= HAND_MARGIN * ((player_one.count_hand() - 1) / 2.0);
+	position.x -= margin * ((player_one.count_hand() - 1) / 2.0);
 	for card_data in player_one.cards_in_hand:
 		if System.Instance.exists(active_card) and active_card.card_data.instance_id == card_data.instance_id:
-			position.x += HAND_MARGIN;
+			position.x += margin;
 			continue;
 		if !get_card(card_data) or get_card(card_data).is_despawning:
 			continue;
 		card = cards[card_data.instance_id];
 		card.goal_position = position;
 		card.move();
-		position.x += HAND_MARGIN;
+		layer = cards_layer if cards_layer.is_ancestor_of(card) else cards_layer2;
+		layer.remove_child(card);
+		layer.add_child(card);
+		position.x += margin;
 
 func spawn_card(card_data : CardData) -> GameplayCard:
 	update_alterations_for_card(card_data);

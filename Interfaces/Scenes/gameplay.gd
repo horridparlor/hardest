@@ -22,6 +22,7 @@ const VISIT_POSITION : Vector2 = Vector2(-350, 350);
 const DEATH_PANEL_SIZE : Vector2 = Vector2(200, 100);
 const DYING_SPEED : float = 1.2;
 const UNDYING_SPEED : float = 4.8;
+const HAND_FITS_CARDS : float = 4.72;
 
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const PRE_RESULTS_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;

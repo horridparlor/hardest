@@ -690,7 +690,7 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 
 func trigger_ocean(card : CardData) -> void:
 	var enemy : CardData = get_opponent(card).get_field_card();
-	var cards_to_wet : Array = player_one.cards_in_hand + player_two.cards_in_hand + ([enemy] if enemy else []) + [card];
+	var cards_to_wet : Array = player_one.cards_in_hand.duplicate() + player_two.cards_in_hand.duplicate() + ([enemy] if enemy else []) + [card];
 	var wait_per_card_trigger : float;
 	var triggers : int;
 	if get_card(card):
@@ -709,7 +709,7 @@ func trigger_ocean(card : CardData) -> void:
 			ocean_streamer.stop();
 			_on_ocean_timer_timeout();
 			return;
-		if make_card_wet(c):
+		if make_card_wet(c) and c != cards_to_wet.back():
 			await System.wait(wait_per_card_trigger);
 
 func summon_ocean_effect(card : CardData) -> void:
@@ -2115,6 +2115,8 @@ func _on_wet_wait_timer_timeout() -> void:
 	is_wet_wait_on = false;
 
 func _on_ocean_timer_timeout() -> void:
+	var enemy : CardData = get_opponent(ocean_card.card_data).get_field_card() if System.Instance.exists(ocean_card) else null;
+	make_card_wet(enemy);
 	ocean_timer.stop();
 	is_ocean_in_progress = false;
 	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;

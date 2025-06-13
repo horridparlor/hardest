@@ -22,7 +22,7 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 	update_panel(card_data.card_type);
 	update_type_icons(card_data.card_type);
 	update_card_art();
-	update_keywords_text(card_data.keywords.duplicate(), gained_keyword);
+	update_keywords_text(card_data.get_keywords(), gained_keyword);
 	update_stamp();
 	if card_data.has_emp():
 		has_emp_visuals = true;

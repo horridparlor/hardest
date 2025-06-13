@@ -665,7 +665,7 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player, only_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var enemy : CardData = opponent.get_field_card();
-	var keywords : Array = [only_keyword] if only_keyword != CardEnums.Keyword.NULL else card.keywords;
+	var keywords : Array = [only_keyword] if only_keyword != CardEnums.Keyword.NULL else card.get_keywords();
 	if enemy and enemy.has_carrot_eater():
 		eat_carrot(enemy);
 	for keyword in keywords:
@@ -685,6 +685,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 					collect_nuts(player);
 			CardEnums.Keyword.OCEAN:
 				trigger_ocean(card);
+			CardEnums.Keyword.POSITIVE:
+				trigger_positive(card, enemy, player);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
 				update_card_alterations();
@@ -702,6 +704,24 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 					player.nut_multiplier *= 2;
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
+
+func trigger_positive(card : CardData, enemy : CardData, player : Player) -> void:
+	var multiplier : int = calculate_base_points(card, enemy, true);
+	var points_gained : int = player.gain_points(player.points * multiplier);
+	var sound : Resource;
+	var instance_id = System.Random.instance_id();
+	if points_gained == 0:
+		return;
+	gain_points_effect(player);
+	spawn_poppets(points_gained, card, player);
+	sound = load("res://Assets/SFX/CardSounds/Bursts/positive-sound.wav");
+	emit_signal("stop_music");
+	sfx_play_id = instance_id;
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
+	await System.wait(4.3);
+	if sfx_play_id != instance_id:
+		return;
+	emit_signal("play_prev_song");
 
 func draw_horse_card(player : Player) -> void:
 	if player.draw_horse():

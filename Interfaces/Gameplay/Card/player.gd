@@ -59,7 +59,7 @@ func count_negatives_in_hand() -> int:
 	var card : CardData;
 	for c in cards_in_hand:
 		card = c
-		if card.is_negative_variant():
+		if card.has_negative() or card.is_negative_variant():
 			count += 1;
 	return count;
 
@@ -179,8 +179,10 @@ func shuffle_deck() -> void:
 func get_field_card() -> CardData:
 	return cards_on_field[0] if !field_empty() else null;
 
-func gain_points(amount : int = 1) -> void:
+func gain_points(amount : int = 1) -> int:
+	amount = max(0, amount);
 	points += amount;
+	return amount;
 
 func lose_points(amount : int = 1) -> void:
 	var original_points : int = points;

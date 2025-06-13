@@ -203,6 +203,9 @@ func has_multi_spy() -> bool:
 func has_mushy() -> bool:
 	return has_keyword(CardEnums.Keyword.MUSHY);
 
+func has_negative() -> bool:
+	return has_keyword(CardEnums.Keyword.NEGATIVE);
+
 func is_negative_variant() -> bool:
 	return variant == CardEnums.CardVariant.NEGATIVE;
 
@@ -235,6 +238,9 @@ func has_pair_breaker() -> bool:
 
 func has_pick_up() -> bool:
 	return has_keyword(CardEnums.Keyword.PICK_UP);
+
+func has_positive() -> bool:
+	return has_keyword(CardEnums.Keyword.POSITIVE);
 
 func has_rainbow() -> bool:
 	return has_keyword(CardEnums.Keyword.RAINBOW);
@@ -329,3 +335,20 @@ func get_max_nuts(opponent_shares_a_nut : bool = false) -> int:
 
 func shoots_wet_bullets() -> bool:
 	return is_gun() and CardEnums.WET_BULLETS.has(bullet_id);
+
+func get_keywords() -> Array:
+	var words : Array;
+	for keyword in keywords:
+		if is_negative_variant():
+			words.append(give_negative_of_keyword(keyword));
+		else:
+			words.append(keyword);
+	return words;
+
+func give_negative_of_keyword(keyword : CardEnums.Keyword) -> CardEnums.Keyword:
+	match keyword:
+		CardEnums.Keyword.NEGATIVE:
+			return CardEnums.Keyword.POSITIVE;
+		CardEnums.Keyword.POSITIVE:
+			return CardEnums.Keyword.NEGATIVE;
+	return keyword;

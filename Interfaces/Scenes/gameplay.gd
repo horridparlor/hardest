@@ -172,6 +172,7 @@ var is_low_tiding : bool;
 var low_tide_speed : float;
 var ocean_card : GameplayCard;
 var opponents_field_card : GameplayCard;
+var sfx_play_id : int;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

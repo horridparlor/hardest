@@ -289,7 +289,7 @@ func get_recoil_position() -> Vector2:
 
 func get_keyword_hints() -> String:
 	var hints_text : String;
-	var keywords : Array = card_data.keywords.duplicate();
+	var keywords : Array = card_data.get_keywords();
 	var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL if !card_data.controller else card_data.controller.gained_keyword;
 	if  gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
 		keywords.append(gained_keyword);

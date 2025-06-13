@@ -426,7 +426,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				get_card(card).despawn();
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
-					spy_target.despawn(-CARD_STARTING_POSITION, true);
+					spy_target.despawn(-CARD_STARTING_POSITION);
 				GameplayEnums.Controller.PLAYER_TWO:
 					reorder_hand();
 			match active_player:
@@ -448,7 +448,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		GameplayEnums.Controller.NULL:
 			play_tie_sound();
 			if opponent.controller == GameplayEnums.Controller.PLAYER_TWO:
-				spy_target.despawn(-CARD_STARTING_POSITION, true)
+				spy_target.despawn(-CARD_STARTING_POSITION)
 			else:
 				reorder_hand();
 	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
@@ -675,7 +675,7 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 	cards.erase(card.instance_id);
 	cards_layer.remove_child(card);
 	cards_layer2.add_child(card);
-	card.despawn(despawn_position, true);
+	card.despawn(despawn_position);
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player, only_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var enemy : CardData = opponent.get_field_card();

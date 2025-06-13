@@ -159,6 +159,11 @@ func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
 	if is_moving or following_mouse:
+		if card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO and System.Vectors.is_default(goal_position):
+			if is_visiting:
+				goal_position = get_despawn_position();
+			else:
+				goal_position = Gameplay.ENEMY_FIELD_POSITION;
 		position = System.Vectors.slide_towards(position, (get_local_mouse_position() - starting_position) \
 			if following_mouse else (visit_point if is_visiting \
 			else goal_position),
@@ -207,15 +212,18 @@ func toggle_follow_mouse(value : bool = true) -> void:
 	starting_position.y = (starting_position.y + GameplayCard.SIZE.y) / 2;
 	toggle_focus(value);
 	
-func despawn(despawn_position : Vector2 = Vector2.ZERO, custom_position : bool = false) -> void:
+func despawn(despawn_position : Vector2 = Vector2.ZERO) -> void:
 	is_shaking = false;
 	is_visiting = false;
 	is_despawning = true;
 	goal_position = despawn_position \
-		if custom_position \
-		else Vector2( System.Random.direction() \
-		* (System.Window_.x / 2 + SIZE.x), goal_position.y);
+		if !System.Vectors.is_default(despawn_position) \
+		else get_despawn_position();
 	toggle_focus(false);
+
+func get_despawn_position() -> Vector2:
+	return Vector2( System.Random.direction() \
+		* (System.Window_.x / 2 + SIZE.x), goal_position.y);
 
 func dissolve(multiplier : float = 1) -> void:
 	pass;

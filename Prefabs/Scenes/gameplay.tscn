@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://0nxqjjkgg16k" path="res://Assets/Art/SpecialPatterns/gameplay-death-pattern.png" id="10_trm33"]
 [ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
 [ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="15_ht6r6"]
+[ext_resource type="Texture2D" uid="uid://c577v2cp8oc0v" path="res://Assets/Art/SpecialPatterns/YourPointsPattern.png" id="16_088nt"]
 [ext_resource type="Shader" path="res://Shaders/Background/bump-wave.gdshader" id="19_n6e1l"]
 [ext_resource type="Texture2D" uid="uid://dr4fcniar43c6" path="res://Assets/Art/VictoryBanners/loser.png" id="20_1t5ev"]
 
@@ -126,9 +127,6 @@ shader_parameter/amplitude = 10.0
 shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 0.0
 shader_parameter/opacity = 1.0
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_64e62"]
-load_path = "res://.godot/imported/YourPointsPattern.png-30915eb26f5e9229f43893f816b5405a.ctex"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r6psl"]
 bg_color = Color(0.960757, 0.252307, 0.518855, 1)
@@ -420,7 +418,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_t0eo2")
 [node name="YourPointPattern" type="Sprite2D" parent="Points/PointPanels/YourPointsPanel"]
 material = SubResource("ShaderMaterial_hrlbd")
 position = Vector2(-285, -705)
-texture = SubResource("CompressedTexture2D_64e62")
+texture = ExtResource("16_088nt")
 script = ExtResource("3_ixfah")
 
 [node name="PointMeter" parent="Points/PointPanels/YourPointsPanel" instance=ExtResource("8_fw0v1")]

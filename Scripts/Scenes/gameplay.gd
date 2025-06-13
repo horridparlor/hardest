@@ -541,9 +541,6 @@ func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
 	return a_x < b_x;
 
 func _on_card_despawned(card : GameplayCard) -> void:
-	if System.Vectors.is_inside_window(card.position, GameplayCard.SIZE):
-		card.despawn();
-		return;
 	cards.erase(card.instance_id);
 	card.queue_free();
 

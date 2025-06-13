@@ -2,14 +2,14 @@ extends Node
 
 const VERSION : String = "0.5";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 21;
 const MAX_CARD_ID : int = 79; #120
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID / 2, 10);
 
 const AUTO_PLAY : bool = true if DEV_MODE else false;
 const AUTO_START : bool = false if DEV_MODE else false;
-const AUTO_LEVEL : int = 15 if DEV_MODE else 0;
+const AUTO_LEVEL : int = 14 if DEV_MODE else 0;
 const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const SHOWCASE_STAMP : CardEnums.Stamp = CardEnums.Stamp.NULL if DEV_MODE else CardEnums.Stamp.NULL;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;

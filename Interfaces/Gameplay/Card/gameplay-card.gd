@@ -207,10 +207,12 @@ func toggle_follow_mouse(value : bool = true) -> void:
 	starting_position.y = (starting_position.y + GameplayCard.SIZE.y) / 2;
 	toggle_focus(value);
 	
-func despawn(despawn_position : Vector2 = Vector2.ZERO) -> void:
+func despawn(despawn_position : Vector2 = Vector2.ZERO, custom_position : bool = false) -> void:
+	is_shaking = false;
+	is_visiting = false;
 	is_despawning = true;
 	goal_position = despawn_position \
-		if !System.Vectors.is_default(despawn_position) \
+		if custom_position \
 		else Vector2( System.Random.direction() \
 		* (System.Window_.x / 2 + SIZE.x), goal_position.y);
 	toggle_focus(false);

@@ -362,7 +362,6 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 		return cards[card_data.instance_id];
 	elif card_data.controller == player_two and System.Instance.exists(opponents_field_card) and card_data.instance_id == opponents_field_card.card_data.instance_id:
 		opponents_field_card.is_despawning = false;
-		print(222);
 		return opponents_field_card;
 	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, cards_layer if active_card == null else cards_layer2);
 	card.card_data = card_data;
@@ -427,7 +426,11 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				get_card(card).despawn();
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
-					spy_target.despawn(-CARD_STARTING_POSITION);
+					spy_target.despawn(-CARD_STARTING_POSITION, true);
+				GameplayEnums.Controller.PLAYER_TWO:
+					reorder_hand();
+			match active_player:
+				GameplayEnums.Controller.PLAYER_ONE:
 					if !player_one.hand_empty():
 						opponents_play_wait.stop();
 						pre_results_timer.stop();
@@ -436,7 +439,6 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 						you_play_wait.start();
 						return;
 				GameplayEnums.Controller.PLAYER_TWO:
-					reorder_hand();
 					if !player_two.hand_empty():
 						you_play_wait.stop();
 						stop_spying();
@@ -446,7 +448,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		GameplayEnums.Controller.NULL:
 			play_tie_sound();
 			if opponent.controller == GameplayEnums.Controller.PLAYER_TWO:
-				spy_target.despawn(-CARD_STARTING_POSITION)
+				spy_target.despawn(-CARD_STARTING_POSITION, true)
 			else:
 				reorder_hand();
 	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
@@ -539,6 +541,9 @@ func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
 	return a_x < b_x;
 
 func _on_card_despawned(card : GameplayCard) -> void:
+	if System.Vectors.is_inside_window(card.position, GameplayCard.SIZE):
+		card.despawn();
+		return;
 	cards.erase(card.instance_id);
 	card.queue_free();
 
@@ -562,8 +567,6 @@ func replace_played_card(card : CardData) -> void:
 func play_card(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> bool:
 	player.play_card(card.card_data, is_digital_speed);
 	if player == player_two:
-		if System.Instance.exists(opponents_field_card) and opponents_field_card != card:
-			erase_card(opponents_field_card);
 		opponents_field_card = card;
 	if card.card_data.has_hydra() and !card.card_data.has_buried():
 		player.build_hydra(card.card_data);
@@ -672,7 +675,7 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 	cards.erase(card.instance_id);
 	cards_layer.remove_child(card);
 	cards_layer2.add_child(card);
-	card.despawn(despawn_position);
+	card.despawn(despawn_position, true);
 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player, only_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var enemy : CardData = opponent.get_field_card();
@@ -1373,7 +1376,7 @@ func round_results() -> void:
 			trigger_winner_loser_effects(card, enemy, player_one, player_two);
 			if !player_one.is_close_to_winning() and !System.Random.chance(YOUR_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", your_points.position);
-			if enemy:
+			if get_card(enemy):
 				get_card(enemy).dissolve();
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, player_two, player_one);

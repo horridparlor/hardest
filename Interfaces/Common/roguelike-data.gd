@@ -126,7 +126,8 @@ func get_stamp_for_spawned_card(card_data : CardData, rare_stamp_chance : int = 
 	return CardEnums.Stamp.NULL;
 
 func get_variant_for_spawned_card(card_data : CardData, variant_chance : int = rare_chance) -> CardEnums.CardVariant:
-	if System.Random.chance(System.Rules.BASE_NEGATIVE_CARD_CHANCE + variant_chance * System.Rules.NEGATIVE_CARD_CHANCE_MULTIPLIER):
+	var negative_chance : int = max(System.Rules.NEGATIVE_MIN_BASE_CHANCE, System.Rules.BASE_NEGATIVE_CARD_CHANCE - rounds_played * System.Rules.NEGATIVE_BASE_CHANCE_EASING_PER_ROUND) + variant_chance * max(System.Rules.NEGATIVE_MIN_MULTIPLIER, System.Rules.NEGATIVE_CARD_CHANCE_MULTIPLIER - rounds_played * System.Rules.NEGATIVE_MULTIPLIER_EASING_PER_ROUND);
+	if System.Random.chance(negative_chance):
 		return CardEnums.CardVariant.NEGATIVE;
 	return CardEnums.CardVariant.REGULAR;
 

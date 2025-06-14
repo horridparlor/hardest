@@ -159,7 +159,7 @@ func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
 	if is_moving or following_mouse:
-		if card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO and System.Vectors.is_default(goal_position):
+		if card_data.controller and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO and System.Vectors.is_default(goal_position):
 			if is_visiting:
 				goal_position = get_despawn_position();
 			else:

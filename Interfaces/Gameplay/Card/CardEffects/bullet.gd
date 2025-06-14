@@ -46,7 +46,7 @@ func _process(delta: float) -> void:
 		speeding_frame(delta);
 	position += direction * delta * speed * speed_multiplier * System.game_speed;
 	if !System.Vectors.is_inside_window(position, SIZE):
-		if bullet_data.id != 8:
+		if !CardEnums.PLAY_SFX_FULLY_BULLETS.has(bullet_data.id):
 			queue_free();
 			return;
 		is_moving = false;

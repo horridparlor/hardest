@@ -437,6 +437,11 @@ const WET_BULLETS : Dictionary = {
 	3: null
 }
 
+const PLAY_SFX_FULLY_BULLETS : Dictionary = {
+	8: null,
+	18: null
+}
+
 const HORSE_CARD_IDS : Array = [
 	79
 ]

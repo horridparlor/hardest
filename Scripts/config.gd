@@ -14,11 +14,11 @@ const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const SHOWCASE_STAMP : CardEnums.Stamp = CardEnums.Stamp.NULL if DEV_MODE else CardEnums.Stamp.NULL;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
 const DEBUG_CARD : int = 0 if DEV_MODE else 0;
-const SPAWNED_CARD : int = 18 if DEV_MODE else 1;
+const SPAWNED_CARD : int = 86 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 
-const MUTE : bool = true if DEV_MODE else false;
+const MUTE : bool = false if DEV_MODE else false;
 const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;
 const MUTE_SFX : bool = (false if DEV_MODE else false) or MUTE;
 const VOLUME : int = 0 if DEV_MODE else 0;

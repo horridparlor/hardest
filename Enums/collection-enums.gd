@@ -181,7 +181,8 @@ const RANDOM_CARDS : Dictionary = {
 		60,
 		62,
 		68,
-		71
+		71,
+		85
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -228,7 +229,8 @@ const RANDOM_CARDS : Dictionary = {
 		59,
 		64,
 		70,
-		73
+		73,
+		84
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -249,7 +251,8 @@ const RANDOM_CARDS : Dictionary = {
 		66,
 		67,
 		75,
-		79
+		79,
+		86
 	],
 	CardEnums.CardType.GOD: [
 		42

@@ -1395,8 +1395,8 @@ func stopped_time_results() -> void:
 	var card : CardData = time_stopping_player.get_field_card();
 	var enemy : CardData = get_opponent(card).get_field_card() if card else null;
 	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
-	if time_stopping_player.hand_empty() or (card and !card.has_buried() and (card.is_gun() or card.is_god())):
-		if card and card.is_gun() and (!enemy or check_type_results(card, enemy) != GameplayEnums.Controller.PLAYER_TWO):
+	if time_stopping_player.hand_empty() or (card and !card.is_buried and (card.is_gun() or card.is_god())):
+		if card and (card.is_gun() and !card.is_buried) and (!enemy or check_type_results(card, enemy) != GameplayEnums.Controller.PLAYER_TWO):
 			await stopped_time_shooting(card, get_opponent(card).get_field_card());
 		time_stop_effect_out();
 		return;

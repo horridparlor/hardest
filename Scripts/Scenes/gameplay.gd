@@ -143,6 +143,8 @@ func spawn_leds() -> void:
 	var led : Led;
 	var position : Vector2 = LED_STARTING_POSITION;
 	var direction : float = 1;
+	if leds_right.size() > 0:
+		return;
 	for i in range(LEDS_PER_COLUMN):
 		led = System.Instance.load_child(System.Paths.LED, leds_layer);
 		led.position = Vector2(-position.x, position.y);

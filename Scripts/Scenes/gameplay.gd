@@ -1927,7 +1927,8 @@ func after_time_stop() -> void:
 		background_pattern,
 		die_pattern,
 		your_point_pattern,
-		opponents_point_pattern
+		opponents_point_pattern,
+		gameplay_title
 	]:
 		node.material = shader_material;
 	led_wait /= TIME_STOP_LED_ACCELERATION;

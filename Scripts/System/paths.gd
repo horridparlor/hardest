@@ -9,4 +9,5 @@ const OCEAN_SHADER : String = "res://Shaders/CardEffects/ocean-shader.gdshader";
 const POINT_LED : String = "res://Prefabs/Gameplay/Points/point-led.tscn";
 const POPPET : String = "res://Prefabs/Gameplay/Points/poppet.tscn";
 const SONG : String = "res://Assets/Songs/%s.mp3";
+const TITLE : String = "res://Prefabs/Scenes/title.tscn";
 const TONGUE : String = "res://Prefabs/Gameplay/Card/tongue.tscn";

@@ -30,6 +30,13 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 	elif card_data.is_negative_variant():
 		has_negative_visuals = true;
 		make_negative();
+	if Config.TEXTLESS_CARDS:
+		for node in [
+			name_label,
+			keywords_label,
+			type_label
+		]:
+			node.visible = false;
 
 func make_negative() -> void:
 	if card_art.material:

@@ -38,12 +38,13 @@ func _process(delta : float) -> void:
 	zoom_frame(delta);
 	scene_layer.rotation_degrees = System.base_rotation;
 	edges.rotation_degrees = System.base_rotation;
-	if Config.DEV_MODE:
-		process_dev_mode_shortcut_actions();
+	process_dev_mode_shortcut_actions();
 
 func process_dev_mode_shortcut_actions() -> void:
 	if Input.is_action_just_pressed("quit_game"):
 		get_tree().quit();
+	if !Config.DEV_MODE:
+		return;
 	if Input.is_action_just_pressed("slow_game"):
 		set_game_speed(Config.MIN_GAME_SPEED);
 		background_music.pitch_scale = System.game_speed;
@@ -72,6 +73,9 @@ func process_dev_mode_shortcut_actions() -> void:
 		pass;
 
 func open_starting_scene() -> void:
+	if Config.SHOW_TITLE:
+		System.Instance.load_child(System.Paths.TITLE, self);
+		return;
 	if Config.SHOWCASE_CARD_ID != 0:
 		nexus = System.Instance.load_child(System.Paths.NEXUS, self);
 		nexus.operate_showcase_layer();

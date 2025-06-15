@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=3 uid="uid://b1ai4pgefgtva"]
+
+[ext_resource type="Texture2D" uid="uid://cmbinkbkipajy" path="res://Assets/Art/Patterns/18.png" id="1_4cutg"]
+[ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="1_bakk5"]
+[ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="3_w0wwx"]
+[ext_resource type="Texture2D" uid="uid://bary56asjbftk" path="res://Assets/Art/BackgroundProps/Logo.png" id="4_itldp"]
+[ext_resource type="Script" path="res://Interfaces/Common/auto-glow-node.gd" id="4_ltfxg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tabvo"]
+shader = ExtResource("1_bakk5")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g3dct"]
+shader = ExtResource("1_bakk5")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 1.0
+
+[node name="Title" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_tabvo")
+position = Vector2(0, -200)
+scale = Vector2(2.12, 2.12)
+texture = ExtResource("1_4cutg")
+script = ExtResource("3_w0wwx")
+
+[node name="Node2D" type="Node2D" parent="."]
+script = ExtResource("4_ltfxg")
+
+[node name="Logo" type="Sprite2D" parent="Node2D"]
+material = SubResource("ShaderMaterial_g3dct")
+position = Vector2(0, -100)
+scale = Vector2(2, 2)
+texture = ExtResource("4_itldp")
+script = ExtResource("3_w0wwx")

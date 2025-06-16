@@ -105,10 +105,15 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 		choices.append({
 			"id": card_id,
 			"stamp": CardEnums.TranslateStampBack[get_stamp_for_spawned_card(card_data)],
-			"variant": CardEnums.TranslateVariantBack[get_variant_for_spawned_card(card_data)]
+			"variant": CardEnums.TranslateVariantBack[get_variant_for_spawned_card(card_data)],
+			"is_holographic": get_is_foil_for_spawned_card(rare_chance, true),
+			"is_foil": get_is_foil_for_spawned_card()
 		});
 		card_data.queue_free();
 	return choices;
+
+func get_is_foil_for_spawned_card(foil_chance : int = rare_chance, is_holographic : bool = false) -> bool:
+	return System.Random.chance(max(System.Rules.MIN_HOLOGRAPHIC_CHANCE if is_holographic else System.Rules.MIN_FOIL_CHANCE, (System.Rules.HOLOGRAPHIC_BASE_CHANCE if is_holographic else System.Rules.BASE_FOIL_CHANCE) + foil_chance * System.Rules.FOIL_CHANCE_MULTIPLIER - rounds_played * System.Rules.FOIL_CHANCE_EASING));
 
 func get_stamp_for_spawned_card(card_data : CardData, rare_stamp_chance : int = rare_chance) -> CardEnums.Stamp:
 	var possible_stamps : Array;

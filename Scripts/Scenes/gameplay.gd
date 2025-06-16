@@ -379,7 +379,12 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	if is_time_stopped:
 		add_time_stop_shader(card);
 	time_stop_nodes += card.get_shader_layers();
-	negative_time_stop_nodes += card.get_negative_shader_layers();
+	custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
+	if is_time_stopped:
+		var shader_material : ShaderMaterial = get_time_stop_material();
+		System.Shaders.set_card_art_shader_parameters(shader_material, card.card_data.is_negative_variant(), card.card_data.is_holographic, card.card_data.is_foil);
+		for node in card.get_custom_shader_layers():
+			node.material = shader_material;
 	return card;
 
 func add_time_stop_shader(card : GameplayCard) -> void:
@@ -467,8 +472,10 @@ func update_card_alterations() -> void:
 		update_alterations_for_card(card);
 		if !is_time_stopped and get_card(card):
 			if (get_card(card).has_emp_visuals and !card.has_emp()) \
-			or (get_card(card).has_negative_visuals and !card.is_negative_variant()):
-				get_card(card).card_art.material = null;
+			or (get_card(card).has_negative_visuals and !card.is_negative_variant()) \
+			or (get_card(card).has_holographic_visuals and !card.is_holographic) \
+			or (get_card(card).has_foil_visuals and !card.is_foil):
+				get_card(card).add_art_base_shader(true);
 
 func update_alterations_for_card(card_data : CardData) -> void:
 	var card : GameplayCard = get_card(card_data);
@@ -719,7 +726,7 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				player.gained_keyword = CardEnums.Keyword.BURIED;
 
 func trigger_positive(card : CardData, enemy : CardData, player : Player) -> void:
-	var multiplier : int = calculate_base_points(card, enemy, true);
+	var multiplier : int = calculate_base_points(card, enemy, true, false);
 	var points_gained : int = player.gain_points(player.points * multiplier);
 	var sound : Resource;
 	var instance_id = System.Random.instance_id();
@@ -750,6 +757,8 @@ func trigger_ocean(card : CardData) -> void:
 	for c in cards_to_wet:
 		if make_card_wet(c, false) and (c.controller == player_one or c.zone == CardEnums.Zone.FIELD):
 			triggers += 1;
+	ocean_effect_wave_speed = System.random.randf_range(OCEAN_EFFECT_MIN_STARTING_WAVE_SPEED, OCEAN_EFFECT_MAX_STARTING_WAVE_SPEED);
+	ocean_effec_speed_exponent = System.random.randf_range(OCEAN_SPEED_EFFECT_MIN_EXPONENT, OCEAN_SPEED_EFFECT_MAX_EXPONENT);
 	is_low_tiding = false;
 	is_ocean_in_progress = true;
 	summon_ocean_effect(card);
@@ -970,15 +979,9 @@ func nut_players_nuts(player : Player, opponent : Player) -> bool:
 	return false;
 
 func nut_with_card(card : CardData, enemy : CardData, player : Player) -> bool:
-	var multiplier : int = 1;
+	var multiplier : int = calculate_base_points(card, enemy, true, false);
 	var points : int = player.points;
 	card.nuts += 1;
-	if card.has_champion():
-		multiplier *= 2;
-	if card.has_rare_stamp():
-		multiplier *= 2;
-	if enemy and enemy.has_champion():
-		multiplier *= 2;
 	if player.do_nut(multiplier):
 		points = player.points - points;
 		spawn_poppets(points, card, player);
@@ -1079,27 +1082,33 @@ func determine_points_result(card : CardData, enemy : CardData) -> int:
 	return 0;
 
 func get_win_points(card : CardData, enemy : CardData) -> int:
-	var points : int = calculate_base_points(card, enemy);
+	var points : int = calculate_base_points(card, enemy, true);
 	var points_to_steal : int = calculate_points_to_steal(card, enemy);
-	var multiplier : int = 2 if card.has_rare_stamp() else 1;
-	return (points + points_to_steal) * multiplier;
+	return points + points_to_steal;
 
 func get_lose_points(card : CardData, enemy : CardData) -> int:
-	var points : int = calculate_base_points(card, enemy);
+	var points : int = calculate_base_points(card, enemy, false, false);
 	var points_to_lose : int = calculate_points_to_steal(enemy, card);
 	return -(points + points_to_lose);
 
-func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false) -> int:
+func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false, add_advantages : bool = true) -> int:
 	var points : int = 1;
 	if card and card.has_champion():
 		points *= 2;
 	if enemy and enemy.has_champion():
 		points *= 2;
-	if card.stopped_time_advantage > 0:
-		points *= card.stopped_time_advantage;
+	if add_advantages:
+		if card.stopped_time_advantage > 0:
+			points *= card.stopped_time_advantage;
 	if !did_win:
 		return points;
 	if card.has_rare_stamp():
+		points *= 2;
+	if card.is_holographic and card.is_foil:
+		points *= 4;
+	elif card.is_foil:
+		points *= 3;
+	elif card.is_holographic:
 		points *= 2;
 	return points;
 
@@ -1268,12 +1277,9 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 10 * player.turns_waited_to_nut * player.nut_multiplier;
 			CardEnums.Keyword.WRAPPED:
 				value += 0 if player.going_first else 1;
-	if card.has_champion():
-		value *= 2;
+	value *= calculate_base_points(card, null, true);
 	if value < 0:
 		return value;
-	if card.has_rare_stamp():
-		value *= 2;
 	if card.is_gun and !card.is_buried and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
 		value *= card.stopped_time_advantage;
 	return value;
@@ -1294,11 +1300,7 @@ func get_result_for_playing(card : CardData, player : Player, opponent : Player)
 	var winner : GameplayEnums.Controller;
 	var enemy : CardData = get_enemy_card_truth(opponent);
 	var value : int = 1;
-	var multiplier : int = 2 if card.has_rare_stamp() else 1;
-	if card.has_champion():
-		value *= 2;
-	if enemy and enemy.has_champion():
-		value *= 2;
+	var multiplier : int = calculate_base_points(card, enemy, true);
 	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.prevents_opponents_reveal():
 		return value * multiplier;
 	if card.has_nut_stealer() and enemy and enemy.get_max_nuts() > 0:
@@ -1435,14 +1437,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 ) -> void:
 	if has_game_ended:
 		return;
-	if card and card.has_champion():
-		points *= 2;
-	if card and card.has_rare_stamp():
-		points *= 2;
-	if enemy and enemy.has_champion():
-		points *= 2;
-	if card and card.stopped_time_advantage > 0:
-		points *= card.stopped_time_advantage;
+	points *= calculate_base_points(card, enemy, true);
 	player.gain_points(points);
 	spawn_poppets(points, card, player);
 	check_lose_effects(enemy, opponent);
@@ -1462,14 +1457,14 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.EXTRA_SALTY:
 					opponent.lose_points(System.Rules.EXTRA_SALTY_POINTS_LOST);
 				CardEnums.Keyword.SALTY:
-					opponent.lose_points(points);
+					opponent.lose_points(System.Rules.SALTY_POINTS_LOST);
 	gain_points_effect(player);
 	if have_you_won() or has_opponent_won():
 		start_game_over();
 
 func spawn_poppets(points : int, card : CardData, player : Player) -> void:
 	var color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE;
-	var count : int = points;
+	var count : int = min(MAX_CARD_POPPETS, points);
 	var extra_count : int;
 	if points > 12:
 		color = Poppet.PoppetColor.RAINBOW;
@@ -1814,7 +1809,7 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	return true;
 
 func trigger_ocean_dweller(card : CardData, player : Player) -> void:
-	var points : int = calculate_base_points(card, null, true);
+	var points : int = calculate_base_points(card, null, true, false);
 	player.gain_points(points);
 	gain_points_effect(player);
 	if get_card(card):
@@ -1852,7 +1847,11 @@ func _process(delta : float) -> void:
 		low_tide_frame(delta);
 
 func high_tide_frame(delta : float) -> void:
+	var wave_speed : float = pow(ocean_effect_wave_speed, ocean_effec_speed_exponent * ocean_pattern.modulate.a);
 	ocean_pattern.modulate.a += high_tide_speed * delta;
+	ocean_pattern.material.set_shader_parameter("wave_speed", wave_speed);
+	ocean_pattern.material.set_shader_parameter("wave_frequency", wave_speed * 20);
+	ocean_pattern.material.set_shader_parameter("wave_amplitude", wave_speed * 0.02);
 	update_ocean_pattern();
 
 func low_tide_frame(delta : float) -> void:
@@ -1870,13 +1869,17 @@ func update_ocean_pattern() -> void:
 
 func init_time_stop() -> void:
 	var shader_material : ShaderMaterial = get_time_stop_material();
-	var negative_shader_material : ShaderMaterial = get_time_stop_material();
 	var shader_material2 : ShaderMaterial = get_time_stop_material();
-	negative_shader_material.set_shader_parameter("is_negative", 1);
+	var custom_material : ShaderMaterial;
+	var card : CardData;
 	for node in get_time_stop_nodes():
 		node.material = shader_material;
-	for node in get_negative_time_stop_nodes():
-		node.material = negative_shader_material;
+	for instance_id in get_custom_time_stop_nodes():
+		card = cards[instance_id].card_data;
+		custom_material = get_time_stop_material();
+		System.Shaders.set_card_art_shader_parameters(custom_material, card.is_negative_variant(), card.is_holographic, card.is_foil);
+		for node in custom_time_stop_nodes[instance_id]:
+			node.material = custom_material;
 	for node in get_time_stop_nodes2():
 		if !System.Instance.exists(node):
 			continue;
@@ -1910,12 +1913,13 @@ func get_time_stop_material() -> ShaderMaterial:
 func after_time_stop() -> void:
 	var shader : Resource = load("res://Shaders/Background/background-wave.gdshader");
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
-	var common_negative_material : ShaderMaterial = System.Shaders.negative();
+	var node_card : GameplayCard;
 	shader_material.shader = shader;
 	for node in get_time_stop_nodes():
 		node.material = null;
-	for node in get_negative_time_stop_nodes():
-		node.material = common_negative_material;
+	for instance_id in get_custom_time_stop_nodes():
+		node_card = cards[instance_id];
+		node_card.add_art_base_shader(true);
 	for node in get_time_stop_nodes2():
 		if !System.Instance.exists(node):
 			continue;
@@ -1976,11 +1980,11 @@ func get_time_stop_nodes() -> Array:
 			time_stop_nodes.erase(node);
 	return time_stop_nodes;
 
-func get_negative_time_stop_nodes() -> Array:
-	for node in negative_time_stop_nodes.duplicate():
-		if !System.Instance.exists(node):
-			negative_time_stop_nodes.erase(node);
-	return negative_time_stop_nodes;
+func get_custom_time_stop_nodes() -> Dictionary:
+	for instance_id in custom_time_stop_nodes.duplicate():
+		if !cards.has(instance_id) or !System.Instance.exists(cards[instance_id]):
+			custom_time_stop_nodes.erase(instance_id);
+	return custom_time_stop_nodes;
 
 func update_time_stop_time() -> void:
 	for node in get_time_stop_nodes():
@@ -1988,11 +1992,11 @@ func update_time_stop_time() -> void:
 			continue;
 		node.material.set_shader_parameter("time", time_stop_shader_time);
 		break;
-	for node in get_negative_time_stop_nodes():
-		if !node.material:
-			continue;
-		node.material.set_shader_parameter("time", time_stop_shader_time);
-		break;
+	for instance_id in get_custom_time_stop_nodes():
+		for node in custom_time_stop_nodes[instance_id]:
+			if !node.material:
+				continue;
+			node.material.set_shader_parameter("time", time_stop_shader_time);
 	for node in time_stop_nodes2:
 		if node.material == null:
 			break;

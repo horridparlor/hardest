@@ -27,9 +27,8 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 	if card_data.has_emp():
 		has_emp_visuals = true;
 		update_emp_visuals();
-	elif card_data.is_negative_variant():
-		has_negative_visuals = true;
-		make_negative();
+	else:
+		add_art_base_shader();
 	if Config.TEXTLESS_CARDS:
 		for node in [
 			name_label,
@@ -38,10 +37,16 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 		]:
 			node.visible = false;
 
-func make_negative() -> void:
-	if card_art.material:
+func add_art_base_shader(do_force : bool = false) -> void:
+	if card_art.material and !do_force:
 		return;
-	card_art.material = System.Shaders.negative();
+	if card_data.is_negative_variant():
+		has_negative_visuals = true;
+	if card_data.is_holographic:
+		has_holographic_visuals = true;
+	if card_data.is_foil:
+		has_foil_visuals = true;
+	card_art.material = System.Shaders.card_art(card_data.is_negative_variant(), card_data.is_holographic, card_data.is_foil);
 
 func update_stamp() -> void:
 	var texture : Resource;
@@ -54,11 +59,7 @@ func update_stamp() -> void:
 func update_emp_visuals() -> void:
 	if card_art.material:
 		return;
-	var shader : Resource = load("res://Shaders/CardEffects/emp-radiation-shader.gdshader");
-	var shader_material : ShaderMaterial = ShaderMaterial.new();
-	shader_material.shader = shader;
-	shader_material.set_shader_parameter("is_negative", 1 if card_data.is_negative_variant() else 0);
-	card_art.material = shader_material;
+	card_art.material = System.Shaders.emp_shader(card_data.is_negative_variant(), card_data.is_holographic, card_data.is_foil);
 	card_art.update_shader();
 
 func bury() -> void:
@@ -152,30 +153,15 @@ func _on_button_pressed() -> void:
 func _on_button_released() -> void:
 	emit_signal("released", self);
 
-func get_dissolve_shader_material() -> ShaderMaterial:
-	var shader : Resource = load("res://Shaders/CardEffects/card-dissolve.gdshader");
-	var shader_material : ShaderMaterial = ShaderMaterial.new();
-	shader_material.shader = shader;
-	shader_material.set_shader_parameter("viewport_size", System.Window_);
-	shader_material.set_shader_parameter("opacity", 1);
-	return shader_material;
-
 func dissolve(multiplier : float = 1) -> void:
-	var shader_material : ShaderMaterial = get_dissolve_shader_material();
-	var shader_material2 : ShaderMaterial = get_dissolve_shader_material();
-	var negative_shader_material : ShaderMaterial = get_dissolve_shader_material();
-	negative_shader_material.set_shader_parameter("is_negative", 1);
+	var shader_material : ShaderMaterial = System.Shaders.dissolve_shader();
+	var shader_material2 : ShaderMaterial = System.Shaders.dissolve_shader();
+	var card_art_shader_material : ShaderMaterial = System.Shaders.dissolve_shader(card_data.is_negative_variant(), card_data.is_holographic, card_data.is_foil);
 	shader_material2.set_shader_parameter("opacity", BACKGROUND_PATTERN_OPACITY);
 	for node in get_shader_layers():
 		node.material = shader_material;
-	if card_data.is_negative_variant():
-		card_art.material = negative_shader_material;
+	card_art.material = card_art_shader_material;
 	background_pattern.material = shader_material2;
-	for node in [
-		left_type_icon,
-		right_type_icon
-	]:
-		node.visible = false;
 	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED) * multiplier;
 	stamp.texture = null;
 	is_dissolving = true;
@@ -195,8 +181,8 @@ func get_shader_layers() -> Array:
 		stamp
 	] + ([] if card_data.is_negative_variant() else [card_art]);
 
-func get_negative_shader_layers() -> Array:
-	return [card_art] if card_data.is_negative_variant() else [];
+func get_custom_shader_layers() -> Array:
+	return [card_art];
 
 func dissolve_frame(delta : float) -> void:
 	dissolve_value += dissolve_speed * delta * (FLOW_DISSOLVE_MULTIPLIER if is_flowing else 1);

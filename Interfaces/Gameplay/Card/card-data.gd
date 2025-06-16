@@ -9,7 +9,9 @@ const DEFAULT_DATA : Dictionary = {
 	"keywords": [],
 	"bullet": 1,
 	"stamp": "null",
-	"variant": "regular"
+	"variant": "regular",
+	"is_holographic": false,
+	"is_foil": false
 }
 
 var default_type : CardEnums.CardType
@@ -21,6 +23,8 @@ var keywords : Array;
 var bullet_id : int;
 var stamp : CardEnums.Stamp;
 var variant : CardEnums.CardVariant;
+var is_holographic : bool;
+var is_foil : bool;
 
 var controller : Player;
 var instance_id : int;
@@ -60,6 +64,8 @@ func eat_spawn_json(data : Dictionary) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	stamp = CardEnums.TranslateStamp[data.stamp];
 	variant = CardEnums.TranslateVariant[data.variant];
+	is_holographic = data.is_holographic;
+	is_foil = data.is_foil;
 
 func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false, do_add : bool = true) -> bool:
 	var upgrade_to_keys : Array;
@@ -112,7 +118,9 @@ func to_json() -> Dictionary:
 		"keywords": get_keywords_json(),
 		"bullet": bullet_id,
 		"stamp": CardEnums.TranslateStampBack[stamp],
-		"variant": CardEnums.TranslateVariantBack[variant]
+		"variant": CardEnums.TranslateVariantBack[variant],
+		"is_holographic": is_holographic,
+		"is_foil": is_foil
 	};
 
 func get_keywords_json() -> Array:

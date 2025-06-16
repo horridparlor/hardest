@@ -13,6 +13,7 @@ const STOPPED_TIME_MIN_SHOTS : int = 2;
 const STOPPED_TIME_MAX_SHOTS : int = 5;
 const NUTS_TO_COLLECT : int = 3;
 const OCEAN_DWELLER_TURNS_WAIT : int = 2;
+const SALTY_POINTS_LOST : int = 1;
 const EXTRA_SALTY_POINTS_LOST : int = 3;
 
 #Roguelike
@@ -36,9 +37,17 @@ const RARE_STAMP_CHANCE_MULTIPLIER : int = 2;
 const RARE_STAMP_BECOMES_COMMON_AFTER_ROUND : int = 8;
 const STAMP_CHANCE_LESSENS_BY_ROUND : int = 1;
 const CHANCE_FOR_EXTRA_HOUSE : int = 20;
+#Negative Chance
 const BASE_NEGATIVE_CARD_CHANCE : int = 60;
 const NEGATIVE_CARD_CHANCE_MULTIPLIER : int = 30;
 const NEGATIVE_BASE_CHANCE_EASING_PER_ROUND : int = 5;
 const NEGATIVE_MIN_BASE_CHANCE : int = 10;
 const NEGATIVE_MULTIPLIER_EASING_PER_ROUND : int = 4;
 const NEGATIVE_MIN_MULTIPLIER : int = 6;
+#Foil Chance
+const BASE_FOIL_CHANCE : int = 27;
+const HOLOGRAPHIC_BASE_CHANCE : int = 3;
+const FOIL_CHANCE_MULTIPLIER : int = 5;
+const FOIL_CHANCE_EASING : int = 6;
+const MIN_HOLOGRAPHIC_CHANCE : int = 4;
+const MIN_FOIL_CHANCE : int = 6;

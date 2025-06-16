@@ -41,6 +41,7 @@ const NUT_WAIT_MULTIPLIER : float = 1.6;
 const VICTORY_POPPET_SPEED : float = 0.26;
 const MIN_VICTORY_POPPETS : int = 50;
 const MAX_VICTORY_POPPETS : int = 100;
+const MAX_CARD_POPPETS : int = 40;
 const POPPETS_RANDOM_ADDITION : int = 10;
 
 const TROLL_MIN_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
@@ -106,6 +107,10 @@ const HIGH_TIDE_MAX_SPEED : float = 0.12 * Config.GAME_SPEED;
 const LOW_TIDE_MIN_SPEED : float = 0.35 * Config.GAME_SPEED;
 const LOW_TIDE_MAX_SPEED : float = 0.42 * Config.GAME_SPEED;
 const OCEAN_PATTERN_MAX_OPACITY : float = 0.35;
+const OCEAN_EFFECT_MIN_STARTING_WAVE_SPEED : float = 1.31;
+const OCEAN_EFFECT_MAX_STARTING_WAVE_SPEED : float = 1.47;
+const OCEAN_SPEED_EFFECT_MIN_EXPONENT : float = 12.3;
+const OCEAN_SPEED_EFFECT_MAX_EXPONENT : float = 16.5;
 
 const TIME_STOP_IN_GLITCH_MIN_SPEED : float = 5 * Config.GAME_SPEED;
 const TIME_STOP_IN_GLITCH_MAX_SPEED : float = 7.8 * Config.GAME_SPEED;
@@ -153,7 +158,7 @@ var time_stop_goal_velocity2 : float;
 var is_time_stopped : bool;
 var active_player : Player;
 var time_stop_nodes : Array;
-var negative_time_stop_nodes : Array;
+var custom_time_stop_nodes : Dictionary;
 var time_stop_nodes2 : Array;
 var time_stopping_player : Player;
 var time_stopped_bullets : Array;
@@ -173,6 +178,8 @@ var low_tide_speed : float;
 var ocean_card : GameplayCard;
 var opponents_field_card : GameplayCard;
 var sfx_play_id : int;
+var ocean_effect_wave_speed : float;
+var ocean_effec_speed_exponent : float;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

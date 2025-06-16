@@ -313,6 +313,14 @@ func devour_card(eater : CardData, card : CardData) -> Array:
 	if eater.is_buried:
 		eater.is_buried = false;
 	eater.card_type = card.card_type;
+	if eater.stamp == CardEnums.Stamp.NULL:
+		eater.stamp = card.stamp;
+	if eater.variant == CardEnums.CardVariant.REGULAR:
+		eater.variant = card.variant;
+	if !eater.is_holographic:
+		eater.is_holographic = card.is_holographic;
+	if !eater.is_foil:
+		eater.is_foil = card.is_foil;
 	for keyword in card.keywords:
 		match keyword:
 			CardEnums.Keyword.UNDEAD:

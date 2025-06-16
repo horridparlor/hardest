@@ -1463,7 +1463,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 
 func spawn_poppets(points : int, card : CardData, player : Player) -> void:
 	var color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE;
-	var count : int = min(MAX_CARD_POPPETS, points);
+	var count : int = points;
 	var extra_count : int;
 	if points > 12:
 		color = Poppet.PoppetColor.RAINBOW;
@@ -1477,9 +1477,9 @@ func spawn_poppets(points : int, card : CardData, player : Player) -> void:
 		color = Poppet.PoppetColor.RED;
 		count /= 2;
 		extra_count = points - 2 * count + System.random.randi_range(0, 1);
-	for i in range(count):
+	for i in range(min(MAX_CARD_POPPETS, count)):
 		spawn_poppet_for_card(card, player, color);
-	for i in range(extra_count):
+	for i in range(min(MAX_CARD_POPPETS, extra_count)):
 		spawn_poppet_for_card(card, player);
 
 func spawn_poppet_for_card(card : CardData, player : Player, color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE) -> void:

@@ -9,9 +9,9 @@ script = ExtResource("1_6sp0h")
 
 [node name="GoalPoints" type="Label" parent="."]
 offset_left = -20.0
-offset_top = -85.0
+offset_top = -87.0
 offset_right = 20.0
-offset_bottom = -45.0
+offset_bottom = -47.0
 theme_override_fonts/font = ExtResource("1_01157")
 theme_override_font_sizes/font_size = 32
 text = "10"

@@ -55,3 +55,6 @@ func light_negative_led() -> void:
 
 func get_nodes() -> Array:
 	return [];
+
+func mirror() -> void:
+	pass;

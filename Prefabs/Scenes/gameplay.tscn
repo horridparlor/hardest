@@ -467,7 +467,7 @@ text = "0"
 vertical_alignment = 1
 
 [node name="OpponentsPoints" type="Label" parent="Points"]
-offset_left = 117.0
+offset_left = 17.0
 offset_top = -894.0
 offset_right = 427.0
 offset_bottom = -737.0

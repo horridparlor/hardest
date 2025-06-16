@@ -117,3 +117,6 @@ func get_nodes() -> Array:
 func _on_negative_led_timer_timeout() -> void:
 	negative_led_timer.stop();
 	light_negative_led();
+
+func mirror() -> void:
+	goal_points.position.x = -goal_points.size.x + 20;

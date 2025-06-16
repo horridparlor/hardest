@@ -164,7 +164,9 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 		level_data.player if controller == GameplayEnums.Controller.PLAYER_ONE else level_data.opponent;
 	var point_meter : PointMeter = your_point_meter if player == player_one else opponents_point_meter;
 	var point_goal : int = level_data.point_goal if player == player_one \
-		else min(System.Rules.OPPONENT_MAX_POINT_GOAL + round(System.Rules.POINT_GOAL_MULTIPLIER * (log(level_data.point_goal) / log(System.Rules.POINT_GOAL_MULTIPLIER))), level_data.point_goal);
+		else min(System.Rules.OPPONENT_MAX_POINT_GOAL + round(System.Rules.POINT_GOAL_MULTIPLIER * (log(level_data.point_goal) / log(System.Rules.POINT_GOAL_MULTIPLIER))), \
+		level_data.point_goal, \
+		System.Rules.OPPONENT_MAX_POINT_GOAL + round(level_data.point_goal / 3 / 1.5) - 3);
 	player.controller = controller;
 	player.point_goal = point_goal;
 	player.is_roguelike = level_data.is_roguelike;

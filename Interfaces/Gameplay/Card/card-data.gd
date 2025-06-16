@@ -10,8 +10,7 @@ const DEFAULT_DATA : Dictionary = {
 	"bullet": 1,
 	"stamp": "null",
 	"variant": "regular",
-	"is_holographic": false,
-	"is_foil": false
+	"is_holographic": false
 }
 
 var default_type : CardEnums.CardType
@@ -56,6 +55,7 @@ func eat_json(data : Dictionary, do_eat_spawn_json : bool = true) -> void:
 		add_keyword(CardEnums.TranslateKeyword[key] if CardEnums.TranslateKeyword.has(key) else CardEnums.Keyword.NULL);
 	add_keyword(Config.DEBUG_KEYWORD);
 	bullet_id = data.bullet;
+	is_foil = CollectionEnums.FOIL_CARDS.has(card_id);
 	if !do_eat_spawn_json:
 		return;
 	eat_spawn_json(data);
@@ -65,7 +65,6 @@ func eat_spawn_json(data : Dictionary) -> void:
 	stamp = CardEnums.TranslateStamp[data.stamp];
 	variant = CardEnums.TranslateVariant[data.variant];
 	is_holographic = data.is_holographic;
-	is_foil = data.is_foil;
 
 func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false, do_add : bool = true) -> bool:
 	var upgrade_to_keys : Array;
@@ -119,8 +118,7 @@ func to_json() -> Dictionary:
 		"bullet": bullet_id,
 		"stamp": CardEnums.TranslateStampBack[stamp],
 		"variant": CardEnums.TranslateVariantBack[variant],
-		"is_holographic": is_holographic,
-		"is_foil": is_foil
+		"is_holographic": is_holographic
 	};
 
 func get_keywords_json() -> Array:

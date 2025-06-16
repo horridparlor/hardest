@@ -45,9 +45,7 @@ const NEGATIVE_MIN_BASE_CHANCE : int = 10;
 const NEGATIVE_MULTIPLIER_EASING_PER_ROUND : int = 4;
 const NEGATIVE_MIN_MULTIPLIER : int = 6;
 #Foil Chance
-const BASE_FOIL_CHANCE : int = 27;
-const HOLOGRAPHIC_BASE_CHANCE : int = 3;
-const FOIL_CHANCE_MULTIPLIER : int = 5;
-const FOIL_CHANCE_EASING : int = 6;
-const MIN_HOLOGRAPHIC_CHANCE : int = 4;
-const MIN_FOIL_CHANCE : int = 6;
+const HOLO_BASE_CHANCE : int = 21;
+const HOLO_CHANCE_MULTIPLIER : int = 5;
+const HOLO_CHANCE_EASING : int = 6;
+const MIN_HOLO_CHANCE : int = 5;

@@ -261,3 +261,15 @@ const RANDOM_CARDS : Dictionary = {
 
 static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.NULL) -> Dictionary:
 	return System.Data.read_card(System.Random.item(RANDOM_CARDS[card_type]));
+
+const FOIL_CARDS : Dictionary = {
+	14: null,
+	18: null,
+	46: null,
+	57: null,
+	65: null,
+	71: null,
+	77: null,
+	78: null,
+	85: null,
+}

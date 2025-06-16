@@ -28,7 +28,7 @@ const MIN_VISIT_SPEED : float = 4.5 * Config.GAME_SPEED;
 const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 const STAMP_HINT_LINE : String = "[b]%s Stamp[/b] [i]–[/i] %s\n";
 const VARIANT_HINT_LINE : String = "[b]%s Variant[/b] [i]–[/i] %s\n";
-const FOIL_HINT_LINE : String = "[b]%s[/b] [i]–[/i] Scores %s.\n";
+const HOLO_HINT_LINE : String = "[b]Holographic[/b] [i]–[/i] Scores double.\n";
 
 const FLOW_SPEED : float = 0.6;
 const MIN_GRAVITY : float = 100;
@@ -314,16 +314,8 @@ func get_keyword_hints() -> String:
 		var hint_text : String = CardEnums.StampHints[card_data.stamp] if CardEnums.StampHints.has(card_data.stamp) else "";
 		var stamp_name : String = CardEnums.TranslateStampBack[card_data.stamp] if CardEnums.TranslateStampBack.has(card_data.stamp) else "?";
 		hints_text += STAMP_HINT_LINE % [stamp_name[0].to_upper() + stamp_name.substr(1), hint_text];
-	if card_data.is_holographic or card_data.is_foil:
-		var foil_name : String = "Foil";
-		var double_name : String = "triple";
-		if card_data.is_holographic and card_data.is_foil:
-			foil_name = "Secret Rare";
-			double_name = "quadruple";
-		elif card_data.is_holographic:
-			foil_name = "Holographic";
-			double_name = "double";
-		hints_text += FOIL_HINT_LINE % [foil_name, double_name];
+	if card_data.is_holographic:
+		hints_text += HOLO_HINT_LINE;
 	if card_data.variant != CardEnums.CardVariant.REGULAR:
 		var hint_text : String = CardEnums.VariantHints[card_data.variant] if CardEnums.VariantHints.has(card_data.variant) else "";
 		var variant_name : String = CardEnums.TranslateVariantBack[card_data.variant] if CardEnums.TranslateVariantBack.has(card_data.variant) else "?";

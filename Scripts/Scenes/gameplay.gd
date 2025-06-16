@@ -1104,11 +1104,7 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 		return points;
 	if card.has_rare_stamp():
 		points *= 2;
-	if card.is_holographic and card.is_foil:
-		points *= 4;
-	elif card.is_foil:
-		points *= 3;
-	elif card.is_holographic:
+	if card.is_holographic:
 		points *= 2;
 	return points;
 

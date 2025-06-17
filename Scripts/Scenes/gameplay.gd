@@ -750,7 +750,7 @@ func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool =
 	var gameplay_card : GameplayCard;
 	if player.hand_empty() or (player.count_hand() + 1) > System.Rules.MAX_HAND_SIZE:
 		return;
-	card_to_clone = player.cards_in_hand.back();
+	card_to_clone = System.Random.item(player.cards_in_hand);
 	cloned_card = player.spawn_card(card_to_clone, CardEnums.Zone.HAND);
 	if is_perfect_clone:
 		cloned_card.is_holographic = true;

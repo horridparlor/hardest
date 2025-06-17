@@ -179,8 +179,10 @@ func shuffle_deck() -> void:
 func get_field_card() -> CardData:
 	return cards_on_field[0] if !field_empty() else null;
 
-func gain_points(amount : int = 1) -> int:
+func gain_points(amount : int = 1, actually_gain : bool = true) -> int:
 	amount = max(0, amount);
+	if !actually_gain:
+		return amount;
 	points += amount;
 	return amount;
 

@@ -38,15 +38,15 @@ extends Gameplay
 @onready var led_timer : Timer = $Timers/LedTimer;
 @onready var auto_play_timer : Timer = $Timers/AutoPlayTimer;
 @onready var start_next_round_timer : Timer = $Timers/StartNextRoundTimer;
-@onready var ocean_timer : Timer = $Timers/OceanTimer;
 @onready var wet_wait_timer : Timer = $Timers/WetWaitTimer;
+@onready var animation_wait_timer : Timer = $Timers/AnimationWaitTimer;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
 @onready var your_point_meter : PointMeter = $Points/PointPanels/YourPointsPanel/PointMeter;
 @onready var opponents_point_meter : PointMeter = $Points/PointPanels/OpponentsPointsPanel/PointMeter;
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
-@onready var ocean_streamer : AudioStreamPlayer2D = $Background/OceanStreamer;
+@onready var animation_sfx : AudioStreamPlayer2D = $Background/AnimationSfx;
 @onready var sfx_player : AudioStreamPlayer2D = $SfxPlayer;
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
@@ -74,7 +74,6 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	cards_shadow.modulate.a = 0;
 	trolling_sprite.visible = false;
 	ocean_pattern.visible = false;
-	ocean_pattern.modulate.a = 0;
 	spawn_leds();
 	init_time_stop_nodes();
 	init_audio();
@@ -729,21 +728,46 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 
 func trigger_positive(card : CardData, enemy : CardData, player : Player) -> void:
 	var multiplier : int = calculate_base_points(card, enemy, true, false);
-	var points_gained : int = player.gain_points(player.points * multiplier);
-	var sound : Resource;
-	var instance_id = System.Random.instance_id();
+	var points_gained : int = player.gain_points(player.points * multiplier, false);
 	if points_gained == 0:
 		return;
-	gain_points_effect(player);
-	spawn_poppets(points_gained, card, player);
-	sound = load("res://Assets/SFX/CardSounds/Bursts/positive-sound.wav");
+	wait_for_animation(AnimationType.POSITIVE, {
+		"points": points_gained,
+		"card": card,
+		"player": player
+	});
+
+func wait_for_animation(type : AnimationType, animation_data : Dictionary = {}) -> void:
+	var instance_id = System.Random.instance_id();
+	var animation_sound : Resource;
+	if animation_instance_id != 0:
+		after_animation(true);
+	animation_instance_id = instance_id;
+	animation_data.type = type;
+	current_animation_type = type;
+	animations[instance_id] = animation_data;
+	animation_wait_timer.wait_time = AnimationWaitTime[type] * System.game_speed_additive_multiplier;
+	animation_wait_timer.start();
+	is_waiting_for_animation_to_finnish = true;
+	match type:
+		AnimationType.OCEAN:
+			ocean_pattern.visible = true;
+			ocean_pattern.modulate.a = 0;
+			high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED);
 	emit_signal("stop_music");
-	sfx_play_id = instance_id;
-	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
-	await System.wait(4.3);
-	if sfx_play_id != instance_id:
+	if Config.MUTE_SFX:
 		return;
-	emit_signal("play_prev_song");
+	animation_sfx.stream = load(get_animation_sound_path(type));
+	animation_sfx.volume_db = Config.SFX_VOLUME + Config.GUN_VOLUME;
+	animation_sfx.play();
+
+func get_animation_sound_path(type : AnimationType) -> String:
+	match type:
+		AnimationType.OCEAN:
+			return "res://Assets/SFX/CardSounds/Bursts/ocean.wav";
+		AnimationType.POSITIVE:
+			return "res://Assets/SFX/CardSounds/Bursts/positive-sound.wav";
+	return "";
 
 func draw_horse_card(player : Player) -> void:
 	if player.draw_horse():
@@ -760,33 +784,17 @@ func trigger_ocean(card : CardData) -> void:
 		if make_card_wet(c, false) and (c.controller == player_one or c.zone == CardEnums.Zone.FIELD):
 			triggers += 1;
 	ocean_effect_wave_speed = System.random.randf_range(OCEAN_EFFECT_MIN_STARTING_WAVE_SPEED, OCEAN_EFFECT_MAX_STARTING_WAVE_SPEED);
-	ocean_effec_speed_exponent = System.random.randf_range(OCEAN_SPEED_EFFECT_MIN_EXPONENT, OCEAN_SPEED_EFFECT_MAX_EXPONENT);
+	ocean_effect_speed_exponent = System.random.randf_range(OCEAN_SPEED_EFFECT_MIN_EXPONENT, OCEAN_SPEED_EFFECT_MAX_EXPONENT);
 	is_low_tiding = false;
-	is_ocean_in_progress = true;
-	summon_ocean_effect(card);
-	ocean_timer.start();
-	wait_per_card_trigger = ocean_timer.wait_time / (triggers + 2);
+	has_ocean_wet_self = false;
+	wait_for_animation(AnimationType.OCEAN);
+	wait_per_card_trigger = AnimationWaitTime[AnimationType.OCEAN] / (triggers + 2);
 	await System.wait(wait_per_card_trigger * 1.9);
 	for c in cards_to_wet:
-		if is_time_stopped:
-			ocean_streamer.stop();
-			_on_ocean_timer_timeout();
-			return;
-		if make_card_wet(c) and c != cards_to_wet.back():
+		if c == card:
+			has_ocean_wet_self = true;
+		if make_card_wet(c):
 			await System.wait(wait_per_card_trigger);
-
-func summon_ocean_effect(card : CardData) -> void:
-	ocean_pattern.visible = true;
-	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED) * System.game_speed_multiplier;
-	ocean_timer.wait_time = System.random.randf_range(OCEAN_MIN_WAIT, OCEAN_MAX_WAIT) * System.game_speed_additive_multiplier;
-	emit_signal("stop_music");
-	play_ocean_sound();
-
-func play_ocean_sound() -> void:
-	if Config.MUTE_SFX:
-		return;
-	ocean_streamer.volume_db = Config.SFX_VOLUME + Config.GUN_VOLUME;
-	ocean_streamer.play();
 
 func eat_carrot(card : CardData) -> void:
 	var enemy : CardData = get_opponent(card).get_field_card();
@@ -879,7 +887,7 @@ func wait_opponent_playing() -> void:
 	opponents_play_wait.start();
 
 func cannot_go_to_results() -> bool:
-	return is_spying or is_ocean_in_progress or is_wet_wait_on;
+	return is_spying or is_waiting_for_animation_to_finnish or is_wet_wait_on;
 
 func go_to_results() -> void:
 	#This structure waits and comes back everytime some action is done
@@ -1840,13 +1848,13 @@ func _process(delta : float) -> void:
 		undying_frame(delta);
 	if has_game_ended:
 		victory_pattern.material.set_shader_parameter("opacity", victory_banner.modulate.a);
-	if is_ocean_in_progress:
+	if current_animation_type == AnimationType.OCEAN:
 		high_tide_frame(delta);
 	if is_low_tiding:
 		low_tide_frame(delta);
 
 func high_tide_frame(delta : float) -> void:
-	var wave_speed : float = pow(ocean_effect_wave_speed, ocean_effec_speed_exponent * ocean_pattern.modulate.a);
+	var wave_speed : float = pow(ocean_effect_wave_speed, ocean_effect_speed_exponent * ocean_pattern.modulate.a);
 	ocean_pattern.modulate.a += high_tide_speed * delta;
 	ocean_pattern.material.set_shader_parameter("wave_speed", wave_speed);
 	ocean_pattern.material.set_shader_parameter("wave_frequency", wave_speed * 20);
@@ -1885,6 +1893,8 @@ func init_time_stop() -> void:
 		node.material = shader_material2;
 	led_wait *= TIME_STOP_LED_ACCELERATION;
 	is_time_stopped = true;
+	if animation_instance_id != 0:
+		after_animation(true);
 	play_time_stop_sound();
 
 func get_time_stop_nodes2() -> Array:
@@ -2191,13 +2201,44 @@ func _on_wet_wait_timer_timeout() -> void:
 	wet_wait_timer.stop();
 	is_wet_wait_on = false;
 
-func _on_ocean_timer_timeout() -> void:
-	var enemy : CardData = get_opponent(ocean_card.card_data).get_field_card() if System.Instance.exists(ocean_card) else null;
-	make_card_wet(enemy);
-	ocean_timer.stop();
-	is_ocean_in_progress = false;
+func after_ocean(is_forced : bool) -> void:
+	var card : CardData = ocean_card.card_data;
+	var enemy : CardData = get_opponent(card).get_field_card() if System.Instance.exists(ocean_card) else null;
 	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;
 	is_low_tiding = true;
+	if is_forced:
+		return;
+	make_card_wet(enemy);
+	if !has_ocean_wet_self:
+		make_card_wet(card);
+
+func after_positive(points : int, card : CardData, player : Player) -> void:
+	player.gain_points(points);
+	gain_points_effect(player);
+	spawn_poppets(points, card, player);
+	
+func after_animation(is_forced : bool = false) -> void:
+	var animation_data : Dictionary;
+	if animation_instance_id == 0:
+		return;
+	animation_data = animations[animation_instance_id]
+	
+	is_waiting_for_animation_to_finnish = false;
+	animations.erase(animation_instance_id);
+	animation_instance_id = 0;
+	current_animation_type = AnimationType.NULL;
+	animation_sfx.stop();
+	match animation_data.type:
+		AnimationType.OCEAN:
+			after_ocean(is_forced);
+		AnimationType.POSITIVE:
+			if !is_forced:
+				after_positive(animation_data.points, animation_data.card, animation_data.player);
 	if is_time_stopped:
 		return;
 	emit_signal("play_prev_song");
+	
+func _on_animation_wait_timer_timeout() -> void:
+	animation_wait_timer.stop();
+	after_animation();
+	

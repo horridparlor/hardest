@@ -1,0 +1,13 @@
+{
+	"id": 18,
+	"title": "Positive test level, opponent's deck",
+	"cards": [
+		1,
+		2,
+		3,
+		{
+			"id": 70,
+			"variant": "negative"
+		}
+	]
+}

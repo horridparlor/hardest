@@ -2,14 +2,14 @@ extends Node
 
 const VERSION : String = "0.5";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 21;
 const MAX_CARD_ID : int = 79; #120
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID / 2, 10);
 
 const AUTO_PLAY : bool = false if DEV_MODE else false;
 const AUTO_START : bool = false if DEV_MODE else false;
-const AUTO_LEVEL : int = 0 if DEV_MODE else 0;
+const AUTO_LEVEL : int = 18 if DEV_MODE else 0;
 const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else false;
 const SHOWCASE_STAMP : CardEnums.Stamp = CardEnums.Stamp.NULL if DEV_MODE else CardEnums.Stamp.NULL;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
@@ -19,7 +19,7 @@ const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 
 const MUTE : bool = false if DEV_MODE else false;
-const MUTE_MUSIC : bool = (true if DEV_MODE else false) or MUTE;
+const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;
 const MUTE_SFX : bool = (false if DEV_MODE else false) or MUTE;
 const VOLUME : int = 0 if DEV_MODE else 0;
 const MUSIC_VOLUME : int = 0 if DEV_MODE else 0;

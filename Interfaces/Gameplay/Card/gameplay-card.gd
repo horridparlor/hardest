@@ -324,6 +324,7 @@ func get_keyword_hints() -> String:
 
 func enrich_hint(message : String) -> String:
 	message = message \
+		.replace("SAME_TYPE", CardEnums.CardTypeName[card_data.default_type].to_lower()) \
 		.replace("SAME_TYPES", CardEnums.CardTypeName[card_data.default_type].to_lower() + "s") \
 		.replace("SAME_BASIC", "[b]%s[/b]" % CardEnums.BasicNames[card_data.default_type]);
 	return message;

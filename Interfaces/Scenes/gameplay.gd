@@ -9,6 +9,17 @@ signal stop_music
 signal stop_music_if_special
 signal play_prev_song
 
+enum AnimationType {
+	NULL,
+	OCEAN,
+	POSITIVE
+}
+
+const AnimationWaitTime : Dictionary = {
+	AnimationType.OCEAN: 4.0 * Config.GAME_SPEED_MULTIPLIER,
+	AnimationType.POSITIVE: 4.0 * Config.GAME_SPEED_MULTIPLIER
+}
+
 const HAND_POSITION : Vector2 = Vector2(0, 760);
 const HAND_MARGIN : int = 200;
 const CARD_STARTING_POSITION : Vector2 = Vector2(0, System.Window_.y + GameplayCard.SIZE.y)
@@ -98,8 +109,6 @@ const MIN_STOPPED_TIME_WAIT : float = 0.09;
 const MAX_STOPPED_TIME_WAIT : float = 0.18;
 const OCEAN_POINTS_MIN_WAIT : float = 0.42 * Config.GAME_SPEED_MULTIPLIER;
 const OCEAN_POINTS_MAX_WAIT : float = 0.76 * Config.GAME_SPEED_MULTIPLIER;
-const OCEAN_MIN_WAIT : float = 3.98 * Config.GAME_SPEED_MULTIPLIER;
-const OCEAN_MAX_WAIT : float = 4.0 * Config.GAME_SPEED_MULTIPLIER;
 const WET_MIN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
 const WET_MAX_WAIT : float = 0.67 * Config.GAME_SPEED_MULTIPLIER;
 const HIGH_TIDE_MIN_SPEED : float = 0.08 * Config.GAME_SPEED;
@@ -170,7 +179,6 @@ var death_progress : float;
 var is_dying : bool;
 var is_undying : bool;
 var poppets : Dictionary;
-var is_ocean_in_progress : bool;
 var is_wet_wait_on : bool;
 var high_tide_speed : float;
 var is_low_tiding : bool;
@@ -179,7 +187,12 @@ var ocean_card : GameplayCard;
 var opponents_field_card : GameplayCard;
 var sfx_play_id : int;
 var ocean_effect_wave_speed : float;
-var ocean_effec_speed_exponent : float;
+var ocean_effect_speed_exponent : float;
+var is_waiting_for_animation_to_finnish : bool;
+var animation_instance_id : int;
+var animations : Dictionary;
+var current_animation_type : AnimationType = AnimationType.NULL;
+var has_ocean_wet_self : bool;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

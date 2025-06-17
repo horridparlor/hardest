@@ -1313,6 +1313,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 2 * player.cards_in_hand.size();
 			CardEnums.Keyword.PICK_UP:
 				value += 0;
+			CardEnums.Keyword.POSITIVE:
+				value += 2 * player.points;
 			CardEnums.Keyword.RAINBOW:
 				value += 1;
 			CardEnums.Keyword.RELOAD:

@@ -118,7 +118,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			74,
 			75,
 			84,
-			85
+			85,
+			91
 		]
 	},
 	House.GOD: [
@@ -252,7 +253,8 @@ const RANDOM_CARDS : Dictionary = {
 		67,
 		75,
 		79,
-		86
+		86,
+		91
 	],
 	CardEnums.CardType.GOD: [
 		42
@@ -272,5 +274,6 @@ const FOIL_CARDS : Dictionary = {
 	77: null,
 	78: null,
 	85: null,
-	90: null
+	90: null,
+	91: null
 }

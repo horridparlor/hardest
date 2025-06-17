@@ -201,6 +201,7 @@ func get_hydra_keywords() -> Array:
 		Keyword.PAIR,
 		Keyword.PAIR_BREAKER,
 		Keyword.PERFECT_CLONE,
+		Keyword.POSITIVE,
 		Keyword.RAINBOW,
 		Keyword.RELOAD,
 		Keyword.RUST,

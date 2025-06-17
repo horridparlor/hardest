@@ -1,7 +1,8 @@
 {
-	"id": 85,
-	"name": "Rock",
-	"type": "rock",
+	"id": 91,
+	"name": "Happy Smiles",
+	"type": "mimic",
 	"keywords": [
+		"positive"
 	]
 }

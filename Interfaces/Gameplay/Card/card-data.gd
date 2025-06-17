@@ -357,6 +357,4 @@ func give_negative_of_keyword(keyword : CardEnums.Keyword) -> CardEnums.Keyword:
 	match keyword:
 		CardEnums.Keyword.NEGATIVE:
 			return CardEnums.Keyword.POSITIVE;
-		CardEnums.Keyword.POSITIVE:
-			return CardEnums.Keyword.NEGATIVE;
 	return keyword;

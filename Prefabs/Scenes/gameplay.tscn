@@ -40,16 +40,16 @@ shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 0.0
 shader_parameter/opacity = 0.6
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1o3qo"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x1xpn"]
 shader = ExtResource("2_8s402")
 shader_parameter/wave_speed = 1.0
 shader_parameter/wave_frequency = 20.0
 shader_parameter/wave_amplitude = 0.02
 shader_parameter/water_color = Color(0, 0.4, 0.8, 1)
 shader_parameter/shine_speed = 5.0
-shader_parameter/shine_color = Vector4(1, 1, 1, 0.4)
-shader_parameter/shine_strength = 0.3
-shader_parameter/opacity = 0.6
+shader_parameter/shine_color = Vector4(0, 0, 0.7, 1)
+shader_parameter/shine_strength = 5.0
+shader_parameter/opacity = 1.0
 shader_parameter/mix_rate = 1.0
 shader_parameter/wave_center = Vector2(0.5, 0.5)
 
@@ -200,7 +200,7 @@ material = SubResource("ShaderMaterial_hanut")
 script = ExtResource("3_ixfah")
 
 [node name="OceanPattern" type="Sprite2D" parent="Background"]
-material = SubResource("ShaderMaterial_1o3qo")
+material = SubResource("ShaderMaterial_x1xpn")
 texture = ExtResource("4_j6pyd")
 
 [node name="Leds" type="Sprite2D" parent="Background"]

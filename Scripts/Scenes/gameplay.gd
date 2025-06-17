@@ -382,10 +382,18 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	time_stop_nodes += card.get_shader_layers();
 	custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
 	if is_time_stopped:
-		var shader_material : ShaderMaterial = get_time_stop_material();
-		System.Shaders.set_card_art_shader_parameters(shader_material, card.card_data.is_negative_variant(), card.card_data.is_holographic, card.card_data.is_foil);
-		for node in card.get_custom_shader_layers():
+		var shader_material : ShaderMaterial;
+		var custom_shader_material : ShaderMaterial = get_time_stop_material();
+		for node in time_stop_nodes:
+			if !node.material:
+				continue;
+			shader_material = node.material;
+			break;
+		System.Shaders.set_card_art_shader_parameters(custom_shader_material, card.card_data.is_negative_variant(), card.card_data.is_holographic, card.card_data.is_foil);
+		for node in card.get_shader_layers():
 			node.material = shader_material;
+		for node in card.get_custom_shader_layers():
+			node.material = custom_shader_material;
 	return card;
 
 func add_time_stop_shader(card : GameplayCard) -> void:
@@ -687,18 +695,38 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 func trigger_play_effects(card : CardData, player : Player, opponent : Player, only_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var enemy : CardData = opponent.get_field_card();
 	var keywords : Array = [only_keyword] if only_keyword != CardEnums.Keyword.NULL else card.get_keywords();
-	if enemy and enemy.has_carrot_eater():
+	if enemy and enemy.has_carrot_eater() and !is_time_stopped:
 		eat_carrot(enemy);
 	for keyword in keywords:
 		match keyword:
-			CardEnums.Keyword.CARROT_EATER:
-				eat_carrot(card);
 			CardEnums.Keyword.CELEBRATE:
 				celebrate(player);
 			CardEnums.Keyword.HORSE_GEAR:
 				draw_horse_card(player);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.default_type);
+			CardEnums.Keyword.RAINBOW:
+				opponent.get_rainbowed();
+				update_card_alterations();
+			CardEnums.Keyword.RELOAD:
+				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
+			CardEnums.Keyword.SCAMMER:
+				player.points = -100;
+				gain_points_effect(player);
+			CardEnums.Keyword.VERY_NUTTY:
+				if !enemy or !enemy.has_november():
+					player.nut_multiplier *= 2;
+			CardEnums.Keyword.WRAPPED:
+				player.gained_keyword = CardEnums.Keyword.BURIED;
+	if is_time_stopped:
+		return;
+	if card.has_time_stop():
+		activate_time_stop(card);
+		return;
+	for keyword in keywords:
+		match keyword:
+			CardEnums.Keyword.CARROT_EATER:
+				eat_carrot(card);
 			CardEnums.Keyword.MULTI_SPY:
 				spy_opponent(card, player, opponent, 3);
 			CardEnums.Keyword.NUT_COLLECTOR:
@@ -708,58 +736,93 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				trigger_ocean(card);
 			CardEnums.Keyword.POSITIVE:
 				trigger_positive(card, enemy, player);
-			CardEnums.Keyword.RAINBOW:
-				opponent.get_rainbowed();
-				update_card_alterations();
-			CardEnums.Keyword.RELOAD:
-				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
-			CardEnums.Keyword.SCAMMER:
-				player.points = -100;
-				gain_points_effect(player);
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
-			CardEnums.Keyword.TIME_STOP:
-				activate_time_stop(card);
-			CardEnums.Keyword.VERY_NUTTY:
-				if !enemy or !enemy.has_november():
-					player.nut_multiplier *= 2;
-			CardEnums.Keyword.WRAPPED:
-				player.gained_keyword = CardEnums.Keyword.BURIED;
 
 func trigger_positive(card : CardData, enemy : CardData, player : Player) -> void:
 	var multiplier : int = calculate_base_points(card, enemy, true, false);
 	var points_gained : int = player.gain_points(player.points * multiplier, false);
 	if points_gained == 0:
 		return;
-	wait_for_animation(AnimationType.POSITIVE, {
+	wait_for_animation(card, AnimationType.POSITIVE, {
 		"points": points_gained,
 		"card": card,
 		"player": player
 	});
 
-func wait_for_animation(type : AnimationType, animation_data : Dictionary = {}) -> void:
+func wait_for_animation(card : CardData, type : AnimationType, animation_data : Dictionary = {}) -> void:
 	var instance_id = System.Random.instance_id();
 	var animation_sound : Resource;
 	if animation_instance_id != 0:
+		animation_wait_timer.stop();
 		after_animation(true);
 	animation_instance_id = instance_id;
 	animation_data.type = type;
 	current_animation_type = type;
 	animations[instance_id] = animation_data;
-	animation_wait_timer.wait_time = AnimationWaitTime[type] * System.game_speed_additive_multiplier;
+	animation_wait_timer.wait_time = System.random.randf_range(AnimationMinWaitTime[type], AnimationMaxWaitTime[type]) * System.game_speed_additive_multiplier;
 	animation_wait_timer.start();
 	is_waiting_for_animation_to_finnish = true;
 	match type:
 		AnimationType.OCEAN:
-			ocean_pattern.visible = true;
-			ocean_pattern.modulate.a = 0;
-			high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED);
+			pass;
+		AnimationType.POSITIVE:
+			if get_card(animation_data.card):
+				get_card(animation_data.card).shine_star_effect();
+	if get_card(card):
+		ocean_card = get_card(card);
+	ocean_pattern.material = get_ocean_material_for_animation(animation_data.type);
+	ocean_effect_wave_speed = System.random.randf_range(OCEAN_EFFECT_MIN_STARTING_WAVE_SPEED, OCEAN_EFFECT_MAX_STARTING_WAVE_SPEED);
+	ocean_effect_speed_exponent = System.random.randf_range(OCEAN_SPEED_EFFECT_MIN_EXPONENT, OCEAN_SPEED_EFFECT_MAX_EXPONENT);
+	is_low_tiding = false;
+	ocean_pattern.visible = true;
+	ocean_pattern.modulate.a = 0;
+	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED);
+	match animation_data.type:
+		AnimationType.POSITIVE:
+			high_tide_speed *= 2;
+			ocean_effect_speed_exponent /= 5;
 	emit_signal("stop_music");
 	if Config.MUTE_SFX:
 		return;
 	animation_sfx.stream = load(get_animation_sound_path(type));
 	animation_sfx.volume_db = Config.SFX_VOLUME + Config.GUN_VOLUME;
 	animation_sfx.play();
+
+func get_ocean_material_for_animation(type : AnimationType) -> ShaderMaterial:
+	var shader : Resource;
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	match type:
+		AnimationType.OCEAN:
+			shader = load("res://Shaders/CardEffects/ocean-shader.gdshader");
+		AnimationType.POSITIVE:
+			shader = load("res://Shaders/Background/star-wave.gdshader");
+	shader_material.shader = shader;
+	match type:
+		AnimationType.OCEAN:
+			shader_material.set_shader_parameter("wave_speed", 1.0);
+			shader_material.set_shader_parameter("wave_frequency", 20.0);
+			shader_material.set_shader_parameter("wave_amplitude", 0.02);
+			shader_material.set_shader_parameter("water_color", Color(0.0, 0.4, 0.8, 1.0));
+			shader_material.set_shader_parameter("shine_speed", 10.0);
+			shader_material.set_shader_parameter("shine_color", Color(1.0, 1.0, 1.0, 1.0));
+			shader_material.set_shader_parameter("shine_strength", 0.3);
+			shader_material.set_shader_parameter("opacity", 1.0);
+			shader_material.set_shader_parameter("mix_rate", 1.0);
+		AnimationType.POSITIVE:
+			shader_material.set_shader_parameter("wave_speed", 0)
+			shader_material.set_shader_parameter("wave_frequency", 20.0)
+			shader_material.set_shader_parameter("wave_amplitude", 0.02)
+			shader_material.set_shader_parameter("star_points", 5)
+			shader_material.set_shader_parameter("star_sharpness", 5.0)
+			shader_material.set_shader_parameter("star_color", Color(1.0, 1.0, 0.0, 1.0))
+			shader_material.set_shader_parameter("shine_speed", 5.0)
+			shader_material.set_shader_parameter("shine_color", Color(0.0, 0.0, 0.7, 1.0))
+			shader_material.set_shader_parameter("shine_strength", 5.0)
+			shader_material.set_shader_parameter("opacity", 1.0)
+			shader_material.set_shader_parameter("mix_rate", 1.0)
+			shader_material.set_shader_parameter("wave_center", Vector2(0.5, 0.5))
+	return shader_material;
 
 func get_animation_sound_path(type : AnimationType) -> String:
 	match type:
@@ -778,17 +841,12 @@ func trigger_ocean(card : CardData) -> void:
 	var cards_to_wet : Array = player_one.cards_in_hand.duplicate() + player_two.cards_in_hand.duplicate() + ([enemy] if enemy else []) + [card];
 	var wait_per_card_trigger : float;
 	var triggers : int;
-	if get_card(card):
-		ocean_card = get_card(card);
 	for c in cards_to_wet:
 		if make_card_wet(c, false) and (c.controller == player_one or c.zone == CardEnums.Zone.FIELD):
 			triggers += 1;
-	ocean_effect_wave_speed = System.random.randf_range(OCEAN_EFFECT_MIN_STARTING_WAVE_SPEED, OCEAN_EFFECT_MAX_STARTING_WAVE_SPEED);
-	ocean_effect_speed_exponent = System.random.randf_range(OCEAN_SPEED_EFFECT_MIN_EXPONENT, OCEAN_SPEED_EFFECT_MAX_EXPONENT);
-	is_low_tiding = false;
 	has_ocean_wet_self = false;
-	wait_for_animation(AnimationType.OCEAN);
-	wait_per_card_trigger = AnimationWaitTime[AnimationType.OCEAN] / (triggers + 2);
+	wait_for_animation(card, AnimationType.OCEAN);
+	wait_per_card_trigger = animation_wait_timer.wait_time / (triggers + 2);
 	await System.wait(wait_per_card_trigger * 1.9);
 	for c in cards_to_wet:
 		if c == card:
@@ -1199,6 +1257,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 0;
 			CardEnums.Keyword.CHAMELEON:
 				value += 1;
+			CardEnums.Keyword.CLONING:
+				value += player.cards_in_hand.size();
 			CardEnums.Keyword.COOTIES:
 				value += 1;
 			CardEnums.Keyword.COPYCAT:
@@ -1249,6 +1309,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 3;
 			CardEnums.Keyword.PAIR_BREAKER:
 				value += 1;
+			CardEnums.Keyword.PERFECT_CLONE:
+				value += 2 * player.cards_in_hand.size();
 			CardEnums.Keyword.PICK_UP:
 				value += 0;
 			CardEnums.Keyword.RAINBOW:
@@ -1848,7 +1910,7 @@ func _process(delta : float) -> void:
 		undying_frame(delta);
 	if has_game_ended:
 		victory_pattern.material.set_shader_parameter("opacity", victory_banner.modulate.a);
-	if current_animation_type == AnimationType.OCEAN:
+	if current_animation_type != AnimationType.NULL:
 		high_tide_frame(delta);
 	if is_low_tiding:
 		low_tide_frame(delta);
@@ -1869,7 +1931,12 @@ func low_tide_frame(delta : float) -> void:
 		is_low_tiding = false;
 
 func update_ocean_pattern() -> void:
-	ocean_pattern.material.set_shader_parameter("opacity", min(OCEAN_PATTERN_MAX_OPACITY, ocean_pattern.modulate.a));
+	var max_opacity : float = OCEAN_PATTERN_MAX_OPACITY;
+	match current_animation_type:
+		AnimationType.POSITIVE:
+			max_opacity = POSITIVE_BACKGROUND_MAX_OPACITY;
+	max_opacity = max(ocean_pattern.material.get_shader_parameter("opacity"), max_opacity);
+	ocean_pattern.material.set_shader_parameter("opacity", min(max_opacity, ocean_pattern.modulate.a));
 	if !System.Instance.exists(ocean_card):
 		return;
 	ocean_pattern.material.set_shader_parameter("wave_center", System.Vectors.get_scale_position(ocean_card.position));
@@ -1894,6 +1961,7 @@ func init_time_stop() -> void:
 	led_wait *= TIME_STOP_LED_ACCELERATION;
 	is_time_stopped = true;
 	if animation_instance_id != 0:
+		animation_wait_timer.stop();
 		after_animation(true);
 	play_time_stop_sound();
 
@@ -2150,7 +2218,7 @@ func _on_auto_play_timer_timeout() -> void:
 	player_one.shuffle_hand();
 	player_one.cards_in_hand.sort_custom(best_to_play_for_you);
 	card = player_one.cards_in_hand.back();
-	spawn_card(card)
+	spawn_card(card);
 	play_card(get_card(card), player_one, player_two);
 
 func _on_start_next_round_timer_timeout() -> void:
@@ -2204,15 +2272,17 @@ func _on_wet_wait_timer_timeout() -> void:
 func after_ocean(is_forced : bool) -> void:
 	var card : CardData = ocean_card.card_data;
 	var enemy : CardData = get_opponent(card).get_field_card() if System.Instance.exists(ocean_card) else null;
-	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;
-	is_low_tiding = true;
 	if is_forced:
 		return;
 	make_card_wet(enemy);
 	if !has_ocean_wet_self:
 		make_card_wet(card);
 
-func after_positive(points : int, card : CardData, player : Player) -> void:
+func after_positive(is_forced : bool, points : int, card : CardData, player : Player) -> void:
+	if get_card(card):
+		get_card(card).shine_star.shutter();
+	if is_forced:
+		return;
 	player.gain_points(points);
 	gain_points_effect(player);
 	spawn_poppets(points, card, player);
@@ -2232,8 +2302,9 @@ func after_animation(is_forced : bool = false) -> void:
 		AnimationType.OCEAN:
 			after_ocean(is_forced);
 		AnimationType.POSITIVE:
-			if !is_forced:
-				after_positive(animation_data.points, animation_data.card, animation_data.player);
+			after_positive(is_forced, animation_data.points, animation_data.card, animation_data.player);
+	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;
+	is_low_tiding = true;
 	if is_time_stopped:
 		return;
 	emit_signal("play_prev_song");

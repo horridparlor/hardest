@@ -223,3 +223,9 @@ func out_ocean_frame(delta : float) -> void:
 		is_out_ocean = false;
 		top_pattern.material = null;
 		top_pattern.visible = false;
+
+func shine_star_effect() -> void:
+	if !System.Instance.exists(shine_star):
+		shine_star = System.Instance.load_child(System.Paths.SHINE_STAR, self);
+	shine_star.position = SHINE_STAR_POSITION;
+	shine_star.flicker();

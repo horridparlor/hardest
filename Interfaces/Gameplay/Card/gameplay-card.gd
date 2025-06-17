@@ -54,6 +54,8 @@ const SHAKE_POS_WAIT : float = 0.05 * Config.GAME_SPEED_MULTIPLIER;
 const MIN_RECOIL : int = 0;
 const MAX_RECOIL : int = 20;
 
+const SHINE_STAR_POSITION : Vector2 = Vector2(-350, -430);
+
 const ROCK_BG_COLOR = "#008242";
 const ROCK_BORDER_COLOR = "#7bffc3";
 const PAPER_BG_COLOR = "#3683cf";
@@ -100,6 +102,7 @@ var has_holographic_visuals : bool;
 var has_foil_visuals : bool;
 var is_in_ocean : bool;
 var is_out_ocean : bool;
+var shine_star : ShineStar;
 
 var dissolve_value : float;
 var is_dissolving : bool;
@@ -344,4 +347,7 @@ func get_custom_shader_layers() -> Array:
 	return [];
 
 func add_art_base_shader(do_force : bool = false) -> void:
+	pass;
+
+func shine_star_effect() -> void:
 	pass;

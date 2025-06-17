@@ -24,6 +24,10 @@ static func from_json(data : Dictionary) -> Decklist:
 func eat_cards(source_cards : Array, source_starting_cards : Array) -> void:
 	var card_type : CardEnums.CardType;
 	var starting_type : CardEnums.CardType;
+	if source_cards.size() == 0:
+		source_cards = [1, 2, 3];
+	while source_cards.size() < 3:
+		source_cards.append(System.Random.item(source_cards));
 	for card in source_cards:
 		cards.append(parse_card_or_id(card));
 	for card in source_starting_cards:

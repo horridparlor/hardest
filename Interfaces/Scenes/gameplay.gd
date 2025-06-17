@@ -15,7 +15,12 @@ enum AnimationType {
 	POSITIVE
 }
 
-const AnimationWaitTime : Dictionary = {
+const AnimationMinWaitTime : Dictionary = {
+	AnimationType.OCEAN: 3.8 * Config.GAME_SPEED_MULTIPLIER,
+	AnimationType.POSITIVE: 3.7 * Config.GAME_SPEED_MULTIPLIER
+}
+
+const AnimationMaxWaitTime : Dictionary = {
 	AnimationType.OCEAN: 4.0 * Config.GAME_SPEED_MULTIPLIER,
 	AnimationType.POSITIVE: 4.0 * Config.GAME_SPEED_MULTIPLIER
 }
@@ -99,6 +104,7 @@ const FAST_LED_SPEED : int = 2;
 const BACKGROUND_OPACITY : float = 0.6;
 const DIE_BUTTON_ROTATION : float = 5.6;
 const TITLE_ROTATION : float = 2.1;
+const POSITIVE_BACKGROUND_MAX_OPACITY : float = 0.9;
 
 const TIME_STOP_ACCELERATION_SPEED : float = 0.5 * Config.GAME_SPEED;
 const TIME_STOP_LED_ACCELERATION : int = 12 * Config.GAME_SPEED;

@@ -28,6 +28,8 @@ var did_nut : bool;
 var nut_multiplier : int = 1;
 var point_goal : int;
 var is_roguelike : bool;
+var last_type_played : CardEnums.CardType = CardEnums.CardType.NULL;
+var played_same_type_in_a_row : int;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -122,6 +124,13 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	if is_digital_speed:
 		return;
 	card.add_keyword(gained_keyword);
+	if card.card_type == last_type_played:
+		played_same_type_in_a_row += 1;
+		if card.has_multiply():
+			card.multiply_advantage = pow(2, played_same_type_in_a_row);
+	else:
+		played_same_type_in_a_row = 0;
+		last_type_played = card.card_type;
 	gained_keyword = CardEnums.Keyword.NULL;
 	if !is_digital_speed:
 		cards_played_this_turn += 1;
@@ -143,10 +152,16 @@ func generate_deck() -> void:
 	for card in cards:
 		spawn_card(card);
 
-func spawn_card(card_data : CardData) -> void:
+func spawn_card(card_data : CardData, spawn_to : CardEnums.Zone = CardEnums.Zone.DECK) -> CardData:
 	var card : CardData = CardData.from_json(card_data.to_json());
 	card.controller = self;
-	cards_in_deck.append(card);
+	match spawn_to:
+		CardEnums.Zone.DECK:
+			cards_in_deck.append(card);
+		CardEnums.Zone.HAND:
+			card.zone = CardEnums.Zone.HAND;
+			cards_in_hand.append(card);
+	return card;
 
 func spawn_card_from_id(card_id : int) -> void:
 	spawn_card(System.Data.load_card(card_id));

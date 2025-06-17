@@ -727,6 +727,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 		match keyword:
 			CardEnums.Keyword.CARROT_EATER:
 				eat_carrot(card);
+			CardEnums.Keyword.CLONING:
+				trigger_cloning(card, player);
 			CardEnums.Keyword.MULTI_SPY:
 				spy_opponent(card, player, opponent, 3);
 			CardEnums.Keyword.NUT_COLLECTOR:
@@ -734,10 +736,32 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 					collect_nuts(player);
 			CardEnums.Keyword.OCEAN:
 				trigger_ocean(card);
+			CardEnums.Keyword.PERFECT_CLONE:
+				trigger_cloning(card, player, true);
 			CardEnums.Keyword.POSITIVE:
 				trigger_positive(card, enemy, player);
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
+
+
+func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool = false) -> void:
+	var cloned_card : CardData;
+	var card_to_clone : CardData;
+	var gameplay_card : GameplayCard;
+	if player.hand_empty() or (player.count_hand() + 1) > System.Rules.MAX_HAND_SIZE:
+		return;
+	card_to_clone = player.cards_in_hand.back();
+	cloned_card = player.spawn_card(card_to_clone, CardEnums.Zone.HAND);
+	if is_perfect_clone:
+		cloned_card.is_holographic = true;
+		cloned_card.stamp = CardEnums.Stamp.RARE;
+	if cloned_card.controller == player_two:
+		return;
+	gameplay_card = spawn_card(cloned_card);
+	if get_card(card_to_clone):
+		var pos : Vector2 = get_card(card_to_clone).position;
+		gameplay_card.position = pos + Vector2(-2, 0);
+	show_hand();
 
 func trigger_positive(card : CardData, enemy : CardData, player : Player) -> void:
 	var multiplier : int = calculate_base_points(card, enemy, true, false);
@@ -1168,6 +1192,8 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 	if add_advantages:
 		if card.stopped_time_advantage > 0:
 			points *= card.stopped_time_advantage;
+		if card.multiply_advantage > 0:
+			points *= card.multiply_advantage;
 	if !did_win:
 		return points;
 	if card.has_rare_stamp():
@@ -1291,6 +1317,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value -= 1;
 			CardEnums.Keyword.MULTI_SPY:
 				value += 3;
+			CardEnums.Keyword.MULTIPLY:
+				value += 0;
 			CardEnums.Keyword.MUSHY:
 				value -= 1;
 			CardEnums.Keyword.NOVEMBER:
@@ -1598,6 +1626,8 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 			count *= 2;
 	elif card.has_pair():
 		count = 2;
+	if card.has_multiply() and count == 1 and card.multiply_advantage > 0:
+		count = min(8, card.multiply_advantage);
 	for i in range(count):
 		if i > 0:
 			enemy_position += System.Random.vector(100, 200);
@@ -1826,6 +1856,12 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 	if card.stopped_time_advantage > 0:
 		return you_win;
 	elif enemy.stopped_time_advantage > 0:
+		return opponent_wins;
+	if card.multiply_advantage > 1000 and enemy.multiply_advantage > 1000:
+		System.Random.item([card, enemy]).multiply_advantage -= 1;
+	if card.multiply_advantage > enemy.multiply_advantage:
+		return you_win;
+	elif enemy.multiply_advantage > card.multiply_advantage:
 		return opponent_wins;
 	if card.has_pair():
 		if !enemy.has_pair():

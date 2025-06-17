@@ -94,7 +94,11 @@ const CARDS_TO_COLLECT : Dictionary = {
 		Rarity.RARE: [
 			27,
 			39,
-			46
+			46,
+			87,
+			88,
+			89,
+			90
 		]
 	},
 	House.KAWAII: {
@@ -183,7 +187,8 @@ const RANDOM_CARDS : Dictionary = {
 		62,
 		68,
 		71,
-		85
+		85,
+		87
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -207,7 +212,8 @@ const RANDOM_CARDS : Dictionary = {
 		69,
 		72,
 		78,
-		83
+		83,
+		88
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -231,7 +237,8 @@ const RANDOM_CARDS : Dictionary = {
 		64,
 		70,
 		73,
-		84
+		84,
+		89
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -243,7 +250,8 @@ const RANDOM_CARDS : Dictionary = {
 		57,
 		65,
 		74,
-		77
+		77,
+		90
 	],
 	CardEnums.CardType.MIMIC: [
 		5,

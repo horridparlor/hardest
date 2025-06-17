@@ -30,6 +30,7 @@ var instance_id : int;
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
 var stopped_time_advantage : int;
+var multiply_advantage : int;
 var nuts : int;
 var nuts_stolen : int;
 
@@ -154,6 +155,9 @@ func has_chameleon() -> bool:
 func has_champion() -> bool:
 	return has_keyword(CardEnums.Keyword.CHAMPION);
 
+func has_cloning() -> bool:
+	return has_keyword(CardEnums.Keyword.CLONING);
+
 func has_cooties() -> bool:
 	return has_keyword(CardEnums.Keyword.COOTIES);
 
@@ -208,6 +212,9 @@ func has_max_keywords() -> bool:
 func has_multi_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.MULTI_SPY);
 
+func has_multiply() -> bool:
+	return has_keyword(CardEnums.Keyword.MULTIPLY);
+
 func has_mushy() -> bool:
 	return has_keyword(CardEnums.Keyword.MUSHY);
 
@@ -243,6 +250,9 @@ func has_pair() -> bool:
 
 func has_pair_breaker() -> bool:
 	return has_keyword(CardEnums.Keyword.PAIR_BREAKER);
+
+func has_perfect_clone() -> bool:
+	return has_keyword(CardEnums.Keyword.PERFECT_CLONE);
 
 func has_pick_up() -> bool:
 	return has_keyword(CardEnums.Keyword.PICK_UP);

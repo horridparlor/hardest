@@ -699,12 +699,18 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 		eat_carrot(enemy);
 	for keyword in keywords:
 		match keyword:
+			CardEnums.Keyword.ALPHA_WEREWOLF:
+				player.played_alpha_werewolf = true;
 			CardEnums.Keyword.CELEBRATE:
 				celebrate(player);
+			CardEnums.Keyword.CLONING:
+				trigger_cloning(card, player);
 			CardEnums.Keyword.HORSE_GEAR:
 				draw_horse_card(player);
 			CardEnums.Keyword.INFLUENCER:
-				influence_opponent(opponent, card.default_type);
+				influence_opponent(opponent, card.card_type);
+			CardEnums.Keyword.PERFECT_CLONE:
+				trigger_cloning(card, player, true);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
 				update_card_alterations();
@@ -727,8 +733,6 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 		match keyword:
 			CardEnums.Keyword.CARROT_EATER:
 				eat_carrot(card);
-			CardEnums.Keyword.CLONING:
-				trigger_cloning(card, player);
 			CardEnums.Keyword.MULTI_SPY:
 				spy_opponent(card, player, opponent, 3);
 			CardEnums.Keyword.NUT_COLLECTOR:
@@ -736,8 +740,6 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 					collect_nuts(player);
 			CardEnums.Keyword.OCEAN:
 				trigger_ocean(card);
-			CardEnums.Keyword.PERFECT_CLONE:
-				trigger_cloning(card, player, true);
 			CardEnums.Keyword.POSITIVE:
 				trigger_positive(card, enemy, player);
 			CardEnums.Keyword.SPY:
@@ -1200,6 +1202,8 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 		points *= 2;
 	if card.is_holographic:
 		points *= 2;
+	if card.is_god():
+		points *= 10;
 	return points;
 
 func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
@@ -1243,8 +1247,8 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 				player.build_hydra(card);
 			trigger_play_effects(card, player, opponent);
 			transformed_any = true;
-		if card.has_copycat():
-			card.card_type = opponent.cards_on_field[0].card_type;
+		if card.has_copycat() and opponent.get_field_card():
+			card.card_type = opponent.get_field_card().card_type;
 		if get_card(card):
 			update_alterations_for_card(card);
 	return transformed_any;
@@ -1277,6 +1281,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 			value += direction * 1;
 	for keyword in card.keywords:
 		match keyword:
+			CardEnums.Keyword.ALPHA_WEREWOLF:
+				value -= 2;
 			CardEnums.Keyword.BURIED:
 				value += 5;
 			CardEnums.Keyword.CELEBRATE:
@@ -1373,6 +1379,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 5 if opponent.points > 0 else 0;
 			CardEnums.Keyword.VERY_NUTTY:
 				value += 10 * player.turns_waited_to_nut * player.nut_multiplier;
+			CardEnums.Keyword.WEREWOLF:
+				value += 0;
 			CardEnums.Keyword.WRAPPED:
 				value += 0 if player.going_first else 1;
 	value *= calculate_base_points(card, null, true);
@@ -1541,6 +1549,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	spawn_poppets(points, card, player);
 	check_lose_effects(enemy, opponent);
 	if card:
+		if card.is_god():
+			summon_divine_judgment(card, enemy);
 		for keyword in card.keywords:
 			match keyword:
 				CardEnums.Keyword.DIVINE:
@@ -1900,6 +1910,17 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 		gameplay_card = get_card(card);
 		if gameplay_card:
 			gameplay_card.despawn();
+	for c in player.cards_in_hand:
+		card = c;
+		if card.has_werewolf():
+			trigger_werewolf(card);
+	for c in player.cards_in_hand:
+		card = c;
+		if card.has_alpha_werewolf():
+			trigger_alpha_werewolf(player);
+	if player.played_alpha_werewolf:
+		trigger_alpha_werewolf(player);
+		player.played_alpha_werewolf = false;
 	for c in player.cards_in_hand.duplicate():
 		card = c;
 		gameplay_card = get_card(card);
@@ -1914,6 +1935,33 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 			gameplay_card.despawn();
 	player.end_of_turn_clear(did_win);
 	return true;
+
+func trigger_alpha_werewolf(player : Player) -> void:
+	var played_color : CardEnums.CardType = player.last_type_played;
+	var other_card : CardData;
+	for c in player.cards_in_hand:
+		other_card = c;
+		if !other_card.has_werewolf():
+			continue;
+		other_card.card_type = played_color;
+	for c in player.cards_in_hand:
+		other_card = c;
+		if !other_card.has_werewolf():
+			continue;
+		other_card.add_keyword(CardEnums.Keyword.MULTIPLY);
+		update_alterations_for_card(other_card);
+
+func trigger_werewolf(card : CardData) -> void:
+	var new_type : CardEnums.CardType = card.default_type;
+	match card.card_type:
+		CardEnums.CardType.ROCK:
+			new_type = CardEnums.CardType.PAPER;
+		CardEnums.CardType.PAPER:
+			new_type = CardEnums.CardType.SCISSORS;
+		CardEnums.CardType.SCISSORS:
+			new_type = CardEnums.CardType.ROCK;
+	card.card_type = new_type;
+	update_alterations_for_card(card);
 
 func trigger_ocean_dweller(card : CardData, player : Player) -> void:
 	var points : int = calculate_base_points(card, null, true, false);

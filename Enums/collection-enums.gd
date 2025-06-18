@@ -44,7 +44,10 @@ const CARDS_TO_COLLECT : Dictionary = {
 			8,
 			13,
 			28,
-			70
+			70,
+			92,
+			93,
+			94
 		],
 		Rarity.RARE: [
 			14,
@@ -188,7 +191,8 @@ const RANDOM_CARDS : Dictionary = {
 		68,
 		71,
 		85,
-		87
+		87,
+		92
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -213,7 +217,8 @@ const RANDOM_CARDS : Dictionary = {
 		72,
 		78,
 		83,
-		88
+		88,
+		93
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -238,7 +243,8 @@ const RANDOM_CARDS : Dictionary = {
 		70,
 		73,
 		84,
-		89
+		89,
+		94
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -275,12 +281,14 @@ static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.
 const FOIL_CARDS : Dictionary = {
 	14: null,
 	18: null,
+	42: null,
 	46: null,
 	57: null,
 	65: null,
 	71: null,
 	77: null,
 	78: null,
+	81: null,
 	85: null,
 	90: null,
 	91: null

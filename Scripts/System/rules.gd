@@ -49,3 +49,7 @@ const HOLO_BASE_CHANCE : int = 21;
 const HOLO_CHANCE_MULTIPLIER : int = 5;
 const HOLO_CHANCE_EASING : int = 6;
 const MIN_HOLO_CHANCE : int = 5;
+#Gods
+const ZESCANOR_CHANCE : int = 1000;
+const MIN_GOD_CHANCE : int = 100;
+const GOD_CHANCE_EASING : int = 10;

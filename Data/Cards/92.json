@@ -1,7 +1,9 @@
 {
-	"id": 85,
-	"name": "Rock",
+	"id": 92,
+	"name": "Sleepy Doggy",
 	"type": "rock",
 	"keywords": [
+		"buried",
+		"werewolf"
 	]
 }

@@ -30,6 +30,7 @@ var point_goal : int;
 var is_roguelike : bool;
 var last_type_played : CardEnums.CardType = CardEnums.CardType.NULL;
 var played_same_type_in_a_row : int;
+var played_alpha_werewolf : bool;
 
 func count_deck() -> int:
 	return cards_in_deck.size();

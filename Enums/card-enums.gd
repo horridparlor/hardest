@@ -28,6 +28,12 @@ const BasicIds : Dictionary = {
 	CardType.GOD: 42
 }
 
+const BASIC_COLORS : Dictionary = {
+	CardType.ROCK: null,
+	CardType.PAPER: null,
+	CardType.SCISSORS: null
+}
+
 const NUT_IDS : Array = [
 	58,
 	59,
@@ -40,10 +46,10 @@ const NUT_IDS : Array = [
 ];
 
 const BasicNames : Dictionary = {
-	CardType.ROCK: "a Pebble",
-	CardType.PAPER: "a Scribble Paper",
+	CardType.ROCK: "Pebble",
+	CardType.PAPER: "Scribble Paper",
 	CardType.SCISSORS: "Paper Scissors",
-	CardType.MIMIC: "a Lesser Mimic",
+	CardType.MIMIC: "Lesser Mimic",
 	CardType.GUN: "The Gun",
 	CardType.GOD: "The Zescanor"
 }
@@ -117,6 +123,7 @@ const TranslateStamp : Dictionary = {
 
 enum Keyword {
 	NULL,
+	ALPHA_WEREWOLF,
 	AUTO_HYDRA,
 	BURIED,
 	CARROT_EATER,
@@ -169,6 +176,7 @@ enum Keyword {
 	UNDEAD,
 	VAMPIRE,
 	VERY_NUTTY,
+	WEREWOLF,
 	WRAPPED
 }
 
@@ -217,6 +225,7 @@ func get_hydra_keywords() -> Array:
 	];
 
 const KeywordNames : Dictionary = {
+	Keyword.ALPHA_WEREWOLF : "Alpha-werewolf",
 	Keyword.AUTO_HYDRA : "Auto-hydra",
 	Keyword.BURIED : "Buried",
 	Keyword.CARROT_EATER : "Carrot-eater",
@@ -269,10 +278,12 @@ const KeywordNames : Dictionary = {
 	Keyword.UNDEAD : "Undead",
 	Keyword.VAMPIRE : "Vampire",
 	Keyword.VERY_NUTTY : "Very Nutty",
+	Keyword.WEREWOLF : "Werewolf",
 	Keyword.WRAPPED : "Wrapped"
 }
 
 const TranslateKeyword : Dictionary = {
+	"alpha-werewolf" : Keyword.ALPHA_WEREWOLF,
 	"auto-hydra" : Keyword.AUTO_HYDRA,
 	"buried" : Keyword.BURIED,
 	"carrot-eater" : Keyword.CARROT_EATER,
@@ -325,10 +336,12 @@ const TranslateKeyword : Dictionary = {
 	"undead" : Keyword.UNDEAD,
 	"vampire" : Keyword.VAMPIRE,
 	"very-nutty" : Keyword.VERY_NUTTY,
+	"werewolf" : Keyword.WEREWOLF,
 	"wrapped" : Keyword.WRAPPED
 }
 
 const TranslateKeywordBack: Dictionary = {
+	Keyword.ALPHA_WEREWOLF : "alpha-werewolf",
 	Keyword.AUTO_HYDRA : "auto-hydra",
 	Keyword.BURIED : "buried",
 	Keyword.CARROT_EATER : "carrot-eater",
@@ -381,10 +394,12 @@ const TranslateKeywordBack: Dictionary = {
 	Keyword.UNDEAD : "undead",
 	Keyword.VAMPIRE : "vampire",
 	Keyword.VERY_NUTTY : "very-nutty",
+	Keyword.WEREWOLF : "werewolf",
 	Keyword.WRAPPED : "wrapped"
 }
 
 var KeywordHints : Dictionary = {
+	Keyword.ALPHA_WEREWOLF : "End of turn, werewolfs in hand become the color you played, and gain multiply.",
 	Keyword.AUTO_HYDRA : "When drawn, gains 3 random keywords.",
 	Keyword.BURIED : "Played face-down.",
 	Keyword.CARROT_EATER : "Eats a random keyword from enemy.",
@@ -437,6 +452,7 @@ var KeywordHints : Dictionary = {
 	Keyword.UNDEAD : "Takes %s SAME_TYPES from your grave and turns into a gun." % [System.Rules.UNDEAD_LIMIT],
 	Keyword.VAMPIRE : "If wins, drains the points from opponent.",
 	Keyword.VERY_NUTTY : "Doubles your next nut.",
+	Keyword.WEREWOLF : "End of turn, changes color. [i](In hand.)[/i]",
 	Keyword.WRAPPED : "Next card you play, gains buried."
 }
 

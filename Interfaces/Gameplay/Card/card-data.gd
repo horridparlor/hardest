@@ -81,6 +81,8 @@ func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false
 				return false;
 		CardEnums.Keyword.NULL:
 			return false;
+		CardEnums.Keyword.ALPHA_WEREWOLF:
+			upgrade_to_keys = [CardEnums.Keyword.WEREWOLF];
 		CardEnums.Keyword.EXTRA_SALTY:
 			upgrade_to_keys = [CardEnums.Keyword.SALTY];
 		CardEnums.Keyword.MULTI_SPY:
@@ -104,6 +106,8 @@ func has_keyword(keyword : CardEnums.Keyword, may_have_buried : bool = false) ->
 			duplicate_keys += [CardEnums.Keyword.EXTRA_SALTY];
 		CardEnums.Keyword.SPY:
 			duplicate_keys += [CardEnums.Keyword.MULTI_SPY];
+		CardEnums.Keyword.WEREWOLF:
+			duplicate_keys += [CardEnums.Keyword.ALPHA_WEREWOLF];
 	for key in duplicate_keys:
 		if keywords.has(key):
 			return true;
@@ -133,6 +137,9 @@ func clone() -> CardData:
 	card_data.eat_json(to_json());
 	card_data.controller = controller;
 	return card_data;
+
+func has_alpha_werewolf() -> bool:
+	return has_keyword(CardEnums.Keyword.ALPHA_WEREWOLF);
 
 func is_aquatic() -> bool:
 	return has_ocean() or has_ocean_dweller() or has_tidal() or has_mushy();
@@ -311,6 +318,9 @@ func has_very_nutty() -> bool:
 
 func is_vanilla() -> bool:
 	return keywords.is_empty();
+
+func has_werewolf() -> bool:
+	return has_keyword(CardEnums.Keyword.WEREWOLF);
 
 func has_wrapped() -> bool:
 	return has_keyword(CardEnums.Keyword.WRAPPED);

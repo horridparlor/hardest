@@ -327,9 +327,13 @@ func get_keyword_hints() -> String:
 
 func enrich_hint(message : String) -> String:
 	message = message \
-		.replace("SAME_TYPE", CardEnums.CardTypeName[card_data.default_type].to_lower()) \
+		.replace("SAME_TYPE", CardEnums.CardTypeName[card_data.card_type].to_lower()) \
 		.replace("SAME_TYPES", CardEnums.CardTypeName[card_data.default_type].to_lower() + "s") \
-		.replace("SAME_BASIC", "[b]%s[/b]" % CardEnums.BasicNames[card_data.default_type]);
+		.replace("SAME_BASIC", ("a " if [
+			CardEnums.CardType.ROCK,
+			CardEnums.CardType.PAPER,
+			CardEnums.CardType.MIMIC
+		].has(card_data.card_type) else "") + "[b]%s[/b]" % CardEnums.BasicNames[card_data.card_type]);
 	return message;
 
 func wet_effect() -> void:

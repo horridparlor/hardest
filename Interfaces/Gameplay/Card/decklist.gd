@@ -51,7 +51,7 @@ func parse_card_or_id(card) -> CardData:
 	var card_data : CardData;
 	if Config.DEBUG_CARD != 0:
 		return System.Data.load_card(Config.DEBUG_CARD);
-	if typeof(card) == TYPE_FLOAT:
+	if typeof(card) == TYPE_FLOAT or typeof(card) == TYPE_INT:
 		return System.Data.load_card(card);
 	card_data = System.Data.load_card(card.id);
 	card_data.eat_spawn_json(card);

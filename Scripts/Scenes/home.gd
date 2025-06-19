@@ -239,8 +239,22 @@ func _on_game_over(did_win : bool) -> void:
 		process_victory();
 	else:
 		process_loss();
+	if in_roguelike_mode:
+		remove_burned_cards_from_decklists();
 	save_data.roguelike_data.get_new_choices(level_data.opponent);
 	save_data.write();
+
+func remove_burned_cards_from_decklists() -> void:
+	for spawn_id in gameplay.player_one.decklist.burned_cards:
+		for card in save_data.roguelike_data.your_cards.duplicate():
+			if card["spawn_id"] == spawn_id:
+				save_data.roguelike_data.your_cards.erase(card);
+				break;
+	for spawn_id in gameplay.player_two.decklist.burned_cards:
+		for card in save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.duplicate():
+			if card["spawn_id"] == spawn_id:
+				save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.erase(card);
+				break;
 
 func _on_background_music_finished() -> void:
 	var song_id : int;
@@ -294,6 +308,7 @@ func give_opponent_card_drop(opponent_id : int, confirmed_rare : bool = false) -
 		"stamp": CardEnums.TranslateStampBack[save_data.roguelike_data.get_stamp_for_spawned_card(card_data, opponent.rare_chance)],
 		"variant": CardEnums.TranslateVariantBack[save_data.roguelike_data.get_variant_for_spawned_card(card_data, opponent.rare_chance)],
 		"is_holographic": save_data.roguelike_data.get_is_holo_for_spawned_card(opponent.rare_chance),
+		"spawn_id": System.random.randi()
 	};
 	if opponent_id == GameplayEnums.Character.MERITUULI and !card_data.has_digital():
 		card_drop.stamp = CardEnums.TranslateStampBack[CardEnums.Stamp.BLUETOOTH];

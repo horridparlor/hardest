@@ -1,21 +1,16 @@
 [gd_scene load_steps=3 format=3 uid="uid://cfbwuumxtjb7i"]
 
-[ext_resource type="Shader" path="res://Shaders/Background/star-wave.gdshader" id="1_ec8o6"]
+[ext_resource type="Shader" path="res://Shaders/Particles/burning-particles.gdshader" id="1_vkqgq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nix5r"]
-shader = ExtResource("1_ec8o6")
-shader_parameter/wave_speed = 1.0
-shader_parameter/wave_frequency = 20.0
-shader_parameter/wave_amplitude = 0.02
-shader_parameter/star_points = 5
-shader_parameter/star_sharpness = 5.0
-shader_parameter/star_color = Color(1, 1, 0, 1)
-shader_parameter/shine_speed = 5.0
-shader_parameter/shine_color = Vector4(0, 0, 0.7, 1)
-shader_parameter/shine_strength = 0.5
-shader_parameter/opacity = 1.0
-shader_parameter/mix_rate = 1.0
-shader_parameter/wave_center = Vector2(0.5, 0.5)
+shader = ExtResource("1_vkqgq")
+shader_parameter/speed = 1.5
+shader_parameter/intensity = 1.0
+shader_parameter/scale = 3.0
+shader_parameter/distortion_amount = 0.2
+shader_parameter/fire_color1 = Vector4(1, 0.4, 0, 1)
+shader_parameter/fire_color2 = Vector4(1, 1, 0, 1)
+shader_parameter/fire_color3 = Vector4(1, 1, 1, 1)
 
 [node name="Node2D" type="Node2D"]
 

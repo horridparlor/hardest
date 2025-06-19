@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://boufls0ytvqmv"]
+
+[ext_resource type="Shader" path="res://Shaders/Particles/random-flip.gdshader" id="1_81pfp"]
+[ext_resource type="Texture2D" uid="uid://b3dna2d21q6fp" path="res://Assets/Art/CardEffects/Glows/burning.png" id="2_cmggq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xqq64"]
+shader = ExtResource("1_81pfp")
+
+[node name="BurningEffect" type="Node2D"]
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+material = SubResource("ShaderMaterial_xqq64")
+amount = 6
+explosiveness = 0.2
+local_coords = true
+texture = ExtResource("2_cmggq")
+emission_shape = 3
+emission_rect_extents = Vector2(450, 10)
+spread = 90.0
+gravity = Vector2(0, -4000)
+initial_velocity_max = 1.0
+orbit_velocity_min = -0.2
+orbit_velocity_max = 0.2
+angle_min = -15.0
+angle_max = 15.0
+scale_amount_min = 5.0
+scale_amount_max = 6.0

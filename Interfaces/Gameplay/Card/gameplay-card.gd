@@ -107,6 +107,7 @@ var shine_star : ShineStar;
 var dissolve_value : float;
 var is_dissolving : bool;
 var dissolve_speed : float;
+var burn_effect_layer : Node2D;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -165,7 +166,7 @@ func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
 	if is_moving or following_mouse:
-		if card_data.controller and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO and System.Vectors.is_default(goal_position):
+		if System.Instance.exists(card_data) and card_data.controller and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO and System.Vectors.is_default(goal_position):
 			if is_visiting:
 				goal_position = get_despawn_position();
 			else:
@@ -338,6 +339,10 @@ func enrich_hint(message : String) -> String:
 
 func wet_effect() -> void:
 	pass;
+
+func burn_effect() -> void:
+	burn_effect_layer = System.Instance.load_child(System.Paths.BURNING_EFFECT, self);
+	burn_effect_layer.position.y = 200;
 
 func _on_out_ocean() -> void:
 	ocean_timer.stop();

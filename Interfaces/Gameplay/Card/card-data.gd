@@ -8,6 +8,7 @@ enum ShootingType {
 
 const DEFAULT_DATA : Dictionary = {
 	"id": 0,
+	"spawn_id": 0,
 	"name": "Name",
 	"type": "mimic",
 	"override_type": null,
@@ -29,6 +30,7 @@ var stamp : CardEnums.Stamp;
 var variant : CardEnums.CardVariant;
 var is_holographic : bool;
 var is_foil : bool;
+var spawn_id : int;
 
 var controller : Player;
 var instance_id : int;
@@ -38,6 +40,7 @@ var stopped_time_advantage : int;
 var multiply_advantage : int;
 var nuts : int;
 var nuts_stolen : int;
+var is_burned : bool;
 
 func _init() -> void:
 	update_instance_id();
@@ -71,6 +74,9 @@ func eat_spawn_json(data : Dictionary) -> void:
 	stamp = CardEnums.TranslateStamp[data.stamp];
 	variant = CardEnums.TranslateVariant[data.variant];
 	is_holographic = data.is_holographic;
+	spawn_id = data.spawn_id;
+	if spawn_id == 0:
+		spawn_id = System.random.randi();
 
 func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false, do_add : bool = true) -> bool:
 	var upgrade_to_keys : Array;
@@ -121,6 +127,7 @@ func has_keyword(keyword : CardEnums.Keyword, may_have_buried : bool = false) ->
 func to_json() -> Dictionary:
 	return {
 		"id": card_id,
+		"spawn_id": spawn_id,
 		"name": card_name,
 		"type": CardEnums.CardTypeName[default_type].to_lower(),
 		"override_type": CardEnums.CardTypeName[card_type].to_lower(),
@@ -147,7 +154,7 @@ func has_alpha_werewolf() -> bool:
 	return has_keyword(CardEnums.Keyword.ALPHA_WEREWOLF);
 
 func is_aquatic() -> bool:
-	return has_ocean() or has_ocean_dweller() or has_tidal() or has_mushy();
+	return has_ocean() or has_ocean_dweller();
 
 func has_auto_hydra() -> bool:
 	return has_keyword(CardEnums.Keyword.AUTO_HYDRA);
@@ -214,6 +221,9 @@ func has_high_nut() -> bool:
 
 func has_hydra() -> bool:
 	return has_keyword(CardEnums.Keyword.HYDRA);
+
+func has_incinerate() -> bool:
+	return has_keyword(CardEnums.Keyword.INCINERATE);
 
 func has_influencer() -> bool:
 	return has_keyword(CardEnums.Keyword.INFLUENCER);

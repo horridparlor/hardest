@@ -425,6 +425,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player, opponent, points);
 			opponent.discard_from_hand(enemy);
+			loser_dissolve_effect(enemy, card);
 			spy_target.dissolve();
 			spy_target.despawn();
 			if cards_to_spy > 0:
@@ -438,7 +439,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			trigger_winner_loser_effects(enemy, card, opponent, player);
 			player.send_from_field_to_grave(card);
 			if get_card(card):
-				get_card(card).dissolve();
+				loser_dissolve_effect(card, enemy);
 				get_card(card).despawn();
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
@@ -754,6 +755,7 @@ func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool =
 		return;
 	card_to_clone = System.Random.item(player.cards_in_hand);
 	cloned_card = player.spawn_card(card_to_clone, CardEnums.Zone.HAND);
+	cloned_card.spawn_id = System.random.randi();
 	if is_perfect_clone:
 		cloned_card.is_holographic = true;
 		cloned_card.stamp = CardEnums.Stamp.RARE;
@@ -1319,6 +1321,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 4;
 			CardEnums.Keyword.HYDRA:
 				value += 2;
+			CardEnums.Keyword.INCINERATE:
+				value += 1;
 			CardEnums.Keyword.INFLUENCER:
 				value -= 1;
 			CardEnums.Keyword.MULTI_SPY:
@@ -1483,14 +1487,12 @@ func round_results() -> void:
 			trigger_winner_loser_effects(card, enemy, player_one, player_two);
 			if !player_one.is_close_to_winning() and !System.Random.chance(YOUR_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", your_points.position);
-			if get_card(enemy):
-				get_card(enemy).dissolve();
+			loser_dissolve_effect(enemy, card);
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, player_two, player_one);
 			if !player_two.is_close_to_winning() and !System.Random.chance(OPPONENTS_POINTS_ZOOM_CHANCE):
 				emit_signal("quick_zoom_to", opponents_points.position);
-			if get_card(card):
-				get_card(card).dissolve();
+			loser_dissolve_effect(card, enemy);
 		GameplayEnums.Controller.NULL:
 			play_tie_sound()
 	if round_winner == GameplayEnums.Controller.NULL:
@@ -1498,6 +1500,19 @@ func round_results() -> void:
 		return;
 	round_end_timer.wait_time = ROUND_END_WAIT * System.game_speed_additive_multiplier;
 	round_end_timer.start();
+
+func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
+	if !get_card(card):
+		return;
+	if enemy.has_incinerate():
+		get_card(card).burn_effect();
+		burn_card(card);
+	get_card(card).dissolve();
+
+func burn_card(card : CardData) -> void:
+	if !card:
+		return;
+	card.controller.burn_card(card);
 
 func stopped_time_results() -> void:
 	if !time_stopping_player:
@@ -1835,6 +1850,10 @@ func check_pre_types_keywords(card : CardData, enemy : CardData) -> GameplayEnum
 	if card.is_nut_tied() and enemy.has_november():
 		return opponent_wins;
 	if enemy.is_nut_tied() and card.has_november():
+		return you_win;
+	if card.is_aquatic() and enemy.has_electrocute():
+		return opponent_wins;
+	elif enemy.is_aquatic() and card.has_electrocute():
 		return you_win;
 	if card.is_buried and !enemy.is_buried and enemy_type != CardEnums.CardType.MIMIC:
 		return opponent_wins;

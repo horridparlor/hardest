@@ -46,6 +46,14 @@ func _init() -> void:
 		rare_opponents[key] = null;
 	for key in super_rare_opponents:
 		super_rare_opponents[key] = null;
+	for opponent_id in all_opponents:
+		var new_cards : Array;
+		for card in all_opponents[opponent_id].cards:
+			new_cards.append({
+				"id": card,
+				"spawn_id": System.random.randi()
+			});
+		all_opponents[opponent_id].cards = new_cards;
 	
 	card_choices_left = get_starting_card_choices();
 	next_opponent = get_starting_opponent();

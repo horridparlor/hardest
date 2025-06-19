@@ -95,12 +95,14 @@ const CARDS_TO_COLLECT : Dictionary = {
 			47,
 			48,
 			49,
+			80,
 		],
 		Rarity.RARE: [
 			27,
 			39,
 			46,
 			53,
+			81,
 			88,
 			90,
 		]
@@ -249,6 +251,7 @@ const RANDOM_CARDS : Dictionary = {
 		64,
 		70,
 		73,
+		80,
 		84,
 		89,
 		94
@@ -264,6 +267,7 @@ const RANDOM_CARDS : Dictionary = {
 		65,
 		74,
 		77,
+		81,
 		90
 	],
 	CardEnums.CardType.MIMIC: [

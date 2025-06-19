@@ -12,6 +12,7 @@ var id : int;
 var title : String;
 var cards : Array;
 var start_with : Array;
+var burned_cards : Array;
 
 static func from_json(data : Dictionary) -> Decklist:
 	var decklist : Decklist = Decklist.new();
@@ -67,3 +68,11 @@ func to_json() -> Dictionary:
 func get_deck() -> Array:
 	cards.shuffle();
 	return cards;
+
+func burn_card(spawn_id : int) -> void:
+	for card in cards.duplicate():
+		if card.spawn_id == spawn_id:
+			cards.erase(card);
+			card.queue_free();
+			break;
+	burned_cards.append(spawn_id);

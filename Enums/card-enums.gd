@@ -107,7 +107,7 @@ const TranslateStampBack : Dictionary = {
 };
 
 const StampHints : Dictionary = {
-	Stamp.BLUETOOTH : "Counterspell from hand. [i](Replaces the card.)[/i]",
+	Stamp.BLUETOOTH : "Counterspell from hand. [i](Replaces your card.)[/i]",
 	Stamp.DOUBLE : "Wins in a tie.",
 	Stamp.MOLE : "Played face-down.",
 	Stamp.RARE : "Scores double."
@@ -194,11 +194,13 @@ func get_hydra_keywords() -> Array:
 		Keyword.CURSED,
 		Keyword.DEVOUR,
 		Keyword.DIVINE,
+		Keyword.ELECTROCUTE,
 		Keyword.EMP,
 		Keyword.GREED,
 		Keyword.HIGH_GROUND,
 		Keyword.HIGH_NUT,
 		Keyword.HORSE_GEAR,
+		Keyword.INCINERATE,
 		Keyword.INFLUENCER,
 		Keyword.MULTI_SPY,
 		Keyword.MULTIPLY,
@@ -416,9 +418,9 @@ var KeywordHints : Dictionary = {
 	Keyword.COPYCAT : "Copies opponent's card type.",
 	Keyword.CURSED : "Cannot be replaced or destroyed.",
 	Keyword.DEVOUR : "Eats the first card opponent plays.",
-	Keyword.DIGITAL : "Counterspell from hand. [i](Replaces the card you played.)[/i]",
+	Keyword.DIGITAL : "Counterspell from hand. [i](Replaces your card.)[/i]",
 	Keyword.DIVINE : "Defeats any undead.",
-	Keyword.ELECTROCUTE : "Defeats any wet card.",
+	Keyword.ELECTROCUTE : "Defeats any ocean card.",
 	Keyword.EMP : "Negates digital and bluetooth stamp",
 	Keyword.EXTRA_SALTY : "If loses, lose 3 points.",
 	Keyword.GREED : "If loses, draw 2.",
@@ -426,7 +428,7 @@ var KeywordHints : Dictionary = {
 	Keyword.HIGH_NUT : "Nuts on any face-down card.",
 	Keyword.HORSE_GEAR : "Draw a horse.",
 	Keyword.HYDRA : "Gains 3 random keywords.",
-	Keyword.INCINERATE : "Permanently destroys cards.",
+	Keyword.INCINERATE : "Permanently destroys defeated cards.",
 	Keyword.INFLUENCER : "Opponent's top card becomes SAME_BASIC.",
 	Keyword.MULTI_SPY : "Fights up to 3 random cards in opponent's hand.",
 	Keyword.MULTIPLY : "Double the value for each SAME_TYPE played in a row.",
@@ -480,9 +482,11 @@ const WET_BULLETS : Dictionary = {
 
 const PLAY_SFX_FULLY_BULLETS : Dictionary = {
 	8: null,
-	18: null
+	18: null,
+	20: null
 }
 
 const HORSE_CARD_IDS : Array = [
-	79
+	79,
+	81
 ]

@@ -87,6 +87,8 @@ func draw() -> bool:
 	var card : CardData;
 	if hand_full():
 		return false;
+	if deck_empty():
+		generate_deck();
 	card = cards_in_deck.pop_back();
 	cards_in_hand.append(card);
 	card.zone = CardEnums.Zone.HAND;
@@ -260,6 +262,8 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	card.card_type = card.default_type;
 	if did_win and card.has_undead(true):
 		purge_undead_materials(card.default_type);
+	if card.is_burned:
+		return;
 	cards_in_grave.append(card);
 	grave_type_counts[card.default_type] += 1;
 
@@ -412,3 +416,15 @@ func draw_horse() -> bool:
 	spawn_card(System.Data.load_card(horse_id));
 	draw();
 	return true;
+
+func burn_card(card : CardData) -> void:
+	var spawn_id : int = card.spawn_id;
+	card.is_burned = true;
+	for other_card in cards_in_grave.duplicate():
+		if other_card.spawn_id == spawn_id:
+			purge_from_grave(other_card);
+	for other_card in cards_in_deck.duplicate():
+		if other_card.spawn_id == spawn_id:
+			cards_in_deck.erase(other_card);
+			other_card.queue_free();
+	decklist.burn_card(spawn_id);

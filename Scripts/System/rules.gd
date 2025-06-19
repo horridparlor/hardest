@@ -52,4 +52,4 @@ const MIN_HOLO_CHANCE : int = 5;
 #Gods
 const ZESCANOR_CHANCE : int = 1000;
 const MIN_GOD_CHANCE : int = 100;
-const GOD_CHANCE_EASING : int = 10;
+const GOD_CHANCE_EASING : int = 20;

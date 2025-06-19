@@ -94,7 +94,7 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 		elif !includes_scam and System.Random.chance(System.Rules.SCAM_DROP_CHANCE):
 			pool = CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[CollectionEnums.House.SCAM];
 			includes_scam = true;
-		elif !includes_god and System.Random.chance(max(System.Rules.MIN_GOD_CHANCE, System.Rules.ZESCANOR_CHANCE - rounds_played * System.Rules.GOD_CHANCE_EASING)):
+		elif !includes_god and System.Random.chance(max(System.Rules.MIN_GOD_CHANCE, System.Rules.ZESCANOR_CHANCE - rounds_played * System.Rules.GOD_CHANCE_EASING * rare_chance)):
 			pool = CollectionEnums.CARDS_TO_COLLECT[CollectionEnums.House.GOD];
 			includes_god = true;
 		else:

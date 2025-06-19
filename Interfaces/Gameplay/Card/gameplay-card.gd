@@ -107,7 +107,7 @@ var shine_star : ShineStar;
 var dissolve_value : float;
 var is_dissolving : bool;
 var dissolve_speed : float;
-var burn_effect_layer : Node2D;
+var particle_effect : Node2D;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -341,8 +341,16 @@ func wet_effect() -> void:
 	pass;
 
 func burn_effect() -> void:
-	burn_effect_layer = System.Instance.load_child(System.Paths.BURNING_EFFECT, self);
-	burn_effect_layer.position.y = 200;
+	if System.Instance.exists(particle_effect):
+		particle_effect.queue_free();
+	particle_effect = System.Instance.load_child(System.Paths.BURNING_EFFECT, self);
+	particle_effect.position.y = 200;
+
+func electrocuted_effect() -> void:
+	if System.Instance.exists(particle_effect):
+		particle_effect.queue_free();
+	particle_effect = System.Instance.load_child(System.Paths.ELECTROCUTED_EFFECT, self);
+	particle_effect.position.y = -400;
 
 func _on_out_ocean() -> void:
 	ocean_timer.stop();

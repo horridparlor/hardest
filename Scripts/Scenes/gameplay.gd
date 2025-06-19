@@ -1509,6 +1509,15 @@ func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 		burn_card(card);
 	get_card(card).dissolve();
 
+func electrocute_card(card : CardData) -> void:
+	get_card(card).electrocuted_effect();
+	zoom_to_node(get_card(card));
+	play_electrocuted_sound();
+
+func play_electrocuted_sound() -> void:
+	var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/electrocution.wav");
+	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
+
 func burn_card(card : CardData) -> void:
 	if !card:
 		return;
@@ -1570,6 +1579,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 			match keyword:
 				CardEnums.Keyword.DIVINE:
 					summon_divine_judgment(card, enemy);
+				CardEnums.Keyword.ELECTROCUTE:
+					electrocute_card(enemy);
 				CardEnums.Keyword.SOUL_HUNTER:
 					if enemy:
 						player.steal_card_soul(enemy);
@@ -1993,7 +2004,7 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	for c in player.cards_in_hand.duplicate():
 		card = c;
 		gameplay_card = get_card(card);
-		if card.has_ocean_dweller():
+		if card.has_ocean_dweller() and card.controller == player_one:
 			trigger_ocean_dweller(card, player)
 			if gameplay_card and !gameplay_card.is_visiting:
 				gameplay_card.recoil();

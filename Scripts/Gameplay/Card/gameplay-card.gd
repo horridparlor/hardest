@@ -192,8 +192,8 @@ func dissolve_frame(delta : float) -> void:
 	panel.material.set_shader_parameter("threshold", dissolve_value);
 	background_pattern.material.set_shader_parameter("threshold", dissolve_value);
 	card_art.material.set_shader_parameter("threshold", dissolve_value);
-	if System.Instance.exists(burn_effect_layer):
-		burn_effect_layer.modulate.a = 1.0 - pow(dissolve_value, 2);
+	if System.Instance.exists(particle_effect):
+		particle_effect.modulate.a = 1.0 - pow(dissolve_value, 2);
 
 func wet_effect() -> void:
 	var shader : Resource = load(System.Paths.OCEAN_SHADER);

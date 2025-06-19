@@ -1,5 +1,6 @@
 const BURNING_EFFECT : String = "res://Prefabs/Gameplay/Card/burning-effect.tscn";
 const CARD : String = "res://Prefabs/Gameplay/Card/gameplay-card.tscn";
+const ELECTROCUTED_EFFECT : String = "res://Prefabs/Gameplay/Card/electrocuted_effect.tscn";
 const LED : String = "res://Prefabs/Nexus/EyeCandy/led.tscn";
 const BULLET : String = "res://Prefabs/Gameplay/Card/bullet.tscn";
 const DIVINE_JUDGMENT : String = "res://Prefabs/Gameplay/Card/divine-judgment.tscn";

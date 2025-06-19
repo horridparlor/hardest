@@ -108,7 +108,7 @@ func zoom_in(point : Vector2 = Vector2.ZERO, is_quick : bool = false) -> void:
 	zoom_position = point * (System.Vectors.default_scale() / zoomed_in_scale);
 	is_zooming = true;
 	is_moving_camera = true;
-	zoom_timer.wait_time = ZOOM_WAIT * System.game_speed_multiplier * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
+	zoom_timer.wait_time = ZOOM_WAIT * System.game_speed_additive_multiplier * (QUICK_ZOOM_MULTIPLIER if is_quick_zooming else 1);
 	zoom_timer.start();
 
 func reset_camera() -> void:
@@ -159,8 +159,7 @@ func slowing_frame(delta : float):
 		is_slowing = false;
 
 func set_game_speed(new_speed : float, update_music_pitch : bool = true):
-	System.game_speed = new_speed;
-	System.game_speed_multiplier = 1 / new_speed;
+	System.update_game_speed(new_speed);
 	if update_music_pitch:
 		background_music.pitch_scale = max(Config.MIN_PITCH, System.game_speed * cached_game_speed);
 
@@ -214,7 +213,7 @@ func _on_speed_back_up() -> void:
 			cached_game_speed = 1;
 	else:
 		pitch_locked = true;
-		background_music.pitch_scale = cached_game_speed;
+		background_music.pitch_scale = max(1, cached_game_speed);
 
 func base_rotation_frame(delta : float) -> void:
 	var direction : float = base_rotation_direction * \

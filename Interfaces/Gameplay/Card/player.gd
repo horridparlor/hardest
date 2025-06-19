@@ -325,6 +325,8 @@ func build_hydra(card : CardData) -> void:
 		keyword = System.Random.item(keywords);
 		keywords.erase(keyword);
 		card.add_keyword(keyword);
+	if card.has_tidal() and !card.is_god():
+		card.card_type = CardEnums.CardType.GUN;
 
 func devour_card(eater : CardData, card : CardData) -> Array:
 	var devoured_keywords : Array;

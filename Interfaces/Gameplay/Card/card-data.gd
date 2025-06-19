@@ -1,6 +1,11 @@
 extends Node
 class_name CardData
 
+enum ShootingType {
+	BULLETS,
+	TENTACLES
+}
+
 const DEFAULT_DATA : Dictionary = {
 	"id": 0,
 	"name": "Name",
@@ -361,8 +366,22 @@ func get_max_nuts(opponent_shares_a_nut : bool = false) -> int:
 		max_nuts += 1;
 	return max_nuts;
 
+func does_shoot() -> bool:
+	return is_gun() or CollectionEnums.NON_GUN_SHOOTING_CARDS.has(card_id);
+
 func shoots_wet_bullets() -> bool:
-	return is_gun() and CardEnums.WET_BULLETS.has(bullet_id);
+	return shoots_bullets() and CardEnums.WET_BULLETS.has(bullet_id);
+
+func shoots_bullets() -> bool:
+	return get_shooting_type() == ShootingType.BULLETS;
+
+func shoots_tentacles() -> bool:
+	return has_tidal() and !CollectionEnums.RANDOM_CARDS[CardEnums.CardType.GUN].has(card_id)
+
+func get_shooting_type() -> ShootingType:
+	if shoots_tentacles():
+		return ShootingType.TENTACLES;
+	return ShootingType.BULLETS;
 
 func get_keywords() -> Array:
 	var words : Array;

@@ -3,12 +3,7 @@
 	"title": "Positive test level, your deck",
 	"cards": [
 		1,
-		2,
-		{
-			"id": 70,
-			"variant": "negative"
-		},
-		77,
+		91,
 		91
 	]
 }

@@ -24,7 +24,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			20,
 			50,
 			51,
-			52
+			52,
 		],
 		Rarity.RARE: [
 			55,
@@ -32,7 +32,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			59,
 			60,
 			61,
-			77
+			77,
+			87,
 		]
 	},
 	House.DELUSIONAL: {
@@ -45,7 +46,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			70,
 			92,
 			93,
-			94
+			94,
 		],
 		Rarity.RARE: [
 			14,
@@ -56,7 +57,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			64,
 			66,
 			79,
-			83
 		]
 	},
 	House.DEMONIC: {
@@ -68,7 +68,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			29,
 			56,
 			68,
-			72
+			72,
+			82,
 		],
 		Rarity.RARE: [
 			37,
@@ -78,7 +79,9 @@ const CARDS_TO_COLLECT : Dictionary = {
 			62,
 			65,
 			78,
-			86
+			83,
+			86,
+			89,
 		]
 	},
 	House.HIGHTECH: {
@@ -91,17 +94,15 @@ const CARDS_TO_COLLECT : Dictionary = {
 			36,
 			47,
 			48,
-			49
+			49,
 		],
 		Rarity.RARE: [
 			27,
 			39,
 			46,
 			53,
-			87,
 			88,
-			89,
-			90
+			90,
 		]
 	},
 	House.KAWAII: {
@@ -115,7 +116,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			44,
 			45,
 			69,
-			73
+			73,
 		],
 		Rarity.RARE: [
 			18,
@@ -126,11 +127,11 @@ const CARDS_TO_COLLECT : Dictionary = {
 			75,
 			84,
 			85,
-			91
+			91,
 		]
 	},
 	House.GOD: [
-		42
+		42,
 	],
 }
 const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
@@ -162,11 +163,11 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		Rarity.COMMON: [
 		],
 		Rarity.RARE: [
-			71
+			71,
 		]
 	},
 	House.SCAM: [
-		76
+		76,
 	]
 }
 
@@ -190,6 +191,7 @@ const RANDOM_CARDS : Dictionary = {
 		62,
 		68,
 		71,
+		82,
 		85,
 		87,
 		92
@@ -292,4 +294,8 @@ const FOIL_CARDS : Dictionary = {
 	85: null,
 	90: null,
 	91: null
+}
+
+const NON_GUN_SHOOTING_CARDS : Dictionary = {
+	78: null
 }

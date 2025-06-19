@@ -416,10 +416,10 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		winner = GameplayEnums.Controller.PLAYER_ONE;
 		points = 3;
 	if card and card.is_gun() and winner != GameplayEnums.Controller.PLAYER_TWO:
-		play_shooting_animation(card, enemy);
+		play_shooting_animation(card, enemy, false, false, true);
 		winner = determine_winner(card, enemy);
 	if enemy and enemy.is_gun() and winner != GameplayEnums.Controller.PLAYER_ONE:
-		play_shooting_animation(enemy, card);
+		play_shooting_animation(enemy, card, false, false, true);
 		winner = determine_winner(card, enemy);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
@@ -1463,11 +1463,11 @@ func round_results() -> void:
 		return;
 	led_direction = YOUR_LED_DIRECTION;
 	led_color = YOUR_LED_COLOR if round_winner == GameplayEnums.Controller.PLAYER_ONE else IDLE_LED_COLOR;
-	if card and card.is_gun() and round_winner != GameplayEnums.Controller.PLAYER_TWO:
+	if card and card.does_shoot() and round_winner != GameplayEnums.Controller.PLAYER_TWO:
 		is_motion_shooting = true;
 		play_shooting_animation(card, enemy, round_winner != GameplayEnums.Controller.NULL or System.Random.chance(2));
 		round_winner = determine_winner(card, enemy);
-	if enemy and enemy.is_gun() and round_winner != GameplayEnums.Controller.PLAYER_ONE:
+	if enemy and enemy.does_shoot() and round_winner != GameplayEnums.Controller.PLAYER_ONE:
 		is_motion_shooting = true;
 		play_shooting_animation(enemy, card, true);
 		round_winner = determine_winner(card, enemy);
@@ -1621,15 +1621,46 @@ func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 	if System.game_speed == 1 and !card.is_gun():
 		emit_signal("zoom_to", get_card(enemy).position);
 
-func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false) -> Array:
+func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false, do_fade : bool = false) -> Array:
+	match card.get_shooting_type():
+		CardData.ShootingType.BULLETS:
+			return play_bullets_shooting_animation(card, enemy, do_zoom, slow_down);
+		CardData.ShootingType.TENTACLES:
+			return play_tentacles_shooting_animation(card, enemy, do_zoom, slow_down, do_fade);
+	return [];
+
+func play_bullets_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false) -> Array:
 	var bullets : Array;
 	var bullet : Bullet;
 	if !get_card(card):
 		return bullets;
-	var enemy_position : Vector2 = get_card(enemy).get_recoil_position() if (enemy and get_card(enemy)) else -get_card(card).get_recoil_position();
+	var enemy_position : Vector2 = get_shooting_enemy_position(card, enemy);
+	var count : int = get_count_of_bullets_shot(card);
+	if count <= 0:
+		return bullets;
+	for i in range(count):
+		if i > 0:
+			enemy_position += System.Random.vector(MIN_BULLET_MARGIN, MAX_BULLET_MARGIN);
+		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
+		if slow_down:
+			bullet.slow_down();
+		bullet.init(enemy_position - (get_card(card).get_recoil_position() if get_card(card) else Vector2.ZERO), i < 2);
+		bullets.append(bullet);
+		if do_zoom and i == 0:
+			zoom_to_node(bullet);
+	if get_card(card):
+		get_card(card).recoil(enemy_position);
+	if card.shoots_wet_bullets():
+		make_card_wet(enemy, true, false);
+	return bullets;
+
+func get_shooting_enemy_position(card : CardData, enemy : CardData) -> Vector2:
+	return get_card(enemy).get_recoil_position() if (enemy and get_card(enemy)) else -get_card(card).get_recoil_position();
+
+func get_count_of_bullets_shot(card : CardData) -> int:
 	var count : int = 1;
 	if card.stopped_time_advantage > 0:
-		return bullets;
+		return -1;
 	if card.has_champion():
 		count = System.random.randi_range(3, 5);
 		if card.has_rare_stamp():
@@ -1638,21 +1669,40 @@ func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool =
 		count = 2;
 	if card.has_multiply() and count == 1 and card.multiply_advantage > 0:
 		count = min(8, card.multiply_advantage);
+	if count == 1 and card.has_max_keywords():
+		count = 3;
+	return count;
+
+func move_card_front(card : GameplayCard) -> void:
+	if cards_layer.is_ancestor_of(card):
+		cards_layer.remove_child(card);
+	else:
+		cards_layer2.remove_child(card);
+	cards_layer.add_child(card);
+
+func play_tentacles_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false, do_fade : bool = false) -> Array:
+	var tentacles : Array;
+	var gameplay_card : GameplayCard = get_card(card);
+	if !gameplay_card:
+		return tentacles;
+	var enemy_position : Vector2 = get_shooting_enemy_position(card, enemy);
+	var count : int = min(MAX_TENTACLES, (8 if !slow_down else 2) + (2 if !slow_down else 1) * get_count_of_bullets_shot(card));
+	var tentacle : Tentacle;
+	if count <= 0:
+		return tentacles;
 	for i in range(count):
-		if i > 0:
-			enemy_position += System.Random.vector(100, 200);
-		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
+		tentacle = System.Instance.load_child(System.Paths.TENTACLE, cards_layer);
 		if slow_down:
-			bullet.slow_down();
-		bullet.init(enemy_position - (get_card(card).get_recoil_position() if get_card(card) else Vector2.ZERO), i < 2);
-		bullets.append(bullet);
-		if do_zoom and i == 0:
-			zoom_to_bullet(bullet);
-	if get_card(card):
-		get_card(card).recoil(enemy_position);
-	if card.shoots_wet_bullets():
-		make_card_wet(enemy, true, false);
-	return bullets;
+			tentacle.slow_down();
+		if do_fade:
+			tentacle.do_fade = true;
+		tentacle.init(gameplay_card, get_card(enemy), enemy_position, i < 2);
+		tentacles.append(tentacle);
+		if do_zoom and i == 0 and !do_fade:
+			zoom_to_node(tentacle);
+	gameplay_card.recoil(-enemy_position);
+	move_card_front(gameplay_card);
+	return tentacles;
 
 func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool = true) -> bool:
 	var player : Player;
@@ -1689,8 +1739,8 @@ func start_wet_wait() -> void:
 	wet_wait_timer.wait_time = System.random.randf_range(WET_MIN_WAIT, WET_MAX_WAIT) * System.game_speed_additive_multiplier;
 	wet_wait_timer.start();
 
-func zoom_to_bullet(bullet : Bullet) -> void:
-	emit_signal("zoom_to", bullet, true);
+func zoom_to_node(node : Node2D) -> void:
+	emit_signal("zoom_to", node, true);
 
 func check_lose_effects(card : CardData, player : Player) -> void:
 	if card and card.has_greed():

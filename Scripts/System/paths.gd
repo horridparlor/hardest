@@ -10,5 +10,6 @@ const POINT_LED : String = "res://Prefabs/Gameplay/Points/point-led.tscn";
 const POPPET : String = "res://Prefabs/Gameplay/Points/poppet.tscn";
 const SHINE_STAR : String = "res://Prefabs/Gameplay/Card/shine-star.tscn";
 const SONG : String = "res://Assets/Songs/%s.mp3";
+const TENTACLE : String = "res://Prefabs/Gameplay/Card/tentacle.tscn";
 const TITLE : String = "res://Prefabs/Scenes/title.tscn";
 const TONGUE : String = "res://Prefabs/Gameplay/Card/tongue.tscn";

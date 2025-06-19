@@ -105,6 +105,9 @@ const BACKGROUND_OPACITY : float = 0.6;
 const DIE_BUTTON_ROTATION : float = 5.6;
 const TITLE_ROTATION : float = 2.1;
 const POSITIVE_BACKGROUND_MAX_OPACITY : float = 0.9;
+const MIN_BULLET_MARGIN : int = 100;
+const MAX_BULLET_MARGIN : int = 200;
+const MAX_TENTACLES : int = 24;
 
 const TIME_STOP_ACCELERATION_SPEED : float = 0.5 * Config.GAME_SPEED;
 const TIME_STOP_LED_ACCELERATION : int = 12 * Config.GAME_SPEED;

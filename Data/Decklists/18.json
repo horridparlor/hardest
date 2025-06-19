@@ -2,9 +2,6 @@
 	"id": 18,
 	"title": "Positive test level, opponent's deck",
 	"cards": [
-		{
-			"id": 70,
-			"variant": "negative"
-		}
+		3
 	]
 }

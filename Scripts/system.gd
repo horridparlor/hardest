@@ -25,7 +25,7 @@ var running_instance_id : int;
 var auto_play : bool = Config.AUTO_PLAY;
 
 func update_game_speed(speed : float) -> void:
-	game_speed = speed;
+	game_speed = max(Config.MIN_PITCH, speed);
 	game_speed_multiplier = 1 / game_speed;
 	game_speed_additive_multiplier = min(1, game_speed_multiplier);
 

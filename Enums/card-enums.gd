@@ -217,6 +217,7 @@ func get_hydra_keywords() -> Array:
 		Keyword.SILVER,
 		Keyword.SOUL_HUNTER,
 		Keyword.SPY,
+		Keyword.TIDAL,
 		Keyword.TIME_STOP,
 		Keyword.UNDEAD,
 		Keyword.VAMPIRE,

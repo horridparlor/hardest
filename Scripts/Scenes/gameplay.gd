@@ -1504,7 +1504,7 @@ func round_results() -> void:
 func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 	if !get_card(card):
 		return;
-	if enemy.has_incinerate():
+	if enemy.has_incinerate() and !card.has_cursed():
 		get_card(card).burn_effect();
 		burn_card(card);
 	get_card(card).dissolve();

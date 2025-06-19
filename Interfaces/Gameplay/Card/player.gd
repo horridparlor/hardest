@@ -364,7 +364,7 @@ func steal_card_soul(card : CardData) -> void:
 
 func trigger_opponent_placed_effects() -> void:
 	var card : CardData = get_field_card();
-	if !card:
+	if !card or card.is_buried:
 		return;
 	for keyword in card.keywords:
 		match keyword:

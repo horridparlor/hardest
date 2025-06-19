@@ -30,7 +30,7 @@ func init_roguelike_page() -> void:
 
 func _process(delta : float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
-		if !gameplay:
+		if !gameplay or !Config.DEV_MODE:
 			get_tree().quit();
 			return;
 		replay_same_level();

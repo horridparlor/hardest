@@ -167,6 +167,11 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		]
 	},
 	House.SCAM: [
+		1,
+		2,
+		3,
+		4,
+		5,
 		76,
 	]
 }

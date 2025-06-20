@@ -70,6 +70,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			68,
 			72,
 			82,
+			83,
 		],
 		Rarity.RARE: [
 			37,
@@ -79,7 +80,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			62,
 			65,
 			78,
-			83,
 			86,
 			89,
 		]
@@ -134,6 +134,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 	},
 	House.GOD: [
 		42,
+		95
 	],
 }
 const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
@@ -282,7 +283,8 @@ const RANDOM_CARDS : Dictionary = {
 		91
 	],
 	CardEnums.CardType.GOD: [
-		42
+		42,
+		95,
 	]
 }
 
@@ -292,7 +294,6 @@ static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.
 const FOIL_CARDS : Dictionary = {
 	14: null,
 	18: null,
-	42: null,
 	46: null,
 	57: null,
 	65: null,
@@ -302,7 +303,8 @@ const FOIL_CARDS : Dictionary = {
 	81: null,
 	85: null,
 	90: null,
-	91: null
+	91: null,
+	95: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

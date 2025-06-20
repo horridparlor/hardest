@@ -287,6 +287,8 @@ func spawn_victory_poppet(color : Poppet.PoppetColor) -> void:
 	poppet.speed *= VICTORY_POPPET_SPEED;
 
 func end_game() -> void:
+	if is_time_stopped:
+		time_stop_effect_out();
 	emit_signal("game_over");
 
 func your_turn() -> void:
@@ -597,7 +599,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 			auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_additive_multiplier;
 			auto_play_timer.start();
 		return false;
-	elif !card.card_data.is_buried and time_stopping_player == null:
+	elif !card.card_data.is_buried:
 		trigger_play_effects(card.card_data, player, opponent);
 	if player == player_two:
 		show_opponents_field();
@@ -720,6 +722,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 			CardEnums.Keyword.SCAMMER:
 				player.points = -100;
 				gain_points_effect(player);
+			CardEnums.Keyword.SPRING_ARRIVES:
+				trigger_spring_arrives(card, player);
 			CardEnums.Keyword.VERY_NUTTY:
 				if !enemy or !enemy.has_november():
 					player.nut_multiplier *= 2;
@@ -746,6 +750,13 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
 
+func trigger_spring_arrives(card : CardData, player : Player) -> void:
+	var hand_size : int = player.count_hand();
+	player.fill_hand();
+	for i in range(System.Rules.MAX_HAND_SIZE - hand_size):
+		card.multiply_advantage *= 2;
+	if player == player_one:
+		show_hand();
 
 func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool = false) -> void:
 	var cloned_card : CardData;
@@ -1196,7 +1207,7 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 	if add_advantages:
 		if card.stopped_time_advantage > 0:
 			points *= card.stopped_time_advantage;
-		if card.multiply_advantage > 0:
+		if card.multiply_advantage > 1:
 			points *= card.multiply_advantage;
 	if !did_win:
 		return points;
@@ -1204,8 +1215,8 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 		points *= 2;
 	if card.is_holographic:
 		points *= 2;
-	if card.is_god():
-		points *= 10;
+	if card.is_god() and points < 10:
+		points = 10;
 	return points;
 
 func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
@@ -1371,6 +1382,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.SOUL_HUNTER:
 				value += 1;
+			CardEnums.Keyword.SPRING_ARRIVES:
+				value *= pow(2, System.Rules.MAX_HAND_SIZE - player.count_hand());
 			CardEnums.Keyword.SPY:
 				value += 2;
 			CardEnums.Keyword.TIDAL:
@@ -1693,7 +1706,7 @@ func get_count_of_bullets_shot(card : CardData) -> int:
 			count *= 2;
 	elif card.has_pair():
 		count = 2;
-	if card.has_multiply() and count == 1 and card.multiply_advantage > 0:
+	if card.has_multiply() and count == 1 and card.multiply_advantage > 1:
 		count = min(8, card.multiply_advantage);
 	if count == 1 and CollectionEnums.TRIPLE_SHOOTING_CARDS.has(card.card_id):
 		count = 3;

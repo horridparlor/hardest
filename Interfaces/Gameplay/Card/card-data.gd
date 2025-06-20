@@ -37,7 +37,7 @@ var instance_id : int;
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
 var stopped_time_advantage : int;
-var multiply_advantage : int;
+var multiply_advantage : int = 1;
 var nuts : int;
 var nuts_stolen : int;
 var is_burned : bool;
@@ -308,6 +308,9 @@ func has_silver() -> bool:
 
 func has_soul_hunter() -> bool:
 	return has_keyword(CardEnums.Keyword.SOUL_HUNTER);
+
+func has_spring_arrives() -> bool:
+	return has_keyword(CardEnums.Keyword.SPRING_ARRIVES);
 
 func has_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.SPY);

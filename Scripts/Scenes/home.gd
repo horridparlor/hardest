@@ -301,6 +301,8 @@ func give_opponent_card_drop(opponent_id : int, confirmed_rare : bool = false) -
 	var card_pool : Dictionary = opponent.card_pool;
 	var rare_chance : int = opponent.rare_chance;
 	var source : Array = card_pool[CollectionEnums.Rarity.RARE] if confirmed_rare or System.Random.chance(rare_chance) else card_pool[CollectionEnums.Rarity.COMMON];
+	if System.Random.chance(max(System.Rules.MIN_GOD_CHANCE, System.Rules.ZESCANOR_CHANCE - save_data.roguelike_data.rounds_played * System.Rules.GOD_CHANCE_EASING * rare_chance)):
+		source = CollectionEnums.CARDS_TO_COLLECT[CollectionEnums.House.GOD];
 	var card_id : int = System.Random.item(source);
 	var card_data : CardData = System.Data.load_card(card_id);
 	var card_drop : Dictionary = {

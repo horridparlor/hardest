@@ -75,6 +75,10 @@ func draw_hand() -> void:
 		draw();
 	extra_draws = 0;
 
+func fill_hand() -> void:
+	while count_hand() < System.Rules.MAX_HAND_SIZE:
+		draw();
+
 func draw_cards(amount : int = 1) -> void:
 	for i in range(amount):
 		if !draw():
@@ -130,7 +134,7 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	if card.card_type == last_type_played:
 		played_same_type_in_a_row += 1;
 		if card.has_multiply():
-			card.multiply_advantage = pow(2, played_same_type_in_a_row);
+			card.multiply_advantage *= pow(2, played_same_type_in_a_row);
 	else:
 		played_same_type_in_a_row = 0;
 		last_type_played = card.card_type;

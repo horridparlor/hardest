@@ -12,7 +12,10 @@ var grave_type_counts : Dictionary = {
 	CardEnums.CardType.SCISSORS: 0,
 	CardEnums.CardType.GUN: 0,
 	CardEnums.CardType.MIMIC: 0,
-	CardEnums.CardType.GOD: 0
+	CardEnums.CardType.GOD: 0,
+	CardEnums.CardType.BEDROCK: 0,
+	CardEnums.CardType.ZIPPER: 0,
+	CardEnums.CardType.ROCKSTAR: 0
 }
 var character : GameplayEnums.Character;
 var controller : GameplayEnums.Controller;
@@ -125,13 +128,15 @@ func discard_hand() -> void:
 		discard_from_hand(card);
 
 func play_card(card : CardData, is_digital_speed : bool = false) -> void:
+	var matching_type : CardEnums.CardType = get_matching_type(card.card_type, last_type_played);
 	cards_in_hand.erase(card);
 	cards_on_field.append(card);
 	card.zone = CardEnums.Zone.FIELD;
 	if is_digital_speed:
 		return;
 	card.add_keyword(gained_keyword);
-	if card.card_type == last_type_played:
+	if matching_type != CardEnums.CardType.NULL:
+		last_type_played = matching_type;
 		played_same_type_in_a_row += 1;
 		if card.has_multiply():
 			card.multiply_advantage *= pow(2, played_same_type_in_a_row);
@@ -141,6 +146,17 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	gained_keyword = CardEnums.Keyword.NULL;
 	if !is_digital_speed:
 		cards_played_this_turn += 1;
+
+func get_matching_type(new_type : CardEnums.CardType, base_type : CardEnums.CardType) -> CardEnums.CardType:
+	var base_types : Array = CardData.break_card_type(base_type);
+	if base_type == CardEnums.CardType.NULL:
+		return CardEnums.CardType.NULL;
+	elif new_type == base_type:
+		return new_type;
+	for type in CardData.break_card_type(new_type):
+		if base_types.has(type):
+			return type;
+	return CardEnums.CardType.NULL;
 
 func eat_decklist(decklist_id : int = 0,
 	character_id : GameplayEnums.Character = GameplayEnums.Character.PEITSE
@@ -185,12 +201,6 @@ func add_start_cards() -> void:
 	for card in start_cards:
 		cards_in_deck.append(card);
 	extra_draws = card_souls.size();
-
-func find_horse_gear_card(card_type : CardEnums.CardType, do_remove_from_deck : bool = false) -> CardData:
-	var card : CardData;
-	if decklist.starting_cards.has(card_type):
-		return System.Data.load_card(decklist.starting_cards[card_type]);
-	return null;
 
 func shuffle_hand() -> void:
 	cards_in_hand.shuffle();
@@ -263,7 +273,7 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	if !card:
 		return;
 	card.zone = CardEnums.Zone.GRAVE;
-	card.card_type = card.default_type;
+	card.set_card_type(card.default_type);
 	if did_win and card.has_undead(true):
 		purge_undead_materials(card.default_type);
 	if card.is_burned:
@@ -274,7 +284,7 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 func purge_undead_materials(card_type : CardEnums.CardType) -> void:
 	var cards_to_purge : int = System.Rules.UNDEAD_LIMIT;
 	for card in cards_in_grave.duplicate():
-		if card.card_type == card_type:
+		if get_matching_type(card.card_type, card_type) != CardEnums.CardType.NULL:
 			purge_from_grave(card);
 			cards_to_purge -= 1;
 			if cards_to_purge == 0:
@@ -290,7 +300,14 @@ func is_close_to_winning() -> bool:
 
 func count_grave_type(card_type : CardEnums.CardType, instance_id_of_replacement : int = 0) -> int:
 	var added_count : int = get_added_count_from_replacing_field(instance_id_of_replacement, card_type);
-	return added_count + grave_type_counts[card_type];
+	var grave_count : int = grave_type_counts[card_type];
+	if CardEnums.BASIC_COLORS.has(card_type):
+		for type in CardData.expand_type(card_type):
+			grave_count += grave_type_counts[type];
+	elif CardEnums.DUAL_COLORS.has(card_type):
+		for type in CardData.break_card_type(card_type):
+			grave_count += grave_type_counts[type];
+	return added_count + grave_count;
 
 func get_added_count_from_replacing_field(instance_id : int, card_type : CardEnums.CardType) -> int:
 	var count : int = 0;
@@ -298,7 +315,7 @@ func get_added_count_from_replacing_field(instance_id : int, card_type : CardEnu
 	if instance_id == 0:
 		return count;
 	field_card = get_field_card();
-	if field_card and field_card.instance_id != instance_id and field_card.default_type == card_type:
+	if field_card and field_card.instance_id != instance_id and get_matching_type(field_card.default_type, card_type) != CardEnums.CardType.NULL:
 		count += 1;
 	return count;
 
@@ -321,7 +338,7 @@ func get_rainbowed() -> void:
 		card = c;
 		card_type = card.default_type;
 		card.eat_json(CollectionEnums.get_random_card(card_type), false);
-		card.card_type = card_type;
+		card.set_card_type(card_type);
 		if card.has_auto_hydra():
 			build_hydra(card);
 
@@ -334,13 +351,13 @@ func build_hydra(card : CardData) -> void:
 		keywords.erase(keyword);
 		card.add_keyword(keyword);
 	if card.has_tidal() and !card.is_god():
-		card.card_type = CardEnums.CardType.GUN;
+		card.set_card_type(CardEnums.CardType.GUN);
 
 func devour_card(eater : CardData, card : CardData) -> Array:
 	var devoured_keywords : Array;
 	if eater.is_buried:
 		eater.is_buried = false;
-	eater.card_type = card.card_type;
+	eater.set_card_type(card.card_type);
 	if eater.stamp == CardEnums.Stamp.NULL:
 		eater.stamp = card.stamp;
 	if eater.variant == CardEnums.CardVariant.REGULAR:
@@ -380,8 +397,8 @@ func trigger_opponent_placed_effects() -> void:
 				trigger_chameleon(card);
 
 func trigger_chameleon(card : CardData) -> void:
-	var card_type : CardEnums.CardType = card.card_type;
-	match card_type:
+	var card_type : CardEnums.CardType = card.default_type;
+	match card.card_type:
 		CardEnums.CardType.ROCK:
 			card_type = CardEnums.CardType.SCISSORS;
 		CardEnums.CardType.PAPER:
@@ -394,7 +411,13 @@ func trigger_chameleon(card : CardData) -> void:
 				CardEnums.CardType.PAPER,
 				CardEnums.CardType.SCISSORS
 			]);
-	card.card_type = card_type;
+		CardEnums.CardType.BEDROCK:
+			card_type = CardEnums.CardType.ROCKSTAR;
+		CardEnums.CardType.ZIPPER:
+			card_type = CardEnums.CardType.BEDROCK;
+		CardEnums.CardType.ROCKSTAR:
+			card_type = CardEnums.CardType.ZIPPER;
+	card.set_card_type(card_type);
 
 func do_nut(multiplier : int = 1) -> bool:
 	var gained : int = turns_waited_to_nut * multiplier * nut_multiplier;

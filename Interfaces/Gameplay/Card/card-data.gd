@@ -24,6 +24,7 @@ var default_type : CardEnums.CardType
 var card_id : int;
 var card_name : String;
 var card_type : CardEnums.CardType = CardEnums.CardType.ROCK;
+var card_types : Array;
 var keywords : Array;
 var bullet_id : int;
 var stamp : CardEnums.Stamp;
@@ -57,7 +58,7 @@ func eat_json(data : Dictionary, do_eat_spawn_json : bool = true) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	card_id = data.id;
 	card_name = data.name;
-	card_type = CardEnums.TranslateCardType[data.type];
+	set_card_type(CardEnums.TranslateCardType[data.type]);
 	default_type = card_type if data.override_type == null else CardEnums.TranslateCardType[data.override_type];
 	keywords = [];
 	for key in data.keywords:
@@ -68,6 +69,48 @@ func eat_json(data : Dictionary, do_eat_spawn_json : bool = true) -> void:
 	if !do_eat_spawn_json:
 		return;
 	eat_spawn_json(data);
+
+func set_card_type(type : CardEnums.CardType) -> void:
+	card_type = type;
+	card_types = break_card_type(type);
+
+static func expand_type(type : CardEnums.CardType) -> Array:
+	match type:
+		CardEnums.CardType.ROCK:
+			return [
+				CardEnums.CardType.BEDROCK,
+				CardEnums.CardType.ROCKSTAR
+			];
+		CardEnums.CardType.PAPER:
+			return [
+				CardEnums.CardType.BEDROCK,
+				CardEnums.CardType.ZIPPER
+			];
+		CardEnums.CardType.SCISSORS:
+			return [
+				CardEnums.CardType.ZIPPER,
+				CardEnums.CardType.ROCKSTAR
+			];
+	return [];
+
+static func break_card_type(type : CardEnums.CardType) -> Array:
+	match type:
+		CardEnums.CardType.BEDROCK:
+			return [
+				CardEnums.CardType.ROCK,
+				CardEnums.CardType.PAPER
+			];
+		CardEnums.CardType.ZIPPER:
+			return [
+				CardEnums.CardType.SCISSORS,
+				CardEnums.CardType.PAPER
+			];
+		CardEnums.CardType.ROCKSTAR:
+			return [
+				CardEnums.CardType.ROCK,
+				CardEnums.CardType.SCISSORS
+			];
+	return [type];
 
 func eat_spawn_json(data : Dictionary) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
@@ -197,6 +240,9 @@ func has_digital() -> bool:
 
 func has_divine() -> bool:
 	return has_keyword(CardEnums.Keyword.DIVINE);
+
+func is_dual_type() -> bool:
+	return CardEnums.DUAL_COLORS.has(card_type);
 
 func has_electrocute() -> bool:
 	return has_keyword(CardEnums.Keyword.ELECTROCUTE);
@@ -344,13 +390,13 @@ func has_wrapped() -> bool:
 	return has_keyword(CardEnums.Keyword.WRAPPED);
 
 func is_rock() -> bool:
-	return card_type == CardEnums.CardType.ROCK;
+	return card_types.has(CardEnums.CardType.ROCK);
 	
 func is_paper() -> bool:
-	return card_type == CardEnums.CardType.PAPER;
+	return card_types.has(CardEnums.CardType.PAPER);
 	
 func is_scissor() -> bool:
-	return card_type == CardEnums.CardType.SCISSORS;
+	return card_types.has(CardEnums.CardType.SCISSORS);
 
 func is_gun() -> bool:
 	return card_type == CardEnums.CardType.GUN;

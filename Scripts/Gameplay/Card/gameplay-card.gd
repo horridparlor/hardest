@@ -2,7 +2,8 @@ extends GameplayCard
 
 @onready var name_label : RichTextLabel = $NameLabel;
 @onready var type_label : Label = $TypeLabel;
-@onready var panel : Panel = $Panel;
+@onready var left_panel : Panel = $LeftPanel;
+@onready var right_panel : Panel = $RightPanel;
 @onready var left_type_icon : Sprite2D = $TypeIcons/LeftIcon;
 @onready var right_type_icon : Sprite2D = $TypeIcons/RightIcon;
 @onready var card_art : Sprite2D = $ArtLayer/CardArt;
@@ -18,7 +19,10 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 		return;
 	update_name_label(card_data.card_name);
 	type_label.text = CardEnums.CardTypeName[card_data.card_type];
-	type_label.add_theme_font_size_override("font_size", TYPE_FONT_SIZE_SMALL if card_data.card_type == CardEnums.CardType.SCISSORS else TYPE_FONT_SIZE_BIG);
+	type_label.add_theme_font_size_override("font_size", TYPE_FONT_SIZE_SMALL if [
+		CardEnums.CardType.BEDROCK,
+		CardEnums.CardType.ROCKSTAR
+		].has(card_data.card_type) else TYPE_FONT_SIZE_BIG);
 	update_panel(card_data.card_type);
 	update_type_icons(card_data.card_type);
 	update_card_art();
@@ -84,26 +88,72 @@ func update_name_label(message : String) -> void:
 	name_label.position.y = -629 + (104 - 88) if font_size == 88 else -629;
 
 func update_panel(card_type : CardEnums.CardType) -> void:
-	var style : StyleBoxFlat = StyleBoxFlat.new();
+	var left_style : StyleBoxFlat = StyleBoxFlat.new();
+	var right_style : StyleBoxFlat = StyleBoxFlat.new();
 	var pattern : Resource = load(BACKGROUND_PATTERN_PATH % [CardEnums.CardTypeName[card_type]]);
-	style.bg_color = get_panel_bg_color(card_type);
-	style.border_color = get_panel_border_color(card_type);
-	style.border_width_left = BORDER_WIDTH;
-	style.border_width_right = BORDER_WIDTH;
-	style.border_width_top = BORDER_WIDTH;
-	style.border_width_bottom = BORDER_WIDTH;
-	style.corner_radius_top_left = BORDER_RADIUS;
-	style.corner_radius_top_right = BORDER_RADIUS;
-	style.corner_radius_bottom_left = BORDER_RADIUS;
-	style.corner_radius_bottom_right = BORDER_RADIUS;
-	panel.add_theme_stylebox_override("panel", style);
+	for style in [left_style, right_style]:
+		style.bg_color = get_panel_bg_color(get_left_type(card_type));
+		style.border_color = get_panel_border_color(get_left_type(card_type));
+		style.border_width_left = BORDER_WIDTH;
+		style.border_width_top = BORDER_WIDTH;
+		style.border_width_bottom = BORDER_WIDTH;
+		style.corner_radius_top_left = BORDER_RADIUS;
+		style.corner_radius_bottom_left = BORDER_RADIUS;
+		if !card_data.is_dual_type():
+			style.border_width_right = BORDER_WIDTH;
+			style.corner_radius_top_right = BORDER_RADIUS;
+			style.corner_radius_bottom_right = BORDER_RADIUS;
+	left_panel.add_theme_stylebox_override("panel", left_style);
+	if card_data.is_dual_type():
+		for style in [right_style]:
+			style.bg_color = get_panel_bg_color(get_right_type(card_type));
+			style.border_color = get_panel_border_color(get_right_type(card_type));
+			style.border_width_left = 0;
+			style.corner_radius_top_left = 0;
+			style.corner_radius_bottom_left = 0;
+			style.border_width_right = BORDER_WIDTH;
+			style.corner_radius_top_right = BORDER_RADIUS;
+			style.corner_radius_bottom_right = BORDER_RADIUS;
+		right_panel.add_theme_stylebox_override("panel", right_style);
+		left_panel.size.x = 451;
+		right_panel.visible = true;
+	else:
+		left_panel.size.x = 900;
+		right_panel.visible = false;
 	background_pattern.texture = pattern;
 	top_pattern.texture = pattern;
 
 func update_type_icons(card_type : CardEnums.CardType) -> void:
-	var sprite_texture : Resource = load(TYPE_ICON_PATH % [CardEnums.CardTypeName[card_type].to_lower()]);
-	left_type_icon.texture = sprite_texture;
-	right_type_icon.texture = sprite_texture;
+	var left_sprite_texture : Resource;
+	var right_sprite_texture : Resource;
+	var is_dual : bool = CardEnums.DUAL_COLORS.has(card_type);
+	left_sprite_texture = load(TYPE_ICON_PATH % [CardEnums.CardTypeName[get_left_type(card_type)].to_lower()]);
+	left_type_icon.texture = left_sprite_texture;
+	if is_dual:
+		right_sprite_texture = load(TYPE_ICON_PATH % [CardEnums.CardTypeName[get_right_type(card_type)].to_lower()]);
+	else:
+		right_sprite_texture = left_sprite_texture;
+	right_type_icon.texture = right_sprite_texture;
+
+func get_left_type(card_type : CardEnums.CardType) -> CardEnums.CardType:
+	match card_type:
+		CardEnums.CardType.BEDROCK:
+			return CardEnums.CardType.PAPER;
+		CardEnums.CardType.ZIPPER:
+			return CardEnums.CardType.SCISSORS;
+		CardEnums.CardType.ROCKSTAR:
+			return CardEnums.CardType.ROCK;
+	return card_type;
+
+func get_right_type(card_type : CardEnums.CardType) -> CardEnums.CardType:
+	match card_type:
+		CardEnums.CardType.BEDROCK:
+			return CardEnums.CardType.ROCK;
+		CardEnums.CardType.ZIPPER:
+			return CardEnums.CardType.PAPER;
+		CardEnums.CardType.ROCKSTAR:
+			return CardEnums.CardType.SCISSORS;
+	return card_type;
 
 func update_card_art(do_full_art : bool = false) -> void:
 	var art_texture : Resource = load((CARD_FULLART_PATH if do_full_art else CARD_ART_PATH) % [card_data.card_id]);
@@ -177,7 +227,8 @@ func get_shader_layers() -> Array:
 		art_background,
 		left_type_icon,
 		right_type_icon,
-		panel,
+		left_panel,
+		right_panel,
 		stamp
 	] + ([] if card_data.is_negative_variant() else [card_art]);
 
@@ -189,7 +240,7 @@ func dissolve_frame(delta : float) -> void:
 	if dissolve_value >= MAX_DISSOLVE_VALUE:
 		is_dissolving = false;
 		emit_signal("despawned", self);
-	panel.material.set_shader_parameter("threshold", dissolve_value);
+	left_panel.material.set_shader_parameter("threshold", dissolve_value);
 	background_pattern.material.set_shader_parameter("threshold", dissolve_value);
 	card_art.material.set_shader_parameter("threshold", dissolve_value);
 	if System.Instance.exists(particle_effect):

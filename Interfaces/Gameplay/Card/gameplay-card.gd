@@ -16,7 +16,7 @@ const BORDER_WIDTH : int = 24;
 const BORDER_RADIUS : int = 60;
 const TYPE_ICON_PATH : String = "res://Assets/Art/CardIcons/%s_120.png";
 const TYPE_FONT_SIZE_BIG : int = 128;
-const TYPE_FONT_SIZE_SMALL : int = 128;
+const TYPE_FONT_SIZE_SMALL : int = 112;
 const CARD_ART_PATH : String = "res://Assets/Art/CardArtSmall/%s.png";
 const CARD_FULLART_PATH : String = "res://Assets/Art/CardArt/%s.png";
 const ROTATION_SPEED : float = 0.12;
@@ -29,6 +29,12 @@ const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 const STAMP_HINT_LINE : String = "[b]%s Stamp[/b] [i]–[/i] %s\n";
 const VARIANT_HINT_LINE : String = "[b]%s Variant[/b] [i]–[/i] %s\n";
 const HOLO_HINT_LINE : String = "[b]Holographic[/b] [i]–[/i] Scores double.\n";
+const DUAL_TYPE_HINT_LINE : String = "[b]%s[/b] [i]–[/i] Defeats %s and %s. [i](Ties with %s.)[/i]";
+const DUAL_TYPE_HINT_REPLACEMENTS : Dictionary = {
+	CardEnums.CardType.BEDROCK: ["Bedrock", "rock", "scissors", "paper"],
+	CardEnums.CardType.ZIPPER: ["Zipper", "rock", "paper", "scissors"],
+	CardEnums.CardType.ROCKSTAR: ["Rockstar", "paper", "scissors", "rock"]
+};
 
 const FLOW_SPEED : float = 0.6;
 const MIN_GRAVITY : float = 100;
@@ -310,6 +316,8 @@ func get_keyword_hints() -> String:
 	var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL if !card_data.controller else card_data.controller.gained_keyword;
 	if  gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
 		keywords.append(gained_keyword);
+	if card_data.is_dual_type() and (keywords.size() + (1 if card_data.is_negative_variant() else 0) + (1 if card_data.is_holographic else 0) + (0 if card_data.stamp == CardEnums.Stamp.NULL else 1)) <= 2:
+		hints_text += DUAL_TYPE_HINT_LINE % DUAL_TYPE_HINT_REPLACEMENTS[card_data.card_type];
 	for keyword in keywords:
 		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
 		hint_text = enrich_hint(hint_text);
@@ -328,8 +336,8 @@ func get_keyword_hints() -> String:
 
 func enrich_hint(message : String) -> String:
 	message = message \
-		.replace("SAME_TYPE", CardEnums.CardTypeName[card_data.card_type].to_lower()) \
 		.replace("SAME_TYPES", CardEnums.CardTypeName[card_data.default_type].to_lower() + "s") \
+		.replace("SAME_TYPE", CardEnums.CardTypeName[card_data.card_type].to_lower()) \
 		.replace("SAME_BASIC", ("a " if [
 			CardEnums.CardType.ROCK,
 			CardEnums.CardType.PAPER,

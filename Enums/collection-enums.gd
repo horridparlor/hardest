@@ -34,6 +34,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			61,
 			77,
 			87,
+			96,
 		]
 	},
 	House.DELUSIONAL: {
@@ -57,6 +58,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			64,
 			66,
 			79,
+			97,
 		]
 	},
 	House.DEMONIC: {
@@ -130,6 +132,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			84,
 			85,
 			91,
+			98,
 		]
 	},
 	House.GOD: [
@@ -285,6 +288,15 @@ const RANDOM_CARDS : Dictionary = {
 	CardEnums.CardType.GOD: [
 		42,
 		95,
+	],
+	CardEnums.CardType.BEDROCK: [
+		96
+	],
+	CardEnums.CardType.ZIPPER: [
+		97
+	],
+	CardEnums.CardType.ROCKSTAR: [
+		98
 	]
 }
 

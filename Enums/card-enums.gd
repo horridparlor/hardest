@@ -7,7 +7,10 @@ enum CardType {
 	SCISSORS,
 	GUN,
 	MIMIC,
-	GOD
+	GOD,
+	BEDROCK,
+	ZIPPER,
+	ROCKSTAR
 }
 
 const CardTypeName : Dictionary = {
@@ -16,7 +19,10 @@ const CardTypeName : Dictionary = {
 	CardType.SCISSORS: "Scissor",
 	CardType.GUN: "Gun",
 	CardType.MIMIC: "Mimic",
-	CardType.GOD: "God"
+	CardType.GOD: "God",
+	CardType.BEDROCK: "Bedrock",
+	CardType.ZIPPER: "Zipper",
+	CardType.ROCKSTAR: "Rockstar"
 }
 
 const BasicIds : Dictionary = {
@@ -25,13 +31,22 @@ const BasicIds : Dictionary = {
 	CardType.SCISSORS: 3,
 	CardType.GUN: 4,
 	CardType.MIMIC: 5,
-	CardType.GOD: 42
+	CardType.GOD: 42,
+	CardType.BEDROCK: 96,
+	CardType.ZIPPER: 97,
+	CardType.ROCKSTAR: 98
 }
 
 const BASIC_COLORS : Dictionary = {
 	CardType.ROCK: null,
 	CardType.PAPER: null,
 	CardType.SCISSORS: null
+}
+
+const DUAL_COLORS : Dictionary = {
+	CardType.BEDROCK: null,
+	CardType.ZIPPER: null,
+	CardType.ROCKSTAR: null
 }
 
 const NUT_IDS : Array = [
@@ -51,7 +66,10 @@ const BasicNames : Dictionary = {
 	CardType.SCISSORS: "Paper Scissors",
 	CardType.MIMIC: "Lesser Mimic",
 	CardType.GUN: "The Gun",
-	CardType.GOD: "The Zescanor"
+	CardType.GOD: "The Zescanor",
+	CardType.BEDROCK: "Mountain",
+	CardType.ZIPPER: "Loose Shirt",
+	CardType.ROCKSTAR: "Pop-Star-Mic"
 }
 
 const TranslateCardType : Dictionary = {
@@ -60,7 +78,10 @@ const TranslateCardType : Dictionary = {
 	"scissor": CardType.SCISSORS,
 	"gun": CardType.GUN,
 	"mimic": CardType.MIMIC,
-	"god": CardType.GOD
+	"god": CardType.GOD,
+	"bedrock": CardType.BEDROCK,
+	"zipper": CardType.ZIPPER,
+	"rockstar": CardType.ROCKSTAR
 }
 
 enum Zone {

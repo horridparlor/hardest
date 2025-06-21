@@ -493,9 +493,9 @@ func update_alterations_for_card(card_data : CardData) -> void:
 	var card : GameplayCard = get_card(card_data);
 	if card_data.has_undead():
 		if card_data.has_undead(true):
-			card_data.card_type = CardEnums.CardType.GUN;
+			card_data.set_card_type(CardEnums.CardType.GUN);
 		else:
-			card_data.card_type = card_data.default_type;
+			card_data.set_card_type(card_data.default_type);
 	if card:
 		card.update_visuals(card.card_data.controller.gained_keyword);
 
@@ -1073,7 +1073,7 @@ func nut_players_nuts(player : Player, opponent : Player) -> bool:
 	var can_steal_nut : bool = card.has_nut_stealer() and enemy and enemy.can_nut(card.has_shared_nut());
 	var nut_prevented : bool = enemy and (enemy.has_november() or enemy.has_nut_stealer());
 	if card.has_copycat() and enemy:
-		card.card_type = enemy.card_type;
+		card.set_card_type(enemy.card_type);
 		update_alterations_for_card(card);
 	if can_nut and !nut_prevented and card.can_nut(enemy and enemy.has_shared_nut()):
 		if nut_with_card(card, enemy, player):
@@ -1261,7 +1261,7 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 			trigger_play_effects(card, player, opponent);
 			transformed_any = true;
 		if card.has_copycat() and opponent.get_field_card():
-			card.card_type = opponent.get_field_card().card_type;
+			card.set_card_type(opponent.get_field_card().card_type);
 		if get_card(card):
 			update_alterations_for_card(card);
 	return transformed_any;
@@ -1416,6 +1416,12 @@ func get_card_base_value(card : CardData) -> int:
 		CardEnums.CardType.SCISSORS:
 			return 1;
 		CardEnums.CardType.GUN:
+			return 3;
+		CardEnums.CardType.BEDROCK:
+			return 2;
+		CardEnums.CardType.ZIPPER:
+			return 2;
+		CardEnums.CardType.ROCKSTAR:
 			return 2;
 	return 0;
 
@@ -1755,7 +1761,7 @@ func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool
 		would_trigger = true;
 	if card.has_tidal() and !card.is_gun():
 		if do_trigger:
-			card.card_type = CardEnums.CardType.GUN;
+			card.set_card_type(CardEnums.CardType.GUN);
 			update_alterations_for_card(card);
 			if get_card(card):
 				get_card(card).wet_effect();
@@ -1924,17 +1930,29 @@ func check_type_results(card : CardData, enemy : CardData) -> GameplayEnums.Cont
 					return you_win;
 				CardEnums.CardType.PAPER:
 					return opponent_wins;
+				CardEnums.CardType.BEDROCK:
+					return opponent_wins;
+				CardEnums.CardType.ZIPPER:
+					return opponent_wins;
 		CardEnums.CardType.PAPER:
 			match enemy_type:
 				CardEnums.CardType.ROCK:
 					return you_win;
 				CardEnums.CardType.SCISSORS:
 					return opponent_wins;
+				CardEnums.CardType.ZIPPER:
+					return opponent_wins;
+				CardEnums.CardType.ROCKSTAR:
+					return opponent_wins;
 		CardEnums.CardType.SCISSORS:
 			match enemy_type:
 				CardEnums.CardType.PAPER:
 					return you_win;
 				CardEnums.CardType.ROCK:
+					return opponent_wins;
+				CardEnums.CardType.BEDROCK:
+					return opponent_wins;
+				CardEnums.CardType.ROCKSTAR:
 					return opponent_wins;
 		CardEnums.CardType.GUN:
 			if enemy.has_rust():
@@ -1947,6 +1965,36 @@ func check_type_results(card : CardData, enemy : CardData) -> GameplayEnums.Cont
 		CardEnums.CardType.GOD:
 			if enemy_type != CardEnums.CardType.GOD:
 				return you_win;
+		CardEnums.CardType.BEDROCK:
+			match enemy_type:
+				CardEnums.CardType.ROCK:
+					return you_win;
+				CardEnums.CardType.SCISSORS:
+					return you_win;
+				CardEnums.CardType.ROCKSTAR:
+					return you_win;
+				CardEnums.CardType.ZIPPER:
+					return opponent_wins;
+		CardEnums.CardType.ZIPPER:
+			match enemy_type:
+				CardEnums.CardType.ROCK:
+					return you_win;
+				CardEnums.CardType.PAPER:
+					return you_win;
+				CardEnums.CardType.BEDROCK:
+					return you_win;
+				CardEnums.CardType.ROCKSTAR:
+					return opponent_wins;
+		CardEnums.CardType.ROCKSTAR:
+			match enemy_type:
+				CardEnums.CardType.PAPER:
+					return you_win;
+				CardEnums.CardType.SCISSORS:
+					return you_win;
+				CardEnums.CardType.ZIPPER:
+					return you_win;
+				CardEnums.CardType.BEDROCK:
+					return opponent_wins;
 	return not_determined;
 
 func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
@@ -2031,29 +2079,21 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 
 func trigger_alpha_werewolf(player : Player) -> void:
 	var played_color : CardEnums.CardType = player.last_type_played;
-	var other_card : CardData;
+	var card : CardData;
 	for c in player.cards_in_hand:
-		other_card = c;
-		if !other_card.has_werewolf():
+		card = c;
+		if !card.has_werewolf():
 			continue;
-		other_card.card_type = played_color;
+		card.set_card_type(played_color);
 	for c in player.cards_in_hand:
-		other_card = c;
-		if !other_card.has_werewolf():
+		card = c;
+		if !card.has_werewolf():
 			continue;
-		other_card.add_keyword(CardEnums.Keyword.MULTIPLY);
-		update_alterations_for_card(other_card);
+		card.add_keyword(CardEnums.Keyword.MULTIPLY);
+		update_alterations_for_card(card);
 
 func trigger_werewolf(card : CardData) -> void:
-	var new_type : CardEnums.CardType = card.default_type;
-	match card.card_type:
-		CardEnums.CardType.ROCK:
-			new_type = CardEnums.CardType.PAPER;
-		CardEnums.CardType.PAPER:
-			new_type = CardEnums.CardType.SCISSORS;
-		CardEnums.CardType.SCISSORS:
-			new_type = CardEnums.CardType.ROCK;
-	card.card_type = new_type;
+	card.controller.trigger_chameleon(card);
 	update_alterations_for_card(card);
 
 func trigger_ocean_dweller(card : CardData, player : Player) -> void:

@@ -241,7 +241,7 @@ func _on_game_over(did_win : bool) -> void:
 		process_loss();
 	if in_roguelike_mode:
 		remove_burned_cards_from_decklists();
-	save_data.roguelike_data.get_new_choices(level_data.opponent);
+	save_data.roguelike_data.get_new_choices(level_data.opponent, gameplay.player_one.decklist.burned_cards.size() > 0);
 	save_data.write();
 
 func remove_burned_cards_from_decklists() -> void:

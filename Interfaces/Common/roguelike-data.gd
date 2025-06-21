@@ -70,10 +70,10 @@ func get_starting_opponent() -> int:
 		GameplayEnums.Character.RAISEN
 	]);
 
-func get_new_choices(current_opponent : int = 0) -> void:
+func get_new_choices(current_opponent : int = 0, force_max_choices : bool = false) -> void:
 	var opponent_choices : Array = opponents.keys();
 	var picks : int = System.Rules.CARD_PICKS_PER_ROUND;
-	if System.Random.chance(3):
+	if System.Random.chance(3) and !force_max_choices:
 		picks -= 1;
 	opponent_choices.erase(current_opponent);
 	card_choices_left = [];

@@ -9,12 +9,12 @@ const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID / 2, 10);
 
 const AUTO_PLAY : bool = false if DEV_MODE else false;
 const AUTO_START : bool = false if DEV_MODE else false;
-const AUTO_LEVEL : int = 26 if DEV_MODE else 0;
+const AUTO_LEVEL : int = 0 if DEV_MODE else 0;
 const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const SHOWCASE_STAMP : CardEnums.Stamp = CardEnums.Stamp.NULL if DEV_MODE else CardEnums.Stamp.NULL;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
 const DEBUG_CARD : int = 0 if DEV_MODE else 0;
-const SPAWNED_CARD : int = 77 if DEV_MODE else 1;
+const SPAWNED_CARD : int = 81 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 

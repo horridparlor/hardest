@@ -20,7 +20,7 @@ void fragment() {
 
     uv.x += wave * distortion_amount;
 
-    float n = sin(uv.x * scale + uv.y) 
+    float n = sin(uv.x * scale + uv.y)
             + sin(uv.x * scale * 1.5 + uv.y * 1.5)
             + sin(uv.x * scale * 0.5 + uv.y * 2.0);
 

@@ -25,6 +25,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			50,
 			51,
 			52,
+			96,
 		],
 		Rarity.RARE: [
 			55,
@@ -34,7 +35,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			61,
 			77,
 			87,
-			96,
 		]
 	},
 	House.DELUSIONAL: {
@@ -48,6 +48,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			92,
 			93,
 			94,
+			97,
 		],
 		Rarity.RARE: [
 			14,
@@ -58,7 +59,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			64,
 			66,
 			79,
-			97,
 			100,
 		]
 	},
@@ -123,6 +123,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			45,
 			69,
 			73,
+			98,
 		],
 		Rarity.RARE: [
 			18,
@@ -134,7 +135,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			84,
 			85,
 			91,
-			98,
 		]
 	},
 	House.GOD: [

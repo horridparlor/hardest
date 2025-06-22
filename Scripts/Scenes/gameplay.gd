@@ -1752,6 +1752,7 @@ func play_tentacles_shooting_animation(card : CardData, enemy : CardData, do_zoo
 func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool = true) -> bool:
 	var player : Player;
 	var would_trigger : bool;
+	var did_gain_keywords : bool;
 	if !card or card.is_buried:
 		return would_trigger;
 	player = card.controller;
@@ -1769,8 +1770,11 @@ func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool
 		would_trigger = true;
 	if !fully_moist:
 		return would_trigger;
-	if (card.is_paper() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)) \
-	or (card.is_scissor() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
+	if (card.is_scissor() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
+		did_gain_keywords = true;
+	if (card.is_paper() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)):
+		did_gain_keywords = true;
+	if did_gain_keywords:
 		if do_trigger:
 			update_alterations_for_card(card);
 			if get_card(card):

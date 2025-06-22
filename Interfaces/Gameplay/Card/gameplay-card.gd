@@ -29,7 +29,7 @@ const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 const STAMP_HINT_LINE : String = "[b]%s Stamp[/b] [i]–[/i] %s\n";
 const VARIANT_HINT_LINE : String = "[b]%s Variant[/b] [i]–[/i] %s\n";
 const HOLO_HINT_LINE : String = "[b]Holographic[/b] [i]–[/i] Scores double.\n";
-const DUAL_TYPE_HINT_LINE : String = "[b]%s[/b] [i]–[/i] Defeats %s and %s. [i](Ties with %s.)[/i]";
+const DUAL_TYPE_HINT_LINE : String = "[b]%s[/b] [i]–[/i] Defeats %s and %s. [i](Ties with %s.)[/i]\n";
 const DUAL_TYPE_HINT_REPLACEMENTS : Dictionary = {
 	CardEnums.CardType.BEDROCK: ["Bedrock", "rock", "scissors", "paper"],
 	CardEnums.CardType.ZIPPER: ["Zipper", "rock", "paper", "scissors"],

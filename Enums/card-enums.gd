@@ -447,7 +447,7 @@ var KeywordHints : Dictionary = {
 	Keyword.DIGITAL : "Counterspell from hand. [i](Replaces your card.)[/i]",
 	Keyword.DIVINE : "Defeats any undead.",
 	Keyword.ELECTROCUTE : "Defeats any ocean card.",
-	Keyword.EMP : "Negates digital and bluetooth stamp",
+	Keyword.EMP : "Negates digital and bluetooth stamp.",
 	Keyword.EXTRA_SALTY : "If loses, lose 3 points.",
 	Keyword.GREED : "If loses, draw 2.",
 	Keyword.HIGH_GROUND : "Automatically defeats any face-down card.",

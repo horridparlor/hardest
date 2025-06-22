@@ -1,7 +1,10 @@
 {
 	"id": 99,
-	"name": "Rock",
-	"type": "rock",
+	"name": "Nuclear Plant",
+	"type": "bedrock",
 	"keywords": [
+		"electrocute",
+		"negative",
+		"emp"
 	]
 }

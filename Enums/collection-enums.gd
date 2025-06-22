@@ -59,6 +59,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			66,
 			79,
 			97,
+			100,
 		]
 	},
 	House.DEMONIC: {
@@ -107,6 +108,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			81,
 			88,
 			90,
+			99,
 		]
 	},
 	House.KAWAII: {
@@ -290,13 +292,15 @@ const RANDOM_CARDS : Dictionary = {
 		95,
 	],
 	CardEnums.CardType.BEDROCK: [
-		96
+		96,
+		99,
 	],
 	CardEnums.CardType.ZIPPER: [
-		97
+		97,
+		100,
 	],
 	CardEnums.CardType.ROCKSTAR: [
-		98
+		98,
 	]
 }
 
@@ -317,6 +321,8 @@ const FOIL_CARDS : Dictionary = {
 	90: null,
 	91: null,
 	95: null,
+	99: null,
+	100: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

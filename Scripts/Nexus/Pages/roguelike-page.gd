@@ -211,7 +211,7 @@ func play_heart_lose_sound(is_standalone : bool = true) -> void:
 func play_sound(sound : Resource, added_volume : int = 0) -> void:
 	sfx_player.stream = sound;
 	sfx_player.volume_db = Config.NO_VOLUME if Config.MUTE_SFX else Config.SFX_VOLUME + added_volume;
-	sfx_player.pitch_scale = System.game_speed;
+	sfx_player.pitch_scale = 1;
 	sfx_player.play();
 
 func _on_die_pressed() -> void:

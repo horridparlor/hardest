@@ -202,6 +202,9 @@ func is_aquatic() -> bool:
 func has_auto_hydra() -> bool:
 	return has_keyword(CardEnums.Keyword.AUTO_HYDRA);
 
+func has_brotherhood() -> bool:
+	return has_keyword(CardEnums.Keyword.BROTHERHOOD);
+
 func has_buried() -> bool:
 	return has_keyword(CardEnums.Keyword.BURIED) or stamp == CardEnums.Stamp.MOLE;
 
@@ -337,6 +340,9 @@ func has_reload() -> bool:
 func has_rust() -> bool:
 	return has_keyword(CardEnums.Keyword.RUST);
 
+func has_sabotage() -> bool:
+	return has_keyword(CardEnums.Keyword.SABOTAGE);
+
 func has_salty() -> bool:
 	return has_keyword(CardEnums.Keyword.SALTY);
 
@@ -351,6 +357,9 @@ func has_shared_nut() -> bool:
 
 func has_silver() -> bool:
 	return has_keyword(CardEnums.Keyword.SILVER);
+
+func has_sinful() -> bool:
+	return has_keyword(CardEnums.Keyword.SINFUL);
 
 func has_soul_hunter() -> bool:
 	return has_keyword(CardEnums.Keyword.SOUL_HUNTER);

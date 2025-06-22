@@ -34,6 +34,7 @@ var is_roguelike : bool;
 var last_type_played : CardEnums.CardType = CardEnums.CardType.NULL;
 var played_same_type_in_a_row : int;
 var played_alpha_werewolf : bool;
+var brotherhood_multiplier : int = 1;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -128,13 +129,19 @@ func discard_hand() -> void:
 		discard_from_hand(card);
 
 func play_card(card : CardData, is_digital_speed : bool = false) -> void:
-	var matching_type : CardEnums.CardType = get_matching_type(card.card_type, last_type_played);
 	cards_in_hand.erase(card);
 	cards_on_field.append(card);
 	card.zone = CardEnums.Zone.FIELD;
 	if is_digital_speed:
 		return;
 	card.add_keyword(gained_keyword);
+	gained_keyword = CardEnums.Keyword.NULL;
+	trigger_play_multipliers(card);
+	if !is_digital_speed:
+		cards_played_this_turn += 1;
+
+func trigger_play_multipliers(card : CardData) -> void:
+	var matching_type : CardEnums.CardType = get_matching_type(card.card_type, last_type_played);
 	if matching_type != CardEnums.CardType.NULL:
 		last_type_played = matching_type;
 		played_same_type_in_a_row += 1;
@@ -143,9 +150,12 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 	else:
 		played_same_type_in_a_row = 0;
 		last_type_played = card.card_type;
-	gained_keyword = CardEnums.Keyword.NULL;
-	if !is_digital_speed:
-		cards_played_this_turn += 1;
+	if card.has_brotherhood():
+		trigger_brotherhood(card);
+
+func trigger_brotherhood(card : CardData) -> void:
+	brotherhood_multiplier *= 2;
+	card.multiply_advantage *= brotherhood_multiplier;
 
 func get_matching_type(new_type : CardEnums.CardType, base_type : CardEnums.CardType) -> CardEnums.CardType:
 	var base_types : Array = CardData.break_card_type(base_type);
@@ -269,6 +279,19 @@ func discard_from_hand(card : CardData) -> void:
 	cards_in_hand.erase(card);
 	add_to_grave(card);
 
+func random_discard(do_destroy : bool = false) -> CardData:
+	var card : CardData;
+	var source : Array;
+	for c in cards_in_hand:
+		card = c;
+		if !do_destroy or !card.has_cursed():
+			source.append(card);
+	if source.size() == 0:
+		return null;
+	card = System.Random.item(source);
+	discard_from_hand(card);
+	return card;
+
 func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	if !card:
 		return;
@@ -340,10 +363,12 @@ func get_rainbowed() -> void:
 		card.eat_json(CollectionEnums.get_random_card(card_type), false);
 		card.set_card_type(card_type);
 		if card.has_auto_hydra():
-			build_hydra(card);
+			build_hydra(card, true);
 
-func build_hydra(card : CardData) -> void:
+func build_hydra(card : CardData, include_hand_keywords : bool = false) -> void:
 	var keywords : Array = CardEnums.get_hydra_keywords();
+	if include_hand_keywords:
+		keywords += CardEnums.get_hand_hydra_keywords();
 	var keyword : CardEnums.Keyword;
 	card.keywords = [] if Config.DEBUG_KEYWORD == CardEnums.Keyword.NULL else [Config.DEBUG_KEYWORD];
 	while card.keywords.size() < System.Rules.HYDRA_KEYWORDS:

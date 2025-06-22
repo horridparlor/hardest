@@ -43,12 +43,13 @@ const CARDS_TO_COLLECT : Dictionary = {
 			7,
 			8,
 			13,
-			28,
 			70,
 			92,
 			93,
 			94,
 			97,
+			101,
+			102
 		],
 		Rarity.RARE: [
 			14,
@@ -99,6 +100,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			48,
 			49,
 			80,
+			103,
 		],
 		Rarity.RARE: [
 			27,
@@ -118,6 +120,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			11,
 			21,
 			22,
+			28,
 			30,
 			44,
 			45,
@@ -207,7 +210,8 @@ const RANDOM_CARDS : Dictionary = {
 		82,
 		85,
 		87,
-		92
+		92,
+		101
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -233,7 +237,8 @@ const RANDOM_CARDS : Dictionary = {
 		78,
 		83,
 		88,
-		93
+		93,
+		102
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -260,7 +265,8 @@ const RANDOM_CARDS : Dictionary = {
 		80,
 		84,
 		89,
-		94
+		94,
+		103
 	],
 	CardEnums.CardType.GUN: [
 		4,

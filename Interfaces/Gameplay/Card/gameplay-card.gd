@@ -202,6 +202,13 @@ func move_card(delta : float) -> void:
 		flow_frame(delta);
 	rotate_card(position - original_position, delta);
 
+func despawn_to_same_direction() -> void:
+	var despawn_point : Vector2 = get_despawn_position();
+	despawn(Vector2(
+		System.Floats.direction(global_position.x) * abs(despawn_point.x),
+		position.y * System.random.randf_range(0.8, 1.2)
+	));
+
 func flow_frame(delta : float) -> void:
 	position = System.Vectors.slide_towards(position, Vector2(position.x + flow_x, position.y + flow_gravity), FLOW_SPEED * delta);
 	if !is_dissolving and System.Random.chance(CHANCE_TO_DISSOLVE_DURING_FLOWING * (1 / (System.Window_.y / position.y)) * (1 / delta)):

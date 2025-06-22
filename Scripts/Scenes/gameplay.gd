@@ -404,6 +404,12 @@ func add_time_stop_shader(card : GameplayCard) -> void:
 		layer.material = material;
 
 func _on_card_visited(card : GameplayCard) -> void:
+	var enemy : CardData;
+	if cards_to_dissolve.has(card.instance_id):
+		enemy = cards_to_dissolve[card.instance_id];
+		cards_to_dissolve.erase(card.instance_id);
+		loser_dissolve_effect(card.card_data, enemy);
+		card.despawn_to_same_direction();
 	if is_spying:
 		resolve_spying(card);
 		
@@ -429,7 +435,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			opponent.discard_from_hand(enemy);
 			loser_dissolve_effect(enemy, card);
 			spy_target.dissolve();
-			spy_target.despawn();
+			spy_target.despawn_to_same_direction();
 			if cards_to_spy > 0:
 				if spy_opponent(card, player, opponent, cards_to_spy):
 					return;
@@ -442,7 +448,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			player.send_from_field_to_grave(card);
 			if get_card(card):
 				loser_dissolve_effect(card, enemy);
-				get_card(card).despawn();
+				get_card(card).despawn_to_same_direction();
 			match player.controller:
 				GameplayEnums.Controller.PLAYER_ONE:
 					spy_target.despawn(-CARD_STARTING_POSITION);
@@ -562,6 +568,8 @@ func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
 	return a_x < b_x;
 
 func _on_card_despawned(card : GameplayCard) -> void:
+	if System.Instance.exists(card) and (player_one.get_field_card() == card or player_two.get_field_card() == card):
+		return;
 	cards.erase(card.instance_id);
 	card.queue_free();
 
@@ -719,6 +727,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				update_card_alterations();
 			CardEnums.Keyword.RELOAD:
 				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
+			CardEnums.Keyword.SABOTAGE:
+				trigger_sabotage(card, opponent);
 			CardEnums.Keyword.SCAMMER:
 				player.points = -100;
 				gain_points_effect(player);
@@ -749,6 +759,22 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				trigger_positive(card, enemy, player);
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
+
+func trigger_sabotage(card : CardData, opponent : Player) -> void:
+	var enemy : CardData = opponent.random_discard(true);
+	var gameplay_card : GameplayCard;
+	if !System.Instance.exists(enemy):	
+		return;
+	gameplay_card = spawn_card(enemy);
+	if opponent == player_one:
+		show_hand();
+		gameplay_card.go_visit_point(VISIT_POSITION);
+		cards_to_dissolve[enemy.instance_id] = card;
+	else:
+		gameplay_card = spawn_card(enemy);
+		gameplay_card.go_visit_point(-VISIT_POSITION);
+		cards_to_dissolve[enemy.instance_id] = card;
+		
 
 func trigger_spring_arrives(card : CardData, player : Player) -> void:
 	var hand_size : int = player.count_hand();
@@ -1313,7 +1339,7 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 			CardEnums.Keyword.DEVOUR:
 				value += 5 if player.going_first else -1;
 			CardEnums.Keyword.DIGITAL:
-				value += 5;
+				value += 3;
 			CardEnums.Keyword.DIVINE:
 				value += 0;
 			CardEnums.Keyword.ELECTROCUTE:
@@ -1370,6 +1396,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.RUST:
 				value += 1;
+			CardEnums.Keyword.SABOTAGE:
+				value += 4;
 			CardEnums.Keyword.SALTY:
 				value += 5 if player.points == 0 else 1;
 			CardEnums.Keyword.SCAMMER:
@@ -1523,7 +1551,7 @@ func round_results() -> void:
 func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 	if !get_card(card):
 		return;
-	if enemy.has_incinerate() and !card.has_cursed():
+	if (card.has_sinful() or enemy.has_incinerate()) and !card.has_cursed():
 		get_card(card).burn_effect();
 		burn_card(card);
 	get_card(card).dissolve();

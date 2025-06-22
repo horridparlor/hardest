@@ -202,6 +202,7 @@ var animation_instance_id : int;
 var animations : Dictionary;
 var current_animation_type : AnimationType = AnimationType.NULL;
 var has_ocean_wet_self : bool;
+var cards_to_dissolve : Dictionary;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

@@ -1,7 +1,9 @@
 {
-	"id": 101,
-	"name": "Rock",
-	"type": "rock",
+	"id": 105,
+	"name": "Sausage Stuffer",
+	"type": "rockstar",
 	"keywords": [
+		"brotherhood",
+		"sinful"
 	]
 }

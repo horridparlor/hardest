@@ -154,8 +154,8 @@ func trigger_play_multipliers(card : CardData) -> void:
 		trigger_brotherhood(card);
 
 func trigger_brotherhood(card : CardData) -> void:
-	brotherhood_multiplier *= 2;
 	card.multiply_advantage *= brotherhood_multiplier;
+	brotherhood_multiplier *= 2;
 
 func get_matching_type(new_type : CardEnums.CardType, base_type : CardEnums.CardType) -> CardEnums.CardType:
 	var base_types : Array = CardData.break_card_type(base_type);

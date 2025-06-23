@@ -26,6 +26,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			51,
 			52,
 			96,
+			104,
 		],
 		Rarity.RARE: [
 			55,
@@ -35,6 +36,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			61,
 			77,
 			87,
+			105,
 		]
 	},
 	House.DELUSIONAL: {
@@ -211,7 +213,8 @@ const RANDOM_CARDS : Dictionary = {
 		85,
 		87,
 		92,
-		101
+		101,
+		104
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -266,7 +269,7 @@ const RANDOM_CARDS : Dictionary = {
 		84,
 		89,
 		94,
-		103
+		103,
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -307,6 +310,7 @@ const RANDOM_CARDS : Dictionary = {
 	],
 	CardEnums.CardType.ROCKSTAR: [
 		98,
+		105,
 	]
 }
 

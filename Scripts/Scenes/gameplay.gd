@@ -2521,7 +2521,7 @@ func _on_wet_wait_timer_timeout() -> void:
 	is_wet_wait_on = false;
 
 func after_ocean(is_forced : bool) -> void:
-	var card : CardData = ocean_card.card_data;
+	var card : CardData = ocean_card.card_data if System.Instance.exists(ocean_card) else null;
 	var enemy : CardData = get_opponent(card).get_field_card() if System.Instance.exists(ocean_card) else null;
 	if is_forced:
 		return;

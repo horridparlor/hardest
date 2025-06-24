@@ -1,6 +1,6 @@
 extends Node
 
-const VERSION : String = "0.6";
+const VERSION : String = "0.7";
 
 const DEV_MODE : bool = false;
 const MAX_SONG_ID : int = 21;

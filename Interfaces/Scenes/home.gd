@@ -68,6 +68,7 @@ var has_game_ended : bool;
 var card_spawn_timer : Timer = Timer.new();
 var background_cards : Array;
 var nexus : Nexus;
+var network : Network = Network.new();
 
 func _ready() -> void:
 	for node in [
@@ -84,7 +85,11 @@ func _ready() -> void:
 	set_process_input(true);
 	save_data = System.Data.load_save_data();
 	init_timers();
+	network_init();
 	init();
+
+func network_init() -> void:
+	network.connect_signals(multiplayer);
 
 func init_timers() -> void:
 	zoom_timer.timeout.connect(_on_zoom_out);

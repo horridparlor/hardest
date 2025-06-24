@@ -2,7 +2,7 @@ extends Node
 
 const VERSION : String = "0.6";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 21;
 const MAX_CARD_ID : int = 105; #120
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID - 3, 20);
@@ -18,7 +18,7 @@ const SPAWNED_CARD : int = 81 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 
-const MUTE : bool = false if DEV_MODE else false;
+const MUTE : bool = true if DEV_MODE else false;
 const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;
 const MUTE_SFX : bool = (false if DEV_MODE else false) or MUTE;
 const VOLUME : int = 0 if DEV_MODE else 0;

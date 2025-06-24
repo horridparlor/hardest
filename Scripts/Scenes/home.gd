@@ -71,6 +71,10 @@ func process_dev_mode_shortcut_actions() -> void:
 		gameplay.time_stop_effect_out();
 	if Input.is_action_just_pressed("hot_action_3") and gameplay:
 		pass;
+	if Input.is_action_just_pressed("host_game"):
+		network.host(multiplayer);
+	if Input.is_action_just_pressed("join_game"):
+		network.join(multiplayer);
 
 func open_starting_scene() -> void:
 	if Config.SHOW_TITLE:

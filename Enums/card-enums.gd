@@ -85,6 +85,7 @@ const TranslateCardType : Dictionary = {
 }
 
 enum Zone {
+	NULL,
 	DECK,
 	HAND,
 	FIELD,
@@ -146,6 +147,7 @@ enum Keyword {
 	NULL,
 	ALPHA_WEREWOLF,
 	AUTO_HYDRA,
+	BERSERK,
 	BROTHERHOOD,
 	BURIED,
 	CARROT_EATER,
@@ -153,6 +155,7 @@ enum Keyword {
 	CHAMELEON,
 	CHAMPION,
 	CLONING,
+	CONTAGIOUS,
 	COOTIES,
 	COPYCAT,
 	CURSED,
@@ -227,12 +230,14 @@ func get_hand_hydra_keywords() -> Array:
 
 func get_hydra_keywords() -> Array:
 	return [
+		Keyword.BERSERK,
 		Keyword.BURIED,
 		Keyword.CARROT_EATER,
 		Keyword.CELEBRATE,
 		Keyword.CHAMELEON,
 		Keyword.CHAMPION,
 		Keyword.CLONING,
+		Keyword.CONTAGIOUS,
 		Keyword.COPYCAT,
 		Keyword.CURSED,
 		Keyword.DEVOUR,
@@ -255,7 +260,6 @@ func get_hydra_keywords() -> Array:
 		Keyword.RUST,
 		Keyword.SABOTAGE,
 		Keyword.SHARED_NUT,
-		Keyword.SPRING_ARRIVES,
 		Keyword.SPY,
 		Keyword.TIDAL,
 		Keyword.TIME_STOP,
@@ -264,9 +268,15 @@ func get_hydra_keywords() -> Array:
 		Keyword.WRAPPED
 	];
 
+func get_rare_hydra_keywords() -> Array:
+	return [
+		Keyword.SPRING_ARRIVES,
+	];
+
 const KeywordNames : Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "Alpha-werewolf",
 	Keyword.AUTO_HYDRA : "Auto-hydra",
+	Keyword.BERSERK : "Berserk",
 	Keyword.BROTHERHOOD : "Brotherhood",
 	Keyword.BURIED : "Buried",
 	Keyword.CARROT_EATER : "Carrot-eater",
@@ -274,6 +284,7 @@ const KeywordNames : Dictionary = {
 	Keyword.CHAMELEON : "Chameleon",
 	Keyword.CHAMPION : "Champion",
 	Keyword.CLONING : "Cloning",
+	Keyword.CONTAGIOUS : "Contagious",
 	Keyword.COOTIES : "Cooties",
 	Keyword.COPYCAT : "Copycat",
 	Keyword.CURSED : "Cursed",
@@ -330,6 +341,7 @@ const KeywordNames : Dictionary = {
 const TranslateKeyword : Dictionary = {
 	"alpha-werewolf" : Keyword.ALPHA_WEREWOLF,
 	"auto-hydra" : Keyword.AUTO_HYDRA,
+	"berserk" : Keyword.BERSERK,
 	"brotherhood" : Keyword.BROTHERHOOD,
 	"buried" : Keyword.BURIED,
 	"carrot-eater" : Keyword.CARROT_EATER,
@@ -337,6 +349,7 @@ const TranslateKeyword : Dictionary = {
 	"chameleon" : Keyword.CHAMELEON,
 	"champion" : Keyword.CHAMPION,
 	"cloning" : Keyword.CLONING,
+	"contagious" : Keyword.CONTAGIOUS,
 	"cooties" : Keyword.COOTIES,
 	"copycat" : Keyword.COPYCAT,
 	"cursed" : Keyword.CURSED,
@@ -393,6 +406,7 @@ const TranslateKeyword : Dictionary = {
 const TranslateKeywordBack: Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "alpha-werewolf",
 	Keyword.AUTO_HYDRA : "auto-hydra",
+	Keyword.BERSERK : "berserk",
 	Keyword.BROTHERHOOD : "brotherhood",
 	Keyword.BURIED : "buried",
 	Keyword.CARROT_EATER : "carrot-eater",
@@ -400,6 +414,7 @@ const TranslateKeywordBack: Dictionary = {
 	Keyword.CHAMELEON : "chameleon",
 	Keyword.CHAMPION : "champion",
 	Keyword.CLONING : "cloning",
+	Keyword.CONTAGIOUS : "contagious",
 	Keyword.COOTIES : "cooties",
 	Keyword.COPYCAT : "copycat",
 	Keyword.CURSED : "cursed",
@@ -456,13 +471,15 @@ const TranslateKeywordBack: Dictionary = {
 var KeywordHints : Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "End of turn, werewolfs in hand become the color you played, and gain multiply.",
 	Keyword.AUTO_HYDRA : "When drawn, gains 3 random keywords.",
+	Keyword.BERSERK : "Fights top card of opponent's deck. If wins, repeat.",
 	Keyword.BROTHERHOOD : "Double the value for each brotherhood member played this game.",
 	Keyword.BURIED : "Played face-down.",
 	Keyword.CARROT_EATER : "Eats a random keyword from enemy.",
 	Keyword.CELEBRATE : "Discard your hand, then draw 1.",
 	Keyword.CHAMELEON : "Whenever opponent gets a card, changes color.",
 	Keyword.CHAMPION : "Games with this card give double points.",
-	Keyword.CLONING : "Create a copy of a random card in your hand.",
+	Keyword.CLONING : "Create a permanent copy of a card in hand.",
+	Keyword.CONTAGIOUS : "A card in hand permanently becomes a SAME_TYPE.",
 	Keyword.COOTIES : "Defeats any card without an effect.",
 	Keyword.COPYCAT : "Copies opponent's card type.",
 	Keyword.CURSED : "Cannot be replaced or destroyed.",
@@ -491,7 +508,7 @@ var KeywordHints : Dictionary = {
 	Keyword.OCEAN_DWELLER : "If stays in hand, gain a point. [i](Also triggers if becomes wet.)[/i]",
 	Keyword.PAIR : "Wins in a tie.",
 	Keyword.PAIR_BREAKER : "Defeats any card with pair or a double stamp.",
-	Keyword.PERFECT_CLONE : "Create a perfect copy of a random card in your hand.",
+	Keyword.PERFECT_CLONE : "Create a perfect copy of a card in hand.",
 	Keyword.PICK_UP : "End of turn, discard this card from your hand.",
 	Keyword.POSITIVE : "Double your points.",
 	Keyword.RAINBOW : "Each card in opponent's hand becomes a random card of same type.",
@@ -535,7 +552,8 @@ const WET_BULLETS : Dictionary = {
 const PLAY_SFX_FULLY_BULLETS : Dictionary = {
 	8: null,
 	18: null,
-	20: null
+	20: null,
+	22: null
 }
 
 const HORSE_CARD_IDS : Array = [

@@ -420,7 +420,8 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	var card : CardData = player.get_field_card();
 	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
 	var points : int = 1;
-	if enemy.has_secrets():
+	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
+	if do_spy_hand and enemy.has_secrets():
 		winner = GameplayEnums.Controller.PLAYER_ONE;
 		points = 3;
 	if card and card.is_gun() and winner != GameplayEnums.Controller.PLAYER_TWO:
@@ -432,12 +433,12 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			trigger_winner_loser_effects(card, enemy, player, opponent, points);
-			opponent.discard_from_hand(enemy);
+			opponent.discard_from_hand(enemy) if do_spy_hand else opponent.mill_from_deck(enemy);
 			loser_dissolve_effect(enemy, card);
 			spy_target.dissolve();
 			spy_target.despawn_to_same_direction();
 			if cards_to_spy > 0:
-				if spy_opponent(card, player, opponent, cards_to_spy):
+				if spy_opponent(card, player, opponent, cards_to_spy, spy_zone):
 					return;
 			if player != active_player and active_player.hand_empty():
 				stop_spying();
@@ -453,7 +454,10 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				GameplayEnums.Controller.PLAYER_ONE:
 					spy_target.despawn(-CARD_STARTING_POSITION);
 				GameplayEnums.Controller.PLAYER_TWO:
-					reorder_hand();
+					if spy_target.card_data.zone == CardEnums.Zone.HAND:
+						reorder_hand();
+					else:
+						spy_target.despawn(-CARD_STARTING_POSITION);
 			match active_player:
 				GameplayEnums.Controller.PLAYER_ONE:
 					if !player_one.hand_empty():
@@ -472,8 +476,8 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 						return;
 		GameplayEnums.Controller.NULL:
 			play_tie_sound();
-			if opponent.controller == GameplayEnums.Controller.PLAYER_TWO:
-				spy_target.despawn(-CARD_STARTING_POSITION)
+			if opponent.controller == GameplayEnums.Controller.PLAYER_TWO or !do_spy_hand:
+				spy_target.despawn(-CARD_STARTING_POSITION if opponent.controller == GameplayEnums.Controller.PLAYER_TWO else CARD_STARTING_POSITION);
 			else:
 				reorder_hand();
 	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
@@ -485,9 +489,9 @@ func continue_play() -> void:
 func stop_spying() -> void:
 	is_spying = false;
 
-func update_card_alterations() -> void:
+func update_card_alterations(rerender_shader : bool = false) -> void:
 	for card in player_one.get_active_cards() + player_two.get_active_cards():
-		update_alterations_for_card(card);
+		update_alterations_for_card(card, rerender_shader);
 		if !is_time_stopped and get_card(card):
 			if (get_card(card).has_emp_visuals and !card.has_emp()) \
 			or (get_card(card).has_negative_visuals and !card.is_negative_variant()) \
@@ -495,7 +499,7 @@ func update_card_alterations() -> void:
 			or (get_card(card).has_foil_visuals and !card.is_foil):
 				get_card(card).add_art_base_shader(true);
 
-func update_alterations_for_card(card_data : CardData) -> void:
+func update_alterations_for_card(card_data : CardData, rerender_shader : bool = false) -> void:
 	var card : GameplayCard = get_card(card_data);
 	if card_data.has_undead():
 		if card_data.has_undead(true):
@@ -503,6 +507,8 @@ func update_alterations_for_card(card_data : CardData) -> void:
 		else:
 			card_data.set_card_type(card_data.default_type);
 	if card:
+		if rerender_shader and !is_time_stopped:
+			card.card_art.material = null;
 		card.update_visuals(card.card_data.controller.gained_keyword);
 
 func _on_card_pressed(card : GameplayCard) -> void:
@@ -568,7 +574,7 @@ func sort_by_card_position(card_a : CardData, card_b : CardData) -> int:
 	return a_x < b_x;
 
 func _on_card_despawned(card : GameplayCard) -> void:
-	if System.Instance.exists(card) and (player_one.get_field_card() == card or player_two.get_field_card() == card):
+	if System.Instance.exists(card) and (player_one.get_field_card() == card.card_data or player_two.get_field_card() == card.card_data):
 		return;
 	cards.erase(card.instance_id);
 	card.queue_free();
@@ -716,6 +722,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				celebrate(player);
 			CardEnums.Keyword.CLONING:
 				trigger_cloning(card, player);
+			CardEnums.Keyword.CONTAGIOUS:
+				trigger_contagious(card, player);
 			CardEnums.Keyword.HORSE_GEAR:
 				draw_horse_card(player);
 			CardEnums.Keyword.INFLUENCER:
@@ -724,7 +732,7 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				trigger_cloning(card, player, true);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
-				update_card_alterations();
+				update_card_alterations(true);
 			CardEnums.Keyword.RELOAD:
 				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
 			CardEnums.Keyword.SABOTAGE:
@@ -746,6 +754,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 		return;
 	for keyword in keywords:
 		match keyword:
+			CardEnums.Keyword.BERSERK:
+				spy_opponent(card, player, opponent, System.Rules.MAX_BERSERKER_SHOTS, CardEnums.Zone.DECK);
 			CardEnums.Keyword.CARROT_EATER:
 				eat_carrot(card);
 			CardEnums.Keyword.MULTI_SPY:
@@ -775,7 +785,6 @@ func trigger_sabotage(card : CardData, opponent : Player) -> void:
 		gameplay_card.go_visit_point(-VISIT_POSITION);
 		cards_to_dissolve[enemy.instance_id] = card;
 		
-
 func trigger_spring_arrives(card : CardData, player : Player) -> void:
 	var hand_size : int = player.count_hand();
 	player.fill_hand();
@@ -783,6 +792,26 @@ func trigger_spring_arrives(card : CardData, player : Player) -> void:
 		card.multiply_advantage *= 2;
 	if player == player_one:
 		show_hand();
+
+func trigger_contagious(source_card : CardData, player : Player) -> void:
+	var card_type : CardEnums.CardType = source_card.card_type;
+	var card_to_alter : CardData;
+	var source : Array;
+	var card : CardData;
+	for c in player.cards_in_hand:
+		card = c;
+		if !card.card_types.has(card_type):
+			source.append(card);
+	if source.is_empty():
+		return;
+	card_to_alter = System.Random.item(source);
+	if card_to_alter.is_dual_type() and CardEnums.BASIC_COLORS.has(card_type):
+		card_type = System.Random.item(CardData.expand_type(card_type));
+	player.rainbow_a_card(card_to_alter, card_type);
+	player.make_card_alterations_permanent(card_to_alter);
+	if card_to_alter.has_auto_hydra():
+		player.build_hydra(card_to_alter, true);
+	update_alterations_for_card(card_to_alter, true);
 
 func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool = false) -> void:
 	var cloned_card : CardData;
@@ -799,6 +828,7 @@ func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool =
 	if cloned_card.controller == player_two:
 		return;
 	gameplay_card = spawn_card(cloned_card);
+	player.make_new_card_permanent(cloned_card);
 	if get_card(card_to_clone):
 		var pos : Vector2 = get_card(card_to_clone).position;
 		gameplay_card.position = pos + Vector2(-2, 0);
@@ -947,12 +977,14 @@ func collect_nuts(player : Player) -> void:
 		player.spawn_card_from_id(System.Random.item(CardEnums.NUT_IDS));
 	player.shuffle_deck();
 
-func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1) -> bool:
+func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1, zone : CardEnums.Zone = CardEnums.Zone.HAND) -> bool:
 	var spied_card_data : CardData;
-	var spied_card : GameplayCard
-	if opponent.hand_empty():
+	var spied_card : GameplayCard;
+	spy_zone = zone;
+	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
+	if do_spy_hand and opponent.hand_empty():
 		return false;
-	spied_card_data = determine_spied_card(opponent);
+	spied_card_data = determine_spied_card(opponent) if do_spy_hand else opponent.get_top_deck();
 	spawn_card(spied_card_data);
 	spied_card = get_card(spied_card_data);
 	match opponent.controller:
@@ -1322,6 +1354,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 		match keyword:
 			CardEnums.Keyword.ALPHA_WEREWOLF:
 				value -= 2;
+			CardEnums.Keyword.BERSERK:
+				value += 5;
 			CardEnums.Keyword.BURIED:
 				value += 5;
 			CardEnums.Keyword.CELEBRATE:
@@ -1330,6 +1364,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.CLONING:
 				value += player.cards_in_hand.size();
+			CardEnums.Keyword.CONTAGIOUS:
+				value += 5 if card.is_gun() else 0;
 			CardEnums.Keyword.COOTIES:
 				value += 1;
 			CardEnums.Keyword.COPYCAT:
@@ -1557,6 +1593,8 @@ func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 	get_card(card).dissolve();
 
 func electrocute_card(card : CardData) -> void:
+	if !get_card(card):
+		return;
 	get_card(card).electrocuted_effect();
 	zoom_to_node(get_card(card));
 	play_electrocuted_sound();
@@ -1576,7 +1614,7 @@ func stopped_time_results() -> void:
 	var card : CardData = time_stopping_player.get_field_card();
 	var enemy : CardData = get_opponent(card).get_field_card() if card else null;
 	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
-	if time_stopping_player.hand_empty() or time_stopping_player.cards_played_this_turn >= 20 or (card and !card.is_buried and (card.is_gun() or card.is_god())):
+	if time_stopping_player.hand_empty() or time_stopping_player.cards_played_this_turn >= System.Rules.MAX_TIME_STOP_CARDS_PLAYED or (card and !card.is_buried and (card.is_gun() or card.is_god())):
 		if card and (card.is_gun() and !card.is_buried) and (!enemy or check_type_results(card, enemy) != GameplayEnums.Controller.PLAYER_TWO):
 			await stopped_time_shooting(card, get_opponent(card).get_field_card());
 		time_stop_effect_out();
@@ -2110,7 +2148,7 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	return true;
 
 func trigger_alpha_werewolf(player : Player) -> void:
-	var played_color : CardEnums.CardType = player.last_type_played;
+	var played_color : CardEnums.CardType = player.true_last_type_played;
 	var card : CardData;
 	for c in player.cards_in_hand:
 		card = c;

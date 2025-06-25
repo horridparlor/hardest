@@ -406,6 +406,31 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 2,
 			"song": 15,
 			"background": 10
+		},
+		GameplayEnums.Character.SWARMYARD: {
+			"cards": [
+				8,
+				14,
+				24,
+				29,
+				52,
+				56,
+				73,
+				80,
+				89,
+				94,
+				94,
+				94,
+				107,
+				100,
+				106
+			],
+			"card_pool": get_card_pool([
+				CollectionEnums.House.SCISSOR
+			]),
+			"rare_chance": 3,
+			"song": 21,
+			"background": 17
 		}
 	};
 
@@ -437,6 +462,8 @@ func get_starting_houses() -> Array:
 	all_houses.shuffle();
 	for i in range(System.Rules.STARTING_HOUSES_COUNT + extra_houses):
 		houses.append(all_houses.pop_back());
+	if Config.AUTO_HOUSE != CollectionEnums.House.NULL:
+		return [Config.AUTO_HOUSE];
 	return houses;
 
 static func from_json(json : Dictionary) -> RoguelikeData:

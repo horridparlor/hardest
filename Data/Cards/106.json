@@ -3,6 +3,8 @@
 	"name": "Berserker Pistol",
 	"type": "gun",
 	"keywords": [
+		"champion",
 		"berserk"
-	]
+	],
+	"bullet": 22
 }

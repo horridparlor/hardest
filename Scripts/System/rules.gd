@@ -9,12 +9,15 @@ const MAX_KEYWORDS : int = 3;
 #Keyword specific
 const UNDEAD_LIMIT : int = 3;
 const HYDRA_KEYWORDS : int = 3;
+const HYDRA_RARE_KEYWORDS_CHANCE : int = 10;
 const STOPPED_TIME_MIN_SHOTS : int = 2;
 const STOPPED_TIME_MAX_SHOTS : int = 5;
 const NUTS_TO_COLLECT : int = 3;
 const OCEAN_DWELLER_TURNS_WAIT : int = 2;
 const SALTY_POINTS_LOST : int = 1;
 const EXTRA_SALTY_POINTS_LOST : int = 3;
+const MAX_BERSERKER_SHOTS : int = 99;
+const MAX_TIME_STOP_CARDS_PLAYED : int = 20;
 
 #Roguelike
 const STARTING_LIVES : int = 3;

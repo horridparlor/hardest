@@ -6,13 +6,15 @@ enum Rarity {
 }
 
 enum House {
+	NULL,
 	CHAMPION,
 	DELUSIONAL,
 	DEMONIC,
 	HIGHTECH,
 	KAWAII,
 	GOD,
-	SCAM
+	SCAM,
+	SCISSOR
 }
 
 const CARDS_TO_COLLECT : Dictionary = {
@@ -37,6 +39,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			77,
 			87,
 			105,
+			106,
 		]
 	},
 	House.DELUSIONAL: {
@@ -63,6 +66,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			66,
 			79,
 			100,
+			108,
 		]
 	},
 	House.DEMONIC: {
@@ -88,6 +92,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			78,
 			86,
 			89,
+			109,
+			110,
 		]
 	},
 	House.HIGHTECH: {
@@ -113,6 +119,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			88,
 			90,
 			99,
+			107,
 		]
 	},
 	House.KAWAII: {
@@ -140,6 +147,40 @@ const CARDS_TO_COLLECT : Dictionary = {
 			84,
 			85,
 			91,
+		]
+	},
+	House.SCISSOR: {
+		Rarity.COMMON: [
+			3,
+			8,
+			11,
+			17,
+			21,
+			24,
+			29,
+			30,
+			33,
+			52,
+			56,
+			73,
+			80,
+			94,
+			97,
+			98,
+			103,
+		],
+		Rarity.RARE: [
+			14,
+			38,
+			41,
+			55,
+			59,
+			64,
+			84,
+			89,
+			100,
+			105,
+			107,
 		]
 	},
 	House.GOD: [
@@ -214,7 +255,8 @@ const RANDOM_CARDS : Dictionary = {
 		87,
 		92,
 		101,
-		104
+		104,
+		109,
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -241,7 +283,8 @@ const RANDOM_CARDS : Dictionary = {
 		83,
 		88,
 		93,
-		102
+		102,
+		108,
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -270,6 +313,7 @@ const RANDOM_CARDS : Dictionary = {
 		89,
 		94,
 		103,
+		107,
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -283,7 +327,9 @@ const RANDOM_CARDS : Dictionary = {
 		74,
 		77,
 		81,
-		90
+		90,
+		106,
+		110,
 	],
 	CardEnums.CardType.MIMIC: [
 		5,
@@ -333,6 +379,8 @@ const FOIL_CARDS : Dictionary = {
 	95: null,
 	99: null,
 	100: null,
+	106: null,
+	110: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

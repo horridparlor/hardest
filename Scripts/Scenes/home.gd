@@ -244,7 +244,9 @@ func _on_game_over(did_win : bool) -> void:
 	else:
 		process_loss();
 	if in_roguelike_mode:
+		add_created_cards_to_decklists();
 		remove_burned_cards_from_decklists();
+		save_permanently_altered_cards_to_decklists();
 	save_data.roguelike_data.get_new_choices(level_data.opponent, gameplay.player_one.decklist.burned_cards.size() > 0);
 	save_data.write();
 
@@ -258,6 +260,29 @@ func remove_burned_cards_from_decklists() -> void:
 		for card in save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.duplicate():
 			if card["spawn_id"] == spawn_id:
 				save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.erase(card);
+				break;
+
+func add_created_cards_to_decklists() -> void:
+	var card : Dictionary;
+	for c in gameplay.player_one.decklist.created_cards:
+		card = c;
+		save_data.roguelike_data.your_cards.append(card);
+	for c in gameplay.player_two.decklist.created_cards:
+		card = c;
+		save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.append(card);				
+
+func save_permanently_altered_cards_to_decklists() -> void:
+	for spawn_id in gameplay.player_one.decklist.altered_cards:
+		for card in save_data.roguelike_data.your_cards.duplicate():
+			if card["spawn_id"] == spawn_id:
+				save_data.roguelike_data.your_cards.erase(card);
+				save_data.roguelike_data.your_cards.append(gameplay.player_one.decklist.altered_cards[spawn_id]);
+				break;
+	for spawn_id in gameplay.player_two.decklist.altered_cards:
+		for card in save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.duplicate():
+			if card["spawn_id"] == spawn_id:
+				save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.erase(card);
+				save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.append(gameplay.player_two.decklist.altered_cards[spawn_id]);
 				break;
 
 func _on_background_music_finished() -> void:

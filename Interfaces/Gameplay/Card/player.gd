@@ -32,6 +32,7 @@ var nut_multiplier : int = 1;
 var point_goal : int;
 var is_roguelike : bool;
 var last_type_played : CardEnums.CardType = CardEnums.CardType.NULL;
+var true_last_type_played : CardEnums.CardType = CardEnums.CardType.NULL;
 var played_same_type_in_a_row : int;
 var played_alpha_werewolf : bool;
 var brotherhood_multiplier : int = 1;
@@ -106,6 +107,11 @@ func draw() -> bool:
 		generate_deck();
 	return true;
 
+func get_top_deck() -> CardData:
+	if deck_empty():
+		generate_deck();
+	return cards_in_deck.back();
+
 func refill_deck() -> void:
 	var ids : Array;
 	for i in range(12):
@@ -150,6 +156,7 @@ func trigger_play_multipliers(card : CardData) -> void:
 	else:
 		played_same_type_in_a_row = 0;
 		last_type_played = card.card_type;
+	true_last_type_played = card.card_type;
 	if card.has_brotherhood():
 		trigger_brotherhood(card);
 
@@ -183,6 +190,8 @@ func generate_deck() -> void:
 		return;
 	cards_in_deck = [];
 	for card in cards:
+		if !System.Instance.exists(card):
+			continue;
 		spawn_card(card);
 
 func spawn_card(card_data : CardData, spawn_to : CardEnums.Zone = CardEnums.Zone.DECK) -> CardData:
@@ -279,6 +288,10 @@ func discard_from_hand(card : CardData) -> void:
 	cards_in_hand.erase(card);
 	add_to_grave(card);
 
+func mill_from_deck(card : CardData) -> void:
+	cards_in_deck.erase(card);
+	add_to_grave(card);
+
 func random_discard(do_destroy : bool = false) -> CardData:
 	var card : CardData;
 	var source : Array;
@@ -356,19 +369,24 @@ func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
 
 func get_rainbowed() -> void:
 	var card : CardData;
-	var card_type : CardEnums.CardType;
 	for c in cards_in_hand:
 		card = c;
-		card_type = card.default_type;
-		card.eat_json(CollectionEnums.get_random_card(card_type), false);
-		card.set_card_type(card_type);
+		rainbow_a_card(card);
 		if card.has_auto_hydra():
 			build_hydra(card, true);
+
+func rainbow_a_card(card : CardData, card_type : CardEnums.CardType = CardEnums.CardType.NULL):
+	if card_type == CardEnums.CardType.NULL:
+		card_type = card.default_type;
+	card.eat_json(CollectionEnums.get_random_card(card_type), false);
+	card.set_card_type(card_type);
 
 func build_hydra(card : CardData, include_hand_keywords : bool = false) -> void:
 	var keywords : Array = CardEnums.get_hydra_keywords();
 	if include_hand_keywords:
 		keywords += CardEnums.get_hand_hydra_keywords();
+	if System.Random.chance(System.Rules.HYDRA_RARE_KEYWORDS_CHANCE):
+		keywords += CardEnums.get_rare_hydra_keywords();
 	var keyword : CardEnums.Keyword;
 	card.keywords = [] if Config.DEBUG_KEYWORD == CardEnums.Keyword.NULL else [Config.DEBUG_KEYWORD];
 	while card.keywords.size() < System.Rules.HYDRA_KEYWORDS:
@@ -478,5 +496,32 @@ func burn_card(card : CardData) -> void:
 	for other_card in cards_in_deck.duplicate():
 		if other_card.spawn_id == spawn_id:
 			cards_in_deck.erase(other_card);
-			other_card.queue_free();
 	decklist.burn_card(spawn_id);
+
+func make_new_card_permanent(card : CardData) -> void:
+	decklist.make_new_card_permanent(card);
+
+func make_card_alterations_permanent(card : CardData) -> void:
+	var index : int;
+	var spawned_card : CardData;
+	var original_card_type : CardEnums.CardType;
+	for c in cards_in_deck:
+		if c.spawn_id == card.spawn_id:
+			spawned_card = spawn_card(card, CardEnums.Zone.NULL);
+			spawned_card.zone = CardEnums.Zone.DECK;
+			spawned_card.set_card_type(spawned_card.default_type);
+			cards_in_deck[index] = spawned_card;
+		index += 1;
+	index = 0;
+	for c in cards_in_grave:
+		if c.spawn_id == card.spawn_id:
+			original_card_type = c.default_type;
+			spawned_card = spawn_card(card, CardEnums.Zone.NULL);
+			spawned_card.zone = CardEnums.Zone.GRAVE;
+			spawned_card.set_card_type(spawned_card.default_type);
+			cards_in_grave[index] = spawned_card;
+			if original_card_type != spawned_card.default_type:
+				grave_type_counts[original_card_type] -= 1
+				grave_type_counts[spawned_card.default_type] += 1
+		index += 1;
+	decklist.make_card_alterations_permanent(card);

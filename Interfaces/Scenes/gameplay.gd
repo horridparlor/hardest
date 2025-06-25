@@ -156,6 +156,7 @@ var shadow_goal_visibility : float;
 var is_updating_points_visibility : float;
 var is_spying : bool;
 var cards_to_spy : int;
+var spy_zone : CardEnums.Zone;
 var leds_left : Array;
 var leds_right : Array;
 var is_trolling : bool;

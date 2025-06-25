@@ -202,6 +202,9 @@ func is_aquatic() -> bool:
 func has_auto_hydra() -> bool:
 	return has_keyword(CardEnums.Keyword.AUTO_HYDRA);
 
+func has_berserk() -> bool:
+	return has_keyword(CardEnums.Keyword.BERSERK);
+
 func has_brotherhood() -> bool:
 	return has_keyword(CardEnums.Keyword.BROTHERHOOD);
 

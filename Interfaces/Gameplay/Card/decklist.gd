@@ -13,6 +13,8 @@ var title : String;
 var cards : Array;
 var start_with : Array;
 var burned_cards : Array;
+var created_cards : Array;
+var altered_cards : Dictionary;
 
 static func from_json(data : Dictionary) -> Decklist:
 	var decklist : Decklist = Decklist.new();
@@ -76,3 +78,15 @@ func burn_card(spawn_id : int) -> void:
 			card.queue_free();
 			break;
 	burned_cards.append(spawn_id);
+
+func make_new_card_permanent(card : CardData) -> void:
+	cards.append(card);
+	created_cards.append(card.to_json());
+
+func make_card_alterations_permanent(card : CardData) -> void:
+	for c in cards.duplicate():
+		if c.spawn_id == card.spawn_id:
+			cards.erase(c);
+			break;
+	cards.append(card);
+	altered_cards[card.spawn_id] = card.to_json();

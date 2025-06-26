@@ -527,7 +527,7 @@ var KeywordHints : Dictionary = {
 	Keyword.SALTY : "If loses, lose a point.",
 	Keyword.SCAMMER : "100 points!",
 	Keyword.SECRETS : "Loses to spies and gives them 3 points.",
-	Keyword.SHADOW_REPLACE : "Played face-down. [i]If helps to win, changes places with a face-down card in your deck.[/i]",
+	Keyword.SHADOW_REPLACE : "Counterspell from top of deck. [i](Replaces your card.)[/i]",
 	Keyword.SHARED_NUT : "Both players nut.",
 	Keyword.SILVER : "Defeats any werewolf.",
 	Keyword.SINFUL : "If loses, permanently destroy this card.",

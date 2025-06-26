@@ -93,7 +93,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			86,
 			89,
 			109,
-			110,
 		]
 	},
 	House.HIGHTECH: {
@@ -185,7 +184,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 	},
 	House.GOD: [
 		42,
-		95
+		95,
+		110,
 	],
 }
 const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {

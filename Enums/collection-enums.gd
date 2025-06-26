@@ -381,10 +381,12 @@ const FOIL_CARDS : Dictionary = {
 	100: null,
 	106: null,
 	110: null,
+	111: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {
-	78: null
+	78: null,
+	111: null,
 }
 
 const TRIPLE_SHOOTING_CARDS : Dictionary = {

@@ -1,7 +1,10 @@
 {
-	"id": 101,
-	"name": "Rock",
-	"type": "rock",
+	"id": 111,
+	"name": "Renderer",
+	"type": "gun",
 	"keywords": [
-	]
+		"aura-farming",
+		"shadow-replace"
+	],
+	"bullet": 24
 }

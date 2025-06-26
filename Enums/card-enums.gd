@@ -146,6 +146,7 @@ const TranslateStamp : Dictionary = {
 enum Keyword {
 	NULL,
 	ALPHA_WEREWOLF,
+	AURA_FARMING,
 	AUTO_HYDRA,
 	BERSERK,
 	BROTHERHOOD,
@@ -194,6 +195,7 @@ enum Keyword {
 	SALTY,
 	SCAMMER,
 	SECRETS,
+	SHADOW_REPLACE,
 	SHARED_NUT,
 	SILVER,
 	SINFUL,
@@ -275,6 +277,7 @@ func get_rare_hydra_keywords() -> Array:
 
 const KeywordNames : Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "Alpha-werewolf",
+	Keyword.AURA_FARMING : "Aura Farming",
 	Keyword.AUTO_HYDRA : "Auto-hydra",
 	Keyword.BERSERK : "Berserk",
 	Keyword.BROTHERHOOD : "Brotherhood",
@@ -323,6 +326,7 @@ const KeywordNames : Dictionary = {
 	Keyword.SALTY : "Salty",
 	Keyword.SCAMMER : "Scammer",
 	Keyword.SECRETS : "Secrets",
+	Keyword.SHADOW_REPLACE : "Shadow-replace",
 	Keyword.SHARED_NUT : "Shared Nut",
 	Keyword.SILVER : "Silver",
 	Keyword.SINFUL : "Sinful",
@@ -340,6 +344,7 @@ const KeywordNames : Dictionary = {
 
 const TranslateKeyword : Dictionary = {
 	"alpha-werewolf" : Keyword.ALPHA_WEREWOLF,
+	"aura-farming" : Keyword.AURA_FARMING,
 	"auto-hydra" : Keyword.AUTO_HYDRA,
 	"berserk" : Keyword.BERSERK,
 	"brotherhood" : Keyword.BROTHERHOOD,
@@ -388,6 +393,7 @@ const TranslateKeyword : Dictionary = {
 	"salty" : Keyword.SALTY,
 	"scammer" : Keyword.SCAMMER,
 	"secrets" : Keyword.SECRETS,
+	"shadow-replace" : Keyword.SHADOW_REPLACE,
 	"shared-nut" : Keyword.SHARED_NUT,
 	"silver" : Keyword.SILVER,
 	"sinful" : Keyword.SINFUL,
@@ -405,6 +411,7 @@ const TranslateKeyword : Dictionary = {
 
 const TranslateKeywordBack: Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "alpha-werewolf",
+	Keyword.AURA_FARMING : "aura-farming",
 	Keyword.AUTO_HYDRA : "auto-hydra",
 	Keyword.BERSERK : "berserk",
 	Keyword.BROTHERHOOD : "brotherhood",
@@ -453,6 +460,7 @@ const TranslateKeywordBack: Dictionary = {
 	Keyword.SALTY : "salty",
 	Keyword.SCAMMER : "scammer",
 	Keyword.SECRETS : "secrets",
+	Keyword.SHADOW_REPLACE : "shadow-replace",
 	Keyword.SHARED_NUT : "shared-nut",
 	Keyword.SILVER : "silver",
 	Keyword.SINFUL : "sinful",
@@ -470,6 +478,7 @@ const TranslateKeywordBack: Dictionary = {
 
 var KeywordHints : Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "End of turn, werewolfs in hand become the color you played, and gain multiply.",
+	Keyword.AURA_FARMING : "[i](Cannot be drawn from deck.)[/i]",
 	Keyword.AUTO_HYDRA : "When drawn, gains 3 random keywords.",
 	Keyword.BERSERK : "Fights top card of opponent's deck. If wins, repeat.",
 	Keyword.BROTHERHOOD : "Double the value for each brotherhood member played this game.",
@@ -518,6 +527,7 @@ var KeywordHints : Dictionary = {
 	Keyword.SALTY : "If loses, lose a point.",
 	Keyword.SCAMMER : "100 points!",
 	Keyword.SECRETS : "Loses to spies and gives them 3 points.",
+	Keyword.SHADOW_REPLACE : "Played face-down. [i]If helps to win, changes places with a face-down card in your deck.[/i]",
 	Keyword.SHARED_NUT : "Both players nut.",
 	Keyword.SILVER : "Defeats any werewolf.",
 	Keyword.SINFUL : "If loses, permanently destroy this card.",

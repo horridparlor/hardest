@@ -1,8 +1,8 @@
 extends Node2D
 class_name Bullet
 
-const MIN_SPEED : int = 7 * Config.GAME_SPEED;
-const MAX_SPEED : int = 15 * Config.GAME_SPEED;
+const MIN_SPEED : int = 7.4 * Config.GAME_SPEED;
+const MAX_SPEED : int = 14.9 * Config.GAME_SPEED;
 const SIZE : Vector2 = Vector2(80, 160);
 const BULLET_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Bullets/%s.wav";
 const BULLET_ART_PATH : String = "res://Assets/Art/CardEffects/Bullets/%s.png";
@@ -25,10 +25,11 @@ var is_moving : bool;
 var is_slowing_down : bool;
 var is_speeding_up : bool;
 var slowing_acceleration : float;
+var is_dead : bool;
 
 func init(direction_ : Vector2, play_sound : bool = false):
 	add_child(sfx_player);
-	sfx_player.finished.connect(queue_free);
+	sfx_player.finished.connect(die);
 	sfx_player.volume_db = Config.VOLUME + Config.SFX_VOLUME + Config.GUN_VOLUME if play_sound and !Config.MUTE_SFX else Config.NO_VOLUME;
 	add_child(sprite);
 	speed = System.random.randf_range(MIN_SPEED, MAX_SPEED);
@@ -38,6 +39,9 @@ func init(direction_ : Vector2, play_sound : bool = false):
 	set_sound();
 	is_moving = true;
 
+func die() -> void:
+	is_dead = true;
+
 func _process(delta: float) -> void:
 	if is_slowing_down:
 		slowing_frame(delta);
@@ -46,7 +50,7 @@ func _process(delta: float) -> void:
 		speeding_frame(delta);
 	position += direction * delta * speed * speed_multiplier * System.game_speed;
 	if !System.Vectors.is_inside_window(position, SIZE):
-		if !CardEnums.PLAY_SFX_FULLY_BULLETS.has(bullet_data.id):
+		if !CardEnums.PLAY_SFX_FULLY_BULLETS.has(bullet_data.id) or is_dead:
 			queue_free();
 			return;
 		is_moving = false;

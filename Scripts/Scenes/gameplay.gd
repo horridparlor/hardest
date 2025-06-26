@@ -509,7 +509,10 @@ func update_alterations_for_card(card_data : CardData, rerender_shader : bool = 
 		if card_data.has_undead(true):
 			card_data.set_card_type(CardEnums.CardType.GUN);
 		else:
-			card_data.set_card_type(card_data.default_type);
+			if card_data.default_type == CardEnums.CardType.MIMIC and card_data.card_type == CardEnums.CardType.GUN:
+				pass;
+			else:
+				card_data.set_card_type(card_data.default_type);
 	if card:
 		if rerender_shader and !is_time_stopped:
 			card.card_art.material = null;
@@ -2118,6 +2121,9 @@ func end_round() -> void:
 		start_next_round_timer.wait_time = System.random.randf_range(OCEAN_POINTS_MIN_WAIT, OCEAN_POINTS_MAX_WAIT) * System.game_speed_additive_multiplier;
 		start_next_round_timer.start();
 	else:
+		if is_time_stopped:
+			time_stop_effect_out();
+			return;
 		start_next_round();
 
 func start_next_round() -> void:

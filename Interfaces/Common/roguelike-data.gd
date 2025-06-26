@@ -430,7 +430,7 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 3,
 			"song": 21,
-			"background": 17
+			"background": 20
 		}
 	};
 

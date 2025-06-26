@@ -37,7 +37,7 @@ var controller : Player;
 var instance_id : int;
 var zone : CardEnums.Zone = CardEnums.Zone.DECK;
 var is_buried : bool;
-var stopped_time_advantage : int;
+var stopped_time_advantage : int = 1;
 var multiply_advantage : int = 1;
 var nuts : int;
 var nuts_stolen : int;
@@ -420,7 +420,7 @@ func is_god() -> bool:
 	return card_type == CardEnums.CardType.GOD;
 
 func prevents_opponents_reveal() -> bool:
-	return !is_buried and (has_high_ground() or has_high_nut() or stopped_time_advantage > 0);
+	return !is_buried and (has_high_ground() or has_high_nut() or stopped_time_advantage > 1);
 
 func can_nut(opponent_shares_a_nut : bool = false) -> bool:
 	return get_max_nuts(opponent_shares_a_nut) > 0 and nuts < max(1, get_max_nuts(opponent_shares_a_nut));

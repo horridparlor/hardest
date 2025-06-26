@@ -164,7 +164,7 @@ func trigger_brotherhood(card : CardData) -> void:
 	card.multiply_advantage *= brotherhood_multiplier;
 	brotherhood_multiplier *= 2;
 
-func get_matching_type(new_type : CardEnums.CardType, base_type : CardEnums.CardType) -> CardEnums.CardType:
+func get_matching_type(new_type : CardEnums.CardType, base_type : CardEnums.CardType = last_type_played) -> CardEnums.CardType:
 	var base_types : Array = CardData.break_card_type(base_type);
 	if base_type == CardEnums.CardType.NULL:
 		return CardEnums.CardType.NULL;

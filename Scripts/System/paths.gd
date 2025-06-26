@@ -6,6 +6,7 @@ const BULLET : String = "res://Prefabs/Gameplay/Card/bullet.tscn";
 const DIVINE_JUDGMENT : String = "res://Prefabs/Gameplay/Card/divine-judgment.tscn";
 const EVENT_ART : String = "res://Assets/Art/EventArt/%s.png";
 const LEVEL_BUTTON : String = "res://Prefabs/Nexus/Buttons/level-button.tscn";
+const MULTIPLIER_BAR : String = "res://Prefabs/Gameplay/Card/multiplier-bar.tscn";
 const NEXUS : String = "res://Prefabs/Scenes/nexus.tscn";
 const OCEAN_SHADER : String = "res://Shaders/CardEffects/ocean-shader.gdshader";
 const POINT_LED : String = "res://Prefabs/Gameplay/Points/point-led.tscn";

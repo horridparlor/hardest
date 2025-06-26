@@ -208,8 +208,9 @@ func dissolve(multiplier : float = 1) -> void:
 	var shader_material2 : ShaderMaterial = System.Shaders.dissolve_shader();
 	var card_art_shader_material : ShaderMaterial = System.Shaders.dissolve_shader(card_data.is_negative_variant(), card_data.is_holographic, card_data.is_foil);
 	shader_material2.set_shader_parameter("opacity", BACKGROUND_PATTERN_OPACITY);
-	for node in get_shader_layers():
+	for node in get_shader_layers(false):
 		node.material = shader_material;
+	hide_multiplier_bar();
 	card_art.material = card_art_shader_material;
 	background_pattern.material = shader_material2;
 	dissolve_speed = System.random.randf_range(MIN_DISSOLVE_SPEED, MAX_DISSOLVE_SPEED) * multiplier;
@@ -218,7 +219,7 @@ func dissolve(multiplier : float = 1) -> void:
 	is_despawning = true;
 	is_moving = false;
 
-func get_shader_layers() -> Array:
+func get_shader_layers(include_multiplier_bar : bool = true) -> Array:
 	return [
 		background_pattern,
 		name_label,
@@ -230,7 +231,8 @@ func get_shader_layers() -> Array:
 		left_panel,
 		right_panel,
 		stamp
-	] + ([] if card_data.is_negative_variant() else [card_art]);
+	] + ([] if card_data.is_negative_variant() else [card_art]) + \
+	(multiplier_bar.get_shader_layers() if System.Instance.exists(multiplier_bar) and include_multiplier_bar else []);
 
 func get_custom_shader_layers() -> Array:
 	return [card_art];

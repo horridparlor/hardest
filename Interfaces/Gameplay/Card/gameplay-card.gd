@@ -61,6 +61,7 @@ const MIN_RECOIL : int = 0;
 const MAX_RECOIL : int = 20;
 
 const SHINE_STAR_POSITION : Vector2 = Vector2(-350, -430);
+const MULTIPLIER_BAR_POSITION : Vector2 = Vector2(0, -840);
 
 const ROCK_BG_COLOR = "#008242";
 const ROCK_BORDER_COLOR = "#7bffc3";
@@ -114,6 +115,7 @@ var dissolve_value : float;
 var is_dissolving : bool;
 var dissolve_speed : float;
 var particle_effect : Node2D;
+var multiplier_bar : MultiplierBar;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -240,6 +242,7 @@ func despawn(despawn_position : Vector2 = Vector2.ZERO) -> void:
 		if !System.Vectors.is_default(despawn_position) \
 		else get_despawn_position();
 	toggle_focus(false);
+	hide_multiplier_bar();
 
 func get_despawn_position() -> Vector2:
 	return Vector2( System.Random.direction() \
@@ -280,6 +283,7 @@ func update_scale(delta : float) -> void:
 func _on_focus_timer_timeout() -> void:
 	focus_timer.stop();
 	is_focused = true;
+	hide_multiplier_bar();
 	update_card_art(true);
 
 func bury() -> void:
@@ -372,7 +376,7 @@ func _on_out_ocean() -> void:
 	is_in_ocean = false;
 	is_out_ocean = true;
 
-func get_shader_layers() -> Array:
+func get_shader_layers(include_multiplier_bar : bool = true) -> Array:
 	return [];
 
 func get_custom_shader_layers() -> Array:
@@ -382,4 +386,27 @@ func add_art_base_shader(do_force : bool = false) -> void:
 	pass;
 
 func shine_star_effect() -> void:
+	pass;
+
+func show_multiplier_bar(value : int) -> void:
+	if !System.Instance.exists(multiplier_bar):
+		multiplier_bar = System.Instance.load_child(System.Paths.MULTIPLIER_BAR, self);
+		multiplier_bar.scale *= 1.8;
+		multiplier_bar.position = MULTIPLIER_BAR_POSITION;
+	multiplier_bar.set_number(value);
+	multiplier_bar.fade_in();
+
+func hide_multiplier_bar() -> void:
+	if !System.Instance.exists(multiplier_bar):
+		return;
+	multiplier_bar.fade_out();
+
+func after_time_stop() -> void:
+	if card_data.has_emp():
+		update_emp_visuals();
+	if !System.Instance.exists(multiplier_bar):
+		return;
+	multiplier_bar.after_time_stop();
+
+func update_emp_visuals() -> void:
 	pass;

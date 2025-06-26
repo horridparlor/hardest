@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=3 uid="uid://bxj0nhvijxcb8"]
+
+[ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="1_eup11"]
+[ext_resource type="Script" path="res://Scripts/Gameplay/Card/multiplier-bar.gd" id="1_go2to"]
+[ext_resource type="Texture2D" uid="uid://dk63lt2md0wp8" path="res://Assets/Art/SpecialPatterns/multiplier-bar-pattern.png" id="3_eml5u"]
+[ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="4_wq0n0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_28tcw"]
+bg_color = Color(0.871931, 0.197925, 0.110869, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0.996082, 0.749561, 0.702448, 1)
+corner_radius_top_left = 13
+corner_radius_top_right = 13
+corner_radius_bottom_right = 13
+corner_radius_bottom_left = 13
+
+[node name="MultiplierBar" type="Node2D"]
+script = ExtResource("1_go2to")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -50.0
+offset_right = 200.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_28tcw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_eml5u")
+script = ExtResource("4_wq0n0")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -183.0
+offset_top = -52.5
+offset_right = 183.0
+offset_bottom = 46.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("1_eup11")
+theme_override_font_sizes/font_size = 80
+text = "3x"
+horizontal_alignment = 1
+vertical_alignment = 1

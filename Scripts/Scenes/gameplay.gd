@@ -314,9 +314,11 @@ func init_layers() -> void:
 
 func show_hand() -> void:
 	var card : CardData;
+	var gameplay_card : GameplayCard;
 	for c in player_one.cards_in_hand:
 		card = c;
-		spawn_card(card);
+		gameplay_card = spawn_card(card);
+		show_multiplier_bar(gameplay_card);
 	order_hand_positions();
 	reorder_hand();
 
@@ -381,6 +383,8 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	card.visited.connect(_on_card_visited);
 	if is_time_stopped:
 		add_time_stop_shader(card);
+	card.show_multiplier_bar(0);
+	card.hide_multiplier_bar();
 	time_stop_nodes += card.get_shader_layers();
 	custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
 	if is_time_stopped:
@@ -558,6 +562,20 @@ func _on_card_released(card : GameplayCard, auto_action : bool = false) -> void:
 	if auto_action:
 		return;
 	check_if_played(card);
+	show_multiplier_bar(card);
+
+func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
+	if !System.Instance.exists(gameplay_card):
+		return;
+	var card : CardData = gameplay_card.card_data;
+	var multi : int = card.multiply_advantage * card.stopped_time_advantage;
+	if card.zone == CardEnums.Zone.HAND and card.has_multiply() and \
+	card.controller.get_matching_type(card.card_type) != CardEnums.CardType.NULL:
+		multi *= pow(2, card.controller.played_same_type_in_a_row + 1);
+	if multi > 1:
+		gameplay_card.show_multiplier_bar(multi);
+	else:
+		gameplay_card.hide_multiplier_bar();
 
 func return_other_cards_front(card : GameplayCard) -> void:
 	for instance_id in cards:
@@ -579,12 +597,13 @@ func _on_card_despawned(card : GameplayCard) -> void:
 	cards.erase(card.instance_id);
 	card.queue_free();
 
-func check_if_played(card : GameplayCard) -> void:
+func check_if_played(card : GameplayCard) -> bool:
 	var mouse_position : Vector2 = get_local_mouse_position();
 	var card_margin : int = GameplayCard.SIZE.y;
 	if !(can_play_card and mouse_position.y + card_margin >= FIELD_START_LINE and mouse_position.y - card_margin <= FIELD_END_LINE) or card.scale > GameplayCard.MIN_SCALE_VECTOR:
-		return;
+		return false;
 	play_card(card, player_one, player_two);
+	return true;
 
 func replace_played_card(card : CardData) -> void:
 	var player : Player = card.controller;
@@ -1063,6 +1082,8 @@ func go_to_results() -> void:
 	if results_phase < 6:
 		if digitals_phase():
 			return results_wait();
+	show_multiplier_bar(get_card(player_one.get_field_card()));
+	show_multiplier_bar(get_card(player_two.get_field_card()));
 	start_results();
 
 func start_results() -> void:
@@ -1125,7 +1146,7 @@ func nut_opponents_nuts() -> bool:
 func nut_players_nuts(player : Player, opponent : Player) -> bool:
 	var card : CardData = player.get_field_card();
 	var enemy : CardData = opponent.get_field_card();
-	if !card or (enemy and enemy.stopped_time_advantage > 0):
+	if !card or (enemy and enemy.stopped_time_advantage > 1):
 		return false;
 	var can_nut : bool = (card.get_max_nuts() > 0) or (!card.has_november() and enemy and enemy.has_shared_nut());
 	var can_steal_nut : bool = card.has_nut_stealer() and enemy and enemy.can_nut(card.has_shared_nut());
@@ -1263,7 +1284,7 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 	if enemy and enemy.has_champion():
 		points *= 2;
 	if add_advantages:
-		if card.stopped_time_advantage > 0:
+		if card.stopped_time_advantage > 1:
 			points *= card.stopped_time_advantage;
 		if card.multiply_advantage > 1:
 			points *= card.multiply_advantage;
@@ -1770,7 +1791,7 @@ func get_shooting_enemy_position(card : CardData, enemy : CardData) -> Vector2:
 
 func get_count_of_bullets_shot(card : CardData) -> int:
 	var count : int = 1;
-	if card.stopped_time_advantage > 0:
+	if card.stopped_time_advantage > 1:
 		return -1;
 	if card.has_champion():
 		count = System.random.randi_range(3, 5);
@@ -2074,9 +2095,9 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
-	if card.stopped_time_advantage > 0:
+	if card.stopped_time_advantage > 1:
 		return you_win;
-	elif enemy.stopped_time_advantage > 0:
+	elif enemy.stopped_time_advantage > 1:
 		return opponent_wins;
 	if card.multiply_advantage > 1000 and enemy.multiply_advantage > 1000:
 		System.Random.item([card, enemy]).multiply_advantage -= 1;
@@ -2290,11 +2311,11 @@ func after_time_stop() -> void:
 		if !System.Instance.exists(node):
 			continue;
 		node.material = null;
-	for card in cards:
+	for card in cards.values():
 		if !System.Instance.exists(card):
 			continue;
-		if card.card_data.has_emp():
-			card.update_emp_visuals();
+		card.after_time_stop();
+		
 	for node in [
 		background_pattern,
 		die_pattern,

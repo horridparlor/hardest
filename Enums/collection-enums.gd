@@ -40,6 +40,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			87,
 			105,
 			106,
+			111,
 		]
 	},
 	House.DELUSIONAL: {
@@ -67,6 +68,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			79,
 			100,
 			108,
+			112,
 		]
 	},
 	House.DEMONIC: {
@@ -180,6 +182,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			100,
 			105,
 			107,
+			111,
 		]
 	},
 	House.GOD: [
@@ -257,6 +260,7 @@ const RANDOM_CARDS : Dictionary = {
 		101,
 		104,
 		109,
+		112,
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -330,6 +334,7 @@ const RANDOM_CARDS : Dictionary = {
 		90,
 		106,
 		110,
+		111,
 	],
 	CardEnums.CardType.MIMIC: [
 		5,
@@ -382,6 +387,7 @@ const FOIL_CARDS : Dictionary = {
 	106: null,
 	110: null,
 	111: null,
+	112: null
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

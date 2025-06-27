@@ -423,7 +423,8 @@ func get_opponents() -> Dictionary:
 				94,
 				107,
 				100,
-				106
+				111,
+				111
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.SCISSOR

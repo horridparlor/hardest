@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://ucxhw3kp02h1"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Card/menacing-effect.gd" id="1_ab803"]
+[ext_resource type="Texture2D" uid="uid://b6as6qa1ix0uq" path="res://Assets/Art/CardEffects/Glows/menacing.png" id="1_ejsyc"]
+
+[node name="MenacingEffect" type="Node2D"]
+script = ExtResource("1_ab803")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 4
+lifetime = 3.0
+one_shot = true
+explosiveness = 0.8
+randomness = 0.1
+local_coords = true
+texture = ExtResource("1_ejsyc")
+emission_shape = 1
+emission_sphere_radius = 20.0
+direction = Vector2(-10, -20)
+gravity = Vector2(-600, -6000)
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+linear_accel_min = 2.0
+linear_accel_max = 4.0
+angle_min = -16.0
+angle_max = -8.0
+scale_amount_min = 4.0
+scale_amount_max = 4.0

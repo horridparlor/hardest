@@ -359,6 +359,9 @@ func enrich_hint(message : String) -> String:
 func wet_effect() -> void:
 	pass;
 
+func menacing_effect() -> void:
+	System.Instance.load_child(System.Paths.MENACING_EFFECT, self);
+
 func burn_effect() -> void:
 	if System.Instance.exists(particle_effect):
 		particle_effect.queue_free();

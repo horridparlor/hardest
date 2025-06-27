@@ -89,6 +89,7 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 		dashboard_button
 	]:
 		button.rotation_degrees = System.random.randf_range(-DIE_BUTTON_ROTATION, DIE_BUTTON_ROTATION) * (1 if button == die_button else 0.3);
+	dashboard_button.visible = false;
 	
 	if !do_start:
 		_on_points_click_timer_timeout();
@@ -394,6 +395,8 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 		add_time_stop_shader(card);
 	card.show_multiplier_bar(0);
 	card.hide_multiplier_bar();
+	if card.card_data.has_aura_farming():
+		card.menacing_effect();
 	time_stop_nodes += card.get_shader_layers();
 	custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
 	if is_time_stopped:
@@ -1094,6 +1097,9 @@ func go_to_results() -> void:
 	if results_phase < 6:
 		if digitals_phase():
 			return results_wait();
+	if results_phase < 8:
+		if shadow_replace_phase():
+			return results_wait();
 	show_multiplier_bar(get_card(player_one.get_field_card()));
 	show_multiplier_bar(get_card(player_two.get_field_card()));
 	start_results();
@@ -1197,6 +1203,58 @@ func gain_points_effect(player : Player) -> void:
 	click_your_points() if player == player_one else click_opponents_points();
 	update_point_visuals();
 
+func shadow_replace_phase() -> bool:
+	if going_first:
+		if results_phase < 7:
+			results_phase = 7;
+			if play_your_shadows():
+				return true;
+		if results_phase < 8:
+			results_phase = 8;
+			if play_opponents_shadows():
+				results_phase = 2;
+				return true;
+	else:
+		if results_phase < 7:
+			results_phase = 7;
+			if play_opponents_shadows():
+				return true;
+		if results_phase < 8:
+			results_phase = 8;
+			if play_your_shadows():
+				results_phase = 2;
+				return true;
+	return false;
+
+func play_your_shadows() -> bool:
+	return play_shadows(player_one, player_two);
+
+func play_opponents_shadows() -> bool:
+	return play_shadows(player_two, player_one);
+
+func no_reason_to_counterspell(player : Player, opponent : Player) -> bool:
+	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
+	return (player.get_field_card() and player.get_field_card().has_cursed()) or winner == GameplayEnums.Controller.PLAYER_ONE;
+
+func play_shadows(player : Player, opponent : Player) -> bool:
+	var shadow_card : CardData;
+	var card : CardData = player.get_field_card();
+	var enemy : CardData = opponent.get_field_card();
+	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
+	if no_reason_to_counterspell(player, opponent) or player.deck_empty():
+		return false;
+	for i in range(player.count_deck()):
+		var c : CardData = player.cards_in_deck[player.count_deck() - (1 + i)];
+		if !c.has_aura_farming() or (c.has_shadow_replace() and ![winner, GameplayEnums.Controller.PLAYER_TWO].has(determine_winner(c, enemy))):
+			if (card and card.has_shadow_replace()) or c.has_shadow_replace():
+				shadow_card = c;
+	if shadow_card == null:
+		return false;
+	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(determine_winner(shadow_card, enemy)):
+		return false;
+	replace_played_card(shadow_card);
+	return true;
+
 func digitals_phase() -> bool:
 	var card : CardData = player_one.get_field_card();
 	var enemy : CardData = player_two.get_field_card();
@@ -1247,7 +1305,7 @@ func play_digitals(player : Player, opponent : Player) -> bool:
 	var enemy : CardData;
 	var digital_to_play : CardData;
 	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
-	if (player.get_field_card() and player.get_field_card().has_cursed()) or winner == GameplayEnums.Controller.PLAYER_ONE:
+	if no_reason_to_counterspell(player, opponent):
 		return false;
 	cards = player.cards_in_hand.filter(func(card : CardData): return card.has_digital());
 	enemy = opponent.get_field_card();

@@ -96,9 +96,7 @@ func draw() -> bool:
 	var card : CardData;
 	if hand_full():
 		return false;
-	if deck_empty():
-		generate_deck();
-	card = cards_in_deck.pop_back();
+	card = get_card_to_draw();
 	cards_in_hand.append(card);
 	card.zone = CardEnums.Zone.HAND;
 	if card.has_auto_hydra():
@@ -107,6 +105,26 @@ func draw() -> bool:
 		generate_deck();
 	return true;
 
+func get_card_to_draw() -> CardData:
+	var card : CardData;
+	var index : int;
+	var has_non_aura_farmers : bool;
+	for c in cards_in_deck:
+		if !c.has_aura_farming():
+			has_non_aura_farmers = true;
+			break;
+	if deck_empty() or !has_non_aura_farmers:
+		generate_deck();
+	for i in range(cards_in_deck.size()):
+		index = cards_in_deck.size() - (1 + i);
+		card = cards_in_deck[index];
+		if card.has_aura_farming() and (get_matching_type(card.default_type, last_type_played) == CardEnums.CardType.NULL or played_same_type_in_a_row + 1 < System.Rules.AURA_FARMIN_COUNT):
+			continue;
+		cards_in_deck.remove_at(index);
+		return card;
+	refill_deck();
+	return cards_in_deck.pop_back();
+
 func get_top_deck() -> CardData:
 	if deck_empty():
 		generate_deck();
@@ -114,6 +132,7 @@ func get_top_deck() -> CardData:
 
 func refill_deck() -> void:
 	var ids : Array;
+	var deck_original_size : int = count_deck();
 	for i in range(12):
 		ids.append(CardEnums.BasicIds[CardEnums.CardType.ROCK]);
 		ids.append(CardEnums.BasicIds[CardEnums.CardType.PAPER]);
@@ -125,6 +144,7 @@ func refill_deck() -> void:
 	ids.shuffle();
 	for id in ids:
 		spawn_card(System.Data.load_card(id));
+	slide_deck(deck_original_size);
 
 func celebrate() -> void:
 	discard_hand();
@@ -135,7 +155,11 @@ func discard_hand() -> void:
 		discard_from_hand(card);
 
 func play_card(card : CardData, is_digital_speed : bool = false) -> void:
-	cards_in_hand.erase(card);
+	match card.zone:
+		CardEnums.Zone.HAND:
+			cards_in_hand.erase(card);
+		CardEnums.Zone.DECK:
+			cards_in_deck.erase(card);
 	cards_on_field.append(card);
 	card.zone = CardEnums.Zone.FIELD;
 	if is_digital_speed:
@@ -185,14 +209,19 @@ func eat_decklist(decklist_id : int = 0,
 
 func generate_deck() -> void:
 	var cards : Array = decklist.get_deck();
+	var deck_original_size : int = count_deck();
 	if cards.is_empty():
 		refill_deck();
 		return;
-	cards_in_deck = [];
 	for card in cards:
 		if !System.Instance.exists(card):
 			continue;
 		spawn_card(card);
+	slide_deck(deck_original_size);
+
+func slide_deck(index : int) -> void:
+	cards_in_deck.append_array(cards_in_deck.slice(0, index))
+	cards_in_deck = cards_in_deck.slice(index);
 
 func spawn_card(card_data : CardData, spawn_to : CardEnums.Zone = CardEnums.Zone.DECK) -> CardData:
 	var card : CardData = CardData.from_json(card_data.to_json());

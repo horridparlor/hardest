@@ -478,7 +478,7 @@ const TranslateKeywordBack: Dictionary = {
 
 var KeywordHints : Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "End of turn, werewolfs in hand become the color you played, and gain multiply.",
-	Keyword.AURA_FARMING : "[i](Cannot be drawn from deck.)[/i]",
+	Keyword.AURA_FARMING : "[i](Cannot be drawn unless you have played 10 SAME_TYPES in a row.)[/i]",
 	Keyword.AUTO_HYDRA : "When drawn, gains 3 random keywords.",
 	Keyword.BERSERK : "Fights top card of opponent's deck. If wins, repeat.",
 	Keyword.BROTHERHOOD : "Double the value for each brotherhood member played this game.",
@@ -506,7 +506,7 @@ var KeywordHints : Dictionary = {
 	Keyword.INCINERATE : "Permanently destroys defeated cards.",
 	Keyword.INFLUENCER : "Opponent's top card becomes SAME_BASIC.",
 	Keyword.MULTI_SPY : "Fights up to 3 random cards in opponent's hand.",
-	Keyword.MULTIPLY : "Double the value for each SAME_TYPE played in a row.",
+	Keyword.MULTIPLY : "Double multiplier for each SAME_TYPE played in a row.",
 	Keyword.MUSHY : "Loses to any rock.",
 	Keyword.NEGATIVE : "While in hand, increases hand size by 1.",
 	Keyword.NOVEMBER : "Defeats any nut.",
@@ -532,7 +532,7 @@ var KeywordHints : Dictionary = {
 	Keyword.SILVER : "Defeats any werewolf.",
 	Keyword.SINFUL : "If loses, permanently destroy this card.",
 	Keyword.SOUL_HUNTER : "You get the cards this defeats at the start of next game.",
-	Keyword.SPRING_ARRIVES : "Fill your hand. Double the value for each card drawn.",
+	Keyword.SPRING_ARRIVES : "Fill your hand. Double multiplier for each card drawn.",
 	Keyword.SPY : "Fights a random card in opponent's hand.",
 	Keyword.TIDAL : "If wet, turns into a gun.",
 	Keyword.TIME_STOP : "Extends your turn.",

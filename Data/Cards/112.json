@@ -1,7 +1,9 @@
 {
-	"id": 101,
-	"name": "Rock",
+	"id": 112,
+	"name": "Dorodango",
 	"type": "rock",
 	"keywords": [
+		"aura-farming",
+		"multiply"
 	]
 }

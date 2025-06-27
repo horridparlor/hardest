@@ -24,7 +24,11 @@ delta : float, min_speed : float = 0) -> Vector2:
 	return point_a.move_toward(point_b, max(distance, min_speed));
 
 static func is_inside_window(position : Vector2, size : Vector2) -> bool:
-	return position.distance_to(Vector2.ZERO) - get_cirmumradius(size) < WINDOW_CIRCUMRADIUS;
+	return position.distance_to(Vector2.ZERO) - get_cirmumradius(size) < (WINDOW_CIRCUMRADIUS if !is_desktop() else WINDOW_CIRCUMRADIUS * 3);
+
+static func is_desktop() -> bool:
+	var platform := OS.get_name().to_lower();
+	return platform == "windows" or platform == "linux" or platform == "macos";
 
 static func put_inside_window(position : Vector2, size : Vector2 = Vector2.ZERO) -> Vector2:
 	var window_margin : Vector2 = System.Window_ / 2;

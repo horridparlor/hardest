@@ -199,6 +199,9 @@ func has_alpha_werewolf() -> bool:
 func is_aquatic() -> bool:
 	return has_ocean() or has_ocean_dweller();
 
+func has_aura_farming() -> bool:
+	return has_keyword(CardEnums.Keyword.AURA_FARMING);
+
 func has_auto_hydra() -> bool:
 	return has_keyword(CardEnums.Keyword.AUTO_HYDRA);
 
@@ -354,6 +357,9 @@ func has_scammer() -> bool:
 
 func has_secrets() -> bool:
 	return has_keyword(CardEnums.Keyword.SECRETS);
+
+func has_shadow_replace() -> bool:
+	return has_keyword(CardEnums.Keyword.SHADOW_REPLACE);
 
 func has_shared_nut() -> bool:
 	return has_keyword(CardEnums.Keyword.SHARED_NUT);

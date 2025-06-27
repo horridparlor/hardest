@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=48 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
@@ -18,6 +18,7 @@
 [ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="9_vl4hw"]
 [ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_fu2mi"]
 [ext_resource type="Texture2D" uid="uid://0nxqjjkgg16k" path="res://Assets/Art/SpecialPatterns/gameplay-death-pattern.png" id="10_trm33"]
+[ext_resource type="Texture2D" uid="uid://bit7knjv6y748" path="res://Assets/Art/SpecialPatterns/dashboard-pattern.png" id="12_38fn7"]
 [ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
 [ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="15_ht6r6"]
 [ext_resource type="Texture2D" uid="uid://c577v2cp8oc0v" path="res://Assets/Art/SpecialPatterns/YourPointsPattern.png" id="16_088nt"]
@@ -59,6 +60,28 @@ shader_parameter/amplitude = 10.0
 shader_parameter/sin_wave = 0.5
 shader_parameter/chaos_factor = 0.0
 shader_parameter/opacity = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_04nuq"]
+bg_color = Color(0.131509, 0.0680064, 0.144642, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.847854, 0.721494, 0.869146, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 21
+corner_radius_bottom_left = 21
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jua3p"]
+shader = ExtResource("2_fmyns")
+shader_parameter/amplitude = 10.0
+shader_parameter/sin_wave = 0.5
+shader_parameter/chaos_factor = 0.0
+shader_parameter/opacity = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8w0he"]
+size = Vector2(300, 100)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u01cp"]
 bg_color = Color(0.6955, 0, 0.121143, 1)
@@ -200,6 +223,7 @@ material = SubResource("ShaderMaterial_hanut")
 script = ExtResource("3_ixfah")
 
 [node name="OceanPattern" type="Sprite2D" parent="Background"]
+visible = false
 material = SubResource("ShaderMaterial_x1xpn")
 texture = ExtResource("4_j6pyd")
 
@@ -319,6 +343,53 @@ script = ExtResource("3_ixfah")
 [node name="Relics" type="Node2D" parent="Points"]
 position = Vector2(0, -130)
 script = ExtResource("8_p6f1f")
+
+[node name="DashboardButton" type="Control" parent="Points/Relics"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -350.0
+offset_top = -870.0
+offset_right = -350.0
+offset_bottom = -870.0
+
+[node name="Panel" type="Panel" parent="Points/Relics/DashboardButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -50.0
+offset_right = 150.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_04nuq")
+
+[node name="DashboardPattern" type="Sprite2D" parent="Points/Relics/DashboardButton"]
+material = SubResource("ShaderMaterial_jua3p")
+texture = ExtResource("12_38fn7")
+script = ExtResource("3_ixfah")
+
+[node name="Label" type="Label" parent="Points/Relics/DashboardButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -127.5
+offset_top = -36.0
+offset_right = 127.5
+offset_bottom = 31.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 48
+text = "Dashboard"
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Points/Relics/DashboardButton"]
+shape = SubResource("RectangleShape2D_8w0he")
 
 [node name="DieButton" type="Control" parent="Points/Relics"]
 layout_mode = 3

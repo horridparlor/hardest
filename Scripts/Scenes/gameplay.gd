@@ -9,10 +9,13 @@ extends Gameplay
 @onready var victory_pattern : Sprite2D = $VictoryBanner/VictoryPattern;
 @onready var relics_layer : GlowNode = $Points/Relics;
 @onready var die_button : Control = $Points/Relics/DieButton;
+@onready var dashboard_button : Control = $Points/Relics/DashboardButton;
 @onready var reset_progress_panel : Panel = $Points/Relics/DieButton/DeathProgress;
 
 @onready var die_panel : Panel = $Points/Relics/DieButton/Panel;
 @onready var die_pattern : Sprite2D = $Points/Relics/DieButton/GameplayDeathPattern;
+@onready var dashboard_panel : Panel = $Points/Relics/DashboardButton/Panel;
+@onready var dashboard_pattern : Sprite2D = $Points/Relics/DashboardButton/DashboardPattern;
 @onready var your_point_panel : Panel = $Points/PointPanels/YourPointsPanel/Panel;
 @onready var your_point_panel_top_margin : Panel = $Points/PointPanels/YourPointsPanel/TopMargin;
 @onready var your_point_panel_right_margin : Panel = $Points/PointPanels/YourPointsPanel/RightMargin;
@@ -81,7 +84,11 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	victory_banner.stop();
 	victory_banner.visible = true;
 	divine_judgment.visible = false;
-	die_button.rotation_degrees = System.random.randf_range(-DIE_BUTTON_ROTATION, DIE_BUTTON_ROTATION);
+	for button in [
+		die_button,
+		dashboard_button
+	]:
+		button.rotation_degrees = System.random.randf_range(-DIE_BUTTON_ROTATION, DIE_BUTTON_ROTATION) * (1 if button == die_button else 0.3);
 	
 	if !do_start:
 		_on_points_click_timer_timeout();
@@ -109,6 +116,8 @@ func init_time_stop_nodes() -> void:
 		opponents_face,
 		die_panel,
 		die_pattern,
+		dashboard_panel,
+		dashboard_pattern,
 		reset_progress_panel,
 		your_point_panel,
 		your_point_panel_top_margin,

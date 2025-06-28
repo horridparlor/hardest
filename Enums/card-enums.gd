@@ -481,7 +481,7 @@ var KeywordHints : Dictionary = {
 	Keyword.AURA_FARMING : "[i](Cannot be drawn unless you have played 10 SAME_TYPES in a row.)[/i]",
 	Keyword.AUTO_HYDRA : "When drawn, gains 3 random keywords.",
 	Keyword.BERSERK : "Fights top card of opponent's deck. If wins, repeat.",
-	Keyword.BROTHERHOOD : "Double the value for each brotherhood member played this game.",
+	Keyword.BROTHERHOOD : "Double multiplier for each brotherhood member played this game.",
 	Keyword.BURIED : "Played face-down.",
 	Keyword.CARROT_EATER : "Eats a random keyword from enemy.",
 	Keyword.CELEBRATE : "Discard your hand, then draw 1.",

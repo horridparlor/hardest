@@ -532,7 +532,7 @@ var KeywordHints : Dictionary = {
 	Keyword.SILVER : "Defeats any werewolf.",
 	Keyword.SINFUL : "If loses, permanently destroy this card.",
 	Keyword.SOUL_HUNTER : "You get the cards this defeats at the start of next game.",
-	Keyword.SPRING_ARRIVES : "Fill your hand. Double multiplier for each card drawn.",
+	Keyword.SPRING_ARRIVES : "Fill your hand. [i]Double multiplier for each card drawn.[/i]",
 	Keyword.SPY : "Fights a random card in opponent's hand.",
 	Keyword.TIDAL : "If wet, turns into a gun.",
 	Keyword.TIME_STOP : "Extends your turn.",

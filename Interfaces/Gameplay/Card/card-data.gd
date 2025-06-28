@@ -247,6 +247,9 @@ func has_rare_stamp() -> bool:
 func has_digital() -> bool:
 	return has_keyword(CardEnums.Keyword.DIGITAL) or stamp == CardEnums.Stamp.BLUETOOTH;
 
+func has_dirt() -> bool:
+	return has_keyword(CardEnums.Keyword.DIRT);
+
 func has_divine() -> bool:
 	return has_keyword(CardEnums.Keyword.DIVINE);
 

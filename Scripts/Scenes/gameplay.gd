@@ -397,6 +397,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	card.hide_multiplier_bar();
 	if card.card_data.has_aura_farming():
 		card.menacing_effect();
+	show_multiplier_bar(card);
 	time_stop_nodes += card.get_shader_layers();
 	custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
 	if is_time_stopped:
@@ -437,6 +438,17 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
 	var points : int = 1;
 	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
+	if current_spy_type == SpyType.DIRT:
+		enemy.multiply_advantage = abs(enemy.multiply_advantage) * -(pow(2, opponent.played_same_type_in_a_row + 1) if opponent.get_matching_type(enemy.card_type) != CardEnums.CardType.NULL else 1);
+		show_multiplier_bar(spy_target);
+		match player.controller:
+			GameplayEnums.Controller.PLAYER_ONE:
+				spy_target.despawn(-CARD_STARTING_POSITION if opponent.controller == GameplayEnums.Controller.PLAYER_TWO else CARD_STARTING_POSITION);
+			GameplayEnums.Controller.PLAYER_TWO:
+				reorder_hand();
+		spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
+		spying_timer.start();
+		return;
 	if do_spy_hand and enemy.has_secrets():
 		winner = GameplayEnums.Controller.PLAYER_ONE;
 		points = 3;
@@ -587,7 +599,7 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 	if card.zone == CardEnums.Zone.HAND and card.has_multiply() and \
 	card.controller.get_matching_type(card.card_type) != CardEnums.CardType.NULL:
 		multi *= pow(2, card.controller.played_same_type_in_a_row + 1);
-	if multi > 1:
+	if multi > 1 or multi < 0:
 		gameplay_card.show_multiplier_bar(multi);
 	else:
 		gameplay_card.hide_multiplier_bar();
@@ -792,6 +804,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				spy_opponent(card, player, opponent, System.Rules.MAX_BERSERKER_SHOTS, CardEnums.Zone.DECK);
 			CardEnums.Keyword.CARROT_EATER:
 				eat_carrot(card);
+			CardEnums.Keyword.DIRT:
+				spy_opponent(card, player, opponent, 1, CardEnums.Zone.HAND, SpyType.DIRT);
 			CardEnums.Keyword.MULTI_SPY:
 				spy_opponent(card, player, opponent, 3);
 			CardEnums.Keyword.NUT_COLLECTOR:
@@ -1011,13 +1025,14 @@ func collect_nuts(player : Player) -> void:
 		player.spawn_card_from_id(System.Random.item(CardEnums.NUT_IDS));
 	player.shuffle_deck();
 
-func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1, zone : CardEnums.Zone = CardEnums.Zone.HAND) -> bool:
+func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1, zone : CardEnums.Zone = CardEnums.Zone.HAND, spy_type : SpyType = SpyType.FIGHT) -> bool:
 	var spied_card_data : CardData;
 	var spied_card : GameplayCard;
 	spy_zone = zone;
 	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
 	if do_spy_hand and opponent.hand_empty():
 		return false;
+	current_spy_type = spy_type;
 	spied_card_data = determine_spied_card(opponent) if do_spy_hand else opponent.get_top_deck();
 	spawn_card(spied_card_data);
 	spied_card = get_card(spied_card_data);
@@ -1034,7 +1049,8 @@ func determine_spied_card(opponent : Player) -> CardData:
 	var cards_with_secret : Array = opponent.cards_in_hand.filter(func(card : CardData):
 		return card.has_secrets();	
 	);
-	return System.Random.item(cards_with_secret if cards_with_secret.size() else opponent.cards_in_hand);
+	var source : Array = cards_with_secret if current_spy_type == SpyType.FIGHT and cards_with_secret.size() else opponent.cards_in_hand.duplicate();
+	return System.Random.item(source);
 
 func celebrate(player : Player) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();
@@ -1356,8 +1372,10 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 	if add_advantages:
 		if card.stopped_time_advantage > 1:
 			points *= card.stopped_time_advantage;
-		if card.multiply_advantage > 1:
-			points *= card.multiply_advantage;
+		if abs(card.multiply_advantage) > 1:
+			points *= abs(card.multiply_advantage);
+		if enemy and enemy.multiply_advantage < 0:
+			points *= abs(enemy.multiply_advantage)
 	if !did_win:
 		return points;
 	if card.has_rare_stamp():
@@ -1993,6 +2011,12 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
+	var you_have_negative_multiplier : bool = card and card.multiply_advantage < 0;
+	var opponent_has_negative_multiplier : bool = enemy and enemy.multiply_advantage < 0;
+	if you_have_negative_multiplier and !opponent_has_negative_multiplier:
+		return opponent_wins;
+	if opponent_has_negative_multiplier and !you_have_negative_multiplier:
+		return you_win;
 	if card == null and enemy == null:
 		return tie;
 	if card == null:
@@ -2169,7 +2193,7 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 		return you_win;
 	elif enemy.stopped_time_advantage > 1:
 		return opponent_wins;
-	if card.multiply_advantage > 1000 and enemy.multiply_advantage > 1000:
+	if card.multiply_advantage > 100000 and enemy.multiply_advantage > 100000:
 		System.Random.item([card, enemy]).multiply_advantage -= 1;
 	if card.multiply_advantage > enemy.multiply_advantage:
 		return you_win;

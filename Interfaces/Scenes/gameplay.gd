@@ -15,6 +15,11 @@ enum AnimationType {
 	POSITIVE
 }
 
+enum SpyType {
+	DIRT,
+	FIGHT
+}
+
 const AnimationMinWaitTime : Dictionary = {
 	AnimationType.OCEAN: 3.8 * Config.GAME_SPEED_MULTIPLIER,
 	AnimationType.POSITIVE: 3.7 * Config.GAME_SPEED_MULTIPLIER
@@ -204,6 +209,7 @@ var animations : Dictionary;
 var current_animation_type : AnimationType = AnimationType.NULL;
 var has_ocean_wet_self : bool;
 var cards_to_dissolve : Dictionary;
+var current_spy_type : SpyType;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

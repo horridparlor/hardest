@@ -24,10 +24,27 @@ func get_shader_layers() -> Array:
 	];
 
 func set_number(value : int) -> void:
+	multi = value;
 	label.text = str(value) + "x";
+	get_panel_material();
 
 func update_opacity() -> void:
 	if sprite.material == pattern_shader:
 		sprite.material.set_shader_parameter("opacity", opacity);
 	panel.modulate.a = opacity;
 	label.modulate.a = opacity;
+
+func get_panel_material() -> StyleBoxFlat:
+	var style : StyleBoxFlat = StyleBoxFlat.new();
+	style.bg_color = POSITIVE_BACKGROUND_COLOR if multi >= 0 else NEGATIVE_BACKGROUND_COLOR;
+	style.border_color = POSITIVE_BORDER_COLOR if multi >= 0 else NEGATIVE_BORDER_COLOR;
+	style.border_width_left = BORDER_WIDTH;
+	style.border_width_top = BORDER_WIDTH;
+	style.border_width_bottom = BORDER_WIDTH;
+	style.corner_radius_top_left = BORDER_RADIUS;
+	style.corner_radius_bottom_left = BORDER_RADIUS;
+	style.border_width_right = BORDER_WIDTH;
+	style.corner_radius_top_right = BORDER_RADIUS;
+	style.corner_radius_bottom_right = BORDER_RADIUS;
+	panel.add_theme_stylebox_override("panel", style);
+	return style;

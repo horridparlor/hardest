@@ -1485,6 +1485,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 5 if player.going_first else -1;
 			CardEnums.Keyword.DIGITAL:
 				value += 3;
+			CardEnums.Keyword.DIRT:
+				value += 4;
 			CardEnums.Keyword.DIVINE:
 				value += 0;
 			CardEnums.Keyword.ELECTROCUTE:

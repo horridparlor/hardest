@@ -5,6 +5,7 @@ const ERROR : Dictionary = {
 	ERROR_KEY: ERROR_KEY
 }
 const SCREENSHOTS_PATH : String = "user://screenshots/";
+const CARD_SCREENSHOTS_PATH : String = SCREENSHOTS_PATH + "cards/";
 
 static func success(json_data : Dictionary) -> bool:
 	return not is_error(json_data);
@@ -18,6 +19,7 @@ static func create_directory() -> void:
 		SAVE_WRITE_PATH_PREFIX,
 		SAVE_WRITE_PATH_PREFIX + System.Data.SOUL_BANKS_SAVE_PATH,
 		SCREENSHOTS_PATH,
+		CARD_SCREENSHOTS_PATH,
 		SAVE_WRITE_PATH_PREFIX + System.Data.DECKLIST_FOLDER_PATH
 	]:
 		dir = DirAccess.open(path);

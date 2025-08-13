@@ -34,7 +34,8 @@ func _process(delta : float) -> void:
 			get_tree().quit();
 			return;
 		replay_same_level();
-	base_rotation_frame(delta);
+	if Config.DO_ROTATE_SCREEN:
+		base_rotation_frame(delta);
 	zoom_frame(delta);
 	scene_layer.rotation_degrees = System.base_rotation;
 	edges.rotation_degrees = System.base_rotation;
@@ -65,10 +66,16 @@ func process_dev_mode_shortcut_actions() -> void:
 	if Input.is_action_just_pressed("card_for_opponent"):
 		if gameplay:
 			gameplay.player_two.spawn_card_from_id(Config.SPAWNED_CARD);
-	if Input.is_action_just_pressed("hot_action_1") and gameplay:
-		gameplay.time_stop_effect_in();
-	if Input.is_action_just_pressed("hot_action_2") and gameplay:
-		gameplay.time_stop_effect_out();
+	if Input.is_action_just_pressed("hot_action_1"):
+		if gameplay:
+			gameplay.time_stop_effect_in();
+		elif nexus:
+			nexus.next_showcase_card();
+	if Input.is_action_just_pressed("hot_action_2"):
+		if gameplay:
+			gameplay.time_stop_effect_out();
+		elif nexus:
+			nexus.screenshot_showcase_card();
 	if Input.is_action_just_pressed("hot_action_3") and gameplay:
 		pass;
 	if Input.is_action_just_pressed("host_game"):

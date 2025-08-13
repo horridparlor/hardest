@@ -103,18 +103,22 @@ func auto_start_level() -> void:
 
 func operate_showcase_layer() -> void:
 	if Config.SHOWCASE_CARD_ID != 0:	
-		showcase_card.card_data = System.Data.load_card(Config.SHOWCASE_CARD_ID);
-		showcase_card.card_data.stamp = Config.SHOWCASE_STAMP;
-		showcase_hints.text = showcase_card.get_keyword_hints();
-		showcase_card.update_visuals();
-		showcase_card.update_card_art(true);
-		showcase_card_layer.visible = true;
-		roguelike_page.visible = false;
-		left_arrow.visible = false;
-		right_arrow.visible = false;
-		background.visible = false;
+		show_showcase_card(Config.SHOWCASE_CARD_ID);
 	else:
 		showcase_card_layer.visible = false;
+
+func show_showcase_card(card_id : int) -> void:
+	showcase_card.card_data = System.Data.load_card(card_id);
+	showcase_card.card_data.stamp = Config.SHOWCASE_STAMP;
+	showcase_hints.text = showcase_card.get_keyword_hints();
+	showcase_card.update_visuals();
+	showcase_card.update_card_art(true);
+	showcase_card_layer.visible = true;
+	roguelike_page.visible = false;
+	left_arrow.visible = false;
+	right_arrow.visible = false;
+	background.visible = false;
+	showcase_card_id = card_id;
 
 func spawn_level_buttons(levels_unlocked : int) -> void:
 	var current_position : Vector2 = LEVEL_BUTTONS_STARTING_POSITION;
@@ -237,3 +241,48 @@ func open_tutorial_page() -> void:
 func update_roguelike_data(roguelike_data_ : RoguelikeData) -> void:
 	roguelike_data = roguelike_data_;
 	roguelike_page.init(roguelike_data);
+
+func next_showcase_card() -> void:
+	showcase_card_id += 1;
+	if showcase_card_id > Config.MAX_CARD_ID:
+		showcase_card_id = 1;
+	show_showcase_card(showcase_card_id);
+
+func screenshot_showcase_card():
+	var image : Image = showcase_card.get_viewport().get_texture().get_image();
+	image = process_showcase_card_image(image);
+	image.save_png("user://screenshots/cards/%s.png" % showcase_card_id);
+	next_showcase_card();
+	await System.wait(0.1);
+	if showcase_card_id == 1:
+		return;
+	screenshot_showcase_card();
+
+func process_showcase_card_image(image : Image) -> Image:
+	image.convert(Image.FORMAT_RGBA8);
+	var full_size = image.get_size();
+	var crop_w = 900;
+	var crop_h = 1400;
+
+	var center_x = full_size.x / 2;
+	var center_y = full_size.y / 2 + showcase_card.position.y;
+	var crop_x = int(center_x - crop_w / 2);
+	var crop_y = int(center_y - crop_h / 2);
+	
+	crop_x = clamp(crop_x, 0, full_size.x - crop_w);
+	crop_y = clamp(crop_y, 0, full_size.y - crop_h);
+	
+	var cropped = Image.create(crop_w, crop_h, false, Image.FORMAT_RGBA8);
+	cropped.blit_rect(image, Rect2i(crop_x, crop_y, crop_w, crop_h), Vector2i.ZERO);
+	
+	var radius = 60;
+	for y in range(crop_h):
+		for x in range(crop_w):
+			var dx = min(x, crop_w - 1 - x);
+			var dy = min(y, crop_h - 1 - y);
+			if dx < radius and dy < radius:
+				if (dx - radius)**2 + (dy - radius)**2 > radius**2:
+					var color = cropped.get_pixel(x, y);
+					color.a = 0.0
+					cropped.set_pixel(x, y, color);
+	return cropped;

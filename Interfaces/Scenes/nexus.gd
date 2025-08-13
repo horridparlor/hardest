@@ -45,6 +45,7 @@ var is_scrolling : bool;
 var scrolling_origin_point : Vector2;
 var open_page : NexusPage = NexusPage.TUTORIAL;
 var roguelike_data : RoguelikeData;
+var showcase_card_id : int;
 
 func init(levels_unlocked_ : int, open_page_ : NexusPage, roguelike_data_ : RoguelikeData) -> void:
 	pass
@@ -61,4 +62,10 @@ func toggle_active(value : bool = true) -> void:
 	is_active = value;
 
 func update_roguelike_data(roguelike_data_ : RoguelikeData) -> void:
+	pass;
+
+func next_showcase_card() -> void:
+	pass;
+
+func screenshot_showcase_card():
 	pass;

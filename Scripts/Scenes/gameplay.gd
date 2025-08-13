@@ -449,9 +449,6 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 		spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
 		spying_timer.start();
 		return;
-	if do_spy_hand and enemy.has_secrets():
-		winner = GameplayEnums.Controller.PLAYER_ONE;
-		points = 3;
 	if card and card.is_gun() and winner != GameplayEnums.Controller.PLAYER_TWO:
 		play_shooting_animation(card, enemy, false, false, true);
 		winner = determine_winner(card, enemy);
@@ -1365,6 +1362,8 @@ func get_lose_points(card : CardData, enemy : CardData) -> int:
 
 func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false, add_advantages : bool = true) -> int:
 	var points : int = 1;
+	if card and card.has_spy() and enemy and enemy.has_secrets():
+		points = 3;
 	if card and card.has_champion():
 		points *= 2;
 	if enemy and enemy.has_champion():
@@ -2060,6 +2059,10 @@ func check_pre_types_keywords(card : CardData, enemy : CardData) -> GameplayEnum
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
+	if card.has_secrets() and enemy.has_spy():
+		return opponent_wins;
+	elif enemy.has_secrets() and card.has_spy():
+		return you_win;
 	if card.has_pair() and enemy.has_pair_breaker():
 		return opponent_wins;
 	elif enemy.has_pair() and card.has_pair_breaker():

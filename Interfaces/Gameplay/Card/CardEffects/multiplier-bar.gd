@@ -7,10 +7,10 @@ const MIN_FADE_OUT_SPEED : float = 2.1;
 const MAX_FADE_OUT_SPEED : float = 2.9;
 const BORDER_WIDTH : int = 8;
 const BORDER_RADIUS : int = 13;
-const POSITIVE_BACKGROUND_COLOR : String = "#0e4287";
-const POSITIVE_BORDER_COLOR : String = "#6b9bdb";
-const NEGATIVE_BACKGROUND_COLOR : String = "#de321c";
-const NEGATIVE_BORDER_COLOR : String = "#febfb3";
+const POSITIVE_BACKGROUND_COLOR : String = "#de321c";
+const POSITIVE_BORDER_COLOR : String = "#febfb3";
+const NEGATIVE_BACKGROUND_COLOR : String = "#0e4287";
+const NEGATIVE_BORDER_COLOR : String = "#6b9bdb";
 
 var is_fading_in : bool;
 var is_fading_out : bool;

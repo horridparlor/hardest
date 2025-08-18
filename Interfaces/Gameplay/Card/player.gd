@@ -52,6 +52,12 @@ func field_empty() -> bool:
 func count_hand() -> int:
 	return cards_in_hand.size();
 
+func count_hand_without(card : CardData) -> int:
+	var count : int = count_hand();
+	if count > 0 and cards_in_hand.has(card):
+		return count - 1;
+	return count;
+
 func hand_empty() -> bool:
 	return count_hand() == 0;
 

@@ -592,7 +592,8 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 	if !System.Instance.exists(gameplay_card):
 		return;
 	var card : CardData = gameplay_card.card_data;
-	var multi : int = card.multiply_advantage * card.stopped_time_advantage;
+	var multi : int = card.multiply_advantage * card.stopped_time_advantage * \
+		get_card_continuous_advantage(card);
 	if card.zone == CardEnums.Zone.HAND and card.has_multiply() and \
 	card.controller.get_matching_type(card.card_type) != CardEnums.CardType.NULL:
 		multi *= pow(2, card.controller.played_same_type_in_a_row + 1);
@@ -600,6 +601,12 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 		gameplay_card.show_multiplier_bar(multi);
 	else:
 		gameplay_card.hide_multiplier_bar();
+
+func get_card_continuous_advantage(card : CardData) -> int:
+	var advantage : int = 1;
+	if card.has_skibbidy():
+		advantage *= pow(2, card.controller.count_hand_without(card));
+	return advantage;
 
 func return_other_cards_front(card : GameplayCard) -> void:
 	for instance_id in cards:
@@ -1369,6 +1376,7 @@ func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = f
 	if enemy and enemy.has_champion():
 		points *= 2;
 	if add_advantages:
+		points *= get_card_continuous_advantage(card);
 		if card.stopped_time_advantage > 1:
 			points *= card.stopped_time_advantage;
 		if abs(card.multiply_advantage) > 1:
@@ -2018,6 +2026,8 @@ func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Contro
 		return opponent_wins;
 	if opponent_has_negative_multiplier and !you_have_negative_multiplier:
 		return you_win;
+	if you_have_negative_multiplier and opponent_has_negative_multiplier:
+		return tie;
 	if card == null and enemy == null:
 		return tie;
 	if card == null:
@@ -2194,15 +2204,20 @@ func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnu
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
+	var card_advantage : int = card.multiply_advantage * get_card_continuous_advantage(card);
+	var enemy_advantage : int = enemy.multiply_advantage * get_card_continuous_advantage(enemy);
 	if card.stopped_time_advantage > 1:
 		return you_win;
 	elif enemy.stopped_time_advantage > 1:
 		return opponent_wins;
-	if card.multiply_advantage > 100000 and enemy.multiply_advantage > 100000:
-		System.Random.item([card, enemy]).multiply_advantage -= 1;
-	if card.multiply_advantage > enemy.multiply_advantage:
+	if card_advantage > 100000 and enemy_advantage > 100000:
+		if System.Random.chance(2):
+			card_advantage -= 1;
+		else:
+			enemy_advantage -= 1;
+	if card_advantage > enemy_advantage:
 		return you_win;
-	elif enemy.multiply_advantage > card.multiply_advantage:
+	elif enemy_advantage > card_advantage:
 		return opponent_wins;
 	if card.has_pair():
 		if !enemy.has_pair():

@@ -373,6 +373,9 @@ func has_silver() -> bool:
 func has_sinful() -> bool:
 	return has_keyword(CardEnums.Keyword.SINFUL);
 
+func has_skibbidy() -> bool:
+	return has_keyword(CardEnums.Keyword.SKIBBIDY);
+
 func has_soul_hunter() -> bool:
 	return has_keyword(CardEnums.Keyword.SOUL_HUNTER);
 

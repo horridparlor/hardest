@@ -432,6 +432,24 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 3,
 			"song": 21,
 			"background": 20
+		},
+		GameplayEnums.Character.SISTERS: {
+			"cards": [
+				91,
+				92,
+				93,
+				94,
+				113,
+				114,
+				115
+			],
+			"card_pool": get_card_pool([
+				CollectionEnums.House.DIVINE,
+				CollectionEnums.House.KAWAII
+			]),
+			"rare_chance": 4,
+			"song": 1,
+			"background": 22
 		}
 	};
 
@@ -449,9 +467,10 @@ func get_rare_opponents() -> Dictionary:
 func get_starting_houses() -> Array:
 	var houses : Array;
 	var all_houses : Array = [
-		CollectionEnums.House.DELUSIONAL,
 		CollectionEnums.House.CHAMPION,
+		CollectionEnums.House.DELUSIONAL,
 		CollectionEnums.House.DEMONIC,
+		CollectionEnums.House.DIVINE,
 		CollectionEnums.House.HIGHTECH,
 		CollectionEnums.House.KAWAII	
 	];

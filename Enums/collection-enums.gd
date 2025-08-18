@@ -10,6 +10,7 @@ enum House {
 	CHAMPION,
 	DELUSIONAL,
 	DEMONIC,
+	DIVINE,
 	HIGHTECH,
 	KAWAII,
 	GOD,
@@ -93,6 +94,14 @@ const CARDS_TO_COLLECT : Dictionary = {
 			78,
 			86,
 			89,
+		]
+	},
+	House.DIVINE: {
+		Rarity.COMMON: [
+			114
+		],
+		Rarity.RARE: [
+			115
 		]
 	},
 	House.HIGHTECH: {
@@ -203,6 +212,12 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		]
 	},
 	House.DEMONIC: {
+		Rarity.COMMON: [
+		],
+		Rarity.RARE: [
+		]
+	},
+	House.DIVINE: {
 		Rarity.COMMON: [
 		],
 		Rarity.RARE: [

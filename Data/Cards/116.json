@@ -1,7 +1,10 @@
 {
-	"id": 101,
-	"name": "Rock",
-	"type": "rock",
+	"id": 116,
+	"name": "Tent-Launcher",
+	"type": "gun",
 	"keywords": [
-	]
+		"skibbidy",
+		"wrapped"
+	],
+	"bullet": 25
 }

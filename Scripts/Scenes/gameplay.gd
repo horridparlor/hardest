@@ -597,7 +597,7 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 	if card.zone == CardEnums.Zone.HAND and card.has_multiply() and \
 	card.controller.get_matching_type(card.card_type) != CardEnums.CardType.NULL:
 		multi *= pow(2, card.controller.played_same_type_in_a_row + 1);
-	if multi > 1 or multi < 0:
+	if !card.is_buried and (multi > 1 or multi < 0):
 		gameplay_card.show_multiplier_bar(multi);
 	else:
 		gameplay_card.hide_multiplier_bar();
@@ -655,6 +655,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	if card.card_data.has_buried():
 		if !is_digital_speed:
 			card.bury();
+			show_multiplier_bar(card);
 	opponent.trigger_opponent_placed_effects();
 	update_card_alterations();
 	if check_for_devoured(card, player, opponent):
@@ -1433,6 +1434,7 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 			if card.has_hydra():
 				player.build_hydra(card);
 			trigger_play_effects(card, player, opponent);
+			show_multiplier_bar(get_card(card));
 			transformed_any = true;
 		if card.has_copycat() and opponent.get_field_card():
 			card.set_card_type(opponent.get_field_card().card_type);

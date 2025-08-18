@@ -24,7 +24,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			15,
 			16,
 			17,
-			20,
 			50,
 			51,
 			52,
@@ -98,10 +97,12 @@ const CARDS_TO_COLLECT : Dictionary = {
 	},
 	House.DIVINE: {
 		Rarity.COMMON: [
-			114
+			20,
+			114,
 		],
 		Rarity.RARE: [
-			115
+			115,
+			116,
 		]
 	},
 	House.HIGHTECH: {
@@ -306,6 +307,7 @@ const RANDOM_CARDS : Dictionary = {
 		102,
 		108,
 		113,
+		114,
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -352,6 +354,7 @@ const RANDOM_CARDS : Dictionary = {
 		106,
 		110,
 		111,
+		116,
 	],
 	CardEnums.CardType.MIMIC: [
 		5,
@@ -362,7 +365,7 @@ const RANDOM_CARDS : Dictionary = {
 		75,
 		79,
 		86,
-		91
+		91,
 	],
 	CardEnums.CardType.GOD: [
 		42,
@@ -379,6 +382,7 @@ const RANDOM_CARDS : Dictionary = {
 	CardEnums.CardType.ROCKSTAR: [
 		98,
 		105,
+		115,
 	]
 }
 

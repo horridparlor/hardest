@@ -277,6 +277,9 @@ func has_high_ground() -> bool:
 func has_high_nut() -> bool:
 	return has_keyword(CardEnums.Keyword.HIGH_NUT);
 
+func has_hivemind() -> bool:
+	return has_keyword(CardEnums.Keyword.HIVEMIND);
+
 func has_hydra() -> bool:
 	return has_keyword(CardEnums.Keyword.HYDRA);
 

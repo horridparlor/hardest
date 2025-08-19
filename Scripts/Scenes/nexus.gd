@@ -111,6 +111,7 @@ func show_showcase_card(card_id : int) -> void:
 	showcase_card.card_data = System.Data.load_card(card_id);
 	showcase_card.card_data.stamp = Config.SHOWCASE_STAMP;
 	showcase_hints.text = showcase_card.get_keyword_hints();
+	showcase_card.card_art.material = null;
 	showcase_card.update_visuals();
 	showcase_card.update_card_art(true);
 	showcase_card_layer.visible = true;
@@ -252,6 +253,7 @@ func screenshot_showcase_card():
 	var image : Image = showcase_card.get_viewport().get_texture().get_image();
 	image = process_showcase_card_image(image);
 	image.save_png("user://screenshots/cards/%s.png" % showcase_card_id);
+	return;
 	next_showcase_card();
 	await System.wait(0.1);
 	if showcase_card_id == 1:

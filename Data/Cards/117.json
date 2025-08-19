@@ -1,7 +1,9 @@
 {
-	"id": 101,
-	"name": "Rock",
+	"id": 117,
+	"name": "Combat Boots",
 	"type": "rock",
 	"keywords": [
+		"brotherhood",
+		"skibbidy"
 	]
 }

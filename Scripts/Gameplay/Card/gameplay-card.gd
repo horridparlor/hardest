@@ -78,14 +78,17 @@ func bury() -> void:
 
 func update_name_label(message : String) -> void:
 	var name_length : int = message.length();
+	var font = name_label.get_theme_font("normal_font");
 	var font_size : int;
 	if message.contains("[i]"):
 		name_length -= "[i][/i]".length();
 	name_label.text = "[center]" + message + "[/center]";
 	font_size = 88 if name_length > 12 else 104;
+	if font_size == 88 and font.get_string_size(message, font_size).x > 150:
+		font_size = 80;
 	name_label.add_theme_font_size_override("normal_font_size", font_size);
 	name_label.add_theme_font_size_override("italics_font_size", font_size);
-	name_label.position.y = -629 + (104 - 88) if font_size == 88 else -629;
+	name_label.position.y = -629 + (104 - 88 - (font_size - 88) / 2) if font_size <= 88 else -629;
 
 func update_panel(card_type : CardEnums.CardType) -> void:
 	var left_style : StyleBoxFlat = StyleBoxFlat.new();

@@ -157,6 +157,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			84,
 			85,
 			91,
+			119,
 		]
 	},
 	House.SCISSOR: {
@@ -341,6 +342,7 @@ const RANDOM_CARDS : Dictionary = {
 		94,
 		103,
 		107,
+		119,
 	],
 	CardEnums.CardType.GUN: [
 		4,

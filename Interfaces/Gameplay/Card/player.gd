@@ -435,6 +435,10 @@ func devour_card(eater : CardData, card : CardData) -> Array:
 	var devoured_keywords : Array;
 	if eater.is_buried:
 		eater.is_buried = false;
+	if eater.has_devow():
+		eater.eat_json(card.to_json(), true, true);
+		eater.variant = CardEnums.CardVariant.NEGATIVE;
+		return eater.keywords;
 	eater.set_card_type(card.card_type);
 	if eater.stamp == CardEnums.Stamp.NULL:
 		eater.stamp = card.stamp;

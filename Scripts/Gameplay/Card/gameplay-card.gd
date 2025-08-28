@@ -287,3 +287,12 @@ func shine_star_effect() -> void:
 		shine_star = System.Instance.load_child(System.Paths.SHINE_STAR, self);
 	shine_star.position = SHINE_STAR_POSITION;
 	shine_star.flicker();
+
+func die() -> void:
+	if particle_effect:
+		for node in get_shader_layers():
+			node.visible = false;
+		is_dying = true;
+		print(555);
+	else:
+		queue_free();

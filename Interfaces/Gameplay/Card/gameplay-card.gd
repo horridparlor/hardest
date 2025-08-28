@@ -50,6 +50,7 @@ const BACKGROUND_PATTERN_OPACITY : float = 0.32;
 const OCEAN_IN_SPEED : float = 3.7 * Config.GAME_SPEED;
 const OCEAN_OUT_SPEED : float = 0.3 * Config.GAME_SPEED;
 const OCEAN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
+const ANIMATION_DYING_SPEED : float = 1.4 * Config.GAME_SPEED;
 
 const MIN_RECOIL_DISTANCE : int = 400;
 const MAX_RECOIL_DISTANCE : int = 600;
@@ -116,6 +117,7 @@ var is_dissolving : bool;
 var dissolve_speed : float;
 var particle_effect : Node2D;
 var multiplier_bar : MultiplierBar;
+var is_dying : bool;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -152,6 +154,9 @@ func rescale(is_instant : bool = false) -> void:
 		return;
 
 func _process(delta: float) -> void:
+	if is_dying:
+		dying_frame(delta);
+		return;
 	if is_dissolving:
 		dissolve_frame(delta);
 	if is_in_ocean:
@@ -169,6 +174,11 @@ func in_ocean_frame(delta : float) -> void:
 
 func out_ocean_frame(delta : float) -> void:
 	pass;
+
+func dying_frame(delta : float) -> void:
+	particle_effect.modulate.a -= delta * ANIMATION_DYING_SPEED;
+	if particle_effect.modulate.a <= 0:
+		queue_free();
 
 func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
@@ -412,4 +422,7 @@ func after_time_stop() -> void:
 	multiplier_bar.after_time_stop();
 
 func update_emp_visuals() -> void:
+	pass;
+
+func die() -> void:
 	pass;

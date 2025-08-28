@@ -161,6 +161,7 @@ enum Keyword {
 	COPYCAT,
 	CURSED,
 	DEVOUR,
+	DEVOW,
 	DIGITAL,
 	DIRT,
 	DIVINE,
@@ -278,6 +279,7 @@ func get_hydra_keywords() -> Array:
 
 func get_rare_hydra_keywords() -> Array:
 	return [
+		Keyword.DEVOW,
 		Keyword.SPRING_ARRIVES,
 	];
 
@@ -298,6 +300,7 @@ const KeywordNames : Dictionary = {
 	Keyword.COPYCAT : "Copycat",
 	Keyword.CURSED : "Cursed",
 	Keyword.DEVOUR : "Devour",
+	Keyword.DEVOW : "Devow",
 	Keyword.DIGITAL : "Digital",
 	Keyword.DIRT : "Dirt",
 	Keyword.DIVINE : "Divine",
@@ -368,6 +371,7 @@ const TranslateKeyword : Dictionary = {
 	"copycat" : Keyword.COPYCAT,
 	"cursed" : Keyword.CURSED,
 	"devour" : Keyword.DEVOUR,
+	"devow" : Keyword.DEVOW,
 	"digital" : Keyword.DIGITAL,
 	"dirt" : Keyword.DIRT,
 	"divine" : Keyword.DIVINE,
@@ -438,6 +442,7 @@ const TranslateKeywordBack: Dictionary = {
 	Keyword.COPYCAT : "copycat",
 	Keyword.CURSED : "cursed",
 	Keyword.DEVOUR : "devour",
+	Keyword.DEVOW : "devow",
 	Keyword.DIGITAL : "digital",
 	Keyword.DIRT : "dirt",
 	Keyword.DIVINE : "divine",
@@ -508,6 +513,7 @@ var KeywordHints : Dictionary = {
 	Keyword.COPYCAT : "Copies opponent's card type.",
 	Keyword.CURSED : "Cannot be replaced or destroyed.",
 	Keyword.DEVOUR : "Eats the first card opponent plays.",
+	Keyword.DEVOW : "Permanently eats the first card opponent plays, and becomes a negative copy of it.",
 	Keyword.DIGITAL : "Counterspell from hand. [i](Replaces your card.)[/i]",
 	Keyword.DIRT : "Give a card in opponent's hand a negative multiplier. [i]Multiply by 2 for each card of the same type they have played in a row.[/i]",
 	Keyword.DIVINE : "Defeats any undead.",

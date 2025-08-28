@@ -1,8 +1,9 @@
 {
 	"id": 104,
 	"name": "Amethyst",
-	"type": "rock",
+	"type": "gun",
 	"keywords": [
 		"auto-hydra"
-	]
+	],
+	"bullet": 26
 }

@@ -73,6 +73,8 @@ func get_deck() -> Array:
 
 func burn_card(spawn_id : int) -> void:
 	for card in cards.duplicate():
+		if !System.Instance.exists(card):
+			continue;
 		if card.spawn_id == spawn_id:
 			cards.erase(card);
 			card.queue_free();

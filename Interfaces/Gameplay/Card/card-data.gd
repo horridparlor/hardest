@@ -54,7 +54,7 @@ static func from_json(data : Dictionary) -> CardData:
 	card.eat_json(data);
 	return card;
 
-func eat_json(data : Dictionary, do_eat_spawn_json : bool = true) -> void:
+func eat_json(data : Dictionary, do_eat_spawn_json : bool = true, keep_spawn_id : bool = false) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	card_id = data.id;
 	card_name = data.name;
@@ -68,7 +68,7 @@ func eat_json(data : Dictionary, do_eat_spawn_json : bool = true) -> void:
 	is_foil = CollectionEnums.FOIL_CARDS.has(card_id);
 	if !do_eat_spawn_json:
 		return;
-	eat_spawn_json(data);
+	eat_spawn_json(data, keep_spawn_id);
 
 func set_card_type(type : CardEnums.CardType) -> void:
 	card_type = type;
@@ -112,11 +112,13 @@ static func break_card_type(type : CardEnums.CardType) -> Array:
 			];
 	return [type];
 
-func eat_spawn_json(data : Dictionary) -> void:
+func eat_spawn_json(data : Dictionary, keep_spawn_id : bool = false) -> void:
 	data = System.Dictionaries.make_safe(data, DEFAULT_DATA);
 	stamp = CardEnums.TranslateStamp[data.stamp];
 	variant = CardEnums.TranslateVariant[data.variant];
 	is_holographic = data.is_holographic;
+	if keep_spawn_id:
+		return;
 	spawn_id = data.spawn_id;
 	if spawn_id == 0:
 		spawn_id = System.random.randi();
@@ -137,6 +139,8 @@ func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false
 			return false;
 		CardEnums.Keyword.ALPHA_WEREWOLF:
 			upgrade_to_keys = [CardEnums.Keyword.WEREWOLF];
+		CardEnums.Keyword.DEVOW:
+			upgrade_to_keys = [CardEnums.Keyword.DEVOUR];
 		CardEnums.Keyword.EXTRA_SALTY:
 			upgrade_to_keys = [CardEnums.Keyword.SALTY];
 		CardEnums.Keyword.MULTI_SPY:
@@ -151,11 +155,13 @@ func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false
 		keywords.append(keyword);
 	return true;
 
-func has_keyword(keyword : CardEnums.Keyword, may_have_buried : bool = false) -> bool:
+func has_keyword(keyword : CardEnums.Keyword, may_be_buried : bool = false) -> bool:
 	var duplicate_keys : Array = [keyword];
-	if is_buried and !may_have_buried:
+	if is_buried and !may_be_buried:
 		return false;
 	match keyword:
+		CardEnums.Keyword.DEVOUR:
+			duplicate_keys += [CardEnums.Keyword.DEVOW];
 		CardEnums.Keyword.SALTY:
 			duplicate_keys += [CardEnums.Keyword.EXTRA_SALTY];
 		CardEnums.Keyword.SPY:
@@ -238,8 +244,11 @@ func has_copycat() -> bool:
 func has_cursed() -> bool:
 	return has_keyword(CardEnums.Keyword.CURSED);
 
-func has_devour(may_have_devour : bool = false) -> bool:
-	return has_keyword(CardEnums.Keyword.DEVOUR, may_have_devour);
+func has_devour(may_be_buried : bool = false) -> bool:
+	return has_keyword(CardEnums.Keyword.DEVOUR, may_be_buried);
+
+func has_devow(may_be_buried : bool = false) -> bool:
+	return has_keyword(CardEnums.Keyword.DEVOW, may_be_buried);
 
 func has_rare_stamp() -> bool:
 	return stamp == CardEnums.Stamp.RARE;

@@ -1,7 +1,9 @@
 {
-	"id": 101,
-	"name": "Rock",
+	"id": 120,
+	"name": "Elder Mimic",
 	"type": "mimic",
 	"keywords": [
+		"buried",
+		"devow"
 	]
 }

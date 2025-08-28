@@ -35,4 +35,4 @@ const MUSIC_NIGHTCORE_PITCH : float = 1.2;
 #Marketing
 const TEXTLESS_CARDS : bool = false if DEV_MODE else false;
 const SHOW_TITLE : bool = false if DEV_MODE else false;
-const DO_ROTATE_SCREEN : bool = false if DEV_MODE else true;
+const DO_ROTATE_SCREEN : bool = true if DEV_MODE else true;

@@ -626,7 +626,7 @@ func _on_card_despawned(card : GameplayCard) -> void:
 	if System.Instance.exists(card) and (player_one.get_field_card() == card.card_data or player_two.get_field_card() == card.card_data):
 		return;
 	cards.erase(card.instance_id);
-	card.queue_free();
+	card.die();
 
 func check_if_played(card : GameplayCard) -> bool:
 	var mouse_position : Vector2 = get_local_mouse_position();
@@ -697,11 +697,16 @@ func check_for_devoured(card : GameplayCard, player : Player, opponent : Player,
 	var enemy : CardData = opponent.get_field_card();
 	var eater_was_face_down : bool;
 	var devoured_keywords : Array;
+	var has_devow : bool = enemy and enemy.has_devow(true);
 	if is_digital_speed:
 		return false;
 	if enemy and enemy.has_devour(true) and player.cards_played_this_turn == 1:
 		eater_was_face_down = enemy.is_buried;
 		devoured_keywords = opponent.devour_card(enemy, card.card_data);
+		if has_devow:
+			turn_card_into_another(enemy);
+			card.burn_effect();
+			player.burn_card(card.card_data);
 		player.send_from_field_to_grave(card.card_data);
 		if eater_was_face_down:
 			trigger_play_effects(enemy, opponent, player);
@@ -861,10 +866,15 @@ func trigger_contagious(source_card : CardData, player : Player) -> void:
 	if card_to_alter.is_dual_type() and CardEnums.BASIC_COLORS.has(card_type):
 		card_type = System.Random.item(CardData.expand_type(card_type));
 	player.rainbow_a_card(card_to_alter, card_type);
-	player.make_card_alterations_permanent(card_to_alter);
-	if card_to_alter.has_auto_hydra():
-		player.build_hydra(card_to_alter, true);
-	update_alterations_for_card(card_to_alter, true);
+	turn_card_into_another(card);
+
+func turn_card_into_another(card : CardData) -> void:
+	var player : Player = card.controller;
+	player.make_card_alterations_permanent(card);
+	if card.has_auto_hydra():
+		player.build_hydra(card, true);
+	update_alterations_for_card(card, true);
+	
 
 func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool = false) -> void:
 	var cloned_card : CardData;

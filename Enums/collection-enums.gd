@@ -105,7 +105,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 		Rarity.RARE: [
 			115,
 			116,
-			118,
 		]
 	},
 	House.HIGHTECH: {
@@ -200,6 +199,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 		42,
 		95,
 		110,
+		118,
 	],
 }
 const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {

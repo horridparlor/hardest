@@ -244,7 +244,6 @@ func get_hydra_keywords() -> Array:
 		Keyword.CHAMELEON,
 		Keyword.CHAMPION,
 		Keyword.CLONING,
-		Keyword.CONTAGIOUS,
 		Keyword.COPYCAT,
 		Keyword.CURSED,
 		Keyword.DEVOUR,
@@ -279,6 +278,7 @@ func get_hydra_keywords() -> Array:
 
 func get_rare_hydra_keywords() -> Array:
 	return [
+		Keyword.CONTAGIOUS,
 		Keyword.DEVOW,
 		Keyword.SPRING_ARRIVES,
 	];

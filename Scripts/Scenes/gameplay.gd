@@ -443,6 +443,7 @@ func resolve_spying_whole_hand(opponent : Player) -> void:
 	var has_priority : bool = card and card.has_hivemind();
 	var results = BattleRoyale.new([card], enemies, has_priority).results;
 	var defender : CardData;
+	var is_not_first : bool;
 	if current_spy_type == SpyType.DIRT:
 		for c in enemies:
 			card = c;
@@ -453,10 +454,13 @@ func resolve_spying_whole_hand(opponent : Player) -> void:
 		if get_card(enemy):
 			get_card(enemy).still_wait_time = results.size() * WHOLE_HAND_SPY_MAX_WAIT;
 	for result in results:
+		if is_not_first:
+			await System.wait(System.random.randf_range(WHOLE_HAND_SPY_MIN_WAIT, WHOLE_HAND_SPY_MAX_WAIT) * System.game_speed);
+		else:
+			is_not_first = true;
 		defender = result.defender if result.attacker == card else result.attacker;
 		enemies.erase(defender);
 		animate_spying_fight(card, player, defender, opponent, true);
-		await System.wait(System.random.randf_range(WHOLE_HAND_SPY_MIN_WAIT, WHOLE_HAND_SPY_MAX_WAIT) * System.game_speed);
 	for enemy in enemies:
 		if get_card(enemy):
 			send_spied_card_back(get_card(enemy), opponent);
@@ -841,7 +845,7 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 			CardEnums.Keyword.RELOAD:
 				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
 			CardEnums.Keyword.SABOTAGE:
-				trigger_sabotage(card, opponent);
+				trigger_sabotage(opponent);
 			CardEnums.Keyword.SCAMMER:
 				player.points = -100;
 				gain_points_effect(player);
@@ -877,21 +881,39 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
 
-func trigger_sabotage(card : CardData, opponent : Player) -> void:
-	var enemy : CardData = opponent.random_discard(true);
-	var gameplay_card : GameplayCard;
-	if !System.Instance.exists(enemy):	
+func trigger_sabotage(opponent : Player) -> void:
+	var enemy : CardData;
+	var count : int = opponent.count_hand();
+	var max_margin_value : int = min(WHOLE_HAND_MAX_SPY_MARGIN.x, (count - 1) * WHOLE_HAND_SPY_MARGIN.x) * System.Floats.direction(opponent.visit_point.y);
+	var max_margin : Vector2 = Vector2(max_margin_value, max_margin_value * (WHOLE_HAND_SPY_MARGIN.y / WHOLE_HAND_SPY_MARGIN.x));
+	var margin : Vector2 = -max_margin / 2;
+	var margin_increment : Vector2 = max_margin / (count - 1);
+	if opponent.has_hivemind_for():
+		for c in opponent.cards_in_hand.duplicate():
+			enemy = c;
+			opponent.discard_from_hand(enemy);
+			inflict_sabotage_on_card(enemy, opponent, margin);
+			margin += margin_increment;
 		return;
-	gameplay_card = spawn_card(enemy);
-	if opponent == player_one:
+	enemy = opponent.random_discard(true);
+	inflict_sabotage_on_card(enemy, opponent);
+	
+
+func inflict_sabotage_on_card(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
+	var gameplay_card : GameplayCard;
+	if !System.Instance.exists(card):	
+		return;
+	gameplay_card = spawn_card(card);
+	prints(222, margin, card.card_name, card.instance_id);
+	if player == player_one:
 		show_hand();
-		gameplay_card.go_visit_point(VISIT_POSITION);
-		cards_to_dissolve[enemy.instance_id] = card;
+		gameplay_card.go_visit_point(VISIT_POSITION + margin);
+		cards_to_dissolve[card.instance_id] = card;
 	else:
-		gameplay_card = spawn_card(enemy);
-		gameplay_card.go_visit_point(-VISIT_POSITION);
-		cards_to_dissolve[enemy.instance_id] = card;
-		
+		gameplay_card = spawn_card(card);
+		gameplay_card.go_visit_point(-VISIT_POSITION + margin);
+		cards_to_dissolve[card.instance_id] = card;
+
 func trigger_spring_arrives(card : CardData, player : Player) -> void:
 	var hand_size : int = player.count_hand();
 	player.fill_hand();

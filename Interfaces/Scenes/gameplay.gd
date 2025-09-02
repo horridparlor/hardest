@@ -46,6 +46,9 @@ const UNDYING_SPEED : float = 4.8;
 const HAND_FITS_CARDS : float = 4.72;
 const WHOLE_HAND_SPY_MARGIN : Vector2 = Vector2(200, 20);
 const WHOLE_HAND_MAX_SPY_MARGIN : Vector2 = 3 * WHOLE_HAND_SPY_MARGIN;
+const WHOLE_HAND_SPY_MIN_WAIT : float = 0.21 * Config.GAME_SPEED_MULTIPLIER;
+const WHOLE_HAND_SPY_MAX_WAIT : float = 0.26 * Config.GAME_SPEED_MULTIPLIER;
+const DIRT_AFTER_WAIT : float = 0.5 * Config.GAME_SPEED_MULTIPLIER;
 
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const PRE_RESULTS_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
@@ -213,6 +216,7 @@ var has_ocean_wet_self : bool;
 var cards_to_dissolve : Dictionary;
 var current_spy_type : SpyType;
 var is_spying_whole_hand : bool;
+var is_already_whole_spying : bool;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

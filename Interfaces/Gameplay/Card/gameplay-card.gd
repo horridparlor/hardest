@@ -118,6 +118,7 @@ var dissolve_speed : float;
 var particle_effect : Node2D;
 var multiplier_bar : MultiplierBar;
 var is_dying : bool;
+var still_wait_time : float = -0.01;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -183,6 +184,11 @@ func dying_frame(delta : float) -> void:
 func move_card(delta : float) -> void:
 	var card_margin : Vector2 = GameplayCard.SIZE / 2;
 	var original_position : Vector2 = position;
+	if still_wait_time > 0:
+		still_wait_time -= System.game_speed_multiplier * delta;
+		if still_wait_time < 0:
+			still_wait_time == -0.01;
+		return;
 	if is_moving or following_mouse:
 		if System.Instance.exists(card_data) and card_data.controller and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO and System.Vectors.is_default(goal_position):
 			if is_visiting:
@@ -244,14 +250,17 @@ func toggle_follow_mouse(value : bool = true) -> void:
 	starting_position.y = (starting_position.y + GameplayCard.SIZE.y) / 2;
 	toggle_focus(value);
 	
-func despawn(despawn_position : Vector2 = Vector2.ZERO) -> void:
+func despawn(despawn_position : Vector2 = Vector2.ZERO, wait_time : float = 0) -> void:
 	is_shaking = false;
 	is_visiting = false;
 	is_despawning = true;
+	still_wait_time += wait_time;
 	goal_position = despawn_position \
 		if !System.Vectors.is_default(despawn_position) \
 		else get_despawn_position();
 	toggle_focus(false);
+	if still_wait_time > 0:
+		return;
 	hide_multiplier_bar();
 
 func get_despawn_position() -> Vector2:

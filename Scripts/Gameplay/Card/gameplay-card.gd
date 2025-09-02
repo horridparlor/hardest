@@ -293,6 +293,5 @@ func die() -> void:
 		for node in get_shader_layers():
 			node.visible = false;
 		is_dying = true;
-		print(555);
 	else:
 		queue_free();

@@ -211,6 +211,8 @@ static func check_post_types_keywords(card : CardData, enemy : CardData) -> Game
 
 static func get_card_continuous_advantage(card : CardData) -> int:
 	var advantage : int = 1;
+	if !card:
+		return advantage;
 	if card.has_skibbidy():
 		advantage *= pow(2, card.controller.count_hand_without(card));
 	return advantage;
@@ -225,18 +227,18 @@ static func calculate_base_points(card : CardData, enemy : CardData, did_win : b
 		points *= 2;
 	if add_advantages:
 		points *= get_card_continuous_advantage(card);
-		if card.stopped_time_advantage > 1:
+		if card and card.stopped_time_advantage > 1:
 			points *= card.stopped_time_advantage;
-		if abs(card.multiply_advantage) > 1:
+		if card and abs(card.multiply_advantage) > 1:
 			points *= abs(card.multiply_advantage);
 		if enemy and enemy.multiply_advantage < 0:
 			points *= abs(enemy.multiply_advantage)
 	if !did_win:
 		return points;
-	if card.has_rare_stamp():
+	if card and card.has_rare_stamp():
 		points *= 2;
-	if card.is_holographic:
+	if card and card.is_holographic:
 		points *= 2;
-	if card.is_god() and points < 10:
+	if card and card.is_god() and points < 10:
 		points = 10;
 	return points;

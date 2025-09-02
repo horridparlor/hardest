@@ -429,39 +429,72 @@ func _on_card_visited(card : GameplayCard) -> void:
 		loser_dissolve_effect(card.card_data, enemy);
 		card.despawn_to_same_direction();
 	if is_spying_whole_hand:
-		is_spying_whole_hand = false;
-		is_spying = false;
+		if is_already_whole_spying:
+			return;
 		resolve_spying_whole_hand(card.card_data.controller);
 	elif is_spying:
 		resolve_spying(card);
 
 func resolve_spying_whole_hand(opponent : Player) -> void:
+	is_already_whole_spying = true;
 	var enemies : Array = opponent.cards_in_hand.duplicate();
 	var player : Player = opponent.opponent;
 	var card : CardData = player.get_field_card();
 	var has_priority : bool = card and card.has_hivemind();
-	var result
+	var results = BattleRoyale.new([card], enemies, has_priority).results;
+	var defender : CardData;
+	if current_spy_type == SpyType.DIRT:
+		for c in enemies:
+			card = c;
+			inflict_dirt_on_card(card, opponent);
+		start_spying_wait();
+		return;
+	for enemy in enemies + [card]:
+		if get_card(enemy):
+			get_card(enemy).still_wait_time = results.size() * WHOLE_HAND_SPY_MAX_WAIT;
+	for result in results:
+		defender = result.defender if result.attacker == card else result.attacker;
+		enemies.erase(defender);
+		animate_spying_fight(card, player, defender, opponent, true);
+		await System.wait(System.random.randf_range(WHOLE_HAND_SPY_MIN_WAIT, WHOLE_HAND_SPY_MAX_WAIT) * System.game_speed);
+	for enemy in enemies:
+		if get_card(enemy):
+			send_spied_card_back(get_card(enemy), opponent);
 	start_spying_wait();
+
+func inflict_dirt_on_card(card : CardData, player : Player) -> void:
+	var gameplay_card : GameplayCard = get_card(card);
+	card.multiply_advantage = abs(card.multiply_advantage) * -(pow(2, player.played_same_type_in_a_row + 1) if player.get_matching_type(card.card_type) != CardEnums.CardType.NULL else 1);
+	show_multiplier_bar(gameplay_card);
+	send_spied_card_back(gameplay_card, player);
+
+func send_spied_card_back(card : GameplayCard, player : Player) -> void:
+	match player.controller:
+		GameplayEnums.Controller.PLAYER_ONE:
+			reorder_hand();
+		GameplayEnums.Controller.PLAYER_TWO:
+			card.despawn(-CARD_STARTING_POSITION if player.controller == GameplayEnums.Controller.PLAYER_TWO else CARD_STARTING_POSITION, DIRT_AFTER_WAIT);
 
 func resolve_spying(spy_target : GameplayCard) -> void:
 	var enemy : CardData = spy_target.card_data;
 	var opponent : Player = enemy.controller;
 	var player : Player = get_opponent(enemy);
 	var card : CardData = player.get_field_card();
+	if current_spy_type == SpyType.DIRT:
+		inflict_dirt_on_card(enemy, opponent);
+		start_spying_wait();
+		return;
+	if animate_spying_fight(card, player, enemy, opponent):
+		return;
+	start_spying_wait();
+
+func animate_spying_fight(card : CardData, player : Player, enemy : CardData, opponent : Player, is_spying_all : bool = false) -> bool:
+	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
+	var spy_target : GameplayCard = get_card(enemy);
 	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
 	var points : int = 1;
-	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
-	if current_spy_type == SpyType.DIRT:
-		enemy.multiply_advantage = abs(enemy.multiply_advantage) * -(pow(2, opponent.played_same_type_in_a_row + 1) if opponent.get_matching_type(enemy.card_type) != CardEnums.CardType.NULL else 1);
-		show_multiplier_bar(spy_target);
-		match player.controller:
-			GameplayEnums.Controller.PLAYER_ONE:
-				spy_target.despawn(-CARD_STARTING_POSITION if opponent.controller == GameplayEnums.Controller.PLAYER_TWO else CARD_STARTING_POSITION);
-			GameplayEnums.Controller.PLAYER_TWO:
-				reorder_hand();
-		spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
-		spying_timer.start();
-		return;
+	if !System.Instance.exists(spy_target):
+		return false;
 	if card and card.is_gun() and winner != GameplayEnums.Controller.PLAYER_TWO:
 		play_shooting_animation(card, enemy, false, false, true);
 		winner = determine_winner(card, enemy);
@@ -475,13 +508,15 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 			loser_dissolve_effect(enemy, card);
 			spy_target.dissolve();
 			spy_target.despawn_to_same_direction();
+			if is_spying_all:
+				return false;
 			if cards_to_spy > 0:
 				if spy_opponent(card, player, opponent, cards_to_spy, spy_zone):
-					return;
+					return true;
 			if player != active_player and active_player.hand_empty():
 				stop_spying();
 				continue_play();
-				return;
+				return true;
 		GameplayEnums.Controller.PLAYER_TWO:
 			trigger_winner_loser_effects(enemy, card, opponent, player);
 			player.send_from_field_to_grave(card);
@@ -504,23 +539,24 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 						stop_spying();
 						you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_additive_multiplier;
 						you_play_wait.start();
-						return;
+						return true;
 				GameplayEnums.Controller.PLAYER_TWO:
 					if !player_two.hand_empty():
 						you_play_wait.stop();
 						stop_spying();
 						opponents_play_wait.wait_time = OPPONENTS_PLAY_WAIT * System.game_speed_additive_multiplier;
 						opponents_play_wait.start();
-						return;
+						return true;
 		GameplayEnums.Controller.NULL:
 			play_tie_sound();
 			if opponent.controller == GameplayEnums.Controller.PLAYER_TWO or !do_spy_hand:
 				spy_target.despawn(-CARD_STARTING_POSITION if opponent.controller == GameplayEnums.Controller.PLAYER_TWO else CARD_STARTING_POSITION);
 			else:
 				reorder_hand();
-	start_spying_wait();
+	return false;
 
 func start_spying_wait() -> void:
+	is_already_whole_spying = false;
 	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
 	spying_timer.start();
 
@@ -1078,7 +1114,7 @@ func spy_opponent(card : CardData, player : Player, opponent : Player, chain : i
 	if do_spy_hand and opponent.hand_empty():
 		return false;
 	current_spy_type = spy_type;
-	is_spying_whole_hand = do_spy_hand and player.has_hivemind_for();
+	is_spying_whole_hand = do_spy_hand and opponent.has_hivemind_for();
 	if is_spying_whole_hand:
 		spy_whole_hand(opponent);
 		return true;
@@ -1088,15 +1124,15 @@ func spy_opponent(card : CardData, player : Player, opponent : Player, chain : i
 	is_spying = true;
 	return true;
 
-func send_card_to_be_spied(card : CardData, opponent : Player, margin : Vector2 = Vector2.ZERO) -> void:
+func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var spied_card : GameplayCard;
 	spawn_card(card);
 	spied_card = get_card(card);
-	match opponent.controller:
+	match player.controller:
 		GameplayEnums.Controller.PLAYER_ONE:
 			if System.Instance.exists(active_card) and spied_card == active_card:
 				_on_card_released(spied_card, true);
-	spied_card.go_visit_point(opponent.visit_point + margin);
+	spied_card.go_visit_point(player.visit_point + margin);
 
 func spy_whole_hand(opponent : Player) -> void:
 	var card : CardData;

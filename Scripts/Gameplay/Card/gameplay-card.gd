@@ -166,7 +166,7 @@ func update_card_art(do_full_art : bool = false) -> void:
 
 func update_keywords_text(keywords : Array, gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	var keywords_text : Array;
-	if card_data.zone == CardEnums.Zone.HAND and gained_keyword != CardEnums.Keyword.NULL and !keywords.has(gained_keyword) and keywords.size() < System.Rules.MAX_KEYWORDS:
+	if card_data.is_in_hand() and gained_keyword != CardEnums.Keyword.NULL and !keywords.has(gained_keyword) and keywords.size() < System.Rules.MAX_KEYWORDS:
 		keywords.push_back(gained_keyword);
 	for keyword in keywords:
 		keywords_text.append(CardEnums.KeywordNames[keyword] if CardEnums.KeywordNames.has(keyword) else "?");

@@ -492,3 +492,18 @@ func give_negative_of_keyword(keyword : CardEnums.Keyword) -> CardEnums.Keyword:
 		CardEnums.Keyword.NEGATIVE:
 			return CardEnums.Keyword.POSITIVE;
 	return keyword;
+
+func is_in_zone(target_zone : CardEnums.Zone) -> bool:
+	return zone == target_zone;
+
+func is_in_hand() -> bool:
+	return is_in_zone(CardEnums.Zone.HAND);
+
+func is_on_the_field() -> bool:
+	return is_in_zone(CardEnums.Zone.FIELD);
+
+func is_in_grave() -> bool:
+	return is_in_zone(CardEnums.Zone.GRAVE);
+
+func is_in_deck() -> bool:
+	return is_in_zone(CardEnums.Zone.DECK);

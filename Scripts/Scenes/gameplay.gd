@@ -177,6 +177,7 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 		level_data.point_goal, \
 		System.Rules.OPPONENT_MAX_POINT_GOAL + round(level_data.point_goal / 3 / 1.5) - 3);
 	player.controller = controller;
+	player.opponent = player_one if player == player_two else player_two;
 	player.point_goal = point_goal;
 	player.is_roguelike = level_data.is_roguelike;
 	point_meter.set_max_points(point_goal);
@@ -479,7 +480,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				GameplayEnums.Controller.PLAYER_ONE:
 					spy_target.despawn(-CARD_STARTING_POSITION);
 				GameplayEnums.Controller.PLAYER_TWO:
-					if spy_target.card_data.zone == CardEnums.Zone.HAND:
+					if spy_target.card_data.is_in_hand():
 						reorder_hand();
 					else:
 						spy_target.despawn(-CARD_STARTING_POSITION);
@@ -594,7 +595,7 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 	var card : CardData = gameplay_card.card_data;
 	var multi : int = card.multiply_advantage * card.stopped_time_advantage * \
 		get_card_continuous_advantage(card);
-	if card.zone == CardEnums.Zone.HAND and card.has_multiply() and \
+	if card.is_in_hand() and card.has_multiply() and \
 	card.controller.get_matching_type(card.card_type) != CardEnums.CardType.NULL:
 		multi *= pow(2, card.controller.played_same_type_in_a_row + 1);
 	if !card.is_buried and (multi > 1 or multi < 0):
@@ -853,7 +854,6 @@ func trigger_spring_arrives(card : CardData, player : Player) -> void:
 
 func trigger_contagious(source_card : CardData, player : Player) -> void:
 	var card_type : CardEnums.CardType = source_card.card_type;
-	var card_to_alter : CardData;
 	var source : Array;
 	var card : CardData;
 	for c in player.cards_in_hand:
@@ -862,10 +862,18 @@ func trigger_contagious(source_card : CardData, player : Player) -> void:
 			source.append(card);
 	if source.is_empty():
 		return;
-	card_to_alter = System.Random.item(source);
-	if card_to_alter.is_dual_type() and CardEnums.BASIC_COLORS.has(card_type):
+	if player.has_hivemind_for():
+		for c in source.duplicate():
+			card = c;
+			inflict_contagious_on_card(card, card_type, player);
+		return;
+	card = System.Random.item(source);
+	inflict_contagious_on_card(card, card_type, player);
+
+func inflict_contagious_on_card(card : CardData, card_type : CardEnums.CardType, player : Player) -> void:
+	if card.is_dual_type() and CardEnums.BASIC_COLORS.has(card_type):
 		card_type = System.Random.item(CardData.expand_type(card_type));
-	player.rainbow_a_card(card_to_alter, card_type);
+	player.rainbow_a_card(card, card_type);
 	turn_card_into_another(card);
 
 func turn_card_into_another(card : CardData) -> void:
@@ -877,12 +885,24 @@ func turn_card_into_another(card : CardData) -> void:
 	
 
 func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool = false) -> void:
-	var cloned_card : CardData;
 	var card_to_clone : CardData;
-	var gameplay_card : GameplayCard;
-	if player.hand_empty() or (player.count_hand() + 1) > System.Rules.MAX_HAND_SIZE:
+	if player.hand_empty() or player.hand_full():
+		return;
+	if player.has_hivemind_for():
+		for c in player.cards_in_hand.duplicate():
+			card_to_clone = c;
+			clone_card(card_to_clone, player, is_perfect_clone);
+			if player.hand_full():
+				break;
+		show_hand();
 		return;
 	card_to_clone = System.Random.item(player.cards_in_hand);
+	clone_card(card_to_clone, player, is_perfect_clone);
+	show_hand();
+
+func clone_card(card_to_clone : CardData, player : Player, is_perfect_clone : bool = false) -> void:
+	var cloned_card : CardData;
+	var gameplay_card : GameplayCard;
 	cloned_card = player.spawn_card(card_to_clone, CardEnums.Zone.HAND);
 	cloned_card.spawn_id = System.random.randi();
 	if is_perfect_clone:
@@ -895,7 +915,6 @@ func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool =
 	if get_card(card_to_clone):
 		var pos : Vector2 = get_card(card_to_clone).position;
 		gameplay_card.position = pos + Vector2(-2, 0);
-	show_hand();
 
 func trigger_positive(card : CardData, enemy : CardData, player : Player) -> void:
 	var multiplier : int = calculate_base_points(card, enemy, true, false);
@@ -1000,7 +1019,7 @@ func trigger_ocean(card : CardData) -> void:
 	var wait_per_card_trigger : float;
 	var triggers : int;
 	for c in cards_to_wet:
-		if make_card_wet(c, false) and (c.controller == player_one or c.zone == CardEnums.Zone.FIELD):
+		if make_card_wet(c, false) and (c.controller == player_one or c.is_on_the_field()):
 			triggers += 1;
 	has_ocean_wet_self = false;
 	wait_for_animation(card, AnimationType.OCEAN);
@@ -1338,7 +1357,10 @@ func play_digitals(player : Player, opponent : Player) -> bool:
 	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
 	if no_reason_to_counterspell(player, opponent):
 		return false;
-	cards = player.cards_in_hand.filter(func(card : CardData): return card.has_digital());
+	if player.has_hivemind_for(CardEnums.Keyword.DIGITAL):
+		cards = player.cards_in_hand;
+	else:
+		cards = player.cards_in_hand.filter(func(card : CardData): return card.has_digital());
 	enemy = opponent.get_field_card();
 	if cards.size() == 0:
 		return false;
@@ -1502,6 +1524,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.DEVOUR:
 				value += 5 if player.going_first else -1;
+			CardEnums.Keyword.DEVOW:
+				value += 6 if player.going_first else -1;
 			CardEnums.Keyword.DIGITAL:
 				value += 3;
 			CardEnums.Keyword.DIRT:
@@ -1520,6 +1544,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 2;
 			CardEnums.Keyword.HIGH_NUT:
 				value += 2 * player.turns_waited_to_nut * player.nut_multiplier;
+			CardEnums.Keyword.HIVEMIND:
+				value += 0;
 			CardEnums.Keyword.HORSE_GEAR:
 				value += 4;
 			CardEnums.Keyword.HYDRA:
@@ -1574,6 +1600,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 2 * (player.turns_waited_to_nut * player.nut_multiplier - opponent.turns_waited_to_nut * opponent.nut_multiplier);
 			CardEnums.Keyword.SILVER:
 				value += 1;
+			CardEnums.Keyword.SKIBBIDY:
+				value += 2 * player.count_hand();
 			CardEnums.Keyword.SOUL_HUNTER:
 				value += 1;
 			CardEnums.Keyword.SPRING_ARRIVES:
@@ -1949,10 +1977,12 @@ func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool
 	var player : Player;
 	var would_trigger : bool;
 	var did_gain_keywords : bool;
+	var has_hivemind_for : bool;
 	if !card or card.is_buried:
 		return would_trigger;
 	player = card.controller;
-	if card.has_ocean_dweller() and (card.controller == player_one or card.zone == CardEnums.Zone.FIELD):
+	has_hivemind_for = card.is_in_hand() and player.has_hivemind_for(CardEnums.Keyword.OCEAN_DWELLER);
+	if (has_hivemind_for or card.has_ocean_dweller()) and (card.controller == player_one or card.is_on_the_field()):
 		if do_trigger:
 			trigger_ocean_dweller(card, player);
 		would_trigger = true;
@@ -1966,8 +1996,10 @@ func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool
 		would_trigger = true;
 	if !fully_moist:
 		return would_trigger;
+	has_hivemind_for = player.has_hivemind_for_type(CardEnums.CardType.SCISSORS);
 	if (card.is_scissor() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
 		did_gain_keywords = true;
+	has_hivemind_for = player.has_hivemind_for_type(CardEnums.CardType.PAPER);
 	if (card.is_paper() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)):
 		did_gain_keywords = true;
 	if did_gain_keywords:
@@ -2266,31 +2298,36 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	var gameplay_card : GameplayCard;
 	var starting_points : int = player.points;
 	var did_trigger_ocean : bool;
+	var triggered_by_hivemind : bool;
+	var pick_up_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.PICK_UP);
 	for c in player.cards_on_field:
 		card = c;
 		gameplay_card = get_card(card);
 		if gameplay_card:
 			gameplay_card.despawn();
+	triggered_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.WEREWOLF);
 	for c in player.cards_in_hand:
 		card = c;
-		if card.has_werewolf():
+		if triggered_by_hivemind or card.has_werewolf():
 			trigger_werewolf(card);
+	triggered_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.ALPHA_WEREWOLF);
 	for c in player.cards_in_hand:
 		card = c;
-		if card.has_alpha_werewolf():
+		if triggered_by_hivemind or card.has_alpha_werewolf():
 			trigger_alpha_werewolf(player);
 	if player.played_alpha_werewolf:
 		trigger_alpha_werewolf(player);
 		player.played_alpha_werewolf = false;
+	triggered_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.OCEAN_DWELLER);
 	for c in player.cards_in_hand.duplicate():
 		card = c;
 		gameplay_card = get_card(card);
-		if card.has_ocean_dweller() and card.controller == player_one:
+		if (triggered_by_hivemind or card.has_ocean_dweller()) and card.controller == player_one:
 			trigger_ocean_dweller(card, player)
 			if gameplay_card and !gameplay_card.is_visiting:
 				gameplay_card.recoil();
 			did_trigger_ocean = true;
-		if !card.has_pick_up():
+		if !pick_up_by_hivemind and !card.has_pick_up():
 			continue;
 		if gameplay_card:
 			gameplay_card.despawn();
@@ -2300,14 +2337,15 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 func trigger_alpha_werewolf(player : Player) -> void:
 	var played_color : CardEnums.CardType = player.true_last_type_played;
 	var card : CardData;
+	var has_hivemind_for_werefolf : bool = player.has_hivemind_for();
 	for c in player.cards_in_hand:
 		card = c;
-		if !card.has_werewolf():
+		if !has_hivemind_for_werefolf and !card.has_werewolf():
 			continue;
 		card.set_card_type(played_color);
 	for c in player.cards_in_hand:
 		card = c;
-		if !card.has_werewolf():
+		if !has_hivemind_for_werefolf and !card.has_werewolf():
 			continue;
 		card.add_keyword(CardEnums.Keyword.MULTIPLY);
 		update_alterations_for_card(card);
@@ -2388,6 +2426,8 @@ func init_time_stop() -> void:
 	for node in get_time_stop_nodes():
 		node.material = shader_material;
 	for instance_id in get_custom_time_stop_nodes():
+		if !System.Instance.exists(cards[instance_id]):
+			continue;
 		card = cards[instance_id].card_data;
 		custom_material = get_time_stop_material();
 		System.Shaders.set_card_art_shader_parameters(custom_material, card.is_negative_variant(), card.is_holographic, card.is_foil);

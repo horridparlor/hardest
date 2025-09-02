@@ -19,6 +19,7 @@ var grave_type_counts : Dictionary = {
 }
 var character : GameplayEnums.Character;
 var controller : GameplayEnums.Controller;
+var opponent : Player;
 var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL;
 var cards_played_this_turn : int;
 var field_position : Vector2;
@@ -71,9 +72,10 @@ func hand_size_reached() -> bool:
 func count_negatives_in_hand() -> int:
 	var count : int;
 	var card : CardData;
+	var has_hivemind_for_negative = has_hivemind_for(CardEnums.Keyword.NEGATIVE);
 	for c in cards_in_hand:
 		card = c
-		if card.has_negative() or card.is_negative_variant():
+		if has_hivemind_for_negative or card.has_negative() or card.is_negative_variant():
 			count += 1;
 	return count;
 
@@ -303,11 +305,50 @@ func clear_field(did_win : bool = false) -> void:
 		card = c;
 		send_from_field_to_grave(card, did_win)
 
+func has_hivemind_for(keyword : CardEnums.Keyword = CardEnums.Keyword.HIVEMIND) -> bool:
+	var has_hivemind : bool = field_has_hivemind();
+	var has_keyword : bool;
+	var card : CardData;
+	for c in cards_in_hand:
+		card = c;
+		if card.has_hivemind():
+			has_hivemind = true;
+		if card.has_keyword(keyword) or (keyword == CardEnums.Keyword.NEGATIVE and card.is_negative_variant()):
+			has_keyword = true;
+		if has_hivemind and has_keyword:
+			return true;
+	return false;
+
+func field_has_hivemind() -> bool:
+	var card : CardData;
+	for c in cards_on_field + opponent.cards_on_field:
+		if !System.Instance.exists(c):
+			continue;
+		card = c;
+		if card.has_hivemind():
+			return true;
+	return false;
+
+func has_hivemind_for_type(card_type : CardEnums.CardType) -> bool:
+	var has_hivemind : bool = field_has_hivemind();
+	var has_type : bool;
+	var card : CardData;
+	for c in cards_in_hand:
+		card = c;
+		if card.has_hivemind():
+			has_hivemind = true;
+		if get_matching_type(card.card_type, card_type) != CardEnums.CardType.NULL:
+			has_type = true;
+		if has_hivemind and has_type:
+			return true;
+	return false;
+
 func clear_pick_ups() -> void:
 	var card : CardData;
+	var has_hivemind : bool = has_hivemind_for(CardEnums.Keyword.PICK_UP);
 	for c in cards_in_hand.duplicate():
 		card = c;
-		if !card.has_pick_up():
+		if !has_hivemind and !card.has_pick_up():
 			continue;
 		cards_in_hand.erase(card);
 		add_to_grave(card);

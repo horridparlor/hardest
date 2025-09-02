@@ -428,9 +428,21 @@ func _on_card_visited(card : GameplayCard) -> void:
 		cards_to_dissolve.erase(card.instance_id);
 		loser_dissolve_effect(card.card_data, enemy);
 		card.despawn_to_same_direction();
-	if is_spying:
+	if is_spying_whole_hand:
+		is_spying_whole_hand = false;
+		is_spying = false;
+		resolve_spying_whole_hand(card.card_data.controller);
+	elif is_spying:
 		resolve_spying(card);
-		
+
+func resolve_spying_whole_hand(opponent : Player) -> void:
+	var enemies : Array = opponent.cards_in_hand.duplicate();
+	var player : Player = opponent.opponent;
+	var card : CardData = player.get_field_card();
+	var has_priority : bool = card and card.has_hivemind();
+	var result
+	start_spying_wait();
+
 func resolve_spying(spy_target : GameplayCard) -> void:
 	var enemy : CardData = spy_target.card_data;
 	var opponent : Player = enemy.controller;
@@ -506,6 +518,9 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 				spy_target.despawn(-CARD_STARTING_POSITION if opponent.controller == GameplayEnums.Controller.PLAYER_TWO else CARD_STARTING_POSITION);
 			else:
 				reorder_hand();
+	start_spying_wait();
+
+func start_spying_wait() -> void:
 	spying_timer.wait_time = SPY_WAIT_TIME * System.game_speed_additive_multiplier;
 	spying_timer.start();
 
@@ -594,7 +609,7 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 		return;
 	var card : CardData = gameplay_card.card_data;
 	var multi : int = card.multiply_advantage * card.stopped_time_advantage * \
-		get_card_continuous_advantage(card);
+		System.Fighting.get_card_continuous_advantage(card);
 	if card.is_in_hand() and card.has_multiply() and \
 	card.controller.get_matching_type(card.card_type) != CardEnums.CardType.NULL:
 		multi *= pow(2, card.controller.played_same_type_in_a_row + 1);
@@ -603,11 +618,8 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 	else:
 		gameplay_card.hide_multiplier_bar();
 
-func get_card_continuous_advantage(card : CardData) -> int:
-	var advantage : int = 1;
-	if card.has_skibbidy():
-		advantage *= pow(2, card.controller.count_hand_without(card));
-	return advantage;
+func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
+	return System.Fighting.determine_winner(card, enemy);
 
 func return_other_cards_front(card : GameplayCard) -> void:
 	for instance_id in cards:
@@ -1061,23 +1073,45 @@ func collect_nuts(player : Player) -> void:
 
 func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1, zone : CardEnums.Zone = CardEnums.Zone.HAND, spy_type : SpyType = SpyType.FIGHT) -> bool:
 	var spied_card_data : CardData;
-	var spied_card : GameplayCard;
 	spy_zone = zone;
 	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
 	if do_spy_hand and opponent.hand_empty():
 		return false;
 	current_spy_type = spy_type;
+	is_spying_whole_hand = do_spy_hand and player.has_hivemind_for();
+	if is_spying_whole_hand:
+		spy_whole_hand(opponent);
+		return true;
 	spied_card_data = determine_spied_card(opponent) if do_spy_hand else opponent.get_top_deck();
-	spawn_card(spied_card_data);
-	spied_card = get_card(spied_card_data);
+	send_card_to_be_spied(spied_card_data, opponent);
+	cards_to_spy = chain - 1;
+	is_spying = true;
+	return true;
+
+func send_card_to_be_spied(card : CardData, opponent : Player, margin : Vector2 = Vector2.ZERO) -> void:
+	var spied_card : GameplayCard;
+	spawn_card(card);
+	spied_card = get_card(card);
 	match opponent.controller:
 		GameplayEnums.Controller.PLAYER_ONE:
 			if System.Instance.exists(active_card) and spied_card == active_card:
 				_on_card_released(spied_card, true);
-	spied_card.go_visit_point(opponent.visit_point);
-	cards_to_spy = chain - 1;
+	spied_card.go_visit_point(opponent.visit_point + margin);
+
+func spy_whole_hand(opponent : Player) -> void:
+	var card : CardData;
+	var spied_card : GameplayCard;
+	var count : int = opponent.count_hand();
+	var max_margin_value : int = min(WHOLE_HAND_MAX_SPY_MARGIN.x, (count - 1) * WHOLE_HAND_SPY_MARGIN.x) * System.Floats.direction(opponent.visit_point.y);
+	var max_margin : Vector2 = Vector2(max_margin_value, max_margin_value * (WHOLE_HAND_SPY_MARGIN.y / WHOLE_HAND_SPY_MARGIN.x));
+	var margin : Vector2 = -max_margin / 2;
+	var margin_increment : Vector2 = max_margin / (count - 1);
+	for c in opponent.cards_in_hand:
+		card = c;
+		send_card_to_be_spied(card, opponent, margin);
+		margin += margin_increment;
+	cards_to_spy = 0;
 	is_spying = true;
-	return true;
 
 func determine_spied_card(opponent : Player) -> CardData:
 	var cards_with_secret : Array = opponent.cards_in_hand.filter(func(card : CardData):
@@ -1401,30 +1435,7 @@ func get_lose_points(card : CardData, enemy : CardData) -> int:
 	return -(points + points_to_lose);
 
 func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false, add_advantages : bool = true) -> int:
-	var points : int = 1;
-	if card and card.has_spy() and enemy and enemy.has_secrets():
-		points = 3;
-	if card and card.has_champion():
-		points *= 2;
-	if enemy and enemy.has_champion():
-		points *= 2;
-	if add_advantages:
-		points *= get_card_continuous_advantage(card);
-		if card.stopped_time_advantage > 1:
-			points *= card.stopped_time_advantage;
-		if abs(card.multiply_advantage) > 1:
-			points *= abs(card.multiply_advantage);
-		if enemy and enemy.multiply_advantage < 0:
-			points *= abs(enemy.multiply_advantage)
-	if !did_win:
-		return points;
-	if card.has_rare_stamp():
-		points *= 2;
-	if card.is_holographic:
-		points *= 2;
-	if card.is_god() and points < 10:
-		points = 10;
-	return points;
+	return System.Fighting.calculate_base_points(card, enemy, did_win, add_advantages);
 
 func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
 	var points : int;
@@ -1773,7 +1784,7 @@ func stopped_time_results() -> void:
 	var enemy : CardData = get_opponent(card).get_field_card() if card else null;
 	await System.wait_range(MIN_STOPPED_TIME_WAIT, MAX_STOPPED_TIME_WAIT);
 	if time_stopping_player.hand_empty() or time_stopping_player.cards_played_this_turn >= System.Rules.MAX_TIME_STOP_CARDS_PLAYED or (card and !card.is_buried and (card.is_gun() or card.is_god())):
-		if card and (card.is_gun() and !card.is_buried) and (!enemy or check_type_results(card, enemy) != GameplayEnums.Controller.PLAYER_TWO):
+		if card and (card.is_gun() and !card.is_buried) and (!enemy or System.Fighting.check_type_results(card, enemy) != GameplayEnums.Controller.PLAYER_TWO):
 			await stopped_time_shooting(card, get_opponent(card).get_field_card());
 		time_stop_effect_out();
 		return;
@@ -2059,217 +2070,6 @@ func opponent_trolling_effect() -> void:
 	is_trolling = true;
 	get_troll_wait();
 	troll_timer.start();
-
-func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
-	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
-	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
-	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
-	var you_have_negative_multiplier : bool = card and card.multiply_advantage < 0;
-	var opponent_has_negative_multiplier : bool = enemy and enemy.multiply_advantage < 0;
-	if you_have_negative_multiplier and !opponent_has_negative_multiplier:
-		return opponent_wins;
-	if opponent_has_negative_multiplier and !you_have_negative_multiplier:
-		return you_win;
-	if you_have_negative_multiplier and opponent_has_negative_multiplier:
-		return tie;
-	if card == null and enemy == null:
-		return tie;
-	if card == null:
-		return opponent_wins;
-	if enemy == null:
-		return you_win;
-	var winner_a : GameplayEnums.Controller = check_winner_from_side(card, enemy);
-	var winner_b : GameplayEnums.Controller = GameplayEnums.flip_player(check_winner_from_side(enemy, card));
-	if winner_a == winner_b:
-		return winner_a;
-	elif winner_a == tie:
-		return winner_b;
-	elif winner_b == tie:
-		return winner_a;
-	return tie;
-
-func check_winner_from_side(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
-	var card_type : CardEnums.CardType = card.card_type;
-	var enemy_type : CardEnums.CardType = enemy.card_type;
-	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
-	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
-	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
-	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
-	var pre_type_result : GameplayEnums.Controller = check_pre_types_keywords(card, enemy);
-	if pre_type_result != not_determined:
-		return pre_type_result;
-	var type_result : GameplayEnums.Controller = check_type_results(card, enemy);
-	if type_result != not_determined:
-		return type_result;
-	var post_type_result : GameplayEnums.Controller = check_post_types_keywords(card, enemy);
-	if post_type_result != not_determined:
-		return post_type_result;
-	return tie;
-
-func check_pre_types_keywords(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
-	var card_type : CardEnums.CardType = card.card_type;
-	var enemy_type : CardEnums.CardType = enemy.card_type;
-	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
-	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
-	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
-	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
-	if card.has_secrets() and enemy.has_spy():
-		return opponent_wins;
-	elif enemy.has_secrets() and card.has_spy():
-		return you_win;
-	if card.has_pair() and enemy.has_pair_breaker():
-		return opponent_wins;
-	elif enemy.has_pair() and card.has_pair_breaker():
-		return you_win;
-	if card.is_nut_tied() and enemy.has_november():
-		return opponent_wins;
-	if enemy.is_nut_tied() and card.has_november():
-		return you_win;
-	if card.is_aquatic() and enemy.has_electrocute():
-		return opponent_wins;
-	elif enemy.is_aquatic() and card.has_electrocute():
-		return you_win;
-	if card.is_buried and !enemy.is_buried and enemy_type != CardEnums.CardType.MIMIC:
-		return opponent_wins;
-	elif enemy.is_buried and !card.is_buried and card_type != CardEnums.CardType.MIMIC:
-		return you_win;
-	if card.is_vanilla() and enemy.has_cooties():
-		return opponent_wins;
-	elif enemy.is_vanilla() and card.has_cooties():
-		return you_win;
-	if card.has_undead() and enemy.has_divine():
-		return opponent_wins;
-	elif enemy.has_undead() and card.has_divine():
-		return you_win;
-	return not_determined;
-
-func check_type_results(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
-	var card_type : CardEnums.CardType = card.card_type;
-	var enemy_type : CardEnums.CardType = enemy.card_type;
-	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
-	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
-	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
-	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
-	match enemy_type:
-		CardEnums.CardType.GUN:
-			if card.has_rust():
-				return you_win;
-			if ![CardEnums.CardType.GUN, CardEnums.CardType.GOD].has(card_type):
-				return opponent_wins;
-		CardEnums.CardType.MIMIC:
-			if card_type != CardEnums.CardType.MIMIC:
-				return you_win;
-		CardEnums.CardType.GOD:
-			if card_type != CardEnums.CardType.GOD:
-				return opponent_wins;
-		CardEnums.CardType.ROCK:
-			if card.has_mushy():
-				return opponent_wins;
-	match card_type:
-		CardEnums.CardType.ROCK:
-			if enemy.has_mushy():
-				return you_win;
-			match enemy_type:
-				CardEnums.CardType.SCISSORS:
-					return you_win;
-				CardEnums.CardType.PAPER:
-					return opponent_wins;
-				CardEnums.CardType.BEDROCK:
-					return opponent_wins;
-				CardEnums.CardType.ZIPPER:
-					return opponent_wins;
-		CardEnums.CardType.PAPER:
-			match enemy_type:
-				CardEnums.CardType.ROCK:
-					return you_win;
-				CardEnums.CardType.SCISSORS:
-					return opponent_wins;
-				CardEnums.CardType.ZIPPER:
-					return opponent_wins;
-				CardEnums.CardType.ROCKSTAR:
-					return opponent_wins;
-		CardEnums.CardType.SCISSORS:
-			match enemy_type:
-				CardEnums.CardType.PAPER:
-					return you_win;
-				CardEnums.CardType.ROCK:
-					return opponent_wins;
-				CardEnums.CardType.BEDROCK:
-					return opponent_wins;
-				CardEnums.CardType.ROCKSTAR:
-					return opponent_wins;
-		CardEnums.CardType.GUN:
-			if enemy.has_rust():
-				return opponent_wins;
-			if ![CardEnums.CardType.GUN, CardEnums.CardType.GOD].has(enemy_type):
-				return you_win;
-		CardEnums.CardType.MIMIC:
-			if enemy_type != CardEnums.CardType.MIMIC:
-				return opponent_wins;
-		CardEnums.CardType.GOD:
-			if enemy_type != CardEnums.CardType.GOD:
-				return you_win;
-		CardEnums.CardType.BEDROCK:
-			match enemy_type:
-				CardEnums.CardType.ROCK:
-					return you_win;
-				CardEnums.CardType.SCISSORS:
-					return you_win;
-				CardEnums.CardType.ROCKSTAR:
-					return you_win;
-				CardEnums.CardType.ZIPPER:
-					return opponent_wins;
-		CardEnums.CardType.ZIPPER:
-			match enemy_type:
-				CardEnums.CardType.ROCK:
-					return you_win;
-				CardEnums.CardType.PAPER:
-					return you_win;
-				CardEnums.CardType.BEDROCK:
-					return you_win;
-				CardEnums.CardType.ROCKSTAR:
-					return opponent_wins;
-		CardEnums.CardType.ROCKSTAR:
-			match enemy_type:
-				CardEnums.CardType.PAPER:
-					return you_win;
-				CardEnums.CardType.SCISSORS:
-					return you_win;
-				CardEnums.CardType.ZIPPER:
-					return you_win;
-				CardEnums.CardType.BEDROCK:
-					return opponent_wins;
-	return not_determined;
-
-func check_post_types_keywords(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
-	var card_type : CardEnums.CardType = card.card_type;
-	var enemy_type : CardEnums.CardType = enemy.card_type;
-	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
-	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
-	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
-	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
-	var card_advantage : int = card.multiply_advantage * get_card_continuous_advantage(card);
-	var enemy_advantage : int = enemy.multiply_advantage * get_card_continuous_advantage(enemy);
-	if card.stopped_time_advantage > 1:
-		return you_win;
-	elif enemy.stopped_time_advantage > 1:
-		return opponent_wins;
-	if card_advantage > 100000 and enemy_advantage > 100000:
-		if System.Random.chance(2):
-			card_advantage -= 1;
-		else:
-			enemy_advantage -= 1;
-	if card_advantage > enemy_advantage:
-		return you_win;
-	elif enemy_advantage > card_advantage:
-		return opponent_wins;
-	if card.has_pair():
-		if !enemy.has_pair():
-			return you_win;
-	elif enemy.has_pair():
-		if !card.has_pair():
-			return opponent_wins;
-	return not_determined;
 
 func end_round() -> void:
 	if clear_field():

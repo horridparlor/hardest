@@ -44,6 +44,8 @@ const DEATH_PANEL_SIZE : Vector2 = Vector2(200, 100);
 const DYING_SPEED : float = 1.2;
 const UNDYING_SPEED : float = 4.8;
 const HAND_FITS_CARDS : float = 4.72;
+const WHOLE_HAND_SPY_MARGIN : Vector2 = Vector2(200, 20);
+const WHOLE_HAND_MAX_SPY_MARGIN : Vector2 = 3 * WHOLE_HAND_SPY_MARGIN;
 
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const PRE_RESULTS_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
@@ -210,6 +212,7 @@ var current_animation_type : AnimationType = AnimationType.NULL;
 var has_ocean_wet_self : bool;
 var cards_to_dissolve : Dictionary;
 var current_spy_type : SpyType;
+var is_spying_whole_hand : bool;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

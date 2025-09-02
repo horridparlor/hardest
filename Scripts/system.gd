@@ -3,6 +3,7 @@ extends Node
 const Data : GDScript = preload("res://Scripts/System/data.gd");
 const Dictionaries : GDScript = preload("res://Scripts/System/dictionaries.gd");
 const Display : int = 2;
+const Fighting : GDScript = preload("res://Scripts/System/fighting.gd");
 const Floats : GDScript = preload("res://Scripts/System/floats.gd");
 const Instance : GDScript = preload("res://Scripts/System/instance.gd");
 const Json : GDScript = preload("res://Scripts/System/json.gd");

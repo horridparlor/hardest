@@ -72,10 +72,9 @@ func hand_size_reached() -> bool:
 func count_negatives_in_hand() -> int:
 	var count : int;
 	var card : CardData;
-	var has_hivemind_for_negative = has_hivemind_for(CardEnums.Keyword.NEGATIVE);
 	for c in cards_in_hand:
 		card = c
-		if has_hivemind_for_negative or card.has_negative() or card.is_negative_variant():
+		if card.has_negative() or card.is_negative_variant():
 			count += 1;
 	return count;
 
@@ -313,7 +312,7 @@ func has_hivemind_for(keyword : CardEnums.Keyword = CardEnums.Keyword.HIVEMIND) 
 		card = c;
 		if card.has_hivemind():
 			has_hivemind = true;
-		if card.has_keyword(keyword) or (keyword == CardEnums.Keyword.NEGATIVE and card.is_negative_variant()):
+		if card.has_keyword(keyword):
 			has_keyword = true;
 		if has_hivemind and has_keyword:
 			return true;

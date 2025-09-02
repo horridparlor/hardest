@@ -101,11 +101,11 @@ const CARDS_TO_COLLECT : Dictionary = {
 		Rarity.COMMON: [
 			20,
 			114,
+			118,
 		],
 		Rarity.RARE: [
 			115,
 			116,
-			118,
 		]
 	},
 	House.HIGHTECH: {

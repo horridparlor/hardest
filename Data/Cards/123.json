@@ -1,7 +1,9 @@
 {
-	"id": 122,
-	"name": "Rock",
-	"type": "rock",
+	"id": 123,
+	"name": "Eternal Pyre",
+	"type": "mimic",
 	"keywords": [
+		"buried-alive",
+		"pair"
 	]
 }

@@ -743,7 +743,12 @@ func bury_card(card : GameplayCard) -> void:
 	if card_data.has_buried_alive():
 		card_data.controller.rainbow_a_card(card_data);
 		for keyword in keywords:
+			if card_data.has_max_keywords() and card_data.has_buried():
+				card_data.keywords.erase(CardEnums.Keyword.BURIED);
+				card_data.keywords.erase(CardEnums.Keyword.BURIED_ALIVE);
 			card_data.add_keyword(keyword);
+		if card_data.has_tidal() and !card_data.is_god():
+			card_data.set_card_type(CardEnums.CardType.GUN);
 	card.bury();
 	show_multiplier_bar(card);
 
@@ -1039,6 +1044,7 @@ func wait_for_animation(card : CardData, type : AnimationType, animation_data : 
 	animation_wait_timer.wait_time = System.random.randf_range(AnimationMinWaitTime[type], AnimationMaxWaitTime[type]) * System.game_speed_additive_multiplier;
 	animation_wait_timer.start();
 	is_waiting_for_animation_to_finnish = true;
+	results_phase = 0;
 	match type:
 		AnimationType.OCEAN:
 			pass;

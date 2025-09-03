@@ -161,6 +161,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			85,
 			91,
 			119,
+			123,
 		]
 	},
 	House.SCISSOR: {
@@ -377,6 +378,7 @@ const RANDOM_CARDS : Dictionary = {
 		86,
 		91,
 		120,
+		123,
 	],
 	CardEnums.CardType.GOD: [
 		42,
@@ -427,6 +429,7 @@ const FOIL_CARDS : Dictionary = {
 	111: null,
 	112: null,
 	120: null,
+	123: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

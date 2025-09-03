@@ -4,5 +4,6 @@
 	"type": "rock",
 	"keywords": [
 		"hivemind"
-	]
+	],
+	"bullet": 27
 }

@@ -316,6 +316,8 @@ grow_vertical = 2
 
 [node name="SfxPlayer" type="AudioStreamPlayer2D" parent="."]
 
+[node name="ThrowablePlayer" type="AudioStreamPlayer2D" parent="."]
+
 [node name="Points" type="Node2D" parent="."]
 position = Vector2(0, 130)
 

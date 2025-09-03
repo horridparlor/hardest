@@ -95,6 +95,7 @@ const SHADOW_FADE_IN_SPEED : float = 0.6 * Config.GAME_SPEED;
 const SHADOW_FADE_OUT_SPEED : float = 0.8 * Config.GAME_SPEED;
 const CHARACTER_FULL_ART_PATH : String = "res://Assets/Art/CharacterFull/%s.png";
 const OPPONENT_POINT_PATTERN_PATH : String = "res://Assets/Art/OpponentPointPatterns/%s.png";
+const SABOTAGE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/sabotage.wav";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);
 const LEDS_PER_COLUMN : int = 19;

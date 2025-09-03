@@ -51,6 +51,7 @@ extends Gameplay
 @onready var point_streamer : AudioStreamPlayer2D = $Background/PointStreamer;
 @onready var animation_sfx : AudioStreamPlayer2D = $Background/AnimationSfx;
 @onready var sfx_player : AudioStreamPlayer2D = $SfxPlayer;
+@onready var throwable_player : AudioStreamPlayer2D = $ThrowablePlayer;
 @onready var cards_shadow : Node2D = $CardsShadow;
 @onready var points_layer : Node = $Points;
 @onready var keywords_hints : RichTextLabel = $CardsShadow/KeywordsHints;
@@ -805,12 +806,19 @@ func play_gulp_sound() -> void:
 	play_sfx(sound, Config.SFX_VOLUME + Config.GUN_VOLUME);
 
 func play_sfx(sound : Resource, volume : int = Config.SFX_VOLUME, pitch : float = System.game_speed):
+	play_sfx_player(sfx_player, sound, volume, pitch);
+
+func play_throwable_sfx(sound_path : String, volume : int = Config.THROWABLE_SFX_VOLUME, pitch : float = System.game_speed):
+	var sound : Resource = load(sound_path);
+	play_sfx_player(throwable_player, sound, volume, pitch);
+
+func play_sfx_player(player : AudioStreamPlayer2D, sound : Resource, volume : int = Config.SFX_VOLUME, pitch : float = System.game_speed):
 	if Config.MUTE_SFX:
 		return;
-	sfx_player.pitch_scale = pitch;
-	sfx_player.volume_db = volume;
-	sfx_player.stream = sound;
-	sfx_player.play();
+	player.pitch_scale = pitch;
+	player.volume_db = volume;
+	player.stream = sound;
+	player.play();
 
 func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) -> void:
 	cards.erase(card.instance_id);
@@ -883,13 +891,17 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 
 func trigger_sabotage(opponent : Player) -> void:
 	var enemy : CardData;
-	var count : int = opponent.count_hand();
+	var source : Array = opponent.cards_in_hand.filter(func(card : CardData): return !card.has_cursed());
+	var count : int = source.size();
 	var max_margin_value : int = min(WHOLE_HAND_MAX_SPY_MARGIN.x, (count - 1) * WHOLE_HAND_SPY_MARGIN.x) * System.Floats.direction(opponent.visit_point.y);
 	var max_margin : Vector2 = Vector2(max_margin_value, max_margin_value * (WHOLE_HAND_SPY_MARGIN.y / WHOLE_HAND_SPY_MARGIN.x));
 	var margin : Vector2 = -max_margin / 2;
 	var margin_increment : Vector2 = max_margin / (count - 1);
+	if count == 0:
+		return;
+	play_sabotage_sound();
 	if opponent.has_hivemind_for():
-		for c in opponent.cards_in_hand.duplicate():
+		for c in source:
 			enemy = c;
 			opponent.discard_from_hand(enemy);
 			inflict_sabotage_on_card(enemy, opponent, margin);
@@ -897,14 +909,16 @@ func trigger_sabotage(opponent : Player) -> void:
 		return;
 	enemy = opponent.random_discard(true);
 	inflict_sabotage_on_card(enemy, opponent);
-	
+
+func play_sabotage_sound() -> void:
+	play_throwable_sfx(SABOTAGE_SOUND_PATH);
 
 func inflict_sabotage_on_card(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var gameplay_card : GameplayCard;
 	if !System.Instance.exists(card):	
 		return;
 	gameplay_card = spawn_card(card);
-	prints(222, margin, card.card_name, card.instance_id);
+	gameplay_card.sabotage_effect();
 	if player == player_one:
 		show_hand();
 		gameplay_card.go_visit_point(VISIT_POSITION + margin);
@@ -2284,7 +2298,7 @@ func init_time_stop() -> void:
 	for node in get_time_stop_nodes():
 		node.material = shader_material;
 	for instance_id in get_custom_time_stop_nodes():
-		if !System.Instance.exists(cards[instance_id]):
+		if !System.Instance.exists(cards[instance_id]) or !System.Instance.exists(cards[instance_id].card_data):
 			continue;
 		card = cards[instance_id].card_data;
 		custom_material = get_time_stop_material();

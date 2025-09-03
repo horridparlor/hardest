@@ -4,7 +4,7 @@ const VERSION : String = "0.8";
 
 const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 21;
-const MAX_CARD_ID : int = 120; #120
+const MAX_CARD_ID : int = 121;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID - 3, 20);
 
 const AUTO_PLAY : bool = false if DEV_MODE else false;
@@ -25,6 +25,7 @@ const MUTE_SFX : bool = (false if DEV_MODE else false) or MUTE;
 const VOLUME : int = 0 if DEV_MODE else 0;
 const MUSIC_VOLUME : int = 0 if DEV_MODE else 0;
 const SFX_VOLUME : int = -10 if DEV_MODE else -10;
+const THROWABLE_SFX_VOLUME : int = 0 if DEV_MODE else 0;
 const GUN_VOLUME : int = 10;
 const NO_VOLUME : int = -80;
 const MIN_PITCH : float = 0.1;

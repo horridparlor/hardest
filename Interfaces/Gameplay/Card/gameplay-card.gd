@@ -115,6 +115,7 @@ var shine_star : ShineStar;
 var dissolve_value : float;
 var is_dissolving : bool;
 var dissolve_speed : float;
+var throwable_effect : Node2D;
 var particle_effect : Node2D;
 var multiplier_bar : MultiplierBar;
 var is_dying : bool;
@@ -386,6 +387,12 @@ func burn_effect() -> void:
 		particle_effect.queue_free();
 	particle_effect = System.Instance.load_child(System.Paths.BURNING_EFFECT, self);
 	particle_effect.position.y = 200;
+
+func sabotage_effect() -> void:
+	if System.Instance.exists(throwable_effect):
+		throwable_effect.queue_free();
+	throwable_effect = System.Instance.load_child(System.Paths.SABOTAGE_EFFECT, self);
+	throwable_effect.position.y = 200;
 
 func electrocuted_effect() -> void:
 	if System.Instance.exists(particle_effect):

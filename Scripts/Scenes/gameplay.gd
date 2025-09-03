@@ -379,7 +379,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	update_alterations_for_card(card_data);
 	if cards.has(card_data.instance_id):
 		return cards[card_data.instance_id];
-	elif card_data.controller == player_two and System.Instance.exists(opponents_field_card) and card_data.instance_id == opponents_field_card.card_data.instance_id:
+	elif card_data.controller == player_two and System.Instance.exists(opponents_field_card) and System.Instance.exists(card_data) and card_data.instance_id == opponents_field_card.card_data.instance_id:
 		opponents_field_card.is_despawning = false;
 		return opponents_field_card;
 	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, cards_layer if active_card == null else cards_layer2);
@@ -708,8 +708,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 		player.build_hydra(card.card_data);
 	if card.card_data.has_buried():
 		if !is_digital_speed:
-			card.bury();
-			show_multiplier_bar(card);
+			bury_card(card);
 	opponent.trigger_opponent_placed_effects();
 	update_card_alterations();
 	if check_for_devoured(card, player, opponent):
@@ -737,6 +736,16 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 	else:
 		_on_opponent_turns_end();
 	return true;
+
+func bury_card(card : GameplayCard) -> void:
+	var card_data : CardData = card.card_data;
+	var keywords : Array = card_data.keywords.filter(func(keyword: int): return keyword != CardEnums.Keyword.BURIED_ALIVE);
+	if card_data.has_buried_alive():
+		card_data.controller.rainbow_a_card(card_data);
+		for keyword in keywords:
+			card_data.add_keyword(keyword);
+	card.bury();
+	show_multiplier_bar(card);
 
 func _on_your_turn_end() -> void:
 	if has_been_stopping_turn:
@@ -1139,9 +1148,10 @@ func eat_carrot(card : CardData) -> void:
 			break;
 
 func activate_time_stop(card : CardData) -> void:
-	if time_stopping_player != null:
+	if time_stopping_player != null or times_time_stopped_this_round == 10:
 		return;
 	time_stopping_player = card.controller;
+	times_time_stopped_this_round += 1;
 	time_stop_effect_in();
 
 func collect_nuts(player : Player) -> void:
@@ -1562,7 +1572,7 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 		if card.has_copycat() and opponent.get_field_card():
 			card.set_card_type(opponent.get_field_card().card_type);
 		if get_card(card):
-			update_alterations_for_card(card);
+			update_alterations_for_card(card, true);
 	return transformed_any;
 
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
@@ -1598,6 +1608,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 			CardEnums.Keyword.BERSERK:
 				value += 5;
 			CardEnums.Keyword.BURIED:
+				value += 5;
+			CardEnums.Keyword.BURIED_ALIVE:
 				value += 5;
 			CardEnums.Keyword.CELEBRATE:
 				value += 0;
@@ -2162,6 +2174,7 @@ func end_round() -> void:
 		start_next_round();
 
 func start_next_round() -> void:
+	times_time_stopped_this_round = 0;
 	set_going_first(!going_first);
 	start_round();
 
@@ -2319,6 +2332,7 @@ func init_time_stop() -> void:
 		node.material = shader_material2;
 	led_wait *= TIME_STOP_LED_ACCELERATION;
 	is_time_stopped = true;
+	results_phase = 0;
 	if animation_instance_id != 0:
 		animation_wait_timer.stop();
 		after_animation(true);

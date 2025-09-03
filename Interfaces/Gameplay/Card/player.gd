@@ -453,7 +453,7 @@ func get_rainbowed() -> void:
 func rainbow_a_card(card : CardData, card_type : CardEnums.CardType = CardEnums.CardType.NULL):
 	if card_type == CardEnums.CardType.NULL:
 		card_type = card.default_type;
-	card.eat_json(CollectionEnums.get_random_card(card_type), false);
+	card.eat_json(CollectionEnums.get_random_card(card_type, card.card_id), false);
 	card.set_card_type(card_type);
 
 func build_hydra(card : CardData, include_hand_keywords : bool = false) -> void:

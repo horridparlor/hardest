@@ -58,7 +58,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			94,
 			97,
 			101,
-			102
+			102,
+			122,
 		],
 		Rarity.RARE: [
 			14,
@@ -345,6 +346,7 @@ const RANDOM_CARDS : Dictionary = {
 		103,
 		107,
 		119,
+		122,
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -396,8 +398,13 @@ const RANDOM_CARDS : Dictionary = {
 	]
 }
 
-static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.NULL) -> Dictionary:
-	return System.Data.read_card(System.Random.item(RANDOM_CARDS[card_type]));
+static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.NULL, avoid_id : int = 0) -> Dictionary:
+	var card_id : int;
+	while true:
+		card_id = System.Random.item(RANDOM_CARDS[card_type]);
+		if card_id != avoid_id:
+			break;
+	return System.Data.read_card(card_id);
 
 const FOIL_CARDS : Dictionary = {
 	14: null,

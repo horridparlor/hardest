@@ -139,6 +139,8 @@ func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false
 			return false;
 		CardEnums.Keyword.ALPHA_WEREWOLF:
 			upgrade_to_keys = [CardEnums.Keyword.WEREWOLF];
+		CardEnums.Keyword.BURIED_ALIVE:
+			upgrade_to_keys = [CardEnums.Keyword.BURIED];
 		CardEnums.Keyword.DEVOW:
 			upgrade_to_keys = [CardEnums.Keyword.DEVOUR];
 		CardEnums.Keyword.EXTRA_SALTY:
@@ -160,6 +162,8 @@ func has_keyword(keyword : CardEnums.Keyword, may_be_buried : bool = false) -> b
 	if is_buried and !may_be_buried:
 		return false;
 	match keyword:
+		CardEnums.Keyword.BURIED:
+			duplicate_keys += [CardEnums.Keyword.BURIED_ALIVE];
 		CardEnums.Keyword.DEVOUR:
 			duplicate_keys += [CardEnums.Keyword.DEVOW];
 		CardEnums.Keyword.SALTY:
@@ -219,6 +223,9 @@ func has_brotherhood() -> bool:
 
 func has_buried() -> bool:
 	return has_keyword(CardEnums.Keyword.BURIED) or stamp == CardEnums.Stamp.MOLE;
+
+func has_buried_alive() -> bool:
+	return has_keyword(CardEnums.Keyword.BURIED_ALIVE);
 
 func has_carrot_eater() -> bool:
 	return has_keyword(CardEnums.Keyword.CARROT_EATER);

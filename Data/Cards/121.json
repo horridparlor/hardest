@@ -1,7 +1,9 @@
 {
 	"id": 121,
-	"name": "Rock",
-	"type": "rock",
+	"name": "[i]Unidentified[/i] Egg",
+	"type": "bedrock",
 	"keywords": [
+		"hivemind",
+		"sabotage"
 	]
 }

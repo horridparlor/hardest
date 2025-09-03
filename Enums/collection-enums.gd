@@ -106,6 +106,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 		Rarity.RARE: [
 			115,
 			116,
+			121,
 		]
 	},
 	House.HIGHTECH: {
@@ -382,6 +383,7 @@ const RANDOM_CARDS : Dictionary = {
 	CardEnums.CardType.BEDROCK: [
 		96,
 		99,
+		121,
 	],
 	CardEnums.CardType.ZIPPER: [
 		97,

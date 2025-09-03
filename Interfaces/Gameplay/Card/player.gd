@@ -306,7 +306,7 @@ func clear_field(did_win : bool = false) -> void:
 
 func has_hivemind_for(keyword : CardEnums.Keyword = CardEnums.Keyword.HIVEMIND) -> bool:
 	var has_hivemind : bool = field_has_hivemind();
-	var has_keyword : bool;
+	var has_keyword : bool = keyword == CardEnums.Keyword.HIVEMIND;
 	var card : CardData;
 	for c in cards_in_hand:
 		card = c;

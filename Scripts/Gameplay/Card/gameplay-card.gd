@@ -42,7 +42,7 @@ func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL)
 			node.visible = false;
 
 func add_art_base_shader(do_force : bool = false) -> void:
-	if card_art.material and !do_force:
+	if !System.Instance.exists(card_data) or (card_art.material and !do_force):
 		return;
 	if card_data.is_negative_variant():
 		has_negative_visuals = true;

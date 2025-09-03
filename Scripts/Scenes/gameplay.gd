@@ -913,6 +913,12 @@ func trigger_sabotage(opponent : Player) -> void:
 func play_sabotage_sound() -> void:
 	play_throwable_sfx(SABOTAGE_SOUND_PATH);
 
+func play_spy_sound() -> void:
+	play_throwable_sfx(SPY_SOUND_PATH);
+
+func play_digital_sound() -> void:
+	play_throwable_sfx(DIGITAL_SOUND_PATH);
+
 func inflict_sabotage_on_card(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var gameplay_card : GameplayCard;
 	if !System.Instance.exists(card):	
@@ -1149,6 +1155,7 @@ func spy_opponent(card : CardData, player : Player, opponent : Player, chain : i
 	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
 	if do_spy_hand and opponent.hand_empty():
 		return false;
+	play_spy_sound();
 	current_spy_type = spy_type;
 	is_spying_whole_hand = do_spy_hand and opponent.has_hivemind_for();
 	if is_spying_whole_hand:
@@ -1477,6 +1484,7 @@ func play_digitals(player : Player, opponent : Player) -> bool:
 	digital_to_play = cards.back();
 	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(determine_winner(digital_to_play, enemy)):
 		return false;
+	play_digital_sound();
 	replace_played_card(digital_to_play);
 	return true;
 

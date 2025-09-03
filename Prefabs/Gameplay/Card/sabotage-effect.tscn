@@ -8,9 +8,8 @@ script = ExtResource("1_aakre")
 
 [node name="CPUParticles2D" type="CPUParticles2D" parent="."]
 emitting = false
-amount = 12
 one_shot = true
-explosiveness = 0.2
+explosiveness = 0.4
 texture = ExtResource("1_1yodh")
 emission_shape = 1
 emission_sphere_radius = 64.0

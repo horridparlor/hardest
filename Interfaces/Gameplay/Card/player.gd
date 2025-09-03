@@ -493,11 +493,13 @@ func devour_card(eater : CardData, card : CardData) -> Array:
 			CardEnums.Keyword.UNDEAD:
 				if eater.is_gun():
 					continue;
-		if eater.has_keyword(keyword) or [CardEnums.Keyword.BURIED, CardEnums.Keyword.DEVOUR].has(keyword):
+		if eater.has_keyword(keyword) or [CardEnums.Keyword.BURIED, CardEnums.Keyword.BURIED_ALIVE, CardEnums.Keyword.DEVOUR].has(keyword):
 			continue;
 		if eater.keywords.size() == System.Rules.MAX_KEYWORDS:
 			if eater.keywords.has(CardEnums.Keyword.BURIED):
 				eater.keywords.erase(CardEnums.Keyword.BURIED);
+			if eater.keywords.has(CardEnums.Keyword.BURIED_ALIVE):
+				eater.keywords.erase(CardEnums.Keyword.BURIED_ALIVE);
 			elif eater.keywords.has(CardEnums.Keyword.DEVOUR):
 				eater.keywords.erase(CardEnums.Keyword.DEVOUR);
 			else:

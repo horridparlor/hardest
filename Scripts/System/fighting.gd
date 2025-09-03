@@ -231,8 +231,10 @@ static func calculate_base_points(card : CardData, enemy : CardData, did_win : b
 			points *= card.stopped_time_advantage;
 		if card and abs(card.multiply_advantage) > 1:
 			points *= abs(card.multiply_advantage);
-		if enemy and enemy.multiply_advantage < 0:
+		if enemy and enemy.multiply_advantage != 0:
 			points *= abs(enemy.multiply_advantage)
+		if enemy:
+			points *= abs(get_card_continuous_advantage(enemy));
 	if !did_win:
 		return points;
 	if card and card.has_rare_stamp():

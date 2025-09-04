@@ -60,6 +60,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			101,
 			102,
 			122,
+			124,
 		],
 		Rarity.RARE: [
 			14,
@@ -317,6 +318,7 @@ const RANDOM_CARDS : Dictionary = {
 		108,
 		113,
 		114,
+		124,
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -434,7 +436,7 @@ const FOIL_CARDS : Dictionary = {
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {
 	78: null,
-	111: null,
+	121: null,
 }
 
 const TRIPLE_SHOOTING_CARDS : Dictionary = {

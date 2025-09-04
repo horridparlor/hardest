@@ -1,7 +1,9 @@
 {
-	"id": 122,
-	"name": "Rock",
-	"type": "rock",
+	"id": 124,
+	"name": "Papyrus",
+	"type": "paper",
 	"keywords": [
+		"buried-alive",
+		"cursed"
 	]
 }

@@ -183,7 +183,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 2,
 			"song": 1,
-			"background": 11
+			"backgrounds": [
+				11
+			]
 		},
 		GameplayEnums.Character.PETE: {
 			"cards": [
@@ -205,7 +207,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 6,
 			"song": 14,
-			"background": 2
+			"backgrounds": [
+				2
+			]
 		},
 		GameplayEnums.Character.LOTTE: {
 			"cards": [
@@ -231,7 +235,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 3,
 			"song": 2,
-			"background": 15
+			"backgrounds": [
+				15
+			]
 		},
 		GameplayEnums.Character.MARK: {
 			"cards": [
@@ -254,7 +260,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 4,
 			"song": 7,
-			"background": 14
+			"backgrounds": [
+				14
+			]
 		},
 		GameplayEnums.Character.KORVEK: {
 			"cards": [
@@ -274,7 +282,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 4,
 			"song": 5,
-			"background": 5
+			"backgrounds": [
+				5
+			]
 		},
 		GameplayEnums.Character.RAISEN: {
 			"cards": [
@@ -295,7 +305,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 5,
 			"song": 6,
-			"background": 6
+			"backgrounds": [
+				6
+			]
 		},
 		GameplayEnums.Character.SIMOONI: {
 			"cards": [
@@ -316,7 +328,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 5,
 			"song": 10,
-			"background": 18
+			"backgrounds": [
+				18
+			]
 		},
 		GameplayEnums.Character.JUKULIUS: {
 			"cards": [
@@ -348,7 +362,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 1,
 			"song": 1,
-			"background": 9
+			"backgrounds": [
+				9
+			]
 		},
 		GameplayEnums.Character.MERITUULI: {
 			"cards": [
@@ -377,7 +393,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 4,
 			"song": 3,
-			"background": 4
+			"backgrounds": [
+				4
+			]
 		},
 		GameplayEnums.Character.AGENT: {
 			"cards": [
@@ -405,7 +423,10 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 2,
 			"song": 15,
-			"background": 10
+			"backgrounds": [
+				10,
+				22
+			]
 		},
 		GameplayEnums.Character.SWARMYARD: {
 			"cards": [
@@ -431,7 +452,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 3,
 			"song": 21,
-			"background": 20
+			"backgrounds": [
+				20
+			]
 		},
 		GameplayEnums.Character.SISTERS: {
 			"cards": [
@@ -449,7 +472,9 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 4,
 			"song": 1,
-			"background": 22
+			"backgrounds": [
+				23
+			]
 		}
 	};
 
@@ -460,7 +485,9 @@ func get_rare_opponents() -> Dictionary:
 			"card_pool": [],
 			"rare_chance": 0,
 			"song": 20,
-			"background": 1
+			"backgrounds": [
+				1
+			]
 		}
 	};
 

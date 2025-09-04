@@ -853,6 +853,8 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 				celebrate(player);
 			CardEnums.Keyword.CLONING:
 				trigger_cloning(card, player);
+			CardEnums.Keyword.COIN_FLIP:
+				trigger_coin_flip(card);
 			CardEnums.Keyword.CONTAGIOUS:
 				trigger_contagious(card, player);
 			CardEnums.Keyword.HORSE_GEAR:
@@ -903,6 +905,53 @@ func trigger_play_effects(card : CardData, player : Player, opponent : Player, o
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent);
 
+func trigger_coin_flip(card : CardData) -> void:
+	var wins : int;
+	var base_odds : int = 2;
+	var odds : int;
+	var super_luck : int;
+	var boosted_luck : int;
+	var permanent_luck : int;
+	if card.is_foil:
+		super_luck += 1;
+		boosted_luck += 2;
+	if card.is_holographic:
+		super_luck += 2;
+		boosted_luck += 1;
+	if card.is_foil and card.is_holographic:
+		permanent_luck += 1;
+		if card.has_rare_stamp():
+			permanent_luck += 1;
+			if card.is_negative_variant():
+				permanent_luck += 1;
+		elif card.is_negative_variant():
+			boosted_luck += 1;
+	if card.is_negative_variant():
+		boosted_luck += 2;
+	if card.has_rare_stamp():
+		super_luck += 1;
+	while true:
+		odds = base_odds + permanent_luck;
+		if super_luck > 0:
+			odds += 2;
+			super_luck -= 1;
+		elif boosted_luck > 0:
+			odds += 1;
+			boosted_luck -= 1;
+		if System.Random.chance(odds):
+			break;
+		wins += 1;
+	card.multiply_advantage *= pow(2, wins);
+	show_coin_flip_effect(wins + 1);
+
+func show_coin_flip_effect(coins_to_spawn : int) -> void:
+	for i in range(coins_to_spawn):
+		spawn_a_coin();
+	play_coin_flip_sound();
+
+func spawn_a_coin() -> void:
+	var coin : Coin = System.Instance.load_child(System.Paths.COIN, above_cards_layer);
+
 func trigger_sabotage(opponent : Player) -> void:
 	var enemy : CardData;
 	var source : Array = opponent.cards_in_hand.filter(func(card : CardData): return !card.has_cursed());
@@ -926,6 +975,9 @@ func trigger_sabotage(opponent : Player) -> void:
 
 func play_sabotage_sound() -> void:
 	play_throwable_sfx(SABOTAGE_SOUND_PATH);
+
+func play_coin_flip_sound() -> void:
+	play_throwable_sfx(COIN_FLIP_SOUND_PATH);
 
 func play_spy_sound() -> void:
 	play_throwable_sfx(SPY_SOUND_PATH);
@@ -1623,6 +1675,8 @@ func get_card_value(card : CardData, player : Player, opponent : Player, directi
 				value += 1;
 			CardEnums.Keyword.CLONING:
 				value += player.cards_in_hand.size();
+			CardEnums.Keyword.COIN_FLIP:
+				value += 3;
 			CardEnums.Keyword.CONTAGIOUS:
 				value += 5 if card.is_gun() else 0;
 			CardEnums.Keyword.COOTIES:

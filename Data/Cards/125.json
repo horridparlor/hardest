@@ -1,7 +1,9 @@
 {
-	"id": 122,
-	"name": "Rock",
+	"id": 125,
+	"name": "Hoard",
 	"type": "rock",
 	"keywords": [
+		"buried-alive",
+		"coin-flip"
 	]
 }

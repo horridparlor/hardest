@@ -109,6 +109,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			115,
 			116,
 			121,
+			125,
 		]
 	},
 	House.HIGHTECH: {
@@ -184,6 +185,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			97,
 			98,
 			103,
+			122,
 		],
 		Rarity.RARE: [
 			14,
@@ -198,6 +200,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			105,
 			107,
 			111,
+			115,
+			119,
 		]
 	},
 	House.GOD: [
@@ -288,6 +292,7 @@ const RANDOM_CARDS : Dictionary = {
 		112,
 		117,
 		118,
+		125,
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -432,6 +437,7 @@ const FOIL_CARDS : Dictionary = {
 	112: null,
 	120: null,
 	123: null,
+	125: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

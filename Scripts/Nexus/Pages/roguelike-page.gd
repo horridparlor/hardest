@@ -61,7 +61,7 @@ func get_level_data() -> LevelData:
 	return LevelData.from_json({
 		"opponent": GameplayEnums.TranslateCharacterBack[character_id],
 		"song": opponent.song,
-		"background": opponent.background,
+		"background": System.Random.item(opponent.backgrounds),
 		"deck": 1000 + (0 if character_id == GameplayEnums.Character.PEITSE else character_id),
 		"deck2": 1000,
 		"isRoguelike": true,

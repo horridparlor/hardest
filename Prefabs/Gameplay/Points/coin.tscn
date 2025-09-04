@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddky5qpkcjqtb"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Points/coin.gd" id="1_pqi1q"]
+[ext_resource type="Texture2D" uid="uid://wy0afnauo0cu" path="res://Assets/Art/CardEffects/Throwables/gold-coin.png" id="2_60f5v"]
+
+[node name="Coin" type="Node2D"]
+script = ExtResource("1_pqi1q")
+
+[node name="CoinSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_60f5v")

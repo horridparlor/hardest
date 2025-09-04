@@ -242,6 +242,12 @@ func has_champion() -> bool:
 func has_cloning() -> bool:
 	return has_keyword(CardEnums.Keyword.CLONING);
 
+func has_coin_flip() -> bool:
+	return has_keyword(CardEnums.Keyword.COIN_FLIP);
+
+func has_contagious() -> bool:
+	return has_keyword(CardEnums.Keyword.CONTAGIOUS);
+
 func has_cooties() -> bool:
 	return has_keyword(CardEnums.Keyword.COOTIES);
 

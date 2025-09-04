@@ -134,6 +134,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			88,
 			90,
 			99,
+			126,
 		]
 	},
 	House.KAWAII: {
@@ -399,6 +400,7 @@ const RANDOM_CARDS : Dictionary = {
 	CardEnums.CardType.ZIPPER: [
 		97,
 		100,
+		126,
 	],
 	CardEnums.CardType.ROCKSTAR: [
 		98,

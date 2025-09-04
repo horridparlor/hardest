@@ -740,6 +740,8 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 func bury_card(card : GameplayCard) -> void:
 	var card_data : CardData = card.card_data;
 	var keywords : Array = card_data.keywords.filter(func(keyword: int): return keyword != CardEnums.Keyword.BURIED_ALIVE);
+	var hydra_keywords : Array = CardEnums.get_hydra_keywords();
+	var if_hydra_keywords : Array;
 	if card_data.has_buried_alive():
 		card_data.controller.rainbow_a_card(card_data);
 		for keyword in keywords:
@@ -747,6 +749,10 @@ func bury_card(card : GameplayCard) -> void:
 				card_data.keywords.erase(CardEnums.Keyword.BURIED);
 				card_data.keywords.erase(CardEnums.Keyword.BURIED_ALIVE);
 			card_data.add_keyword(keyword);
+			if keyword in hydra_keywords:
+				if_hydra_keywords.append(keyword);
+		if_hydra_keywords.reverse();
+		card_data.if_hydra_keywords = if_hydra_keywords;
 		if card_data.has_tidal() and !card_data.is_god():
 			card_data.set_card_type(CardEnums.CardType.GUN);
 	card.bury();
@@ -930,6 +936,8 @@ func trigger_coin_flip(card : CardData) -> void:
 		boosted_luck += 2;
 	if card.has_rare_stamp():
 		super_luck += 1;
+	if card.has_max_keywords():
+		boosted_luck += 1;
 	while true:
 		odds = base_odds + permanent_luck;
 		if super_luck > 0:
@@ -942,15 +950,48 @@ func trigger_coin_flip(card : CardData) -> void:
 			break;
 		wins += 1;
 	card.multiply_advantage *= pow(2, wins);
-	show_coin_flip_effect(wins + 1);
+	if wins > 0:
+		show_coin_flip_effect(wins, card.controller.controller);
+	else:
+		spawn_a_coin(false, card.controller.controller);
+		play_coin_lose_sound();
 
-func show_coin_flip_effect(coins_to_spawn : int) -> void:
+func show_coin_flip_effect(coins_to_spawn : int, controller : GameplayEnums.Controller) -> void:
+	var scales : Array;
+	var max_scale : float = 1.0;
+	if coins_to_spawn >= 100:
+		max_scale = 1.6;
+	elif coins_to_spawn >= 50:
+		max_scale = 1.5;
+	elif coins_to_spawn >= 20:
+		max_scale = 1.4;
+	elif coins_to_spawn >= 10:
+		max_scale = 1.3;
+	elif coins_to_spawn >= 5:
+		max_scale = 1.2;
+	elif coins_to_spawn > 1:
+		max_scale = 1.1;
 	for i in range(coins_to_spawn):
-		spawn_a_coin();
+		scales.append(Coin.get_base_scale(max_scale));
+	scales.sort();
+	scales.reverse();
+	for scale in scales:
+		spawn_a_coin(true, controller, scale);
 	play_coin_flip_sound();
 
-func spawn_a_coin() -> void:
+func spawn_a_coin(did_win : bool = true, controller : GameplayEnums.Controller = GameplayEnums.Controller.NULL, overwrite_scale : float = -1) -> void:
 	var coin : Coin = System.Instance.load_child(System.Paths.COIN, above_cards_layer);
+	match controller:
+		GameplayEnums.Controller.PLAYER_ONE:
+			coin.position.x = -abs(coin.position.x);
+		GameplayEnums.Controller.PLAYER_TWO:
+			coin.position.x = abs(coin.position.x);
+	if overwrite_scale > 0:
+		coin.base_sprite_scale = overwrite_scale;
+	if did_win:
+		coin.init();
+	else:
+		coin.lose_init();
 
 func trigger_sabotage(opponent : Player) -> void:
 	var enemy : CardData;
@@ -978,6 +1019,9 @@ func play_sabotage_sound() -> void:
 
 func play_coin_flip_sound() -> void:
 	play_throwable_sfx(COIN_FLIP_SOUND_PATH);
+
+func play_coin_lose_sound() -> void:
+	play_throwable_sfx(COIN_LOSE_SOUND_PATH);
 
 func play_spy_sound() -> void:
 	play_throwable_sfx(SPY_SOUND_PATH);
@@ -1622,8 +1666,8 @@ func transform_mimics(your_cards : Array, player : Player, opponent : Player) ->
 		card = c;
 		if card.is_buried:
 			card.is_buried = false;
-			if card.has_hydra():
-				player.build_hydra(card);
+			if card.has_hydra() or card.has_auto_hydra():
+				player.build_hydra(card, false, false);
 			trigger_play_effects(card, player, opponent);
 			show_multiplier_bar(get_card(card));
 			transformed_any = true;
@@ -2254,6 +2298,8 @@ func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bo
 	var triggered_by_hivemind : bool;
 	var pick_up_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.PICK_UP);
 	for c in player.cards_on_field:
+		if !System.Instance.exists(c):
+			continue;
 		card = c;
 		gameplay_card = get_card(card);
 		if gameplay_card:

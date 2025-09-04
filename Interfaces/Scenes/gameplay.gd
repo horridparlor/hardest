@@ -97,6 +97,7 @@ const CHARACTER_FULL_ART_PATH : String = "res://Assets/Art/CharacterFull/%s.png"
 const OPPONENT_POINT_PATTERN_PATH : String = "res://Assets/Art/OpponentPointPatterns/%s.png";
 const SABOTAGE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/sabotage.wav";
 const COIN_FLIP_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/coin-flip.wav";
+const COIN_LOSE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/coin-lose.wav";
 const SPY_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/spy-sound.wav";
 const DIGITAL_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/digital-sound.wav";
 

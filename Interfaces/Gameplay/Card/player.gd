@@ -456,16 +456,21 @@ func rainbow_a_card(card : CardData, card_type : CardEnums.CardType = CardEnums.
 	card.eat_json(CollectionEnums.get_random_card(card_type, card.card_id), false);
 	card.set_card_type(card_type);
 
-func build_hydra(card : CardData, include_hand_keywords : bool = false) -> void:
+func build_hydra(card : CardData, include_hand_keywords : bool = false, allow_buried : bool = true) -> void:
 	var keywords : Array = CardEnums.get_hydra_keywords();
 	if include_hand_keywords:
 		keywords += CardEnums.get_hand_hydra_keywords();
 	if System.Random.chance(System.Rules.HYDRA_RARE_KEYWORDS_CHANCE):
 		keywords += CardEnums.get_rare_hydra_keywords();
+	if allow_buried:
+		keywords += CardEnums.get_face_down_hydra_keywords();
 	var keyword : CardEnums.Keyword;
 	card.keywords = [] if Config.DEBUG_KEYWORD == CardEnums.Keyword.NULL else [Config.DEBUG_KEYWORD];
 	while card.keywords.size() < System.Rules.HYDRA_KEYWORDS:
-		keyword = System.Random.item(keywords);
+		if card.if_hydra_keywords.is_empty():
+			keyword = System.Random.item(keywords);
+		else:
+			keyword = card.if_hydra_keywords.pop_back();
 		keywords.erase(keyword);
 		card.add_keyword(keyword);
 	if card.has_tidal() and !card.is_god():

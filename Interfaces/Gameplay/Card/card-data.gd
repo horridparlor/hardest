@@ -42,6 +42,7 @@ var multiply_advantage : int = 1;
 var nuts : int;
 var nuts_stolen : int;
 var is_burned : bool;
+var if_hydra_keywords : Array;
 
 func _init() -> void:
 	update_instance_id();

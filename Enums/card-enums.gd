@@ -241,7 +241,6 @@ func get_hand_hydra_keywords() -> Array:
 func get_hydra_keywords() -> Array:
 	return [
 		Keyword.BERSERK,
-		Keyword.BURIED,
 		Keyword.CARROT_EATER,
 		Keyword.CELEBRATE,
 		Keyword.CHAMELEON,
@@ -250,7 +249,6 @@ func get_hydra_keywords() -> Array:
 		Keyword.COIN_FLIP,
 		Keyword.COPYCAT,
 		Keyword.CURSED,
-		Keyword.DEVOUR,
 		Keyword.DIRT,
 		Keyword.DIVINE,
 		Keyword.EMP,
@@ -278,6 +276,12 @@ func get_hydra_keywords() -> Array:
 		Keyword.UNDEAD,
 		Keyword.VAMPIRE,
 		Keyword.WRAPPED
+	];
+
+func get_face_down_hydra_keywords() -> Array:
+	return [
+		Keyword.BURIED,
+		Keyword.DEVOUR,
 	];
 
 func get_rare_hydra_keywords() -> Array:
@@ -519,7 +523,7 @@ var KeywordHints : Dictionary = {
 	Keyword.CHAMELEON : "Whenever opponent gets a card, changes color.",
 	Keyword.CHAMPION : "Games with this card give double points.",
 	Keyword.CLONING : "Create a permanent copy of a card in hand.",
-	Keyword.COIN_FLIP : "50% chance to get a double multiplier and repeat.",
+	Keyword.COIN_FLIP : "50% chance to get double multiplier and repeat.",
 	Keyword.CONTAGIOUS : "A card in hand permanently becomes a SAME_TYPE.",
 	Keyword.COOTIES : "Defeats any card without an effect.",
 	Keyword.COPYCAT : "Copies opponent's card type.",

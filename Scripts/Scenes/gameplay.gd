@@ -90,7 +90,6 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 		dashboard_button
 	]:
 		button.rotation_degrees = System.random.randf_range(-DIE_BUTTON_ROTATION, DIE_BUTTON_ROTATION) * (1 if button == die_button else 0.3);
-	dashboard_button.visible = false;
 	
 	if !do_start:
 		_on_points_click_timer_timeout();
@@ -241,6 +240,7 @@ func start_first_round() -> void:
 	start_round();
 	update_point_visuals();
 	relics_layer.activate_animations();
+	is_active = true;
 	
 func start_round() -> void:
 	if has_game_ended:
@@ -597,7 +597,7 @@ func update_alterations_for_card(card_data : CardData, rerender_shader : bool = 
 		card.update_visuals(card.card_data.controller.gained_keyword);
 
 func _on_card_pressed(card : GameplayCard) -> void:
-	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND or has_game_ended:
+	if System.Instance.exists(active_card) or card.card_data.zone != CardEnums.Zone.HAND or is_clicking_disabled():
 		return;
 	if !started_playing:
 		_on_started_playing();
@@ -630,8 +630,10 @@ func put_other_cards_behind(card : GameplayCard) -> void:
 		cards_layer2.add_child(cards[instance_id]);
 
 func _on_card_released(card : GameplayCard, auto_action : bool = false) -> void:
-	if !System.Instance.exists(active_card) or card != active_card:
+	if !System.Instance.exists(active_card) or card != active_card or is_clicking_disabled():
 		return;
+
+func unfocus_card(card : GameplayCard, auto_action : bool = false) -> void:
 	card.toggle_follow_mouse(false);
 	return_other_cards_front(card);
 	active_card = null;
@@ -2733,16 +2735,19 @@ func get_nonfull_death_progress_style() -> StyleBoxFlat:
 	return get_full_progress_style("#860015", "fcdcd5", true);
 
 func _on_die_pressed() -> void:
-	if has_game_ended or is_preloaded:
+	if is_clicking_disabled():
 		return;
 	is_dying = true;
 	is_undying = false;
 
 func _on_die_released() -> void:
-	if has_game_ended or is_preloaded:
+	if is_clicking_disabled():
 		return;
 	is_undying = true;
 	is_dying = false;
+
+func is_clicking_disabled() -> bool:
+	return !is_active or has_game_ended or is_preloaded;
 
 func _on_wet_wait_timer_timeout() -> void:
 	wet_wait_timer.stop();
@@ -2792,3 +2797,13 @@ func _on_animation_wait_timer_timeout() -> void:
 	animation_wait_timer.stop();
 	after_animation();
 	
+func _on_touch_screen_button_triggered() -> void:
+	if is_clicking_disabled():
+		return;
+	_on_card_released(active_card, true);
+	_on_die_released();
+	is_active = false;
+	open_settings_menu();
+
+func open_settings_menu() -> void:
+	pass;

@@ -223,6 +223,7 @@ var current_spy_type : SpyType;
 var is_spying_whole_hand : bool;
 var is_already_whole_spying : bool;
 var times_time_stopped_this_round : int;
+var is_active : bool;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

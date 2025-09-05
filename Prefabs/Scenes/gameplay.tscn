@@ -376,10 +376,11 @@ offset_bottom = 31.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 48
-text = "Dashboard"
+text = "Settings"
 
 [node name="TouchScreenButton" type="TouchScreenButton" parent="Points/Relics/DashboardButton"]
 shape = SubResource("RectangleShape2D_8w0he")
+script = ExtResource("10_fu2mi")
 
 [node name="DieButton" type="Control" parent="Points/Relics"]
 layout_mode = 3
@@ -685,5 +686,6 @@ script = ExtResource("3_ixfah")
 [connection signal="timeout" from="Timers/StartNextRoundTimer" to="." method="_on_start_next_round_timer_timeout"]
 [connection signal="timeout" from="Timers/WetWaitTimer" to="." method="_on_wet_wait_timer_timeout"]
 [connection signal="timeout" from="Timers/AnimationWaitTimer" to="." method="_on_animation_wait_timer_timeout"]
+[connection signal="triggered" from="Points/Relics/DashboardButton/TouchScreenButton" to="." method="_on_touch_screen_button_triggered"]
 [connection signal="pressed" from="Points/Relics/DieButton/Die" to="." method="_on_die_pressed"]
 [connection signal="released" from="Points/Relics/DieButton/Die" to="." method="_on_die_released"]

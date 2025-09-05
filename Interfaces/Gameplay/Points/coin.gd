@@ -57,9 +57,9 @@ static func get_base_scale(max_scale : float = MAX_BASE_SPRITE_SCALE) -> float:
 
 func lose_init() -> void:
 	full_shutter();
-	position.y = -position.y;
 	base_sprite_scale = System.random.randf_range(MIN_BASE_SPRITE_SCALE, MAX_BASE_SPRITE_SCALE_LOSING);
 	init();
+	position.y = -position.y;
 	fall();
 	fall_speed *= LOSING_COIN_FALL_MULTIPLIER;
 	vertical_flip_speed /= LOSING_COIN_FALL_MULTIPLIER;
@@ -75,6 +75,8 @@ func init() -> void:
 		System.Random.direction() * System.random.randf_range(GOAL_MIN_DISTANCE.x, GOAL_MAX_DISTANCE.x),
 		System.random.randf_range(GOAL_MIN_DISTANCE.y, GOAL_MAX_DISTANCE.y)
 	);
+	if base_sprite_scale > 1:
+		position.y += SIZE.y / 2 * (base_sprite_scale - 1);
 
 func randomize_flip_stats() -> void:
 	vertical_flip_speed = System.random.randf_range(MIN_VERTICAL_FLIP_SPEED, MAX_VERTICAL_FLIP_SPEED);

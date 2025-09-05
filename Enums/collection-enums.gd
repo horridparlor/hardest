@@ -356,6 +356,7 @@ const RANDOM_CARDS : Dictionary = {
 		107,
 		119,
 		122,
+		126,
 	],
 	CardEnums.CardType.GUN: [
 		4,

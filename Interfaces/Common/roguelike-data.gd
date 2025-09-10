@@ -471,7 +471,7 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.KAWAII
 			]),
 			"rare_chance": 4,
-			"song": 1,
+			"song": 22,
 			"backgrounds": [
 				23
 			]

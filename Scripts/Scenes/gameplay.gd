@@ -632,6 +632,7 @@ func put_other_cards_behind(card : GameplayCard) -> void:
 func _on_card_released(card : GameplayCard, auto_action : bool = false) -> void:
 	if !System.Instance.exists(active_card) or card != active_card or is_clicking_disabled():
 		return;
+	unfocus_card(card, auto_action);
 
 func unfocus_card(card : GameplayCard, auto_action : bool = false) -> void:
 	card.toggle_follow_mouse(false);

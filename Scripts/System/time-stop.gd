@@ -145,3 +145,28 @@ static func time_stop_effect_out(gameplay : Gameplay) -> void:
 	gameplay.time_stop_goal_velocity2 = System.random.randf_range(Gameplay.TIME_STOP_OUT_GLITCH_MIN_SPEED, Gameplay.TIME_STOP_OUT_GLITCH_MAX_SPEED);
 	gameplay.emit_signal("stop_music_if_special");
 	gameplay.play_time_stop_sound_reverse();
+
+static func init_time_stop_nodes(gameplay : Gameplay) -> void:
+	gameplay.time_stop_nodes = [
+		gameplay.background_pattern
+	];
+	gameplay.time_stop_nodes2 = [
+		gameplay.your_face,
+		gameplay.opponents_face,
+		gameplay.die_panel,
+		gameplay.die_pattern,
+		gameplay.dashboard_panel,
+		gameplay.dashboard_pattern,
+		gameplay.reset_progress_panel,
+		gameplay.your_point_panel,
+		gameplay.your_point_panel_top_margin,
+		gameplay.your_point_panel_right_margin,
+		gameplay.opponents_point_panel,
+		gameplay.your_point_pattern,
+		gameplay.opponents_point_pattern,
+		gameplay.opponents_point_panel_top_margin,
+		gameplay.opponents_point_panel_left_margin,
+		gameplay.gameplay_title
+	];
+	for led in gameplay.leds_left + gameplay.leds_right:
+		gameplay.time_stop_nodes += led.get_shader_layers()

@@ -64,3 +64,71 @@ static func spawn_victory_poppet(color : Poppet.PoppetColor, gameplay : Gameplay
 	var goal_point : Vector2 = Vector2(System.random.randf_range(-System.Window_.x / 2, System.Window_.x / 2), -y_margin);
 	var poppet : Poppet = spawn_poppet(spawn_point, goal_point, gameplay, color);
 	poppet.speed *= VICTORY_POPPET_SPEED;
+
+static func play_tentacles_shooting_animation(card : CardData, enemy : CardData, gameplay : Gameplay, do_zoom : bool = false, slow_down : bool = false, do_fade : bool = false) -> Array:
+	var tentacles : Array;
+	var gameplay_card : GameplayCard = gameplay.get_card(card);
+	if !gameplay_card:
+		return tentacles;
+	var enemy_position : Vector2 = gameplay.get_shooting_enemy_position(card, enemy);
+	var count : int = min(Gameplay.MAX_TENTACLES, (8 if !slow_down else 2) + (2 if !slow_down else 1) * gameplay.get_count_of_bullets_shot(card));
+	var tentacle : Tentacle;
+	if count <= 0:
+		return tentacles;
+	for i in range(count):
+		tentacle = System.Instance.load_child(System.Paths.TENTACLE, gameplay.cards_layer);
+		if slow_down:
+			tentacle.slow_down();
+		if do_fade:
+			tentacle.do_fade = true;
+		tentacle.init(gameplay_card, gameplay.get_card(enemy), enemy_position, i < 2);
+		tentacles.append(tentacle);
+		if do_zoom and i == 0 and !do_fade:
+			gameplay.zoom_to_node(tentacle);
+	gameplay_card.recoil(-enemy_position);
+	gameplay.move_card_front(gameplay_card);
+	return tentacles;
+
+static func play_bullets_shooting_animation(card : CardData, enemy : CardData, gameplay : Gameplay, do_zoom : bool = false, slow_down : bool = false) -> Array:
+	var bullets : Array;
+	var bullet : Bullet;
+	if !gameplay.get_card(card):
+		return bullets;
+	var enemy_position : Vector2 = get_shooting_enemy_position(card, enemy, gameplay);
+	var count : int = get_count_of_bullets_shot(card);
+	if count <= 0:
+		return bullets;
+	for i in range(count):
+		if i > 0:
+			enemy_position += System.Random.vector(Gameplay.MIN_BULLET_MARGIN, Gameplay.MAX_BULLET_MARGIN);
+		bullet = System.Data.load_bullet(card.bullet_id, gameplay.cards_layer);
+		if slow_down:
+			bullet.slow_down();
+		bullet.init(enemy_position - (gameplay.get_card(card).get_recoil_position() if gameplay.get_card(card) else Vector2.ZERO), i < 2);
+		bullets.append(bullet);
+		if do_zoom and i == 0:
+			gameplay.zoom_to_node(bullet);
+	if gameplay.get_card(card):
+		gameplay.get_card(card).recoil(enemy_position);
+	if card.shoots_wet_bullets():
+		System.AutoEffects.make_card_wet(enemy, gameplay, true, false);
+	return bullets;
+
+static func get_shooting_enemy_position(card : CardData, enemy : CardData, gameplay : Gameplay) -> Vector2:
+	return gameplay.get_card(enemy).get_recoil_position() if (enemy and gameplay.get_card(enemy)) else -gameplay.get_card(card).get_recoil_position();
+
+static func get_count_of_bullets_shot(card : CardData) -> int:
+	var count : int = 1;
+	if card.stopped_time_advantage > 1:
+		return -1;
+	if card.has_champion():
+		count = System.random.randi_range(3, 5);
+		if card.has_rare_stamp():
+			count *= 2;
+	elif card.has_pair():
+		count = 2;
+	if card.has_multiply() and count == 1 and card.multiply_advantage > 1:
+		count = min(8, card.multiply_advantage);
+	if count == 1 and CollectionEnums.TRIPLE_SHOOTING_CARDS.has(card.card_id):
+		count = 3;
+	return count;

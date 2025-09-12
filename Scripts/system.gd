@@ -1,10 +1,12 @@
 extends Node
 
 const AutoEffects : GDScript = preload("res://Scripts/System/auto-effects.gd");
+const CardManager : GDScript = preload("res://Scripts/System/card-manager.gd");
 const Data : GDScript = preload("res://Scripts/System/data.gd");
 const Dictionaries : GDScript = preload("res://Scripts/System/dictionaries.gd");
 const Display : int = 2;
 const EndOfTurn : GDScript = preload("res://Scripts/System/end-of-turn.gd");
+const EnemyAI : GDScript = preload("res://Scripts/System/enemy-ai.gd");
 const EyeCandy : GDScript = preload("res://Scripts/System/eye-candy.gd");
 const Fighting : GDScript = preload("res://Scripts/System/fighting.gd");
 const Floats : GDScript = preload("res://Scripts/System/floats.gd");

@@ -92,7 +92,7 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	trolling_sprite.visible = false;
 	ocean_pattern.visible = false;
 	spawn_leds();
-	init_time_stop_nodes();
+	System.TimeStop.init_time_stop_nodes(self);
 	init_audio();
 	init_title();
 	victory_banner.stop();
@@ -120,31 +120,6 @@ func init_title() -> void:
 
 func init_starting_hints() -> void:
 	starting_hints.text = "[center]Rock-Paper-Scissors!\n[b]%s points[/b] [i]to[/i] win!\n[b][i]​[/i][/b]\nDrag a card forward.\n[b][i]​[/i][/b]\n[i](Hold a card in hand\nto read its effects.)[/i][/center]" % [level_data.point_goal];
-
-func init_time_stop_nodes() -> void:
-	time_stop_nodes = [
-		background_pattern
-	];
-	time_stop_nodes2 = [
-		your_face,
-		opponents_face,
-		die_panel,
-		die_pattern,
-		dashboard_panel,
-		dashboard_pattern,
-		reset_progress_panel,
-		your_point_panel,
-		your_point_panel_top_margin,
-		your_point_panel_right_margin,
-		opponents_point_panel,
-		your_point_pattern,
-		opponents_point_pattern,
-		opponents_point_panel_top_margin,
-		opponents_point_panel_left_margin,
-		gameplay_title
-	];
-	for led in leds_left + leds_right:
-		time_stop_nodes += led.get_shader_layers();
 
 func highlight_face(is_yours : bool = true) -> void:
 	your_face.modulate.a = ACTIVE_CHARACTER_VISIBILITY if is_yours else INACTIVE_CHARACTER_VISIBILITY;
@@ -318,7 +293,7 @@ func show_hand() -> void:
 	var gameplay_card : GameplayCard;
 	for c in player_one.cards_in_hand:
 		card = c;
-		gameplay_card = spawn_card(card);
+		gameplay_card = System.CardManager.spawn_card(card, self);
 		show_multiplier_bar(gameplay_card);
 	order_hand_positions();
 	reorder_hand();
@@ -363,48 +338,6 @@ func reorder_hand(do_shuffle : bool = false) -> void:
 		layer.remove_child(card);
 		layer.add_child(card);
 		position.x += margin;
-
-func spawn_card(card_data : CardData) -> GameplayCard:
-	update_alterations_for_card(card_data);
-	if cards.has(card_data.instance_id):
-		return cards[card_data.instance_id];
-	elif card_data.controller == player_two and System.Instance.exists(opponents_field_card) and System.Instance.exists(card_data) and card_data.instance_id == opponents_field_card.card_data.instance_id:
-		opponents_field_card.is_despawning = false;
-		return opponents_field_card;
-	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, cards_layer if active_card == null else cards_layer2);
-	card.card_data = card_data;
-	card.instance_id = card_data.instance_id;
-	card.init(card_data.controller.gained_keyword);
-	cards[card.card_data.instance_id] = card;
-	card.position = CARD_STARTING_POSITION if card_data.controller == player_one else -CARD_STARTING_POSITION;
-	card.position.x = System.random.randf_range(-System.Window_.x, System.Window_.x) / 2;
-	card.pressed.connect(_on_card_pressed);
-	card.released.connect(_on_card_released);
-	card.despawned.connect(_on_card_despawned);
-	card.visited.connect(_on_card_visited);
-	if is_time_stopped:
-		add_time_stop_shader(card);
-	card.show_multiplier_bar(0);
-	card.hide_multiplier_bar();
-	if card.card_data.has_aura_farming():
-		card.menacing_effect();
-	show_multiplier_bar(card);
-	time_stop_nodes += card.get_shader_layers();
-	custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
-	if is_time_stopped:
-		var shader_material : ShaderMaterial;
-		var custom_shader_material : ShaderMaterial = System.Shaders.time_stop_material();
-		for node in time_stop_nodes:
-			if !node.material:
-				continue;
-			shader_material = node.material;
-			break;
-		System.Shaders.set_card_art_shader_parameters(custom_shader_material, card.card_data.is_negative_variant(), card.card_data.is_holographic, card.card_data.is_foil);
-		for node in card.get_shader_layers():
-			node.material = shader_material;
-		for node in card.get_custom_shader_layers():
-			node.material = custom_shader_material;
-	return card;
 
 func add_time_stop_shader(card : GameplayCard) -> void:
 	var material : ShaderMaterial = System.Shaders.time_stop_material();
@@ -679,7 +612,7 @@ func check_if_played(card : GameplayCard) -> bool:
 	var card_margin : int = GameplayCard.SIZE.y;
 	if !(can_play_card and mouse_position.y + card_margin >= FIELD_START_LINE and mouse_position.y - card_margin <= FIELD_END_LINE) or card.scale > GameplayCard.MIN_SCALE_VECTOR:
 		return false;
-	play_card(card, player_one, player_two);
+	System.CardManager.play_card(card, player_one, player_two, self);
 	return true;
 
 func replace_played_card(card : CardData) -> void:
@@ -690,65 +623,7 @@ func replace_played_card(card : CardData) -> void:
 		card_to_replace.despawn();
 		card_to_replace.move();
 	player.clear_field();
-	play_card(spawn_card(card), player, opponent, true);
-
-func play_card(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> bool:
-	player.play_card(card.card_data, is_digital_speed);
-	if player == player_two:
-		opponents_field_card = card;
-	if card.card_data.has_hydra() and !card.card_data.has_buried():
-		player.build_hydra(card.card_data);
-	if card.card_data.has_buried():
-		if !is_digital_speed:
-			bury_card(card);
-	opponent.trigger_opponent_placed_effects();
-	update_card_alterations();
-	if check_for_devoured(card, player, opponent):
-		reorder_hand();
-		if player == player_one and System.auto_play:
-			auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_additive_multiplier;
-			auto_play_timer.start();
-		return false;
-	elif !card.card_data.is_buried:
-		System.PlayEffects.trigger_play_effects(card.card_data, player, opponent, self);
-	if player == player_two:
-		show_opponents_field();
-		return true;
-	if !started_playing:
-		_on_started_playing();
-	card.goal_position = FIELD_POSITION;
-	card.is_moving = true;
-	reorder_hand();
-	if is_digital_speed:
-		return true;
-	can_play_card = false;
-	highlight_face(false);
-	if going_first:
-		_on_your_turn_end();
-	else:
-		_on_opponent_turns_end();
-	return true;
-
-func bury_card(card : GameplayCard) -> void:
-	var card_data : CardData = card.card_data;
-	var keywords : Array = card_data.keywords.filter(func(keyword: int): return keyword != CardEnums.Keyword.BURIED_ALIVE);
-	var hydra_keywords : Array = CardEnums.get_hydra_keywords();
-	var if_hydra_keywords : Array;
-	if card_data.has_buried_alive():
-		card_data.controller.rainbow_a_card(card_data);
-		for keyword in keywords:
-			if card_data.has_max_keywords() and card_data.has_buried():
-				card_data.keywords.erase(CardEnums.Keyword.BURIED);
-				card_data.keywords.erase(CardEnums.Keyword.BURIED_ALIVE);
-			card_data.add_keyword(keyword);
-			if keyword in hydra_keywords:
-				if_hydra_keywords.append(keyword);
-		if_hydra_keywords.reverse();
-		card_data.if_hydra_keywords = if_hydra_keywords;
-		if card_data.has_tidal() and !card_data.is_god():
-			card_data.set_card_type(CardEnums.CardType.GUN);
-	card.bury();
-	show_multiplier_bar(card);
+	System.CardManager.play_card(System.CardManager.spawn_card(card, self), player, opponent, self, true);
 
 func _on_your_turn_end() -> void:
 	if has_been_stopping_turn:
@@ -758,34 +633,6 @@ func _on_your_turn_end() -> void:
 
 func _on_opponent_turns_end() -> void:
 	go_to_pre_results();
-
-func check_for_devoured(card : GameplayCard, player : Player, opponent : Player, is_digital_speed : bool = false) -> bool:
-	var enemy : CardData = opponent.get_field_card();
-	var eater_was_face_down : bool;
-	var devoured_keywords : Array;
-	var has_devow : bool = enemy and enemy.has_devow(true);
-	if is_digital_speed:
-		return false;
-	if enemy and enemy.has_devour(true) and player.cards_played_this_turn == 1:
-		eater_was_face_down = enemy.is_buried;
-		devoured_keywords = opponent.devour_card(enemy, card.card_data);
-		if has_devow:
-			turn_card_into_another(enemy);
-			card.burn_effect();
-			player.burn_card(card.card_data);
-		player.send_from_field_to_grave(card.card_data);
-		if eater_was_face_down:
-			System.PlayEffects.trigger_play_effects(enemy, opponent, player, self);
-		else:
-			for keyword in devoured_keywords:
-				System.PlayEffects.trigger_play_effects(enemy, opponent, player, self, keyword);
-		update_alterations_for_card(enemy);
-		spawn_tongue(card, get_card(enemy));
-		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * 0.1 \
-			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));
-		
-		return true;
-	return false;
 
 func spawn_tongue(card : GameplayCard, enemy : GameplayCard) -> void:
 	var tongue : Tongue;
@@ -946,7 +793,7 @@ func play_digital_sound() -> void:
 
 func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var spied_card : GameplayCard;
-	spawn_card(card);
+	System.CardManager.spawn_card(card, self);
 	spied_card = get_card(card);
 	match player.controller:
 		GameplayEnums.Controller.PLAYER_ONE:
@@ -964,12 +811,12 @@ func opponents_turn() -> void:
 		return;
 	led_direction = OPPONENTS_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR;
-	player_two.cards_in_hand.sort_custom(best_to_play_for_opponent);
+	player_two.cards_in_hand.sort_custom(System.EnemyAI.best_to_play_for_opponent);
 	#for car in player_two.cards_in_hand:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
 	card = player_two.cards_in_hand.back();
-	if !play_card(spawn_card(card), player_two, player_one):
+	if !System.CardManager.play_card(System.CardManager.spawn_card(card, self), player_two, player_one, self):
 		wait_opponent_playing();
 		return;
 	if going_first or has_been_stopping_turn:
@@ -1022,227 +869,6 @@ func no_mimics() -> bool:
 		if card_data.card_type == CardEnums.CardType.MIMIC or card_data.is_buried:
 			return false;
 	return true;
-
-func best_to_play_for_you(card_a : CardData, card_b : CardData) -> int:
-	return best_to_play(card_a, card_b, player_one, player_two);
-
-func best_to_play_for_opponent(card_a : CardData, card_b : CardData) -> int:
-	return best_to_play(card_a, card_b, player_two, player_one);
-
-func best_to_play(card_a : CardData, card_b : CardData, player : Player, opponent : Player) -> int:
-	var a_value : int = get_result_for_playing(card_a, player, opponent);
-	var b_value : int = get_result_for_playing(card_b, player, opponent);
-	if a_value == b_value:
-		return most_valuable(card_a, card_b, player, opponent) * (-1 if time_stopping_player == player else 1);
-	return a_value < b_value if time_stopping_player != player else a_value > b_value;
-
-func most_valuable(card_a : CardData, card_b : CardData, player : Player, opponent : Player) -> int:
-	return -get_card_value(card_a, player, opponent, -1) < -get_card_value(card_b, player, opponent, -1);
-
-func get_card_value(card : CardData, player : Player, opponent : Player, direction : int = 1) -> int:
-	var value : int = 10 * get_card_base_value(card);
-	var card_data : CardData;
-	for c in player.cards_in_hand:
-		card_data = c;
-		if card_data.card_type == card.card_type:
-			value += direction * 1;
-	for keyword in card.keywords:
-		match keyword:
-			CardEnums.Keyword.ALPHA_WEREWOLF:
-				value -= 2;
-			CardEnums.Keyword.BERSERK:
-				value += 5;
-			CardEnums.Keyword.BURIED:
-				value += 5;
-			CardEnums.Keyword.BURIED_ALIVE:
-				value += 5;
-			CardEnums.Keyword.CELEBRATE:
-				value += 0;
-			CardEnums.Keyword.CHAMELEON:
-				value += 1;
-			CardEnums.Keyword.CLONING:
-				value += player.cards_in_hand.size();
-			CardEnums.Keyword.COIN_FLIP:
-				value += 3;
-			CardEnums.Keyword.CONTAGIOUS:
-				value += 5 if card.is_gun() else 0;
-			CardEnums.Keyword.COOTIES:
-				value += 1;
-			CardEnums.Keyword.COPYCAT:
-				value += 1;
-			CardEnums.Keyword.CURSED:
-				value += 1;
-			CardEnums.Keyword.DEVOUR:
-				value += 5 if player.going_first else -1;
-			CardEnums.Keyword.DEVOW:
-				value += 6 if player.going_first else -1;
-			CardEnums.Keyword.DIGITAL:
-				value += 3;
-			CardEnums.Keyword.DIRT:
-				value += 4;
-			CardEnums.Keyword.DIVINE:
-				value += 0;
-			CardEnums.Keyword.ELECTROCUTE:
-				value += 1;
-			CardEnums.Keyword.EMP:
-				value += 2;
-			CardEnums.Keyword.EXTRA_SALTY:
-				value += 6 if player.points == 0 else 2;
-			CardEnums.Keyword.GREED:
-				value += 10;
-			CardEnums.Keyword.HIGH_GROUND:
-				value += 2;
-			CardEnums.Keyword.HIGH_NUT:
-				value += 2 * player.turns_waited_to_nut * player.nut_multiplier;
-			CardEnums.Keyword.HIVEMIND:
-				value += 0;
-			CardEnums.Keyword.HORSE_GEAR:
-				value += 4;
-			CardEnums.Keyword.HYDRA:
-				value += 2;
-			CardEnums.Keyword.INCINERATE:
-				value += 1;
-			CardEnums.Keyword.INFLUENCER:
-				value -= 1;
-			CardEnums.Keyword.MULTI_SPY:
-				value += 3;
-			CardEnums.Keyword.MULTIPLY:
-				value += 0;
-			CardEnums.Keyword.MUSHY:
-				value -= 1;
-			CardEnums.Keyword.NOVEMBER:
-				value += 1;
-			CardEnums.Keyword.NUT:
-				value += 2 * player.turns_waited_to_nut * player.nut_multiplier;
-			CardEnums.Keyword.NUT_COLLECTOR:
-				value += 1;
-			CardEnums.Keyword.NUT_STEALER:
-				value += 1;
-			CardEnums.Keyword.OCEAN:
-				value += 0;
-			CardEnums.Keyword.OCEAN_DWELLER:
-				value += 0;
-			CardEnums.Keyword.PAIR:
-				value += 3;
-			CardEnums.Keyword.PAIR_BREAKER:
-				value += 1;
-			CardEnums.Keyword.PERFECT_CLONE:
-				value += 2 * player.cards_in_hand.size();
-			CardEnums.Keyword.PICK_UP:
-				value += 0;
-			CardEnums.Keyword.POSITIVE:
-				value += 2 * player.points;
-			CardEnums.Keyword.RAINBOW:
-				value += 1;
-			CardEnums.Keyword.RELOAD:
-				value += 1;
-			CardEnums.Keyword.RUST:
-				value += 1;
-			CardEnums.Keyword.SABOTAGE:
-				value += 4;
-			CardEnums.Keyword.SALTY:
-				value += 5 if player.points == 0 else 1;
-			CardEnums.Keyword.SCAMMER:
-				value -= 100;
-			CardEnums.Keyword.SECRETS:
-				value += 0;
-			CardEnums.Keyword.SHARED_NUT:
-				value += 2 * (player.turns_waited_to_nut * player.nut_multiplier - opponent.turns_waited_to_nut * opponent.nut_multiplier);
-			CardEnums.Keyword.SILVER:
-				value += 1;
-			CardEnums.Keyword.SKIBBIDY:
-				value += 2 * player.count_hand();
-			CardEnums.Keyword.SOUL_HUNTER:
-				value += 1;
-			CardEnums.Keyword.SPRING_ARRIVES:
-				value *= pow(2, System.Rules.MAX_HAND_SIZE - player.count_hand());
-			CardEnums.Keyword.SPY:
-				value += 2;
-			CardEnums.Keyword.TIDAL:
-				value += 0;
-			CardEnums.Keyword.TIME_STOP:
-				value += 10;
-			CardEnums.Keyword.UNDEAD:
-				value -= 1;
-			CardEnums.Keyword.VAMPIRE:
-				value += 5 if opponent.points > 0 else 0;
-			CardEnums.Keyword.VERY_NUTTY:
-				value += 10 * player.turns_waited_to_nut * player.nut_multiplier;
-			CardEnums.Keyword.WEREWOLF:
-				value += 0;
-			CardEnums.Keyword.WRAPPED:
-				value += 0 if player.going_first else 1;
-	value *= calculate_base_points(card, null, true);
-	if value < 0:
-		return value;
-	if card.is_gun and !card.is_buried and (time_stopping_player == player or (time_stopping_player == null and card.has_time_stop())):
-		value *= card.stopped_time_advantage;
-	return value;
-
-func get_card_base_value(card : CardData) -> int:
-	match card.card_type:
-		CardEnums.CardType.ROCK:
-			return 1;
-		CardEnums.CardType.PAPER:
-			return 1;
-		CardEnums.CardType.SCISSORS:
-			return 1;
-		CardEnums.CardType.GUN:
-			return 3;
-		CardEnums.CardType.BEDROCK:
-			return 2;
-		CardEnums.CardType.ZIPPER:
-			return 2;
-		CardEnums.CardType.ROCKSTAR:
-			return 2;
-	return 0;
-
-func get_result_for_playing(card : CardData, player : Player, opponent : Player) -> int:
-	var winner : GameplayEnums.Controller;
-	var enemy : CardData = get_enemy_card_truth(opponent);
-	var value : int = 1;
-	var multiplier : int = calculate_base_points(card, enemy, true);
-	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.prevents_opponents_reveal():
-		return value * multiplier;
-	if card.has_nut_stealer() and enemy and enemy.get_max_nuts() > 0:
-		return value * multiplier * player.turns_waited_to_nut * player.nut_multiplier * 2;
-	if !enemy:
-		return get_value_to_threaten(card, player, opponent);
-	winner = determine_winner(card, enemy);
-	match winner:
-		GameplayEnums.Controller.PLAYER_ONE:
-			if enemy.has_greed() and !player.is_close_to_winning():
-				return -2;
-			return value * multiplier;
-		GameplayEnums.Controller.PLAYER_TWO:
-			if card.has_greed() and !opponent.is_close_to_winning():
-				return 2;
-			return -value;
-	return 0;
-
-func get_enemy_card_truth(opponent : Player) -> CardData:
-	var card : CardData = opponent.get_field_card();
-	if !card:
-		return null;
-	card = card.clone();
-	if card.has_chameleon():
-		opponent.trigger_chameleon(card);
-	return card;
-
-func get_first_face_up_card(source : Array) -> CardData:
-	for card in source:
-		if !card.is_buried:
-			return card;
-	return null;
-
-func get_value_to_threaten(card : CardData, player : Player, opponent : Player) -> int:
-	var value : int;
-	if card.has_digital():
-		return -1;
-	if card.has_champion():
-		return 0;
-	value = get_card_value(card, player, opponent);
-	return value;
 
 func round_results() -> void:
 	var card : CardData = player_one.get_field_card();
@@ -1405,54 +1031,10 @@ func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 func play_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false, do_fade : bool = false) -> Array:
 	match card.get_shooting_type():
 		CardData.ShootingType.BULLETS:
-			return play_bullets_shooting_animation(card, enemy, do_zoom, slow_down);
+			return System.EyeCandy.play_bullets_shooting_animation(card, enemy, self, do_zoom, slow_down);
 		CardData.ShootingType.TENTACLES:
-			return play_tentacles_shooting_animation(card, enemy, do_zoom, slow_down, do_fade);
+			return System.EyeCandy.play_tentacles_shooting_animation(card, enemy, self, do_zoom, slow_down, do_fade);
 	return [];
-
-func play_bullets_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false) -> Array:
-	var bullets : Array;
-	var bullet : Bullet;
-	if !get_card(card):
-		return bullets;
-	var enemy_position : Vector2 = get_shooting_enemy_position(card, enemy);
-	var count : int = get_count_of_bullets_shot(card);
-	if count <= 0:
-		return bullets;
-	for i in range(count):
-		if i > 0:
-			enemy_position += System.Random.vector(MIN_BULLET_MARGIN, MAX_BULLET_MARGIN);
-		bullet = System.Data.load_bullet(card.bullet_id, cards_layer);
-		if slow_down:
-			bullet.slow_down();
-		bullet.init(enemy_position - (get_card(card).get_recoil_position() if get_card(card) else Vector2.ZERO), i < 2);
-		bullets.append(bullet);
-		if do_zoom and i == 0:
-			zoom_to_node(bullet);
-	if get_card(card):
-		get_card(card).recoil(enemy_position);
-	if card.shoots_wet_bullets():
-		System.AutoEffects.make_card_wet(enemy, self, true, false);
-	return bullets;
-
-func get_shooting_enemy_position(card : CardData, enemy : CardData) -> Vector2:
-	return get_card(enemy).get_recoil_position() if (enemy and get_card(enemy)) else -get_card(card).get_recoil_position();
-
-func get_count_of_bullets_shot(card : CardData) -> int:
-	var count : int = 1;
-	if card.stopped_time_advantage > 1:
-		return -1;
-	if card.has_champion():
-		count = System.random.randi_range(3, 5);
-		if card.has_rare_stamp():
-			count *= 2;
-	elif card.has_pair():
-		count = 2;
-	if card.has_multiply() and count == 1 and card.multiply_advantage > 1:
-		count = min(8, card.multiply_advantage);
-	if count == 1 and CollectionEnums.TRIPLE_SHOOTING_CARDS.has(card.card_id):
-		count = 3;
-	return count;
 
 func move_card_front(card : GameplayCard) -> void:
 	if cards_layer.is_ancestor_of(card):
@@ -1460,30 +1042,6 @@ func move_card_front(card : GameplayCard) -> void:
 	else:
 		cards_layer2.remove_child(card);
 	cards_layer.add_child(card);
-
-func play_tentacles_shooting_animation(card : CardData, enemy : CardData, do_zoom : bool = false, slow_down : bool = false, do_fade : bool = false) -> Array:
-	var tentacles : Array;
-	var gameplay_card : GameplayCard = get_card(card);
-	if !gameplay_card:
-		return tentacles;
-	var enemy_position : Vector2 = get_shooting_enemy_position(card, enemy);
-	var count : int = min(MAX_TENTACLES, (8 if !slow_down else 2) + (2 if !slow_down else 1) * get_count_of_bullets_shot(card));
-	var tentacle : Tentacle;
-	if count <= 0:
-		return tentacles;
-	for i in range(count):
-		tentacle = System.Instance.load_child(System.Paths.TENTACLE, cards_layer);
-		if slow_down:
-			tentacle.slow_down();
-		if do_fade:
-			tentacle.do_fade = true;
-		tentacle.init(gameplay_card, get_card(enemy), enemy_position, i < 2);
-		tentacles.append(tentacle);
-		if do_zoom and i == 0 and !do_fade:
-			zoom_to_node(tentacle);
-	gameplay_card.recoil(-enemy_position);
-	move_card_front(gameplay_card);
-	return tentacles;
 
 func start_wet_wait() -> void:
 	is_wet_wait_on = true;
@@ -1725,10 +1283,10 @@ func _on_auto_play_timer_timeout() -> void:
 		return;
 	active_player = player_one;
 	player_one.shuffle_hand();
-	player_one.cards_in_hand.sort_custom(best_to_play_for_you);
+	player_one.cards_in_hand.sort_custom(System.EnemyAI.best_to_play_for_you);
 	card = player_one.cards_in_hand.back();
-	spawn_card(card);
-	play_card(get_card(card), player_one, player_two);
+	System.CardManager.spawn_card(card, self);
+	System.CardManager.play_card(get_card(card), player_one, player_two, self);
 
 func _on_start_next_round_timer_timeout() -> void:
 	start_next_round_timer.stop();

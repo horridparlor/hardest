@@ -170,14 +170,14 @@ static func inflict_sabotage_on_card(card : CardData, player : Player, gameplay 
 	var gameplay_card : GameplayCard;
 	if !System.Instance.exists(card):	
 		return;
-	gameplay_card = gameplay.spawn_card(card);
+	gameplay_card = System.CardManager.spawn_card(card, gameplay);
 	gameplay_card.sabotage_effect();
 	if player == gameplay.player_one:
 		gameplay.show_hand();
 		gameplay_card.go_visit_point(Gameplay.VISIT_POSITION + margin);
 		gameplay.cards_to_dissolve[card.instance_id] = card;
 	else:
-		gameplay_card = gameplay.spawn_card(card);
+		gameplay_card = System.CardManager.spawn_card(card, gameplay);
 		gameplay_card.go_visit_point(-Gameplay.VISIT_POSITION + margin);
 		gameplay.cards_to_dissolve[card.instance_id] = card;
 
@@ -296,7 +296,7 @@ static func clone_card(card_to_clone : CardData, player : Player, gameplay : Gam
 		cloned_card.stamp = CardEnums.Stamp.RARE;
 	if cloned_card.controller == gameplay.player_two:
 		return;
-	gameplay_card = gameplay.spawn_card(cloned_card);
+	gameplay_card = System.CardManager.spawn_card(cloned_card, gameplay);
 	player.make_new_card_permanent(cloned_card);
 	if gameplay.get_card(card_to_clone):
 		var pos : Vector2 = gameplay.get_card(card_to_clone).position;

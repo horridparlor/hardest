@@ -10,6 +10,7 @@ const Json : GDScript = preload("res://Scripts/System/json.gd");
 const Leds : GDScript = preload("res://Scripts/System/leds.gd");
 const Levels : GDScript = preload("res://Scripts/System/levels.gd");
 const Paths : GDScript = preload("res://Scripts/System/paths.gd");
+const PreResults : GDScript = preload("res://Scripts/System/pre-results.gd");
 const Random : GDScript = preload("res://Scripts/System/random.gd");
 const Rules : GDScript = preload("res://Scripts/System/rules.gd");
 const Scale : GDScript = preload("res://Scripts/System/scale.gd");

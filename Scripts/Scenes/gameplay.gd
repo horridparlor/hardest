@@ -66,6 +66,19 @@ extends Gameplay
 @onready var leds_layer : Node2D = $Background/Leds;
 @onready var divine_judgment : DivineJudgment = $AboveCardsLayer/DivineJudgment;
 
+func _ready() -> void:
+	set_default_shader_materials();
+
+func set_default_shader_materials():
+	background_pattern.material = System.Shaders.background_wave();
+	ocean_pattern.material = System.Shaders.new_shader_material();
+	gameplay_title.material = System.Shaders.background_wave();
+	dashboard_pattern.material = System.Shaders.background_wave();
+	die_pattern.material = System.Shaders.background_wave();
+	your_point_pattern.material = System.Shaders.background_wave();
+	opponents_point_pattern.material = System.Shaders.background_wave();
+	victory_pattern.material = System.Shaders.bump_wave();
+
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	level_data = level_data_;
 	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id, do_start);
@@ -1356,292 +1369,21 @@ func wait_opponent_playing() -> void:
 func cannot_go_to_results() -> bool:
 	return is_spying or is_waiting_for_animation_to_finnish or is_wet_wait_on;
 
-func go_to_results() -> void:
-	#This structure waits and comes back everytime some action is done
-	#So that player has time to see animation and react mentally.
-	#Better structure to use enum for the phase and make it not crawl
-	#The whole structure like this. Fix, if this ever gets longer than
-	#Let's say 100 lines :D
-	if is_time_stopped:
-		return start_results();
-	if cannot_go_to_results():
-		return results_wait();
-	if results_phase < 2:
-		if mimics_phase():
-			return results_wait();
-	if results_phase < 4:
-		if nut_phase():
-			return results_wait(NUT_WAIT_MULTIPLIER - 0.2 * nut_combo);
-	if results_phase < 6:
-		if digitals_phase():
-			return results_wait();
-	if results_phase < 8:
-		if shadow_replace_phase():
-			return results_wait();
-	show_multiplier_bar(get_card(player_one.get_field_card()));
-	show_multiplier_bar(get_card(player_two.get_field_card()));
-	start_results();
-
 func start_results() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT * System.game_speed_additive_multiplier;
 	round_results_timer.start();
 
-func mimics_phase() -> bool:
-	if going_first:
-		if results_phase < 1:
-			results_phase = 1;
-			if transform_your_mimics():
-				return true;
-		if results_phase < 2:
-			results_phase = 2;
-			if transform_opponents_mimics():
-				return true;
-	else:
-		if results_phase < 1:
-			results_phase = 1;
-			if transform_opponents_mimics():
-				return true;
-		if results_phase < 2:
-			results_phase = 2;
-			if transform_your_mimics():
-				return true;
-	return false;
-
-func nut_phase() -> bool:
-	if going_first:
-		if results_phase < 3:
-			results_phase = 3;
-			if nut_your_nuts():
-				results_phase = 2;
-				return true;
-		if results_phase < 4:
-			results_phase = 4;
-			if nut_opponents_nuts():
-				results_phase = 3;
-				return true;
-	else:
-		if results_phase < 3:
-			results_phase = 3;
-			if nut_opponents_nuts():
-				results_phase = 2;
-				return true;
-		if results_phase < 4:
-			results_phase = 4;
-			if nut_your_nuts():
-				results_phase = 3;
-				return true;
-	nut_combo = 0;
-	return false;
-
-func nut_your_nuts() -> bool:
-	return nut_players_nuts(player_one, player_two);
-
-func nut_opponents_nuts() -> bool:
-	return nut_players_nuts(player_two, player_one);
-
-func nut_players_nuts(player : Player, opponent : Player) -> bool:
-	var card : CardData = player.get_field_card();
-	var enemy : CardData = opponent.get_field_card();
-	if !card or (enemy and enemy.stopped_time_advantage > 1):
-		return false;
-	var can_nut : bool = (card.get_max_nuts() > 0) or (!card.has_november() and enemy and enemy.has_shared_nut());
-	var can_steal_nut : bool = card.has_nut_stealer() and enemy and enemy.can_nut(card.has_shared_nut());
-	var nut_prevented : bool = enemy and (enemy.has_november() or enemy.has_nut_stealer());
-	if card.has_copycat() and enemy:
-		card.set_card_type(enemy.card_type);
-		update_alterations_for_card(card);
-	if can_nut and !nut_prevented and card.can_nut(enemy and enemy.has_shared_nut()):
-		if nut_with_card(card, enemy, player):
-			return true;
-	if can_steal_nut and !nut_prevented and card.nuts_stolen < 2 * max(1, enemy.get_max_nuts(card.has_shared_nut())):
-		if nut_with_card(card, enemy, player):
-			card.nuts -= 1;
-			card.nuts_stolen += 1;
-			return true;
-	return false;
-
-func nut_with_card(card : CardData, enemy : CardData, player : Player) -> bool:
-	var multiplier : int = calculate_base_points(card, enemy, true, false);
-	var points : int = player.points;
-	card.nuts += 1;
-	if player.do_nut(multiplier):
-		points = player.points - points;
-		spawn_poppets(points, card, player);
-		if get_card(card):
-			get_card(card).recoil(get_card(card).position);
-			var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/bottle-shake.wav");
-			play_sfx(sound, Config.SFX_VOLUME, System.game_speed * pow(1.1, nut_combo));
-			emit_signal("quick_zoom_to", get_card(card).position);
-			nut_combo += 1;
-		gain_points_effect(player);
-		return true;
-	return false;
-
 func gain_points_effect(player : Player) -> void:
 	click_your_points() if player == player_one else click_opponents_points();
 	update_point_visuals();
-
-func shadow_replace_phase() -> bool:
-	if going_first:
-		if results_phase < 7:
-			results_phase = 7;
-			if play_your_shadows():
-				return true;
-		if results_phase < 8:
-			results_phase = 8;
-			if play_opponents_shadows():
-				results_phase = 2;
-				return true;
-	else:
-		if results_phase < 7:
-			results_phase = 7;
-			if play_opponents_shadows():
-				return true;
-		if results_phase < 8:
-			results_phase = 8;
-			if play_your_shadows():
-				results_phase = 2;
-				return true;
-	return false;
-
-func play_your_shadows() -> bool:
-	return play_shadows(player_one, player_two);
-
-func play_opponents_shadows() -> bool:
-	return play_shadows(player_two, player_one);
-
-func no_reason_to_counterspell(player : Player, opponent : Player) -> bool:
-	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
-	return (player.get_field_card() and player.get_field_card().has_cursed()) or winner == GameplayEnums.Controller.PLAYER_ONE;
-
-func play_shadows(player : Player, opponent : Player) -> bool:
-	var shadow_card : CardData;
-	var card : CardData = player.get_field_card();
-	var enemy : CardData = opponent.get_field_card();
-	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
-	if no_reason_to_counterspell(player, opponent) or player.deck_empty():
-		return false;
-	for i in range(player.count_deck()):
-		var c : CardData = player.cards_in_deck[player.count_deck() - (1 + i)];
-		if !c.has_aura_farming() or (c.has_shadow_replace() and ![winner, GameplayEnums.Controller.PLAYER_TWO].has(determine_winner(c, enemy))):
-			if (card and card.has_shadow_replace()) or c.has_shadow_replace():
-				shadow_card = c;
-	if shadow_card == null:
-		return false;
-	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(determine_winner(shadow_card, enemy)):
-		return false;
-	replace_played_card(shadow_card);
-	return true;
-
-func digitals_phase() -> bool:
-	var card : CardData = player_one.get_field_card();
-	var enemy : CardData = player_two.get_field_card();
-	if (card and card.has_emp()) or (enemy and enemy.has_emp()):
-		return false;
-	if going_first:
-		if results_phase < 5:
-			results_phase = 5;
-			if play_your_digitals():
-				return true;
-		if results_phase < 6:
-			results_phase = 6;
-			if play_opponents_digitals():
-				results_phase = 2;
-				return true;
-	else:
-		if results_phase < 5:
-			results_phase = 5;
-			if play_opponents_digitals():
-				return true;
-		if results_phase < 6:
-			results_phase = 6;
-			if play_your_digitals():
-				results_phase = 2;
-				return true;
-	return false;
-
-func transform_your_mimics() -> bool:
-	var enemy : CardData = player_two.get_field_card();
-	if enemy and enemy.prevents_opponents_reveal():
-		return false;
-	return transform_mimics(player_one.cards_on_field, player_one, player_two);
-
-func transform_opponents_mimics() -> bool:
-	var enemy : CardData = player_one.get_field_card();
-	if enemy and enemy.prevents_opponents_reveal():
-		return false;
-	return transform_mimics(player_two.cards_on_field, player_two, player_one);
-
-func play_your_digitals() -> bool:
-	return play_digitals(player_one, player_two);
-
-func play_opponents_digitals() -> bool:
-	return play_digitals(player_two, player_one);
-
-func play_digitals(player : Player, opponent : Player) -> bool:
-	var cards : Array;
-	var enemy : CardData;
-	var digital_to_play : CardData;
-	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
-	if no_reason_to_counterspell(player, opponent):
-		return false;
-	if player.has_hivemind_for(CardEnums.Keyword.DIGITAL):
-		cards = player.cards_in_hand;
-	else:
-		cards = player.cards_in_hand.filter(func(card : CardData): return card.has_digital());
-	enemy = opponent.get_field_card();
-	if cards.size() == 0:
-		return false;
-	cards.sort_custom(
-		func(card_a : CardData, card_b : CardData):
-			return determine_points_result(card_a, enemy) < determine_points_result(card_b, enemy);
-	);
-	digital_to_play = cards.back();
-	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(determine_winner(digital_to_play, enemy)):
-		return false;
-	play_digital_sound();
-	replace_played_card(digital_to_play);
-	return true;
 
 func get_opponent(card : CardData) -> Player:
 	if card.controller == player_one:
 		return player_two;
 	return player_one;
 
-func determine_points_result(card : CardData, enemy : CardData) -> int:
-	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
-	var win_points : int = get_win_points(card, enemy);
-	var lose_points : int = get_lose_points(card, enemy);
-	match winner:
-		GameplayEnums.Controller.PLAYER_ONE:
-			return win_points;
-		GameplayEnums.Controller.PLAYER_TWO:
-			return lose_points;
-	return 0;
-
-func get_win_points(card : CardData, enemy : CardData) -> int:
-	var points : int = calculate_base_points(card, enemy, true);
-	var points_to_steal : int = calculate_points_to_steal(card, enemy);
-	return points + points_to_steal;
-
-func get_lose_points(card : CardData, enemy : CardData) -> int:
-	var points : int = calculate_base_points(card, enemy, false, false);
-	var points_to_lose : int = calculate_points_to_steal(enemy, card);
-	return -(points + points_to_lose);
-
 func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false, add_advantages : bool = true) -> int:
 	return System.Fighting.calculate_base_points(card, enemy, did_win, add_advantages);
-
-func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
-	var points : int;
-	if card.has_vampire():
-		points += 1;
-	if enemy.has_salty():
-		points += 1;
-	return min(points, enemy.controller.points);
-
-func determine_winning_player(player : Player, opponent : Player) -> GameplayEnums.Controller:
-	return determine_winner(player.get_field_card(), opponent.get_field_card());
 
 func go_to_pre_results() -> void:
 	results_phase = 0;
@@ -1661,24 +1403,6 @@ func no_mimics() -> bool:
 		if card_data.card_type == CardEnums.CardType.MIMIC or card_data.is_buried:
 			return false;
 	return true;
-
-func transform_mimics(your_cards : Array, player : Player, opponent : Player) -> bool:
-	var card : CardData;
-	var transformed_any : bool;
-	for c in your_cards:
-		card = c;
-		if card.is_buried:
-			card.is_buried = false;
-			if card.has_hydra() or card.has_auto_hydra():
-				player.build_hydra(card, false, false);
-			trigger_play_effects(card, player, opponent);
-			show_multiplier_bar(get_card(card));
-			transformed_any = true;
-		if card.has_copycat() and opponent.get_field_card():
-			card.set_card_type(opponent.get_field_card().card_type);
-		if get_card(card):
-			update_alterations_for_card(card, true);
-	return transformed_any;
 
 func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
 	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1].eat_json(System.Data.read_card(CardEnums.BasicIds[card_type]));
@@ -2628,7 +2352,7 @@ func _on_points_click_timer_timeout() -> void:
 
 func _on_pre_results_timer_timeout() -> void:
 	pre_results_timer.stop();
-	go_to_results();
+	System.PreResults.go_to_results(self);
 
 func _on_card_focus_timer_timeout() -> void:
 	card_focus_timer.stop();

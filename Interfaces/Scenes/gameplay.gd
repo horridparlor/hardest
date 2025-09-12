@@ -63,7 +63,6 @@ const SPY_WAIT_TIME : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
 const AUTO_PLAY_MIN_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const AUTO_PLAY_MAX_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
 const GULP_WAIT : float = 0.35 * Config.GAME_SPEED_MULTIPLIER;
-const NUT_WAIT_MULTIPLIER : float = 1.6;
 const VICTORY_POPPET_SPEED : float = 0.26;
 const MIN_VICTORY_POPPETS : int = 50;
 const MAX_VICTORY_POPPETS : int = 100;

@@ -29,9 +29,13 @@ func _ready() -> void:
 			emit_signal("death");
 	);
 	spawn_level_buttons();
+	panel_pattern.material = System.Shaders.background_wave();
 	panel_pattern.material.set_shader_parameter("opacity", BACKGROUND_OPACITY);
+	progress_bar_pattern.material = System.Shaders.background_wave();
 	progress_bar_pattern.material.set_shader_parameter("opacity", PROGRESS_BAR_PATTERN_OPACITY);
+	roguelike_death_pattern.material = System.Shaders.background_wave();
 	roguelike_death_pattern.material.set_shader_parameter("opacity", ROGUELIKE_DEATH_PATTERN_OPACITY);
+	pack_button_pattern.material = System.Shaders.background_wave();
 	pack_button_pattern.material.set_shader_parameter("opacity", PACK_BUTTON_PATTERN_OPACITY);
 	choice_button_layer.rotation_degrees = System.random.randf_range(-CHOICE_BUTTON_ROTATION, CHOICE_BUTTON_ROTATION);
 

@@ -1,9 +1,8 @@
-[gd_scene load_steps=47 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=37 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
 [ext_resource type="FontFile" uid="uid://yxygawtc05lh" path="res://Assets/FontFiles/Montserrat/Montserrat-SemiBold.ttf" id="2_7ibue"]
-[ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_fmyns"]
 [ext_resource type="FontFile" uid="uid://cm2kg0uewqwes" path="res://Assets/FontFiles/Montserrat/Montserrat-Italic.ttf" id="3_0gad1"]
 [ext_resource type="Script" path="res://Interfaces/Nexus/EyeCandy/wave-background.gd" id="3_ixfah"]
 [ext_resource type="FontFile" uid="uid://di4abqxuqvl4h" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBold.ttf" id="4_04fvt"]
@@ -21,7 +20,6 @@
 [ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
 [ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="15_ht6r6"]
 [ext_resource type="Texture2D" uid="uid://c577v2cp8oc0v" path="res://Assets/Art/SpecialPatterns/YourPointsPattern.png" id="16_088nt"]
-[ext_resource type="Shader" path="res://Shaders/Background/bump-wave.gdshader" id="19_n6e1l"]
 [ext_resource type="Texture2D" uid="uid://dr4fcniar43c6" path="res://Assets/Art/VictoryBanners/loser.png" id="20_1t5ev"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0s264"]
@@ -32,22 +30,6 @@ border_width_right = 8
 border_width_bottom = 8
 border_color = Color(0.255382, 0.0595813, 0.335234, 1)
 border_blend = true
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_hanut"]
-shader = ExtResource("2_fmyns")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 0.6
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_x1xpn"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ewqwb"]
-shader = ExtResource("2_fmyns")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_04nuq"]
 bg_color = Color(0.131509, 0.0680064, 0.144642, 1)
@@ -60,13 +42,6 @@ corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 21
 corner_radius_bottom_left = 21
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jua3p"]
-shader = ExtResource("2_fmyns")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8w0he"]
 size = Vector2(300, 100)
@@ -96,13 +71,6 @@ corner_radius_top_right = 16
 corner_radius_bottom_right = 21
 corner_radius_bottom_left = 21
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ea3pm"]
-shader = ExtResource("2_fmyns")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ewi27"]
 size = Vector2(200, 100)
 
@@ -131,13 +99,6 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 52
 corner_detail = 1
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_hrlbd"]
-shader = ExtResource("2_fmyns")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r6psl"]
 bg_color = Color(0.960757, 0.252307, 0.518855, 1)
 border_width_left = 8
@@ -163,13 +124,6 @@ corner_radius_top_left = 20
 corner_radius_bottom_left = 52
 corner_detail = 1
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ya60d"]
-shader = ExtResource("2_fmyns")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
-
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_gh5e6"]
 load_path = "res://.godot/imported/OpponentsPointsPattern.png-f36fac462755b9f85fe0de73ccc613b4.ctex"
 
@@ -178,14 +132,6 @@ load_path = "res://.godot/imported/2.png-4e1f09fc41d34b106cb2f89d1400e5cd.ctex"
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_8itmb"]
 load_path = "res://.godot/imported/1.png-29526ef40120d13386527986843503df.ctex"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_g8gut"]
-shader = ExtResource("19_n6e1l")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
-shader_parameter/bump_factor = 10.0
 
 [node name="Gameplay" type="Node2D"]
 script = ExtResource("1_5y1xe")
@@ -207,12 +153,10 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0s264")
 
 [node name="Pattern" type="Sprite2D" parent="Background"]
-material = SubResource("ShaderMaterial_hanut")
 script = ExtResource("3_ixfah")
 
 [node name="OceanPattern" type="Sprite2D" parent="Background"]
 visible = false
-material = SubResource("ShaderMaterial_x1xpn")
 texture = ExtResource("4_j6pyd")
 
 [node name="Leds" type="Sprite2D" parent="Background"]
@@ -325,7 +269,6 @@ position = Vector2(0, 130)
 script = ExtResource("8_p6f1f")
 
 [node name="GameplayTitle" type="Sprite2D" parent="Points/TitleLayer"]
-material = SubResource("ShaderMaterial_ewqwb")
 position = Vector2(0, -1015)
 texture = ExtResource("8_b3g7l")
 script = ExtResource("3_ixfah")
@@ -358,7 +301,6 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_04nuq")
 
 [node name="DashboardPattern" type="Sprite2D" parent="Points/Relics/DashboardButton"]
-material = SubResource("ShaderMaterial_jua3p")
 texture = ExtResource("12_38fn7")
 script = ExtResource("3_ixfah")
 
@@ -421,7 +363,6 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_df3vt")
 
 [node name="GameplayDeathPattern" type="Sprite2D" parent="Points/Relics/DieButton"]
-material = SubResource("ShaderMaterial_ea3pm")
 texture = ExtResource("10_trm33")
 script = ExtResource("3_ixfah")
 
@@ -475,7 +416,6 @@ offset_bottom = -618.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_t0eo2")
 
 [node name="YourPointPattern" type="Sprite2D" parent="Points/PointPanels/YourPointsPanel"]
-material = SubResource("ShaderMaterial_hrlbd")
 position = Vector2(-285, -705)
 texture = ExtResource("16_088nt")
 script = ExtResource("3_ixfah")
@@ -507,7 +447,6 @@ offset_bottom = -618.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_2dj46")
 
 [node name="OpponentsPointPattern" type="Sprite2D" parent="Points/PointPanels/OpponentsPointsPanel"]
-material = SubResource("ShaderMaterial_ya60d")
 position = Vector2(285, -705)
 texture = SubResource("CompressedTexture2D_gh5e6")
 script = ExtResource("3_ixfah")
@@ -666,7 +605,6 @@ grow_vertical = 2
 color = Color(0.00820202, 0.00820202, 0.00820202, 1)
 
 [node name="VictoryPattern" type="Sprite2D" parent="VictoryBanner"]
-material = SubResource("ShaderMaterial_g8gut")
 scale = Vector2(0.72, 0.72)
 texture = ExtResource("20_1t5ev")
 script = ExtResource("3_ixfah")

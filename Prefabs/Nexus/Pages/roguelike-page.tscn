@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://dr5fq4v3lflqw"]
+[gd_scene load_steps=26 format=3 uid="uid://dr5fq4v3lflqw"]
 
 [ext_resource type="Script" path="res://Scripts/Nexus/Pages/roguelike-page.gd" id="1_jidoa"]
 [ext_resource type="Shader" path="res://Shaders/Background/background-wave.gdshader" id="2_2t1wj"]
@@ -29,13 +29,6 @@ corner_radius_top_left = 13
 corner_radius_top_right = 13
 corner_radius_bottom_right = 13
 corner_radius_bottom_left = 13
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_flrwm"]
-shader = ExtResource("2_2t1wj")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjaq0"]
 bg_color = Color(0.996999, 0.210579, 0.23255, 1)
@@ -94,13 +87,6 @@ corner_radius_top_right = 7
 corner_radius_bottom_right = 7
 corner_radius_bottom_left = 13
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_hbxjb"]
-shader = ExtResource("2_2t1wj")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lqn0m"]
 size = Vector2(280, 110)
 
@@ -115,13 +101,6 @@ corner_radius_top_left = 21
 corner_radius_top_right = 21
 corner_radius_bottom_right = 21
 corner_radius_bottom_left = 21
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_emwca"]
-shader = ExtResource("2_2t1wj")
-shader_parameter/amplitude = 10.0
-shader_parameter/sin_wave = 0.5
-shader_parameter/chaos_factor = 0.0
-shader_parameter/opacity = 1.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ia5ba"]
 size = Vector2(600, 180)
@@ -144,7 +123,6 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xocjd")
 
 [node name="RoguelikePattern" type="Sprite2D" parent="."]
-material = SubResource("ShaderMaterial_flrwm")
 texture = ExtResource("3_2ub3v")
 script = ExtResource("4_mra10")
 
@@ -242,7 +220,6 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_18nvc")
 
 [node name="RoguelikeDeathPattern" type="Sprite2D" parent="BasicInfo/ResetButton"]
 self_modulate = Color(1, 1, 1, 0.231373)
-material = SubResource("ShaderMaterial_hbxjb")
 texture = ExtResource("8_fam7p")
 script = ExtResource("4_mra10")
 
@@ -292,7 +269,6 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_mensn")
 
 [node name="PackButtonPattern" type="Sprite2D" parent="ChoiceBox/ChoiceButton"]
 self_modulate = Color(1, 1, 1, 0.329412)
-material = SubResource("ShaderMaterial_emwca")
 texture = ExtResource("9_ol40b")
 script = ExtResource("4_mra10")
 

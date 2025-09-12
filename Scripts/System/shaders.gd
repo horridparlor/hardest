@@ -10,6 +10,12 @@ static func background_wave() -> ShaderMaterial:
 	shader_material.shader = shader;
 	return shader_material;
 
+static func bump_wave() -> ShaderMaterial:
+	var shader : Resource = load("res://Shaders/Background/bump-wave.gdshader");
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	shader_material.shader = shader;
+	return shader_material;
+
 static func card_art(is_negative : bool, is_holographic : bool, is_foil : bool) -> ShaderMaterial:
 	var shader : Resource = load("res://Shaders/CardEffects/card-art-shader.gdshader");
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
@@ -37,3 +43,6 @@ static func dissolve_shader(is_negative : bool = false, is_holographic : bool = 
 	shader_material.set_shader_parameter("opacity", 1);
 	set_card_art_shader_parameters(shader_material, is_negative, is_holographic, is_foil);
 	return shader_material;
+
+static func new_shader_material() -> ShaderMaterial:
+	return ShaderMaterial.new();

@@ -244,3 +244,39 @@ static func calculate_base_points(card : CardData, enemy : CardData, did_win : b
 	if card and card.is_god() and points < 10:
 		points = 10;
 	return points;
+
+static func determine_winning_player(player : Player, opponent : Player) -> GameplayEnums.Controller:
+	return determine_winner(player.get_field_card(), opponent.get_field_card());
+
+static func no_reason_to_counterspell(player : Player, opponent : Player) -> bool:
+	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
+	return (player.get_field_card() and player.get_field_card().has_cursed()) or winner == GameplayEnums.Controller.PLAYER_ONE;
+
+static func determine_points_result(card : CardData, enemy : CardData) -> int:
+	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
+	var win_points : int = get_win_points(card, enemy);
+	var lose_points : int = get_lose_points(card, enemy);
+	match winner:
+		GameplayEnums.Controller.PLAYER_ONE:
+			return win_points;
+		GameplayEnums.Controller.PLAYER_TWO:
+			return lose_points;
+	return 0;
+
+static func get_win_points(card : CardData, enemy : CardData) -> int:
+	var points : int = calculate_base_points(card, enemy, true);
+	var points_to_steal : int = calculate_points_to_steal(card, enemy);
+	return points + points_to_steal;
+
+static func get_lose_points(card : CardData, enemy : CardData) -> int:
+	var points : int = calculate_base_points(card, enemy, false, false);
+	var points_to_lose : int = calculate_points_to_steal(enemy, card);
+	return -(points + points_to_lose);
+
+static func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
+	var points : int;
+	if card.has_vampire():
+		points += 1;
+	if enemy.has_salty():
+		points += 1;
+	return min(points, enemy.controller.points);

@@ -7,9 +7,10 @@ static func best_to_play_for_opponent(card_a : CardData, card_b : CardData, game
 static func best_to_play(card_a : CardData, card_b : CardData, player : Player, opponent : Player, gameplay) -> int:
 	var a_value : int = get_result_for_playing(card_a, player, opponent, gameplay);
 	var b_value : int = get_result_for_playing(card_b, player, opponent, gameplay);
+	var do_play_weakest : bool = gameplay.time_stopping_player == player or (opponent.going_first and opponent.field_empty());
 	if a_value == b_value:
 		return most_valuable(card_a, card_b, player, opponent, gameplay) * (-1 if gameplay.time_stopping_player == player else 1);
-	return a_value < b_value if gameplay.time_stopping_player != player else a_value > b_value;
+	return a_value < b_value if !do_play_weakest else a_value > b_value;
 
 static func most_valuable(card_a : CardData, card_b : CardData, player : Player, opponent : Player, gameplay : Gameplay) -> int:
 	return -get_card_value(card_a, player, opponent, gameplay, -1) < -get_card_value(card_b, player, opponent, gameplay, -1);

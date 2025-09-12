@@ -85,6 +85,8 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id, do_start);
 	init_layers();
 	set_going_first(0 if level_data.id == System.Levels.INTRODUCTION_LEVEL else System.Random.boolean());
+	if Config.STARTING_PLAYER != GameplayEnums.Controller.NULL:
+		set_going_first(1 if Config.STARTING_PLAYER == GameplayEnums.Controller.PLAYER_ONE else 0);
 	highlight_face(false);
 	update_character_faces();
 	initialize_background_pattern();

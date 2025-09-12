@@ -18,6 +18,7 @@ const SPAWNED_CARD : int = 106 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 const AUTO_HOUSE : CollectionEnums.House = CollectionEnums.House.NULL if DEV_MODE else CollectionEnums.House.NULL;
+const STARTING_PLAYER : GameplayEnums.Controller = GameplayEnums.Controller.NULL if DEV_MODE else GameplayEnums.Controller.NULL;
 
 const MUTE : bool = false if DEV_MODE else false;
 const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;

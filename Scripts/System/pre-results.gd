@@ -136,7 +136,7 @@ static func nut_with_card(card : CardData, enemy : CardData, player : Player, ga
 	card.nuts += 1;
 	if player.do_nut(multiplier):
 		points = player.points - points;
-		gameplay.spawn_poppets(points, card, player);
+		System.EyeCandy.spawn_poppets(points, card, player, gameplay);
 		if gameplay.get_card(card):
 			gameplay.get_card(card).recoil(gameplay.get_card(card).position);
 			var sound : Resource = load("res://Assets/SFX/CardSounds/Bursts/bottle-shake.wav");

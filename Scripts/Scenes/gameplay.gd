@@ -279,7 +279,7 @@ func start_game_over() -> void:
 	victory_banner.fade_in(2);
 	init_victory_banner_sprite();
 	if did_win:
-		spawn_victory_poppets();
+		System.EyeCandy.spawn_victory_poppets(self);
 	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_additive_multiplier;
 	game_over_timer.start();
 
@@ -287,33 +287,9 @@ func init_victory_banner_sprite() -> void:
 	var texture : Resource = load("res://Assets/Art/VictoryBanners/%s.png" % ["champion" if did_win else "loser"]);
 	victory_pattern.texture = texture;
 
-func spawn_victory_poppets() -> void:
-	var colors : Array = get_victory_poppet_colors();
-	var count : int = min(MAX_VICTORY_POPPETS, MIN_VICTORY_POPPETS + player_one.points) + System.random.randi_range(-POPPETS_RANDOM_ADDITION, POPPETS_RANDOM_ADDITION);
-	for i in range(count):
-		spawn_victory_poppet(System.Random.item(colors));
-
-func get_victory_poppet_colors() -> Array:
-	var colors : Array = [Poppet.PoppetColor.BLUE];
-	var points : int = player_one.points;
-	if points >= 10:
-		colors.append(Poppet.PoppetColor.RED);
-	if points >= 40:
-		colors.append(Poppet.PoppetColor.GOLD);
-	if points >= 100:
-		colors.append(Poppet.PoppetColor.RAINBOW);
-	return colors;
-
-func spawn_victory_poppet(color : Poppet.PoppetColor) -> void:
-	var y_margin : float = System.Window_.y / 2 + 2 * Poppet.MAX_SIZE.y / 2;
-	var spawn_point : Vector2 = Vector2(System.random.randf_range(-System.Window_.x / 2, System.Window_.x / 2), y_margin);
-	var goal_point : Vector2 = Vector2(System.random.randf_range(-System.Window_.x / 2, System.Window_.x / 2), -y_margin);
-	var poppet : Poppet = spawn_poppet(spawn_point, goal_point, color);
-	poppet.speed *= VICTORY_POPPET_SPEED;
-
 func end_game() -> void:
 	if is_time_stopped:
-		time_stop_effect_out();
+		System.TimeStop.time_stop_effect_out(self);
 	emit_signal("game_over");
 
 func your_turn() -> void:
@@ -417,7 +393,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
 	if is_time_stopped:
 		var shader_material : ShaderMaterial;
-		var custom_shader_material : ShaderMaterial = get_time_stop_material();
+		var custom_shader_material : ShaderMaterial = System.Shaders.time_stop_material();
 		for node in time_stop_nodes:
 			if !node.material:
 				continue;
@@ -431,7 +407,7 @@ func spawn_card(card_data : CardData) -> GameplayCard:
 	return card;
 
 func add_time_stop_shader(card : GameplayCard) -> void:
-	var material : ShaderMaterial = get_time_stop_material();
+	var material : ShaderMaterial = System.Shaders.time_stop_material();
 	for layer in card.get_shader_layers():
 		layer.material = material;
 
@@ -1349,7 +1325,7 @@ func stopped_time_results() -> void:
 	if time_stopping_player.hand_empty() or time_stopping_player.cards_played_this_turn >= System.Rules.MAX_TIME_STOP_CARDS_PLAYED or (card and !card.is_buried and (card.is_gun() or card.is_god())):
 		if card and (card.is_gun() and !card.is_buried) and (!enemy or System.Fighting.check_type_results(card, enemy) != GameplayEnums.Controller.PLAYER_TWO):
 			await stopped_time_shooting(card, get_opponent(card).get_field_card());
-		time_stop_effect_out();
+		System.TimeStop.time_stop_effect_out(self);
 		return;
 	time_stopping_player.send_from_field_to_grave(card);
 	if get_card(card):
@@ -1387,7 +1363,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 		return;
 	points *= calculate_base_points(card, enemy, true);
 	player.gain_points(points);
-	spawn_poppets(points, card, player);
+	System.EyeCandy.spawn_poppets(points, card, player, self);
 	check_lose_effects(enemy, opponent);
 	if card:
 		if card.is_god():
@@ -1413,44 +1389,6 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	gain_points_effect(player);
 	if have_you_won() or has_opponent_won():
 		start_game_over();
-
-func spawn_poppets(points : int, card : CardData, player : Player) -> void:
-	var color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE;
-	var count : int = points;
-	var extra_count : int;
-	if points > 12:
-		color = Poppet.PoppetColor.RAINBOW;
-		count /= 6;
-		extra_count = points - 5 * count + System.random.randi_range(0, 5);
-	elif points > 4:
-		color = Poppet.PoppetColor.GOLD;
-		count /= 4;
-		extra_count = points - 4 * count + System.random.randi_range(0, 3);
-	elif points > 1:
-		color = Poppet.PoppetColor.RED;
-		count /= 2;
-		extra_count = points - 2 * count + System.random.randi_range(0, 1);
-	for i in range(min(MAX_CARD_POPPETS, count)):
-		spawn_poppet_for_card(card, player, color);
-	for i in range(min(MAX_CARD_POPPETS, extra_count)):
-		spawn_poppet_for_card(card, player);
-
-func spawn_poppet_for_card(card : CardData, player : Player, color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE) -> void:
-	var goal_position : Vector2
-	if !get_card(card):
-		return;
-	goal_position = (your_point_panel.position if player == player_one else opponents_point_panel.position) + Vector2(235, 95) + Vector2(System.random.randf_range(-130, 130), System.random.randf_range(-50, 50));
-	spawn_poppet(get_card(card).position + System.Random.vector(0, 50), goal_position, color);
-
-func spawn_poppet(spawn_position : Vector2, goal_position : Vector2, color : Poppet.PoppetColor) -> Poppet:
-	var poppet : Poppet;
-	poppet = System.Instance.load_child(System.Paths.POPPET, above_cards_layer);
-	poppet.position = spawn_position;
-	poppet.rotation_degrees = System.random.randf_range(-40, 40);
-	poppet.move_to(goal_position, color);
-	poppets[poppet.instance_id] = poppet;
-	return poppet;
-		
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 	var judgment_position : Vector2;
@@ -1494,7 +1432,7 @@ func play_bullets_shooting_animation(card : CardData, enemy : CardData, do_zoom 
 	if get_card(card):
 		get_card(card).recoil(enemy_position);
 	if card.shoots_wet_bullets():
-		make_card_wet(enemy, true, false);
+		System.AutoEffects.make_card_wet(enemy, self, true, false);
 	return bullets;
 
 func get_shooting_enemy_position(card : CardData, enemy : CardData) -> Vector2:
@@ -1547,44 +1485,6 @@ func play_tentacles_shooting_animation(card : CardData, enemy : CardData, do_zoo
 	move_card_front(gameplay_card);
 	return tentacles;
 
-func make_card_wet(card : CardData, do_trigger : bool = true, fully_moist : bool = true) -> bool:
-	var player : Player;
-	var would_trigger : bool;
-	var did_gain_keywords : bool;
-	var has_hivemind_for : bool;
-	if !card or card.is_buried:
-		return would_trigger;
-	player = card.controller;
-	has_hivemind_for = card.is_in_hand() and player.has_hivemind_for(CardEnums.Keyword.OCEAN_DWELLER);
-	if (has_hivemind_for or card.has_ocean_dweller()) and (card.controller == player_one or card.is_on_the_field()):
-		if do_trigger:
-			trigger_ocean_dweller(card, player);
-		would_trigger = true;
-	if card.has_tidal() and !card.is_gun():
-		if do_trigger:
-			card.set_card_type(CardEnums.CardType.GUN);
-			update_alterations_for_card(card);
-			if get_card(card):
-				get_card(card).wet_effect();
-			start_wet_wait()
-		would_trigger = true;
-	if !fully_moist:
-		return would_trigger;
-	has_hivemind_for = player.has_hivemind_for_type(CardEnums.CardType.SCISSORS);
-	if (card.is_scissor() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.RUST, false, do_trigger)):
-		did_gain_keywords = true;
-	has_hivemind_for = player.has_hivemind_for_type(CardEnums.CardType.PAPER);
-	if (card.is_paper() and !card.is_aquatic() and card.add_keyword(CardEnums.Keyword.MUSHY, false, do_trigger)):
-		did_gain_keywords = true;
-	if did_gain_keywords:
-		if do_trigger:
-			update_alterations_for_card(card);
-			if get_card(card):
-				get_card(card).wet_effect();
-			start_wet_wait();
-		would_trigger = true;
-	return would_trigger;
-
 func start_wet_wait() -> void:
 	is_wet_wait_on = true;
 	wet_wait_timer.wait_time = System.random.randf_range(WET_MIN_WAIT, WET_MAX_WAIT) * System.game_speed_additive_multiplier;
@@ -1635,12 +1535,12 @@ func opponent_trolling_effect() -> void:
 	troll_timer.start();
 
 func end_round() -> void:
-	if clear_field():
+	if System.EndOfTurn.clear_field(self):
 		start_next_round_timer.wait_time = System.random.randf_range(OCEAN_POINTS_MIN_WAIT, OCEAN_POINTS_MAX_WAIT) * System.game_speed_additive_multiplier;
 		start_next_round_timer.start();
 	else:
 		if is_time_stopped:
-			time_stop_effect_out();
+			System.TimeStop.time_stop_effect_out(self);
 			return;
 		start_next_round();
 
@@ -1648,85 +1548,6 @@ func start_next_round() -> void:
 	times_time_stopped_this_round = 0;
 	set_going_first(!going_first);
 	start_round();
-
-func clear_field() -> bool:
-	var did_trigger_clear_field_effects : bool;
-	if clear_players_field(player_one, round_winner == GameplayEnums.Controller.PLAYER_ONE, round_winner == GameplayEnums.Controller.PLAYER_TWO):
-		did_trigger_clear_field_effects = true;
-	if clear_players_field(player_two, round_winner == GameplayEnums.Controller.PLAYER_TWO, round_winner == GameplayEnums.Controller.PLAYER_ONE):
-		did_trigger_clear_field_effects = true;
-	return did_trigger_clear_field_effects;
-
-func clear_players_field(player : Player, did_win : bool, did_lose : bool) -> bool:
-	var card : CardData;
-	var gameplay_card : GameplayCard;
-	var starting_points : int = player.points;
-	var did_trigger_ocean : bool;
-	var triggered_by_hivemind : bool;
-	var pick_up_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.PICK_UP);
-	for c in player.cards_on_field:
-		if !System.Instance.exists(c):
-			continue;
-		card = c;
-		gameplay_card = get_card(card);
-		if gameplay_card:
-			gameplay_card.despawn();
-	triggered_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.WEREWOLF);
-	for c in player.cards_in_hand:
-		card = c;
-		if triggered_by_hivemind or card.has_werewolf():
-			trigger_werewolf(card);
-	triggered_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.ALPHA_WEREWOLF);
-	for c in player.cards_in_hand:
-		card = c;
-		if triggered_by_hivemind or card.has_alpha_werewolf():
-			trigger_alpha_werewolf(player);
-	if player.played_alpha_werewolf:
-		trigger_alpha_werewolf(player);
-		player.played_alpha_werewolf = false;
-	triggered_by_hivemind = player.has_hivemind_for(CardEnums.Keyword.OCEAN_DWELLER);
-	for c in player.cards_in_hand.duplicate():
-		card = c;
-		gameplay_card = get_card(card);
-		if (triggered_by_hivemind or card.has_ocean_dweller()) and card.controller == player_one:
-			trigger_ocean_dweller(card, player)
-			if gameplay_card and !gameplay_card.is_visiting:
-				gameplay_card.recoil();
-			did_trigger_ocean = true;
-		if !pick_up_by_hivemind and !card.has_pick_up():
-			continue;
-		if gameplay_card:
-			gameplay_card.despawn();
-	player.end_of_turn_clear(did_win);
-	return true;
-
-func trigger_alpha_werewolf(player : Player) -> void:
-	var played_color : CardEnums.CardType = player.true_last_type_played;
-	var card : CardData;
-	var has_hivemind_for_werefolf : bool = player.has_hivemind_for();
-	for c in player.cards_in_hand:
-		card = c;
-		if !has_hivemind_for_werefolf and !card.has_werewolf():
-			continue;
-		card.set_card_type(played_color);
-	for c in player.cards_in_hand:
-		card = c;
-		if !has_hivemind_for_werefolf and !card.has_werewolf():
-			continue;
-		card.add_keyword(CardEnums.Keyword.MULTIPLY);
-		update_alterations_for_card(card);
-
-func trigger_werewolf(card : CardData) -> void:
-	card.controller.trigger_chameleon(card);
-	update_alterations_for_card(card);
-
-func trigger_ocean_dweller(card : CardData, player : Player) -> void:
-	var points : int = calculate_base_points(card, null, true, false);
-	player.gain_points(points);
-	gain_points_effect(player);
-	if get_card(card):
-		get_card(card).wet_effect();
-	spawn_poppets(points, card, player);
 
 func show_opponents_field() -> void:
 	var card : GameplayCard;
@@ -1746,7 +1567,7 @@ func _process(delta : float) -> void:
 		update_points_visibility(delta);
 	if is_trolling:
 		move_troll_layer(delta);
-	time_stop_frame(delta);
+	System.TimeStop.time_stop_frame(delta, self);
 	if is_dying:
 		death_frame(delta);
 	if is_undying:
@@ -1783,164 +1604,6 @@ func update_ocean_pattern() -> void:
 	if !System.Instance.exists(ocean_card):
 		return;
 	ocean_pattern.material.set_shader_parameter("wave_center", System.Vectors.get_scale_position(ocean_card.position));
-
-func init_time_stop() -> void:
-	var shader_material : ShaderMaterial = get_time_stop_material();
-	var shader_material2 : ShaderMaterial = get_time_stop_material();
-	var custom_material : ShaderMaterial;
-	var card : CardData;
-	for node in get_time_stop_nodes():
-		node.material = shader_material;
-	for instance_id in get_custom_time_stop_nodes():
-		if !System.Instance.exists(cards[instance_id]) or !System.Instance.exists(cards[instance_id].card_data):
-			continue;
-		card = cards[instance_id].card_data;
-		custom_material = get_time_stop_material();
-		System.Shaders.set_card_art_shader_parameters(custom_material, card.is_negative_variant(), card.is_holographic, card.is_foil);
-		for node in custom_time_stop_nodes[instance_id]:
-			node.material = custom_material;
-	for node in get_time_stop_nodes2():
-		if !System.Instance.exists(node):
-			continue;
-		node.material = shader_material2;
-	led_wait *= TIME_STOP_LED_ACCELERATION;
-	is_time_stopped = true;
-	results_phase = 0;
-	if animation_instance_id != 0:
-		animation_wait_timer.stop();
-		after_animation(true);
-	play_time_stop_sound();
-
-func get_time_stop_nodes2() -> Array:
-	return time_stop_nodes2 + your_point_meter.get_nodes() + opponents_point_meter.get_nodes() + get_poppet_nodes();
-
-func get_poppet_nodes() -> Array:
-	var nodes : Array;
-	for instance_id in poppets:
-		if !System.Instance.exists(poppets[instance_id]):
-			poppets.erase(instance_id);
-		else:
-			nodes += poppets[instance_id].get_shader_nodes();
-	return nodes;
-
-func get_time_stop_material() -> ShaderMaterial:
-	var shader : Resource = load("res://Shaders/CardEffects/za-warudo-shader.gdshader");
-	var shader_material : ShaderMaterial = ShaderMaterial.new();
-	shader_material.shader = shader;
-	shader_material.set_shader_parameter("time", 0.9999);
-	shader_material.set_shader_parameter("glitch_mix", 0.3);
-	shader_material.set_shader_parameter("bw_mix", 0.96);
-	shader_material.set_shader_parameter("pulse_width", 0.8);
-	return shader_material;
-
-func after_time_stop() -> void:
-	var shader : Resource = load("res://Shaders/Background/background-wave.gdshader");
-	var shader_material : ShaderMaterial = ShaderMaterial.new();
-	var node_card : GameplayCard;
-	shader_material.shader = shader;
-	for node in get_time_stop_nodes():
-		node.material = null;
-	for instance_id in get_custom_time_stop_nodes():
-		node_card = cards[instance_id];
-		node_card.add_art_base_shader(true);
-	for node in get_time_stop_nodes2():
-		if !System.Instance.exists(node):
-			continue;
-		node.material = null;
-	for card in cards.values():
-		if !System.Instance.exists(card):
-			continue;
-		card.after_time_stop();
-		
-	for node in [
-		background_pattern,
-		die_pattern,
-		your_point_pattern,
-		opponents_point_pattern,
-		gameplay_title
-	]:
-		node.material = shader_material;
-	led_wait /= TIME_STOP_LED_ACCELERATION;
-	System.update_game_speed(1);
-	is_time_stopped = false;
-	is_stopping_time = false;
-	has_been_stopping_turn = false;
-	time_stopping_player = null;
-	for bullet in time_stopped_bullets:
-		bullet.speed_up();
-	time_stopped_bullets = [];
-	pre_results_timer.start();
-
-func time_stop_frame(delta : float) -> void:
-	if !is_stopping_time and !is_accelerating_time:
-		return;
-	time_stop_velocity = System.Scale.baseline(time_stop_velocity, time_stop_goal_velocity, delta * TIME_STOP_ACCELERATION_SPEED * System.game_speed);
-	if is_stopping_time:
-		time_stop_shader_time -= time_stop_velocity * delta * System.game_speed;
-		if time_stop_shader_time <= 0:
-			time_stop_shader_time = 1.9999;
-			time_stop_goal_velocity = System.random.randf_range(TIME_STOP_IN_BW_MIN_SPEED, TIME_STOP_IN_BW_MAX_SPEED);
-		if time_stop_goal_velocity < TIME_STOP_IN_GLITCH_MIN_SPEED and time_stop_shader_time <= 1.0001:
-			time_stop_shader_time = 1.001;
-			time_stop_velocity = 0;
-	if is_accelerating_time:
-		time_stop_shader_time += time_stop_velocity * delta * System.game_speed;
-		if time_stop_shader_time >= 1.9999:
-			time_stop_shader_time = 0;
-			time_stop_goal_velocity = time_stop_goal_velocity2;
-		if time_stop_goal_velocity > TIME_STOP_OUT_BW_MAX_SPEED and time_stop_shader_time >= 0.9999:
-			time_stop_shader_time = 0.9999;
-			is_accelerating_time = false;
-			time_stop_velocity = 0;
-			after_time_stop();
-	System.update_game_speed(System.Scale.baseline(\
-		System.game_speed, TIME_STOP_GAME_SPEED if is_stopping_time else 1, delta));
-	update_time_stop_time();
-
-func get_time_stop_nodes() -> Array:
-	for node in time_stop_nodes.duplicate():
-		if !System.Instance.exists(node):
-			time_stop_nodes.erase(node);
-	return time_stop_nodes;
-
-func get_custom_time_stop_nodes() -> Dictionary:
-	for instance_id in custom_time_stop_nodes.duplicate():
-		if !cards.has(instance_id) or !System.Instance.exists(cards[instance_id]):
-			custom_time_stop_nodes.erase(instance_id);
-	return custom_time_stop_nodes;
-
-func update_time_stop_time() -> void:
-	for node in get_time_stop_nodes():
-		if !node.material:
-			continue;
-		node.material.set_shader_parameter("time", time_stop_shader_time);
-		break;
-	for instance_id in get_custom_time_stop_nodes():
-		for node in custom_time_stop_nodes[instance_id]:
-			if !node.material:
-				continue;
-			node.material.set_shader_parameter("time", time_stop_shader_time);
-	for node in time_stop_nodes2:
-		if node.material == null:
-			break;
-		node.material.set_shader_parameter("time", time_stop_shader_time);
-		break;
-
-func time_stop_effect_in() -> void:
-	init_time_stop();
-	time_stop_shader_time = 0.9999;
-	is_accelerating_time = false;
-	is_stopping_time = true;
-	time_stop_goal_velocity = System.random.randf_range(TIME_STOP_IN_GLITCH_MIN_SPEED, TIME_STOP_IN_GLITCH_MAX_SPEED);
-
-func time_stop_effect_out() -> void:
-	time_stop_shader_time = 1.01;
-	is_stopping_time = false;
-	is_accelerating_time = true;
-	time_stop_goal_velocity = System.random.randf_range(TIME_STOP_OUT_BW_MIN_SPEED, TIME_STOP_OUT_BW_MAX_SPEED);
-	time_stop_goal_velocity2 = System.random.randf_range(TIME_STOP_OUT_GLITCH_MIN_SPEED, TIME_STOP_OUT_GLITCH_MAX_SPEED);
-	emit_signal("stop_music_if_special");
-	play_time_stop_sound_reverse();
 
 func move_troll_layer(delta : float) -> void:
 	trolling_sprite.position += delta * System.game_speed * Vector2(
@@ -2123,9 +1786,9 @@ func after_ocean(is_forced : bool) -> void:
 	var enemy : CardData = get_opponent(card).get_field_card() if System.Instance.exists(ocean_card) else null;
 	if is_forced:
 		return;
-	make_card_wet(enemy);
+	System.AutoEffects.make_card_wet(enemy, self);
 	if !has_ocean_wet_self:
-		make_card_wet(card);
+		System.AutoEffects.make_card_wet(card, self);
 
 func after_positive(is_forced : bool, points : int, card : CardData, player : Player) -> void:
 	if get_card(card):
@@ -2134,7 +1797,7 @@ func after_positive(is_forced : bool, points : int, card : CardData, player : Pl
 		return;
 	player.gain_points(points);
 	gain_points_effect(player);
-	spawn_poppets(points, card, player);
+	System.EyeCandy.spawn_poppets(points, card, player, self);
 	
 func after_animation(is_forced : bool = false) -> void:
 	var animation_data : Dictionary;

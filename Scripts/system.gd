@@ -1,8 +1,11 @@
 extends Node
 
+const AutoEffects : GDScript = preload("res://Scripts/System/auto-effects.gd");
 const Data : GDScript = preload("res://Scripts/System/data.gd");
 const Dictionaries : GDScript = preload("res://Scripts/System/dictionaries.gd");
 const Display : int = 2;
+const EndOfTurn : GDScript = preload("res://Scripts/System/end-of-turn.gd");
+const EyeCandy : GDScript = preload("res://Scripts/System/eye-candy.gd");
 const Fighting : GDScript = preload("res://Scripts/System/fighting.gd");
 const Floats : GDScript = preload("res://Scripts/System/floats.gd");
 const Instance : GDScript = preload("res://Scripts/System/instance.gd");
@@ -16,6 +19,7 @@ const Random : GDScript = preload("res://Scripts/System/random.gd");
 const Rules : GDScript = preload("res://Scripts/System/rules.gd");
 const Scale : GDScript = preload("res://Scripts/System/scale.gd");
 const Shaders : GDScript = preload("res://Scripts/System/shaders.gd");
+const TimeStop : GDScript = preload("res://Scripts/System/time-stop.gd");
 const Vectors : GDScript = preload("res://Scripts/System/vectors.gd");
 const Window_ : Vector2 = Vector2(1080, 1920);
 

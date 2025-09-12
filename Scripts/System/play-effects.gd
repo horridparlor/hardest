@@ -260,7 +260,7 @@ static func activate_time_stop(card : CardData, gameplay : Gameplay) -> void:
 		return;
 	gameplay.time_stopping_player = card.controller;
 	gameplay.times_time_stopped_this_round += 1;
-	gameplay.time_stop_effect_in();
+	System.TimeStop.time_stop_effect_in(gameplay);
 
 static func celebrate(player : Player, gameplay : Gameplay) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();

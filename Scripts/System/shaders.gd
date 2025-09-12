@@ -46,3 +46,13 @@ static func dissolve_shader(is_negative : bool = false, is_holographic : bool = 
 
 static func new_shader_material() -> ShaderMaterial:
 	return ShaderMaterial.new();
+
+static func time_stop_material() -> ShaderMaterial:
+	var shader : Resource = load("res://Shaders/CardEffects/za-warudo-shader.gdshader");
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	shader_material.shader = shader;
+	shader_material.set_shader_parameter("time", 0.9999);
+	shader_material.set_shader_parameter("glitch_mix", 0.3);
+	shader_material.set_shader_parameter("bw_mix", 0.96);
+	shader_material.set_shader_parameter("pulse_width", 0.8);
+	return shader_material;

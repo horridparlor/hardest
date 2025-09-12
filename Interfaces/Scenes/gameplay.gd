@@ -9,25 +9,14 @@ signal stop_music
 signal stop_music_if_special
 signal play_prev_song
 
-enum AnimationType {
-	NULL,
-	OCEAN,
-	POSITIVE
-}
-
-enum SpyType {
-	DIRT,
-	FIGHT
-}
-
 const AnimationMinWaitTime : Dictionary = {
-	AnimationType.OCEAN: 3.8 * Config.GAME_SPEED_MULTIPLIER,
-	AnimationType.POSITIVE: 3.7 * Config.GAME_SPEED_MULTIPLIER
+	GameplayEnums.AnimationType.OCEAN: 3.8 * Config.GAME_SPEED_MULTIPLIER,
+	GameplayEnums.AnimationType.POSITIVE: 3.7 * Config.GAME_SPEED_MULTIPLIER
 }
 
 const AnimationMaxWaitTime : Dictionary = {
-	AnimationType.OCEAN: 4.0 * Config.GAME_SPEED_MULTIPLIER,
-	AnimationType.POSITIVE: 4.0 * Config.GAME_SPEED_MULTIPLIER
+	GameplayEnums.AnimationType.OCEAN: 4.0 * Config.GAME_SPEED_MULTIPLIER,
+	GameplayEnums.AnimationType.POSITIVE: 4.0 * Config.GAME_SPEED_MULTIPLIER
 }
 
 const HAND_POSITION : Vector2 = Vector2(0, 760);
@@ -39,16 +28,10 @@ const FIELD_START_LINE : int = -100;
 const FIELD_END_LINE : int = 445;
 const FIELD_POSITION : Vector2 = Vector2(0, FIELD_START_LINE + (FIELD_END_LINE - FIELD_START_LINE) / 2);
 const ENEMY_FIELD_POSITION : Vector2 = Vector2(0, 2 * FIELD_START_LINE);
-const VISIT_POSITION : Vector2 = Vector2(-350, 350);
 const DEATH_PANEL_SIZE : Vector2 = Vector2(200, 100);
 const DYING_SPEED : float = 1.2;
 const UNDYING_SPEED : float = 4.8;
 const HAND_FITS_CARDS : float = 4.72;
-const WHOLE_HAND_SPY_MARGIN : Vector2 = Vector2(200, 20);
-const WHOLE_HAND_MAX_SPY_MARGIN : Vector2 = 3 * WHOLE_HAND_SPY_MARGIN;
-const WHOLE_HAND_SPY_MIN_WAIT : float = 0.21 * Config.GAME_SPEED_MULTIPLIER;
-const WHOLE_HAND_SPY_MAX_WAIT : float = 0.26 * Config.GAME_SPEED_MULTIPLIER;
-const DIRT_AFTER_WAIT : float = 0.5 * Config.GAME_SPEED_MULTIPLIER;
 
 const ROUND_RESULTS_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
 const PRE_RESULTS_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
@@ -153,6 +136,12 @@ const TIME_STOP_OUT_BW_MAX_SPEED : float = 0.9 * Config.GAME_SPEED;
 const TIME_STOP_OUT_GLITCH_MIN_SPEED : float = 5 * Config.GAME_SPEED;
 const TIME_STOP_OUT_GLITCH_MAX_SPEED : float = 8.9 * Config.GAME_SPEED;
 
+const VISIT_POSITION : Vector2 = Vector2(-350, 350);
+const WHOLE_HAND_SPY_MARGIN : Vector2 = Vector2(200, 20);
+const WHOLE_HAND_MAX_SPY_MARGIN : Vector2 = 3 * WHOLE_HAND_SPY_MARGIN;
+const WHOLE_HAND_SPY_MIN_WAIT : float = 0.21 * Config.GAME_SPEED_MULTIPLIER;
+const WHOLE_HAND_SPY_MAX_WAIT : float = 0.26 * Config.GAME_SPEED_MULTIPLIER;
+const DIRT_AFTER_WAIT : float = 0.5 * Config.GAME_SPEED_MULTIPLIER;
 
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
@@ -215,10 +204,10 @@ var ocean_effect_speed_exponent : float;
 var is_waiting_for_animation_to_finnish : bool;
 var animation_instance_id : int;
 var animations : Dictionary;
-var current_animation_type : AnimationType = AnimationType.NULL;
+var current_animation_type : GameplayEnums.AnimationType = GameplayEnums.AnimationType.NULL;
 var has_ocean_wet_self : bool;
 var cards_to_dissolve : Dictionary;
-var current_spy_type : SpyType;
+var current_spy_type : GameplayEnums.SpyType;
 var is_spying_whole_hand : bool;
 var is_already_whole_spying : bool;
 var times_time_stopped_this_round : int;

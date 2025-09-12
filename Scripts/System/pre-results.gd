@@ -68,7 +68,7 @@ static func transform_mimics(your_cards : Array, player : Player, opponent : Pla
 			card.is_buried = false;
 			if card.has_hydra() or card.has_auto_hydra():
 				player.build_hydra(card, false, false);
-			gameplay.trigger_play_effects(card, player, opponent);
+			System.PlayEffects.trigger_play_effects(card, player, opponent, gameplay);
 			gameplay.show_multiplier_bar(gameplay.get_card(card));
 			transformed_any = true;
 		if card.has_copycat() and opponent.get_field_card():

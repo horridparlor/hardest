@@ -100,3 +100,14 @@ const CharacterToId : Dictionary = {
 	Character.SWARMYARD: 13,
 	Character.SISTERS: 14
 }
+
+enum AnimationType {
+	NULL,
+	OCEAN,
+	POSITIVE
+}
+
+enum SpyType {
+	DIRT,
+	FIGHT
+}

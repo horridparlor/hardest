@@ -458,7 +458,7 @@ func resolve_spying_whole_hand(opponent : Player) -> void:
 	var results = BattleRoyale.new([card], enemies, has_priority).results;
 	var defender : CardData;
 	var is_not_first : bool;
-	if current_spy_type == SpyType.DIRT:
+	if current_spy_type == GameplayEnums.SpyType.DIRT:
 		for c in enemies:
 			card = c;
 			inflict_dirt_on_card(card, opponent);
@@ -498,7 +498,7 @@ func resolve_spying(spy_target : GameplayCard) -> void:
 	var opponent : Player = enemy.controller;
 	var player : Player = get_opponent(enemy);
 	var card : CardData = player.get_field_card();
-	if current_spy_type == SpyType.DIRT:
+	if current_spy_type == GameplayEnums.SpyType.DIRT:
 		inflict_dirt_on_card(enemy, opponent);
 		start_spying_wait();
 		return;
@@ -529,7 +529,7 @@ func animate_spying_fight(card : CardData, player : Player, enemy : CardData, op
 			if is_spying_all:
 				return false;
 			if cards_to_spy > 0:
-				if spy_opponent(card, player, opponent, cards_to_spy, spy_zone):
+				if System.PlayEffects.spy_opponent(card, player, opponent, self, cards_to_spy, spy_zone):
 					return true;
 			if player != active_player and active_player.hand_empty():
 				stop_spying();
@@ -734,7 +734,7 @@ func play_card(card : GameplayCard, player : Player, opponent : Player, is_digit
 			auto_play_timer.start();
 		return false;
 	elif !card.card_data.is_buried:
-		trigger_play_effects(card.card_data, player, opponent);
+		System.PlayEffects.trigger_play_effects(card.card_data, player, opponent, self);
 	if player == player_two:
 		show_opponents_field();
 		return true;
@@ -799,10 +799,10 @@ func check_for_devoured(card : GameplayCard, player : Player, opponent : Player,
 			player.burn_card(card.card_data);
 		player.send_from_field_to_grave(card.card_data);
 		if eater_was_face_down:
-			trigger_play_effects(enemy, opponent, player);
+			System.PlayEffects.trigger_play_effects(enemy, opponent, player, self);
 		else:
 			for keyword in devoured_keywords:
-				trigger_play_effects(enemy, opponent, player, keyword);
+				System.PlayEffects.trigger_play_effects(enemy, opponent, player, self, keyword);
 		update_alterations_for_card(enemy);
 		spawn_tongue(card, get_card(enemy));
 		erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * 0.1 \
@@ -862,173 +862,96 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 	cards_layer2.add_child(card);
 	card.despawn(despawn_position);
 
-func trigger_play_effects(card : CardData, player : Player, opponent : Player, only_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
-	var enemy : CardData = opponent.get_field_card();
-	var keywords : Array = [only_keyword] if only_keyword != CardEnums.Keyword.NULL else card.get_keywords();
-	if enemy and enemy.has_carrot_eater() and !is_time_stopped:
-		eat_carrot(enemy);
-	for keyword in keywords:
-		match keyword:
-			CardEnums.Keyword.ALPHA_WEREWOLF:
-				player.played_alpha_werewolf = true;
-			CardEnums.Keyword.CELEBRATE:
-				celebrate(player);
-			CardEnums.Keyword.CLONING:
-				trigger_cloning(card, player);
-			CardEnums.Keyword.COIN_FLIP:
-				trigger_coin_flip(card);
-			CardEnums.Keyword.CONTAGIOUS:
-				trigger_contagious(card, player);
-			CardEnums.Keyword.HORSE_GEAR:
-				draw_horse_card(player);
-			CardEnums.Keyword.INFLUENCER:
-				influence_opponent(opponent, card.card_type);
-			CardEnums.Keyword.PERFECT_CLONE:
-				trigger_cloning(card, player, true);
-			CardEnums.Keyword.RAINBOW:
-				opponent.get_rainbowed();
-				update_card_alterations(true);
-			CardEnums.Keyword.RELOAD:
-				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
-			CardEnums.Keyword.SABOTAGE:
-				trigger_sabotage(opponent);
-			CardEnums.Keyword.SCAMMER:
-				player.points = -100;
-				gain_points_effect(player);
-			CardEnums.Keyword.SPRING_ARRIVES:
-				trigger_spring_arrives(card, player);
-			CardEnums.Keyword.VERY_NUTTY:
-				if !enemy or !enemy.has_november():
-					player.nut_multiplier *= 2;
-			CardEnums.Keyword.WRAPPED:
-				player.gained_keyword = CardEnums.Keyword.BURIED;
-	if is_time_stopped:
-		return;
-	if card.has_time_stop():
-		activate_time_stop(card);
-		return;
-	for keyword in keywords:
-		match keyword:
-			CardEnums.Keyword.BERSERK:
-				spy_opponent(card, player, opponent, System.Rules.MAX_BERSERKER_SHOTS, CardEnums.Zone.DECK);
-			CardEnums.Keyword.CARROT_EATER:
-				eat_carrot(card);
-			CardEnums.Keyword.DIRT:
-				spy_opponent(card, player, opponent, 1, CardEnums.Zone.HAND, SpyType.DIRT);
-			CardEnums.Keyword.MULTI_SPY:
-				spy_opponent(card, player, opponent, 3);
-			CardEnums.Keyword.NUT_COLLECTOR:
-				if !enemy or !enemy.has_november():
-					collect_nuts(player);
-			CardEnums.Keyword.OCEAN:
-				trigger_ocean(card);
-			CardEnums.Keyword.POSITIVE:
-				trigger_positive(card, enemy, player);
-			CardEnums.Keyword.SPY:
-				spy_opponent(card, player, opponent);
+func turn_card_into_another(card : CardData) -> void:
+	var player : Player = card.controller;
+	player.make_card_alterations_permanent(card);
+	if card.has_auto_hydra():
+		player.build_hydra(card, true);
+	update_alterations_for_card(card, true);
 
-func trigger_coin_flip(card : CardData) -> void:
-	var wins : int;
-	var base_odds : int = 2;
-	var odds : int;
-	var super_luck : int;
-	var boosted_luck : int;
-	var permanent_luck : int;
-	if card.is_foil:
-		super_luck += 1;
-		boosted_luck += 2;
-	if card.is_holographic:
-		super_luck += 2;
-		boosted_luck += 1;
-	if card.is_foil and card.is_holographic:
-		permanent_luck += 1;
-		if card.has_rare_stamp():
-			permanent_luck += 1;
-			if card.is_negative_variant():
-				permanent_luck += 1;
-		elif card.is_negative_variant():
-			boosted_luck += 1;
-	if card.is_negative_variant():
-		boosted_luck += 2;
-	if card.has_rare_stamp():
-		super_luck += 1;
-	if card.has_max_keywords():
-		boosted_luck += 1;
-	while true:
-		odds = base_odds + permanent_luck;
-		if super_luck > 0:
-			odds += 2;
-			super_luck -= 1;
-		elif boosted_luck > 0:
-			odds += 1;
-			boosted_luck -= 1;
-		if System.Random.chance(odds):
-			break;
-		wins += 1;
-	card.multiply_advantage *= pow(2, wins);
-	if wins > 0:
-		show_coin_flip_effect(wins, card.controller.controller);
-	else:
-		spawn_a_coin(false, card.controller.controller);
-		play_coin_lose_sound();
+func wait_for_animation(card : CardData, type : GameplayEnums.AnimationType, animation_data : Dictionary = {}) -> int:
+	var instance_id = System.Random.instance_id();
+	var animation_sound : Resource;
+	if animation_instance_id != 0:
+		animation_wait_timer.stop();
+		after_animation(true);
+	animation_instance_id = instance_id;
+	animation_data.type = type;
+	current_animation_type = type;
+	animations[instance_id] = animation_data;
+	animation_wait_timer.wait_time = System.random.randf_range(AnimationMinWaitTime[type], AnimationMaxWaitTime[type]) * System.game_speed_additive_multiplier;
+	animation_wait_timer.start();
+	is_waiting_for_animation_to_finnish = true;
+	results_phase = 0;
+	match type:
+		GameplayEnums.AnimationType.OCEAN:
+			pass;
+		GameplayEnums.AnimationType.POSITIVE:
+			if get_card(animation_data.card):
+				get_card(animation_data.card).shine_star_effect();
+	if get_card(card):
+		ocean_card = get_card(card);
+	ocean_pattern.material = get_ocean_material_for_animation(animation_data.type);
+	ocean_effect_wave_speed = System.random.randf_range(OCEAN_EFFECT_MIN_STARTING_WAVE_SPEED, OCEAN_EFFECT_MAX_STARTING_WAVE_SPEED);
+	ocean_effect_speed_exponent = System.random.randf_range(OCEAN_SPEED_EFFECT_MIN_EXPONENT, OCEAN_SPEED_EFFECT_MAX_EXPONENT);
+	is_low_tiding = false;
+	ocean_pattern.visible = true;
+	ocean_pattern.modulate.a = 0;
+	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED);
+	match animation_data.type:
+		GameplayEnums.AnimationType.POSITIVE:
+			high_tide_speed *= 2;
+			ocean_effect_speed_exponent /= 5;
+	emit_signal("stop_music");
+	if Config.MUTE_SFX:
+		return instance_id;
+	animation_sfx.stream = load(get_animation_sound_path(type));
+	animation_sfx.volume_db = Config.SFX_VOLUME + Config.GUN_VOLUME;
+	animation_sfx.play();
+	return instance_id;
 
-func show_coin_flip_effect(coins_to_spawn : int, controller : GameplayEnums.Controller) -> void:
-	var scales : Array;
-	var max_scale : float = 1.0;
-	if coins_to_spawn >= 100:
-		max_scale = 1.6;
-	elif coins_to_spawn >= 50:
-		max_scale = 1.5;
-	elif coins_to_spawn >= 20:
-		max_scale = 1.4;
-	elif coins_to_spawn >= 10:
-		max_scale = 1.3;
-	elif coins_to_spawn >= 5:
-		max_scale = 1.2;
-	elif coins_to_spawn > 1:
-		max_scale = 1.1;
-	for i in range(coins_to_spawn):
-		scales.append(Coin.get_base_scale(max_scale));
-	scales.sort();
-	scales.reverse();
-	for scale in scales:
-		spawn_a_coin(true, controller, scale);
-	play_coin_flip_sound();
+func get_ocean_material_for_animation(type : GameplayEnums.AnimationType) -> ShaderMaterial:
+	var shader : Resource;
+	var shader_material : ShaderMaterial = ShaderMaterial.new();
+	match type:
+		GameplayEnums.AnimationType.OCEAN:
+			shader = load("res://Shaders/CardEffects/ocean-shader.gdshader");
+		GameplayEnums.AnimationType.POSITIVE:
+			shader = load("res://Shaders/Background/star-wave.gdshader");
+	shader_material.shader = shader;
+	match type:
+		GameplayEnums.AnimationType.OCEAN:
+			shader_material.set_shader_parameter("wave_speed", 1.0);
+			shader_material.set_shader_parameter("wave_frequency", 20.0);
+			shader_material.set_shader_parameter("wave_amplitude", 0.02);
+			shader_material.set_shader_parameter("water_color", Color(0.0, 0.4, 0.8, 1.0));
+			shader_material.set_shader_parameter("shine_speed", 10.0);
+			shader_material.set_shader_parameter("shine_color", Color(1.0, 1.0, 1.0, 1.0));
+			shader_material.set_shader_parameter("shine_strength", 0.3);
+			shader_material.set_shader_parameter("opacity", 1.0);
+			shader_material.set_shader_parameter("mix_rate", 1.0);
+		GameplayEnums.AnimationType.POSITIVE:
+			shader_material.set_shader_parameter("wave_speed", 0)
+			shader_material.set_shader_parameter("wave_frequency", 20.0)
+			shader_material.set_shader_parameter("wave_amplitude", 0.02)
+			shader_material.set_shader_parameter("star_points", 5)
+			shader_material.set_shader_parameter("star_sharpness", 5.0)
+			shader_material.set_shader_parameter("star_color", Color(1.0, 1.0, 0.0, 1.0))
+			shader_material.set_shader_parameter("shine_speed", 5.0)
+			shader_material.set_shader_parameter("shine_color", Color(0.0, 0.0, 0.7, 1.0))
+			shader_material.set_shader_parameter("shine_strength", 5.0)
+			shader_material.set_shader_parameter("opacity", 1.0)
+			shader_material.set_shader_parameter("mix_rate", 1.0)
+			shader_material.set_shader_parameter("wave_center", Vector2(0.5, 0.5))
+	return shader_material;
 
-func spawn_a_coin(did_win : bool = true, controller : GameplayEnums.Controller = GameplayEnums.Controller.NULL, overwrite_scale : float = -1) -> void:
-	var coin : Coin = System.Instance.load_child(System.Paths.COIN, above_cards_layer);
-	match controller:
-		GameplayEnums.Controller.PLAYER_ONE:
-			coin.position.x = -abs(coin.position.x);
-		GameplayEnums.Controller.PLAYER_TWO:
-			coin.position.x = abs(coin.position.x);
-	if overwrite_scale > 0:
-		coin.base_sprite_scale = overwrite_scale;
-	if did_win:
-		coin.init();
-	else:
-		coin.lose_init();
-
-func trigger_sabotage(opponent : Player) -> void:
-	var enemy : CardData;
-	var source : Array = opponent.cards_in_hand.filter(func(card : CardData): return !card.has_cursed());
-	var count : int = source.size();
-	var max_margin_value : int = min(WHOLE_HAND_MAX_SPY_MARGIN.x, (count - 1) * WHOLE_HAND_SPY_MARGIN.x) * System.Floats.direction(opponent.visit_point.y);
-	var max_margin : Vector2 = Vector2(max_margin_value, max_margin_value * (WHOLE_HAND_SPY_MARGIN.y / WHOLE_HAND_SPY_MARGIN.x));
-	var margin : Vector2 = -max_margin / 2;
-	var margin_increment : Vector2 = max_margin / (count - 1);
-	if count == 0:
-		return;
-	play_sabotage_sound();
-	if opponent.has_hivemind_for():
-		for c in source:
-			enemy = c;
-			opponent.discard_from_hand(enemy);
-			inflict_sabotage_on_card(enemy, opponent, margin);
-			margin += margin_increment;
-		return;
-	enemy = opponent.random_discard(true);
-	inflict_sabotage_on_card(enemy, opponent);
+func get_animation_sound_path(type : GameplayEnums.AnimationType) -> String:
+	match type:
+		GameplayEnums.AnimationType.OCEAN:
+			return "res://Assets/SFX/CardSounds/Bursts/ocean.wav";
+		GameplayEnums.AnimationType.POSITIVE:
+			return "res://Assets/SFX/CardSounds/Bursts/positive-sound.wav";
+	return "";
 
 func play_sabotage_sound() -> void:
 	play_throwable_sfx(SABOTAGE_SOUND_PATH);
@@ -1045,256 +968,6 @@ func play_spy_sound() -> void:
 func play_digital_sound() -> void:
 	play_throwable_sfx(DIGITAL_SOUND_PATH);
 
-func inflict_sabotage_on_card(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
-	var gameplay_card : GameplayCard;
-	if !System.Instance.exists(card):	
-		return;
-	gameplay_card = spawn_card(card);
-	gameplay_card.sabotage_effect();
-	if player == player_one:
-		show_hand();
-		gameplay_card.go_visit_point(VISIT_POSITION + margin);
-		cards_to_dissolve[card.instance_id] = card;
-	else:
-		gameplay_card = spawn_card(card);
-		gameplay_card.go_visit_point(-VISIT_POSITION + margin);
-		cards_to_dissolve[card.instance_id] = card;
-
-func trigger_spring_arrives(card : CardData, player : Player) -> void:
-	var hand_size : int = player.count_hand();
-	player.fill_hand();
-	for i in range(System.Rules.MAX_HAND_SIZE - hand_size):
-		card.multiply_advantage *= 2;
-	if player == player_one:
-		show_hand();
-
-func trigger_contagious(source_card : CardData, player : Player) -> void:
-	var card_type : CardEnums.CardType = source_card.card_type;
-	var source : Array;
-	var card : CardData;
-	for c in player.cards_in_hand:
-		card = c;
-		if !card.card_types.has(card_type):
-			source.append(card);
-	if source.is_empty():
-		return;
-	if player.has_hivemind_for():
-		for c in source.duplicate():
-			card = c;
-			inflict_contagious_on_card(card, card_type, player);
-		return;
-	card = System.Random.item(source);
-	inflict_contagious_on_card(card, card_type, player);
-
-func inflict_contagious_on_card(card : CardData, card_type : CardEnums.CardType, player : Player) -> void:
-	if card.is_dual_type() and CardEnums.BASIC_COLORS.has(card_type):
-		card_type = System.Random.item(CardData.expand_type(card_type));
-	player.rainbow_a_card(card, card_type);
-	turn_card_into_another(card);
-
-func turn_card_into_another(card : CardData) -> void:
-	var player : Player = card.controller;
-	player.make_card_alterations_permanent(card);
-	if card.has_auto_hydra():
-		player.build_hydra(card, true);
-	update_alterations_for_card(card, true);
-	
-
-func trigger_cloning(card : CardData, player : Player, is_perfect_clone : bool = false) -> void:
-	var card_to_clone : CardData;
-	if player.hand_empty() or player.hand_full():
-		return;
-	if player.has_hivemind_for():
-		for c in player.cards_in_hand.duplicate():
-			card_to_clone = c;
-			clone_card(card_to_clone, player, is_perfect_clone);
-			if player.hand_full():
-				break;
-		show_hand();
-		return;
-	card_to_clone = System.Random.item(player.cards_in_hand);
-	clone_card(card_to_clone, player, is_perfect_clone);
-	show_hand();
-
-func clone_card(card_to_clone : CardData, player : Player, is_perfect_clone : bool = false) -> void:
-	var cloned_card : CardData;
-	var gameplay_card : GameplayCard;
-	cloned_card = player.spawn_card(card_to_clone, CardEnums.Zone.HAND);
-	cloned_card.spawn_id = System.random.randi();
-	if is_perfect_clone:
-		cloned_card.is_holographic = true;
-		cloned_card.stamp = CardEnums.Stamp.RARE;
-	if cloned_card.controller == player_two:
-		return;
-	gameplay_card = spawn_card(cloned_card);
-	player.make_new_card_permanent(cloned_card);
-	if get_card(card_to_clone):
-		var pos : Vector2 = get_card(card_to_clone).position;
-		gameplay_card.position = pos + Vector2(-2, 0);
-
-func trigger_positive(card : CardData, enemy : CardData, player : Player) -> void:
-	var multiplier : int = calculate_base_points(card, enemy, true, false);
-	var points_gained : int = player.gain_points(player.points * multiplier, false);
-	if points_gained == 0:
-		return;
-	wait_for_animation(card, AnimationType.POSITIVE, {
-		"points": points_gained,
-		"card": card,
-		"player": player
-	});
-
-func wait_for_animation(card : CardData, type : AnimationType, animation_data : Dictionary = {}) -> void:
-	var instance_id = System.Random.instance_id();
-	var animation_sound : Resource;
-	if animation_instance_id != 0:
-		animation_wait_timer.stop();
-		after_animation(true);
-	animation_instance_id = instance_id;
-	animation_data.type = type;
-	current_animation_type = type;
-	animations[instance_id] = animation_data;
-	animation_wait_timer.wait_time = System.random.randf_range(AnimationMinWaitTime[type], AnimationMaxWaitTime[type]) * System.game_speed_additive_multiplier;
-	animation_wait_timer.start();
-	is_waiting_for_animation_to_finnish = true;
-	results_phase = 0;
-	match type:
-		AnimationType.OCEAN:
-			pass;
-		AnimationType.POSITIVE:
-			if get_card(animation_data.card):
-				get_card(animation_data.card).shine_star_effect();
-	if get_card(card):
-		ocean_card = get_card(card);
-	ocean_pattern.material = get_ocean_material_for_animation(animation_data.type);
-	ocean_effect_wave_speed = System.random.randf_range(OCEAN_EFFECT_MIN_STARTING_WAVE_SPEED, OCEAN_EFFECT_MAX_STARTING_WAVE_SPEED);
-	ocean_effect_speed_exponent = System.random.randf_range(OCEAN_SPEED_EFFECT_MIN_EXPONENT, OCEAN_SPEED_EFFECT_MAX_EXPONENT);
-	is_low_tiding = false;
-	ocean_pattern.visible = true;
-	ocean_pattern.modulate.a = 0;
-	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED);
-	match animation_data.type:
-		AnimationType.POSITIVE:
-			high_tide_speed *= 2;
-			ocean_effect_speed_exponent /= 5;
-	emit_signal("stop_music");
-	if Config.MUTE_SFX:
-		return;
-	animation_sfx.stream = load(get_animation_sound_path(type));
-	animation_sfx.volume_db = Config.SFX_VOLUME + Config.GUN_VOLUME;
-	animation_sfx.play();
-
-func get_ocean_material_for_animation(type : AnimationType) -> ShaderMaterial:
-	var shader : Resource;
-	var shader_material : ShaderMaterial = ShaderMaterial.new();
-	match type:
-		AnimationType.OCEAN:
-			shader = load("res://Shaders/CardEffects/ocean-shader.gdshader");
-		AnimationType.POSITIVE:
-			shader = load("res://Shaders/Background/star-wave.gdshader");
-	shader_material.shader = shader;
-	match type:
-		AnimationType.OCEAN:
-			shader_material.set_shader_parameter("wave_speed", 1.0);
-			shader_material.set_shader_parameter("wave_frequency", 20.0);
-			shader_material.set_shader_parameter("wave_amplitude", 0.02);
-			shader_material.set_shader_parameter("water_color", Color(0.0, 0.4, 0.8, 1.0));
-			shader_material.set_shader_parameter("shine_speed", 10.0);
-			shader_material.set_shader_parameter("shine_color", Color(1.0, 1.0, 1.0, 1.0));
-			shader_material.set_shader_parameter("shine_strength", 0.3);
-			shader_material.set_shader_parameter("opacity", 1.0);
-			shader_material.set_shader_parameter("mix_rate", 1.0);
-		AnimationType.POSITIVE:
-			shader_material.set_shader_parameter("wave_speed", 0)
-			shader_material.set_shader_parameter("wave_frequency", 20.0)
-			shader_material.set_shader_parameter("wave_amplitude", 0.02)
-			shader_material.set_shader_parameter("star_points", 5)
-			shader_material.set_shader_parameter("star_sharpness", 5.0)
-			shader_material.set_shader_parameter("star_color", Color(1.0, 1.0, 0.0, 1.0))
-			shader_material.set_shader_parameter("shine_speed", 5.0)
-			shader_material.set_shader_parameter("shine_color", Color(0.0, 0.0, 0.7, 1.0))
-			shader_material.set_shader_parameter("shine_strength", 5.0)
-			shader_material.set_shader_parameter("opacity", 1.0)
-			shader_material.set_shader_parameter("mix_rate", 1.0)
-			shader_material.set_shader_parameter("wave_center", Vector2(0.5, 0.5))
-	return shader_material;
-
-func get_animation_sound_path(type : AnimationType) -> String:
-	match type:
-		AnimationType.OCEAN:
-			return "res://Assets/SFX/CardSounds/Bursts/ocean.wav";
-		AnimationType.POSITIVE:
-			return "res://Assets/SFX/CardSounds/Bursts/positive-sound.wav";
-	return "";
-
-func draw_horse_card(player : Player) -> void:
-	if player.draw_horse():
-		show_hand();
-
-func trigger_ocean(card : CardData) -> void:
-	var enemy : CardData = get_opponent(card).get_field_card();
-	var cards_to_wet : Array = player_one.cards_in_hand.duplicate() + player_two.cards_in_hand.duplicate() + ([enemy] if enemy else []) + [card];
-	var wait_per_card_trigger : float;
-	var triggers : int;
-	for c in cards_to_wet:
-		if make_card_wet(c, false) and (c.controller == player_one or c.is_on_the_field()):
-			triggers += 1;
-	has_ocean_wet_self = false;
-	wait_for_animation(card, AnimationType.OCEAN);
-	wait_per_card_trigger = animation_wait_timer.wait_time / (triggers + 2);
-	await System.wait(wait_per_card_trigger * 1.9);
-	for c in cards_to_wet:
-		if c == card:
-			has_ocean_wet_self = true;
-		if make_card_wet(c):
-			await System.wait(wait_per_card_trigger);
-
-func eat_carrot(card : CardData) -> void:
-	var enemy : CardData = get_opponent(card).get_field_card();
-	var keywords : Array;
-	var sound : Resource;
-	if !enemy or enemy.is_buried:
-		return;
-	keywords = enemy.keywords.duplicate();
-	keywords.shuffle();
-	for keyword in keywords:
-		if card.add_keyword(keyword):
-			card.keywords.erase(CardEnums.Keyword.CARROT_EATER);
-			enemy.keywords.erase(keyword);
-			sound = load("res://Assets/SFX/CardSounds/Transformations/puffer-fish.wav");
-			play_sfx(sound);
-			trigger_play_effects(card, card.controller, get_opponent(card), keyword);
-			break;
-
-func activate_time_stop(card : CardData) -> void:
-	if time_stopping_player != null or times_time_stopped_this_round == 10:
-		return;
-	time_stopping_player = card.controller;
-	times_time_stopped_this_round += 1;
-	time_stop_effect_in();
-
-func collect_nuts(player : Player) -> void:
-	for i in range(System.Rules.NUTS_TO_COLLECT):
-		player.spawn_card_from_id(System.Random.item(CardEnums.NUT_IDS));
-	player.shuffle_deck();
-
-func spy_opponent(card : CardData, player : Player, opponent : Player, chain : int = 1, zone : CardEnums.Zone = CardEnums.Zone.HAND, spy_type : SpyType = SpyType.FIGHT) -> bool:
-	var spied_card_data : CardData;
-	spy_zone = zone;
-	var do_spy_hand : bool = spy_zone == CardEnums.Zone.HAND;
-	if do_spy_hand and opponent.hand_empty():
-		return false;
-	play_spy_sound();
-	current_spy_type = spy_type;
-	is_spying_whole_hand = do_spy_hand and opponent.has_hivemind_for();
-	if is_spying_whole_hand:
-		spy_whole_hand(opponent);
-		return true;
-	spied_card_data = determine_spied_card(opponent) if do_spy_hand else opponent.get_top_deck();
-	send_card_to_be_spied(spied_card_data, opponent);
-	cards_to_spy = chain - 1;
-	is_spying = true;
-	return true;
-
 func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var spied_card : GameplayCard;
 	spawn_card(card);
@@ -1304,36 +977,6 @@ func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = 
 			if System.Instance.exists(active_card) and spied_card == active_card:
 				_on_card_released(spied_card, true);
 	spied_card.go_visit_point(player.visit_point + margin);
-
-func spy_whole_hand(opponent : Player) -> void:
-	var card : CardData;
-	var spied_card : GameplayCard;
-	var count : int = opponent.count_hand();
-	var max_margin_value : int = min(WHOLE_HAND_MAX_SPY_MARGIN.x, (count - 1) * WHOLE_HAND_SPY_MARGIN.x) * System.Floats.direction(opponent.visit_point.y);
-	var max_margin : Vector2 = Vector2(max_margin_value, max_margin_value * (WHOLE_HAND_SPY_MARGIN.y / WHOLE_HAND_SPY_MARGIN.x));
-	var margin : Vector2 = -max_margin / 2;
-	var margin_increment : Vector2 = max_margin / (count - 1);
-	for c in opponent.cards_in_hand:
-		card = c;
-		send_card_to_be_spied(card, opponent, margin);
-		margin += margin_increment;
-	cards_to_spy = 0;
-	is_spying = true;
-
-func determine_spied_card(opponent : Player) -> CardData:
-	var cards_with_secret : Array = opponent.cards_in_hand.filter(func(card : CardData):
-		return card.has_secrets();	
-	);
-	var source : Array = cards_with_secret if current_spy_type == SpyType.FIGHT and cards_with_secret.size() else opponent.cards_in_hand.duplicate();
-	return System.Random.item(source);
-
-func celebrate(player : Player) -> void:
-	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();
-	player.celebrate();
-	for card in cards_where_in_hand:
-		if get_card(card):
-			get_card(card).despawn();
-	show_hand();
 
 func opponents_turn() -> void:
 	var card : CardData;
@@ -1403,9 +1046,6 @@ func no_mimics() -> bool:
 		if card_data.card_type == CardEnums.CardType.MIMIC or card_data.is_buried:
 			return false;
 	return true;
-
-func influence_opponent(opponent : Player, card_type : CardEnums.CardType) -> void:
-	opponent.cards_in_deck[opponent.cards_in_deck.size() - 1].eat_json(System.Data.read_card(CardEnums.BasicIds[card_type]));
 
 func best_to_play_for_you(card_a : CardData, card_b : CardData) -> int:
 	return best_to_play(card_a, card_b, player_one, player_two);
@@ -2113,7 +1753,7 @@ func _process(delta : float) -> void:
 		undying_frame(delta);
 	if has_game_ended:
 		victory_pattern.material.set_shader_parameter("opacity", victory_banner.modulate.a);
-	if current_animation_type != AnimationType.NULL:
+	if current_animation_type != GameplayEnums.AnimationType.NULL:
 		high_tide_frame(delta);
 	if is_low_tiding:
 		low_tide_frame(delta);
@@ -2136,7 +1776,7 @@ func low_tide_frame(delta : float) -> void:
 func update_ocean_pattern() -> void:
 	var max_opacity : float = OCEAN_PATTERN_MAX_OPACITY;
 	match current_animation_type:
-		AnimationType.POSITIVE:
+		GameplayEnums.AnimationType.POSITIVE:
 			max_opacity = POSITIVE_BACKGROUND_MAX_OPACITY;
 	max_opacity = max(ocean_pattern.material.get_shader_parameter("opacity"), max_opacity);
 	ocean_pattern.material.set_shader_parameter("opacity", min(max_opacity, ocean_pattern.modulate.a));
@@ -2505,12 +2145,12 @@ func after_animation(is_forced : bool = false) -> void:
 	is_waiting_for_animation_to_finnish = false;
 	animations.erase(animation_instance_id);
 	animation_instance_id = 0;
-	current_animation_type = AnimationType.NULL;
+	current_animation_type = GameplayEnums.AnimationType.NULL;
 	animation_sfx.stop();
 	match animation_data.type:
-		AnimationType.OCEAN:
+		GameplayEnums.AnimationType.OCEAN:
 			after_ocean(is_forced);
-		AnimationType.POSITIVE:
+		GameplayEnums.AnimationType.POSITIVE:
 			after_positive(is_forced, animation_data.points, animation_data.card, animation_data.player);
 	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;
 	is_low_tiding = true;

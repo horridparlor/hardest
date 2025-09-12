@@ -1,4 +1,4 @@
-static func make_card_wet(card : CardData, gameplay : Gameplay, do_trigger : bool = true, fully_moist : bool = true) -> bool:
+static func make_card_wet(card : CardData, gameplay : Gameplay, do_trigger : bool = true, fully_moist : bool = true, dont_alter_game : bool = false) -> bool:
 	var player : Player;
 	var would_trigger : bool;
 	var did_gain_keywords : bool;
@@ -8,7 +8,7 @@ static func make_card_wet(card : CardData, gameplay : Gameplay, do_trigger : boo
 	player = card.controller;
 	has_hivemind_for = card.is_in_hand() and player.has_hivemind_for(CardEnums.Keyword.OCEAN_DWELLER);
 	if (has_hivemind_for or card.has_ocean_dweller()) and (card.controller == gameplay.player_one or card.is_on_the_field()):
-		if do_trigger:
+		if do_trigger and !dont_alter_game:
 			System.EndOfTurn.trigger_ocean_dweller(card, player, gameplay);
 		would_trigger = true;
 	if card.has_tidal() and !card.is_gun():

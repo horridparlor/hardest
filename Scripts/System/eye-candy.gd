@@ -70,8 +70,8 @@ static func play_tentacles_shooting_animation(card : CardData, enemy : CardData,
 	var gameplay_card : GameplayCard = gameplay.get_card(card);
 	if !gameplay_card:
 		return tentacles;
-	var enemy_position : Vector2 = gameplay.get_shooting_enemy_position(card, enemy);
-	var count : int = min(Gameplay.MAX_TENTACLES, (8 if !slow_down else 2) + (2 if !slow_down else 1) * gameplay.get_count_of_bullets_shot(card));
+	var enemy_position : Vector2 = get_shooting_enemy_position(card, enemy, gameplay);
+	var count : int = min(Gameplay.MAX_TENTACLES, (8 if !slow_down else 2) + (2 if !slow_down else 1) * get_count_of_bullets_shot(card));
 	var tentacle : Tentacle;
 	if count <= 0:
 		return tentacles;

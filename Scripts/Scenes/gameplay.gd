@@ -811,7 +811,7 @@ func opponents_turn() -> void:
 		return;
 	led_direction = OPPONENTS_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR;
-	player_two.cards_in_hand.sort_custom(System.EnemyAI.best_to_play_for_opponent);
+	player_two.cards_in_hand.sort_custom(func(a : CardData, b : CardData): return System.EnemyAI.best_to_play_for_opponent(a, b, self));
 	#for car in player_two.cards_in_hand:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
@@ -1283,7 +1283,7 @@ func _on_auto_play_timer_timeout() -> void:
 		return;
 	active_player = player_one;
 	player_one.shuffle_hand();
-	player_one.cards_in_hand.sort_custom(System.EnemyAI.best_to_play_for_you);
+	player_one.cards_in_hand.sort_custom(func(a : CardData, b : CardData): return System.EnemyAI.best_to_play_for_you(a, b, self));
 	card = player_one.cards_in_hand.back();
 	System.CardManager.spawn_card(card, self);
 	System.CardManager.play_card(get_card(card), player_one, player_two, self);

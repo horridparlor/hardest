@@ -174,7 +174,8 @@ static func get_card_base_value(card : CardData) -> int:
 
 static func get_result_for_playing(card : CardData, player : Player, opponent : Player, gameplay : Gameplay) -> int:
 	var winner : GameplayEnums.Controller;
-	var enemy : CardData = get_enemy_card_truth(opponent);
+	card = get_card_truth(card, opponent.get_field_card(), opponent, gameplay);
+	var enemy : CardData = get_card_truth(opponent.get_field_card(), card, opponent, gameplay, true);
 	var value : int = 1;
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true);
 	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.prevents_opponents_reveal():
@@ -195,13 +196,15 @@ static func get_result_for_playing(card : CardData, player : Player, opponent : 
 			return -value;
 	return 0;
 
-static func get_enemy_card_truth(opponent : Player) -> CardData:
-	var card : CardData = opponent.get_field_card();
+static func get_card_truth(card : CardData, enemy : CardData, player : Player, gameplay : Gameplay, is_already_on_field : bool = false) -> CardData:
+	var new_card : CardData = enemy if is_already_on_field else card;
 	if !card:
 		return null;
 	card = card.clone();
-	if card.has_chameleon():
-		opponent.trigger_chameleon(card);
+	if card.has_chameleon() and is_already_on_field:
+		player.trigger_chameleon(card);
+	if (card.has_ocean() or (enemy and enemy.has_ocean())) and !(gameplay.is_time_stopped or new_card.has_time_stop() or new_card.has_positive()):
+		System.AutoEffects.make_card_wet(card, gameplay, true, true, true);
 	return card;
 
 static func get_first_face_up_card(source : Array) -> CardData:

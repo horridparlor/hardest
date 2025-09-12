@@ -224,18 +224,18 @@ static func trigger_ocean(card : CardData, gameplay : Gameplay) -> void:
 	var triggers : int;
 	var instance_id : int;
 	for c in cards_to_wet:
-		if gameplay.make_card_wet(c, false) and (c.controller == gameplay.player_one or c.is_on_the_field()):
+		if System.AutoEffects.make_card_wet(c, gameplay, false) and (c.controller == gameplay.player_one or c.is_on_the_field()):
 			triggers += 1;
 	gameplay.has_ocean_wet_self = false;
 	instance_id = gameplay.wait_for_animation(card, GameplayEnums.AnimationType.OCEAN);
 	wait_per_card_trigger = gameplay.animation_wait_timer.wait_time / (triggers + 2);
 	await System.wait(wait_per_card_trigger * 1.9);
 	for c in cards_to_wet:
-		if gameplay.animation_instance_id != instance_id:
+		if !System.Instance.exists(gameplay) or gameplay.animation_instance_id != instance_id:
 			return;
 		if c == card:
 			gameplay.has_ocean_wet_self = true;
-		if gameplay.make_card_wet(c):
+		if System.AutoEffects.make_card_wet(c, gameplay):
 			await System.wait(wait_per_card_trigger);
 
 static func eat_carrot(card : CardData, gameplay : Gameplay) -> void:

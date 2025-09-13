@@ -16,6 +16,7 @@ extends Gameplay
 @onready var die_pattern : Sprite2D = $Points/Relics/DieButton/GameplayDeathPattern;
 @onready var dashboard_panel : Panel = $Points/Relics/DashboardButton/Panel;
 @onready var dashboard_pattern : Sprite2D = $Points/Relics/DashboardButton/DashboardPattern;
+@onready var dashboard_icon : Sprite2D = $Points/Relics/DashboardButton/SettingsCog;
 @onready var your_point_panel : Panel = $Points/PointPanels/YourPointsPanel/Panel;
 @onready var your_point_panel_top_margin : Panel = $Points/PointPanels/YourPointsPanel/TopMargin;
 @onready var your_point_panel_right_margin : Panel = $Points/PointPanels/YourPointsPanel/RightMargin;

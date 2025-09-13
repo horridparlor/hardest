@@ -157,6 +157,7 @@ static func init_time_stop_nodes(gameplay : Gameplay) -> void:
 		gameplay.die_pattern,
 		gameplay.dashboard_panel,
 		gameplay.dashboard_pattern,
+		gameplay.dashboard_icon,
 		gameplay.reset_progress_panel,
 		gameplay.your_point_panel,
 		gameplay.your_point_panel_top_margin,

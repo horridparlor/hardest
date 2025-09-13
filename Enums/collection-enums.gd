@@ -97,6 +97,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			78,
 			86,
 			89,
+			128,
 		]
 	},
 	House.DIVINE: {
@@ -206,6 +207,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			119,
 			126,
 			127,
+			128,
 		]
 	},
 	House.GOD: [
@@ -359,6 +361,7 @@ const RANDOM_CARDS : Dictionary = {
 		107,
 		119,
 		122,
+		128,
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -444,6 +447,7 @@ const FOIL_CARDS : Dictionary = {
 	120: null,
 	123: null,
 	125: null,
+	128: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

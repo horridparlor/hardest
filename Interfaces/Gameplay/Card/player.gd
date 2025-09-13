@@ -294,9 +294,12 @@ func end_of_turn_updates() -> void:
 func end_of_turn_nut_update() -> void:
 	if did_nut:
 		did_nut = false;
-		turns_waited_to_nut = 0;
-		nut_multiplier = 1;
+		reset_nut();
 	turns_waited_to_nut += 1;
+
+func reset_nut() -> void:
+	turns_waited_to_nut = 0;
+	nut_multiplier = 1;
 
 func clear_field(did_win : bool = false) -> void:
 	var card : CardData;

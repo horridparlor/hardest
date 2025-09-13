@@ -19,6 +19,8 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 				draw_horse_card(player, gameplay);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.card_type, gameplay);
+			CardEnums.Keyword.NOVEMBER:
+				november_opponent(opponent, gameplay);
 			CardEnums.Keyword.PERFECT_CLONE:
 				trigger_cloning(card, player, gameplay, true);
 			CardEnums.Keyword.RAINBOW:
@@ -62,6 +64,9 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 				trigger_positive(card, enemy, player, gameplay);
 			CardEnums.Keyword.SPY:
 				spy_opponent(card, player, opponent, gameplay);
+
+static func november_opponent(opponent : Player, gameplay : Gameplay) -> void:
+	opponent.reset_nut();
 
 static func trigger_coin_flip(card : CardData, gameplay : Gameplay) -> void:
 	var wins : int;

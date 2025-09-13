@@ -236,7 +236,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 3,
 			"song": 2,
 			"backgrounds": [
-				15
+				15,
+				24,
 			]
 		},
 		GameplayEnums.Character.MARK: {
@@ -283,7 +284,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 4,
 			"song": 5,
 			"backgrounds": [
-				5
+				5,
+				26,
 			]
 		},
 		GameplayEnums.Character.RAISEN: {
@@ -394,7 +396,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 4,
 			"song": 3,
 			"backgrounds": [
-				4
+				4,
+				25,
 			]
 		},
 		GameplayEnums.Character.AGENT: {
@@ -458,13 +461,15 @@ func get_opponents() -> Dictionary:
 		},
 		GameplayEnums.Character.SISTERS: {
 			"cards": [
+				20,
+				20,
+				60,
 				91,
 				92,
 				93,
 				94,
 				113,
-				114,
-				115
+				119
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.DIVINE,
@@ -487,6 +492,55 @@ func get_rare_opponents() -> Dictionary:
 			"song": 20,
 			"backgrounds": [
 				1
+			]
+		},
+		GameplayEnums.Character.LOTTE_ANT_QUEEN: {
+			"cards": [
+				18,
+				44,
+				59,
+				67,
+				74,
+				91,
+				113,
+				120,
+				123,
+				127
+			],
+			"card_pool": get_card_pool([
+				CollectionEnums.House.CHAMPION,
+				CollectionEnums.House.DIVINE
+			]),
+			"rare_chance": 1,
+			"song": 11,
+			"backgrounds": [
+				27,
+				29
+			]
+		},
+		GameplayEnums.Character.PETE_BADASS: {
+			"cards": [
+				101,
+				102,
+				103,
+				110,
+				121,
+				122,
+				122,
+				124,
+				124,
+				125,
+				125,
+				128,
+			],
+			"card_pool": get_card_pool([
+				CollectionEnums.House.DELUSIONAL,
+				CollectionEnums.House.DEMONIC
+			]),
+			"rare_chance": 2,
+			"song": 12,
+			"backgrounds": [
+				28
 			]
 		}
 	};
@@ -546,6 +600,7 @@ func eat_json(data : Dictionary) -> void:
 
 func convert_opponent(data : Dictionary) -> Dictionary:
 	var card_pool : Dictionary;
+	print(data);
 	if data.card_pool.is_empty():
 		data.card_pool = {};
 		return data;

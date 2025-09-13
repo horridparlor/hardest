@@ -1,7 +1,11 @@
 {
-	"id": 122,
-	"name": "Rock",
-	"type": "rock",
+	"id": 128,
+	"name": "Bone Fingers",
+	"type": "scissor",
 	"keywords": [
-	]
+		"undead",
+		"november",
+		"soul-hunter"
+	],
+	"bullet": 4
 }

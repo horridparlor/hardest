@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://cixbfkrken8bb"]
+[gd_scene load_steps=38 format=3 uid="uid://cixbfkrken8bb"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/gameplay.gd" id="1_5y1xe"]
 [ext_resource type="FontFile" uid="uid://c3vhrrc52vift" path="res://Assets/FontFiles/Montserrat/Montserrat-Bold.ttf" id="2_0nx3a"]
@@ -16,6 +16,7 @@
 [ext_resource type="FontFile" uid="uid://b33ot3epa3xqe" path="res://Assets/FontFiles/Montserrat/Montserrat-ExtraBoldItalic.ttf" id="9_vl4hw"]
 [ext_resource type="Script" path="res://Scripts/Common/spring-button.gd" id="10_fu2mi"]
 [ext_resource type="Texture2D" uid="uid://0nxqjjkgg16k" path="res://Assets/Art/SpecialPatterns/gameplay-death-pattern.png" id="10_trm33"]
+[ext_resource type="Texture2D" uid="uid://dbg0hv2nbeab" path="res://Assets/Art/Buttons/settings-cog.png" id="11_1v67u"]
 [ext_resource type="Texture2D" uid="uid://bit7knjv6y748" path="res://Assets/Art/SpecialPatterns/dashboard-pattern.png" id="12_38fn7"]
 [ext_resource type="PackedScene" uid="uid://cd6ghj8xvjf8l" path="res://Prefabs/Gameplay/Card/divine-judgment.tscn" id="13_kpgfb"]
 [ext_resource type="FontFile" uid="uid://mmieoswfypmq" path="res://Assets/FontFiles/Montserrat/Montserrat-LightItalic.ttf" id="15_ht6r6"]
@@ -312,15 +313,20 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -127.5
-offset_top = -36.0
+offset_top = -38.0
 offset_right = 127.5
-offset_bottom = 31.0
+offset_bottom = 29.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 48
 text = "Settings"
 
+[node name="SettingsCog" type="Sprite2D" parent="Points/Relics/DashboardButton"]
+position = Vector2(104, -2)
+texture = ExtResource("11_1v67u")
+
 [node name="TouchScreenButton" type="TouchScreenButton" parent="Points/Relics/DashboardButton"]
+visible = false
 shape = SubResource("RectangleShape2D_8w0he")
 script = ExtResource("10_fu2mi")
 

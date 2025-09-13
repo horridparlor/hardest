@@ -1,7 +1,8 @@
 {
-	"id": 122,
-	"name": "Rock",
-	"type": "rock",
+	"id": 129,
+	"name": "Roulette",
+	"type": "paper",
 	"keywords": [
+		"coin-flip"
 	]
 }

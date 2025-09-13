@@ -90,6 +90,8 @@ static func trigger_coin_flip(card : CardData, gameplay : Gameplay) -> void:
 		super_luck += 1;
 	if card.has_max_keywords():
 		boosted_luck += 1;
+	if card.is_gun() or card.is_multi_type():
+		super_luck += 1;
 	while true:
 		odds = base_odds + permanent_luck;
 		if super_luck > 0:
@@ -208,7 +210,7 @@ static func trigger_contagious(source_card : CardData, player : Player, gameplay
 	inflict_contagious_on_card(card, card_type, player, gameplay);
 
 static func inflict_contagious_on_card(card : CardData, card_type : CardEnums.CardType, player : Player, gameplay : Gameplay) -> void:
-	if card.is_dual_type() and CardEnums.BASIC_COLORS.has(card_type):
+	if card.is_multi_type() and CardEnums.BASIC_COLORS.has(card_type):
 		card_type = System.Random.item(CardData.expand_type(card_type));
 	player.rainbow_a_card(card, card_type);
 	gameplay.turn_card_into_another(card);

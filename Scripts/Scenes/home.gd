@@ -155,6 +155,8 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	gameplay.stop_music.connect(_on_stop_music);
 	gameplay.stop_music_if_special.connect(_on_stop_music_if_special);
 	gameplay.play_prev_song.connect(_on_play_prev_song);
+	if System.game_speed < 1:
+		_on_play_prev_song();
 	set_game_speed(1);
 	if gameplay.is_preloaded:
 		gameplay.is_preloaded = false;

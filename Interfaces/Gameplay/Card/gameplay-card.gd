@@ -29,8 +29,8 @@ const KEYWORD_HINT_LINE : String = "[b][i]%s[/i][/b] [i]–[/i] %s\n";
 const STAMP_HINT_LINE : String = "[b]%s Stamp[/b] [i]–[/i] %s\n";
 const VARIANT_HINT_LINE : String = "[b]%s Variant[/b] [i]–[/i] %s\n";
 const HOLO_HINT_LINE : String = "[b]Holographic[/b] [i]–[/i] Scores double.\n";
-const DUAL_TYPE_HINT_LINE : String = "[b]%s[/b] [i]–[/i] Defeats %s and %s. [i](Ties with %s.)[/i]\n";
-const DUAL_TYPE_HINT_REPLACEMENTS : Dictionary = {
+const MULTI_TYPE_HINT_LINE : String = "[b]%s[/b] [i]–[/i] Defeats %s and %s. [i](Ties with %s.)[/i]\n";
+const MULTI_TYPE_HINT_REPLACEMENTS : Dictionary = {
 	CardEnums.CardType.BEDROCK: ["Bedrock", "rock", "scissors", "paper"],
 	CardEnums.CardType.ZIPPER: ["Zipper", "rock", "paper", "scissors"],
 	CardEnums.CardType.ROCKSTAR: ["Rockstar", "paper", "scissors", "rock"]
@@ -347,8 +347,8 @@ func get_keyword_hints() -> String:
 	var gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL if !card_data.controller else card_data.controller.gained_keyword;
 	if  gained_keyword != CardEnums.Keyword.NULL and keywords.size() < System.Rules.MAX_KEYWORDS:
 		keywords.append(gained_keyword);
-	if card_data.is_dual_type() and (keywords.size() + (1 if card_data.is_negative_variant() else 0) + (1 if card_data.is_holographic else 0) + (0 if card_data.stamp == CardEnums.Stamp.NULL else 1)) <= 2 and (keywords.filter(func(keyword : int): return (CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "").length() >= 80).size() == 0 or keywords.size() == 1):
-		hints_text += DUAL_TYPE_HINT_LINE % DUAL_TYPE_HINT_REPLACEMENTS[card_data.card_type];
+	if card_data.is_multi_type() and (keywords.size() + (1 if card_data.is_negative_variant() else 0) + (1 if card_data.is_holographic else 0) + (0 if card_data.stamp == CardEnums.Stamp.NULL else 1)) <= 2 and (keywords.filter(func(keyword : int): return (CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "").length() >= 80).size() == 0 or keywords.size() == 1):
+		hints_text += MULTI_TYPE_HINT_LINE % MULTI_TYPE_HINT_REPLACEMENTS[card_data.card_type];
 	for keyword in keywords:
 		var hint_text : String = CardEnums.KeywordHints[keyword] if CardEnums.KeywordHints.has(keyword) else "";
 		hint_text = enrich_hint(hint_text);

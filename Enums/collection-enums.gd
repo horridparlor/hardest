@@ -165,6 +165,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			91,
 			119,
 			123,
+			127,
 		]
 	},
 	House.SCISSOR: {
@@ -203,6 +204,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			111,
 			115,
 			119,
+			126,
+			127,
 		]
 	},
 	House.GOD: [
@@ -356,7 +359,6 @@ const RANDOM_CARDS : Dictionary = {
 		107,
 		119,
 		122,
-		126,
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -402,6 +404,7 @@ const RANDOM_CARDS : Dictionary = {
 		97,
 		100,
 		126,
+		127,
 	],
 	CardEnums.CardType.ROCKSTAR: [
 		98,

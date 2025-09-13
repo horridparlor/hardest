@@ -4,12 +4,12 @@ const VERSION : String = "0.9";
 
 const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 22;
-const MAX_CARD_ID : int = 126;
+const MAX_CARD_ID : int = 127;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID - 3, 20);
 
 const AUTO_PLAY : bool = false if DEV_MODE else false;
 const AUTO_START : bool = false if DEV_MODE else false;
-const AUTO_LEVEL : int = 46 if DEV_MODE else 0;
+const AUTO_LEVEL : int = 0 if DEV_MODE else 0;
 const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const SHOWCASE_STAMP : CardEnums.Stamp = CardEnums.Stamp.NULL if DEV_MODE else CardEnums.Stamp.NULL;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
@@ -17,7 +17,7 @@ const DEBUG_CARD : int = 0 if DEV_MODE else 0;
 const SPAWNED_CARD : int = 106 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
-const AUTO_HOUSE : CollectionEnums.House = CollectionEnums.House.NULL if DEV_MODE else CollectionEnums.House.NULL;
+const AUTO_HOUSE : CollectionEnums.House = CollectionEnums.House.KAWAII if DEV_MODE else CollectionEnums.House.NULL;
 const STARTING_PLAYER : GameplayEnums.Controller = GameplayEnums.Controller.NULL if DEV_MODE else GameplayEnums.Controller.NULL;
 
 const MUTE : bool = false if DEV_MODE else false;

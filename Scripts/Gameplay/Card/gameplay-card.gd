@@ -102,12 +102,12 @@ func update_panel(card_type : CardEnums.CardType) -> void:
 		style.border_width_bottom = BORDER_WIDTH;
 		style.corner_radius_top_left = BORDER_RADIUS;
 		style.corner_radius_bottom_left = BORDER_RADIUS;
-		if !card_data.is_dual_type():
+		if !card_data.is_multi_type():
 			style.border_width_right = BORDER_WIDTH;
 			style.corner_radius_top_right = BORDER_RADIUS;
 			style.corner_radius_bottom_right = BORDER_RADIUS;
 	left_panel.add_theme_stylebox_override("panel", left_style);
-	if card_data.is_dual_type():
+	if card_data.is_multi_type():
 		for style in [right_style]:
 			style.bg_color = get_panel_bg_color(get_right_type(card_type));
 			style.border_color = get_panel_border_color(get_right_type(card_type));

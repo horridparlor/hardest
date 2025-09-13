@@ -206,7 +206,7 @@ static func get_card_truth(card : CardData, enemy : CardData, player : Player, g
 		player.trigger_chameleon(card);
 	if (card.has_ocean() or (enemy and enemy.has_ocean())) and !(gameplay.is_time_stopped or new_card.has_time_stop() or new_card.has_positive()):
 		System.AutoEffects.make_card_wet(card, gameplay, true, true, true);
-	if (card.has_time_stop() and card.is_gun()) and (is_already_on_field or !gameplay.is_time_stopped):
+	if ((card.has_time_stop() or (gameplay.time_stopping_player == player and card == new_card)) and (card.is_gun() and !card.has_buried())) and (is_already_on_field or !gameplay.is_time_stopped):
 		card.stopped_time_advantage = 2;
 	return card;
 

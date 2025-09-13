@@ -525,7 +525,7 @@ var KeywordHints : Dictionary = {
 	Keyword.CLONING : "Create a permanent copy of a card in hand.",
 	Keyword.COIN_FLIP : "50% chance to get double multiplier and repeat.",
 	Keyword.CONTAGIOUS : "A card in hand permanently becomes a SAME_TYPE.",
-	Keyword.COOTIES : "Defeats any card without an effect.",
+	Keyword.COOTIES : "Defeats any card with less keywords.",
 	Keyword.COPYCAT : "Copies opponent's card type.",
 	Keyword.CURSED : "Cannot be replaced or destroyed.",
 	Keyword.DEVOUR : "Eats the first card opponent plays.",

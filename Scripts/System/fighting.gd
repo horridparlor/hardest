@@ -71,9 +71,9 @@ static func check_pre_types_keywords(card : CardData, enemy : CardData) -> Gamep
 		return opponent_wins;
 	elif enemy.is_buried and !card.is_buried and card_type != CardEnums.CardType.MIMIC:
 		return you_win;
-	if card.is_vanilla() and enemy.has_cooties():
+	if card.keywords.size() < enemy.keywords.size() and enemy.has_cooties():
 		return opponent_wins;
-	elif enemy.is_vanilla() and card.has_cooties():
+	elif enemy.keywords.size() < card.keywords.size() and card.has_cooties():
 		return you_win;
 	if card.has_undead() and enemy.has_divine():
 		return opponent_wins;

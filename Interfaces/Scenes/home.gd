@@ -18,7 +18,7 @@ const MIN_ZOOM_MULTIPLIER : float = 1.5;
 const MAX_ZOOM_MULTIPLIER : float = 2.4;
 const CAMERA_MOVE_SPEED : float = 0.9;
 const MIN_CARD_SPAWN_WAIT : float = 0.1;
-const MAX_CARD_SPAWN_WAIT : float = 3.0;
+const MAX_CARD_SPAWN_WAIT : float = 1.0;
 const BACKGROUND_CARDS_SCALE : float = 0.96;
 
 const SLOWING_IN_MIN_SPEED : float = 4.1 * Config.GAME_SPEED;
@@ -243,7 +243,8 @@ func base_rotation_frame(delta : float) -> void:
 func instance_background_card(parent : Node) -> GameplayCard:
 	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, parent);
 	card.card_data = System.Data.load_card(System.random.randi_range(1, Config.MAX_CARD_ID));
-	if CollectionEnums.RANDOM_CARDS[CardEnums.CardType.GUN].has(card.card_data.card_id):
+	if (card.card_data.has_tidal() or card.card_data.has_undead()) \
+	and System.Random.chance(10):
 		card.card_data.card_type = CardEnums.CardType.GUN;
 	card.card_data.stamp = save_data.roguelike_data.get_stamp_for_spawned_card(card.card_data);
 	card.card_data.variant = save_data.roguelike_data.get_variant_for_spawned_card(card.card_data);

@@ -364,8 +364,13 @@ func spawn_a_background_card() -> void:
 		else [cards_front_layer, cards_front_layer2]	
 	);
 	var card : GameplayCard = instance_background_card(layer);
+	var max_wait : float = MAX_CARD_SPAWN_WAIT;
+	if System.Random.chance(4):
+		max_wait += MAX_CARD_SPAWN_WAIT;
+	if System.Random.chance(5):
+		max_wait += MAX_CARD_SPAWN_WAIT;
 	card.despawned.connect(_on_card_despawned);
-	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, MAX_CARD_SPAWN_WAIT) * System.game_speed_additive_multiplier;
+	card_spawn_timer.wait_time = System.random.randf_range(MIN_CARD_SPAWN_WAIT, max_wait) * System.game_speed_additive_multiplier;
 	if is_back:
 		card.scale *= BACKGROUND_CARDS_SCALE;
 	if card.card_data.is_god():

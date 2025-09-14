@@ -525,7 +525,10 @@ func steal_card_soul(card : CardData) -> void:
 	System.Data.add_card_soul_to_character(character, controller, card);
 
 func steal_card(card : CardData) -> void:
-	var new_card : CardData = CardData.from_json(card.to_json());
+	var new_card : CardData;
+	if !System.Instance.exists(card):
+		return;
+	card = CardData.from_json(card.to_json());
 	card.controller.burn_card(card);
 	new_card.controller = self;
 	shuffle_to_deck(new_card);

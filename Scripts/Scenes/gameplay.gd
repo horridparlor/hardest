@@ -81,6 +81,8 @@ func set_default_shader_materials():
 	victory_pattern.material = System.Shaders.bump_wave();
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
+	if !level_data_:
+		level_data_ = LevelData.from_json({});
 	level_data = level_data_;
 	init_player(player_one, GameplayEnums.Controller.PLAYER_ONE, level_data.deck2_id, do_start);
 	init_player(player_two, GameplayEnums.Controller.PLAYER_TWO, level_data.deck_id, do_start);

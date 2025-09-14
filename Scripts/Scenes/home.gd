@@ -265,6 +265,8 @@ func _on_game_over(did_win : bool) -> void:
 		add_created_cards_to_decklists();
 		remove_burned_cards_from_decklists();
 		save_permanently_altered_cards_to_decklists();
+	if !level_data:
+		level_data = LevelData.from_json({});
 	save_data.roguelike_data.get_new_choices(level_data.opponent, gameplay.player_one.decklist.burned_cards.size() > 0);
 	save_data.write();
 
@@ -342,6 +344,8 @@ func process_loss() -> void:
 		give_opponent_card_drop(save_data.roguelike_data.chosen_opponent);
 
 func give_opponent_card_drop(opponent_id : int, confirmed_rare : bool = false) -> void:
+	if opponent_id == 0:
+		return;
 	var opponent : Dictionary = save_data.roguelike_data.all_opponents[opponent_id];
 	if typeof(opponent.card_pool) == TYPE_ARRAY or opponent.card_pool.keys().is_empty():
 		return;

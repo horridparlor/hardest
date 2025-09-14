@@ -612,7 +612,8 @@ const PLAY_SFX_FULLY_BULLETS : Dictionary = {
 	8: null,
 	18: null,
 	20: null,
-	22: null
+	22: null,
+	29: null,
 }
 
 const HORSE_CARD_IDS : Array = [

@@ -1,7 +1,10 @@
 {
-	"id": 131,
-	"name": "Rock",
-	"type": "rock",
+	"id": 133,
+	"name": "Fire Arrows",
+	"type": "scissor",
 	"keywords": [
-	]
+		"incinerate",
+		"reload"
+	],
+	"bullet": 29
 }

@@ -1,7 +1,9 @@
 {
-	"id": 131,
-	"name": "Rock",
-	"type": "rock",
+	"id": 132,
+	"name": "Speed Test",
+	"type": "scissor",
 	"keywords": [
+		"coin-flip",
+		"sinful"
 	]
 }

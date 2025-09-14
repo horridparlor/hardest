@@ -61,6 +61,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			102,
 			122,
 			124,
+			135,
 		],
 		Rarity.RARE: [
 			14,
@@ -107,6 +108,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			118,
 			129,
 			130,
+			132,
+			133,
 		],
 		Rarity.RARE: [
 			115,
@@ -138,6 +141,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			90,
 			99,
 			126,
+			134,
 		]
 	},
 	House.KAWAII: {
@@ -192,6 +196,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			98,
 			103,
 			122,
+			132,
+			133,
 		],
 		Rarity.RARE: [
 			14,
@@ -336,6 +342,7 @@ const RANDOM_CARDS : Dictionary = {
 		114,
 		124,
 		129,
+		135,
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -369,6 +376,8 @@ const RANDOM_CARDS : Dictionary = {
 		119,
 		122,
 		128,
+		132,
+		133,
 	],
 	CardEnums.CardType.GUN: [
 		4,
@@ -387,6 +396,7 @@ const RANDOM_CARDS : Dictionary = {
 		111,
 		116,
 		131,
+		134,
 	],
 	CardEnums.CardType.MIMIC: [
 		5,
@@ -450,16 +460,20 @@ const FOIL_CARDS : Dictionary = {
 	111: null,
 	120: null,
 	125: null,
-	128: null,
 	131: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {
 	78: null,
 	121: null,
+	133: null,
 }
 
 const TRIPLE_SHOOTING_CARDS : Dictionary = {
 	37: null,
 	78: null
+}
+
+const TURRET_SHOOTING_CARDS : Dictionary = {
+	134: null,
 }

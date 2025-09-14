@@ -43,11 +43,14 @@ const BASIC_COLORS : Dictionary = {
 	CardType.SCISSORS: null
 }
 
-const DUAL_COLORS : Dictionary = {
+const MULTI_COLORS : Dictionary = {
 	CardType.BEDROCK: null,
 	CardType.ZIPPER: null,
 	CardType.ROCKSTAR: null
 }
+
+static func is_multi_type(type : CardType) -> bool:
+	return MULTI_COLORS.has(type);
 
 const NUT_IDS : Array = [
 	58,

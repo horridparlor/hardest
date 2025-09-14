@@ -418,7 +418,7 @@ func count_grave_type(card_type : CardEnums.CardType, instance_id_of_replacement
 	if CardEnums.BASIC_COLORS.has(card_type):
 		for type in CardData.expand_type(card_type):
 			grave_count += grave_type_counts[type];
-	elif CardEnums.DUAL_COLORS.has(card_type):
+	elif CardEnums.is_multi_type(card_type):
 		for type in CardData.break_card_type(card_type):
 			grave_count += grave_type_counts[type];
 	return added_count + grave_count;
@@ -530,6 +530,17 @@ func trigger_opponent_placed_effects() -> void:
 
 func trigger_chameleon(card : CardData) -> void:
 	var card_type : CardEnums.CardType = card.default_type;
+	if CardEnums.is_multi_type(card_type) and !CardEnums.is_multi_type(card.card_type):
+		match card.card_type:
+			CardEnums.CardType.MIMIC:
+				card.card_type = System.Random.item(CardEnums.BASIC_COLORS.keys());
+		match card.card_type:
+			CardEnums.CardType.ROCK:
+				card.card_type = CardEnums.CardType.BEDROCK;
+			CardEnums.CardType.PAPER:
+				card.card_type = CardEnums.CardType.ZIPPER;
+			CardEnums.CardType.SCISSORS:
+				card.card_type = CardEnums.CardType.ROCKSTAR;
 	match card.card_type:
 		CardEnums.CardType.ROCK:
 			card_type = CardEnums.CardType.SCISSORS;
@@ -538,11 +549,7 @@ func trigger_chameleon(card : CardData) -> void:
 		CardEnums.CardType.SCISSORS:
 			card_type = CardEnums.CardType.PAPER;
 		CardEnums.CardType.MIMIC:
-			card_type = System.Random.item([
-				CardEnums.CardType.ROCK,
-				CardEnums.CardType.PAPER,
-				CardEnums.CardType.SCISSORS
-			]);
+			card_type = System.Random.item(CardEnums.BASIC_COLORS.keys());
 		CardEnums.CardType.BEDROCK:
 			card_type = CardEnums.CardType.ROCKSTAR;
 		CardEnums.CardType.ZIPPER:

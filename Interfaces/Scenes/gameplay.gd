@@ -51,8 +51,8 @@ const TROLL_MIN_WAIT : float = 0.8 * Config.GAME_SPEED_MULTIPLIER;
 const TROLL_MAX_WAIT : float = 1.2 * Config.GAME_SPEED_MULTIPLIER;
 const TROLL_MIN_MOVE : float = 100;
 const TROLL_MAX_MOVE : float = 500;
-const TROLL_CHANCE : int = 1
-;
+const TROLL_CHANCE : int = 5;
+
 const CHANCE_TO_FLICKER_HAND : int = 3;
 const FLICKER_SPEED_UP : float = 2/3;
 const YOUR_POINTS_ZOOM_CHANCE : int = 3;

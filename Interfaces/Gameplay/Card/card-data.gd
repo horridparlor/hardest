@@ -277,7 +277,7 @@ func has_divine() -> bool:
 	return has_keyword(CardEnums.Keyword.DIVINE);
 
 func is_multi_type() -> bool:
-	return CardEnums.DUAL_COLORS.has(card_type);
+	return CardEnums.is_multi_type(card_type);
 
 func has_electrocute() -> bool:
 	return has_keyword(CardEnums.Keyword.ELECTROCUTE);

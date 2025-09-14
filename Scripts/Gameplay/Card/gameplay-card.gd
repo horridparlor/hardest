@@ -129,10 +129,10 @@ func update_panel(card_type : CardEnums.CardType) -> void:
 func update_type_icons(card_type : CardEnums.CardType) -> void:
 	var left_sprite_texture : Resource;
 	var right_sprite_texture : Resource;
-	var is_dual : bool = CardEnums.DUAL_COLORS.has(card_type);
+	var is_multi : bool = CardEnums.is_multi_type(card_type);
 	left_sprite_texture = load(TYPE_ICON_PATH % [CardEnums.CardTypeName[get_left_type(card_type)].to_lower()]);
 	left_type_icon.texture = left_sprite_texture;
-	if is_dual:
+	if is_multi:
 		right_sprite_texture = load(TYPE_ICON_PATH % [CardEnums.CardTypeName[get_right_type(card_type)].to_lower()]);
 	else:
 		right_sprite_texture = left_sprite_texture;

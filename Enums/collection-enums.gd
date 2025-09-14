@@ -429,16 +429,10 @@ static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.
 	return System.Data.read_card(card_id);
 
 const FOIL_CARDS : Dictionary = {
-	14: null,
-	18: null,
 	46: null,
 	57: null,
 	65: null,
-	71: null,
-	77: null,
 	78: null,
-	81: null,
-	85: null,
 	90: null,
 	91: null,
 	95: null,
@@ -447,10 +441,6 @@ const FOIL_CARDS : Dictionary = {
 	106: null,
 	110: null,
 	111: null,
-	112: null,
-	120: null,
-	123: null,
-	125: null,
 	128: null,
 }
 

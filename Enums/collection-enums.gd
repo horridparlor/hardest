@@ -169,6 +169,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			119,
 			123,
 			127,
+			131,
 		]
 	},
 	House.SCISSOR: {
@@ -385,6 +386,7 @@ const RANDOM_CARDS : Dictionary = {
 		110,
 		111,
 		116,
+		131,
 	],
 	CardEnums.CardType.MIMIC: [
 		5,
@@ -430,10 +432,14 @@ static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.
 	return System.Data.read_card(card_id);
 
 const FOIL_CARDS : Dictionary = {
+	14: null,
+	18: null,
 	46: null,
 	57: null,
 	65: null,
+	71: null,
 	78: null,
+	81: null,
 	90: null,
 	91: null,
 	95: null,
@@ -442,7 +448,10 @@ const FOIL_CARDS : Dictionary = {
 	106: null,
 	110: null,
 	111: null,
+	120: null,
+	125: null,
 	128: null,
+	131: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

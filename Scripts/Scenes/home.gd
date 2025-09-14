@@ -155,6 +155,9 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	gameplay.stop_music.connect(_on_stop_music);
 	gameplay.stop_music_if_special.connect(_on_stop_music_if_special);
 	gameplay.play_prev_song.connect(_on_play_prev_song);
+	cards_generated_this_game = 0;
+	if in_roguelike_mode:
+		gameplay.player_one.card_added.connect(_on_player_has_generated_card);
 	if System.game_speed < 1:
 		_on_play_prev_song();
 	set_game_speed(1);
@@ -170,6 +173,9 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	reset_base_rotation();
 	reset_camera();
 	roguelike_page.roll_out();
+
+func _on_player_has_generated_card() -> void:
+	cards_generated_this_game += 1;
 
 func stop_background_cards() -> void:
 	card_spawn_timer.stop();
@@ -249,6 +255,8 @@ func _on_game_over(did_win : bool) -> void:
 	save_data.roguelike_data.money += gameplay.player_one.points;
 	save_data.roguelike_data.point_goal = max(save_data.roguelike_data.point_goal + System.Rules.MIN_POINT_INCREASE, System.Rules.POINT_GOAL_MULTIPLIER * save_data.roguelike_data.point_goal);
 	save_data.roguelike_data.rounds_played += 1;
+	save_data.roguelike_data.cards_bought += cards_generated_this_game;
+	cards_generated_this_game = 0;
 	if did_win:
 		process_victory();
 	else:

@@ -69,6 +69,7 @@ var card_spawn_timer : Timer = Timer.new();
 var background_cards : Array;
 var nexus : Nexus;
 var network : Network = Network.new();
+var cards_generated_this_game : int;
 
 func _ready() -> void:
 	for node in [

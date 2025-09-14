@@ -924,7 +924,7 @@ func round_results() -> void:
 func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 	if !get_card(card):
 		return;
-	if (card.has_sinful() or enemy.has_incinerate()) and !card.has_cursed():
+	if ((card.has_sinful() or enemy.has_incinerate()) and !card.has_cursed()) or enemy.has_soul_robber():
 		get_card(card).burn_effect();
 		burn_card(card);
 	get_card(card).dissolve();
@@ -1006,6 +1006,9 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.SOUL_HUNTER:
 					if enemy:
 						player.steal_card_soul(enemy);
+				CardEnums.Keyword.SOUL_ROBBER:
+					if enemy:
+						player.steal_card(enemy);
 				CardEnums.Keyword.VAMPIRE:
 					opponent.lose_points(points);
 	if enemy:

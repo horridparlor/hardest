@@ -1,7 +1,10 @@
 {
 	"id": 131,
-	"name": "Rock",
-	"type": "rock",
+	"name": "[i]Luv-Luv[/i] Slaver",
+	"type": "gun",
 	"keywords": [
-	]
+		"soul-robber",
+		"cooties"
+	],
+	"bullet": 28
 }

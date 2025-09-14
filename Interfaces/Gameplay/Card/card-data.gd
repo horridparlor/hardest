@@ -148,6 +148,10 @@ func add_keyword(keyword : CardEnums.Keyword, ignore_max_keywords : bool = false
 			upgrade_to_keys = [CardEnums.Keyword.SALTY];
 		CardEnums.Keyword.MULTI_SPY:
 			upgrade_to_keys = [CardEnums.Keyword.SPY];
+		CardEnums.Keyword.PERFECT_CLONE:
+			upgrade_to_keys = [CardEnums.Keyword.CLONING];
+		CardEnums.Keyword.SOUL_ROBBER:
+			upgrade_to_keys = [CardEnums.Keyword.SOUL_HUNTER];
 	for key in upgrade_to_keys:
 		if keywords.has(key):
 			keywords[keywords.find(key)] = keyword;
@@ -165,10 +169,14 @@ func has_keyword(keyword : CardEnums.Keyword, may_be_buried : bool = false) -> b
 	match keyword:
 		CardEnums.Keyword.BURIED:
 			duplicate_keys += [CardEnums.Keyword.BURIED_ALIVE];
+		CardEnums.Keyword.CLONING:
+			duplicate_keys += [CardEnums.Keyword.PERFECT_CLONE];
 		CardEnums.Keyword.DEVOUR:
 			duplicate_keys += [CardEnums.Keyword.DEVOW];
 		CardEnums.Keyword.SALTY:
 			duplicate_keys += [CardEnums.Keyword.EXTRA_SALTY];
+		CardEnums.Keyword.SOUL_HUNTER:
+			duplicate_keys += [CardEnums.Keyword.SOUL_ROBBER];
 		CardEnums.Keyword.SPY:
 			duplicate_keys += [CardEnums.Keyword.MULTI_SPY];
 		CardEnums.Keyword.WEREWOLF:
@@ -404,6 +412,9 @@ func has_skibbidy() -> bool:
 
 func has_soul_hunter() -> bool:
 	return has_keyword(CardEnums.Keyword.SOUL_HUNTER);
+
+func has_soul_robber() -> bool:
+	return has_keyword(CardEnums.Keyword.SOUL_ROBBER);
 
 func has_spring_arrives() -> bool:
 	return has_keyword(CardEnums.Keyword.SPRING_ARRIVES);

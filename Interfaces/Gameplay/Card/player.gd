@@ -1,6 +1,8 @@
 extends Node
 class_name Player
 
+signal card_added
+
 var cards_in_deck : Array;
 var cards_in_hand : Array;
 var cards_on_field : Array;
@@ -441,9 +443,12 @@ func get_cards() -> Array:
 
 func shuffle_random_card_to_deck(card_type : CardEnums.CardType) -> CardData:
 	var card : CardData = CardData.from_json(CollectionEnums.get_random_card(card_type));
+	shuffle_to_deck(card);
+	return card; 
+
+func shuffle_to_deck(card : CardData) -> void:
 	cards_in_deck.append(card);
 	shuffle_deck();
-	return card; 
 
 func get_rainbowed() -> void:
 	var card : CardData;
@@ -518,6 +523,13 @@ func devour_card(eater : CardData, card : CardData) -> Array:
 
 func steal_card_soul(card : CardData) -> void:
 	System.Data.add_card_soul_to_character(character, controller, card);
+
+func steal_card(card : CardData) -> void:
+	var new_card : CardData = CardData.from_json(card.to_json());
+	card.controller.burn_card(card);
+	new_card.controller = self;
+	shuffle_to_deck(new_card);
+	make_new_card_permanent(new_card);
 
 func trigger_opponent_placed_effects() -> void:
 	var card : CardData = get_field_card();
@@ -596,6 +608,7 @@ func burn_card(card : CardData) -> void:
 
 func make_new_card_permanent(card : CardData) -> void:
 	decklist.make_new_card_permanent(card);
+	emit_signal("card_added");
 
 func make_card_alterations_permanent(card : CardData) -> void:
 	var index : int;

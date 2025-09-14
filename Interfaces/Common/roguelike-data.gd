@@ -461,6 +461,10 @@ func get_opponents() -> Dictionary:
 		},
 		GameplayEnums.Character.SISTERS: {
 			"cards": [
+				1,
+				2,
+				3,
+				5,
 				20,
 				20,
 				60,
@@ -505,7 +509,8 @@ func get_rare_opponents() -> Dictionary:
 				113,
 				120,
 				123,
-				127
+				127,
+				131
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.CHAMPION,
@@ -600,7 +605,6 @@ func eat_json(data : Dictionary) -> void:
 
 func convert_opponent(data : Dictionary) -> Dictionary:
 	var card_pool : Dictionary;
-	print(data);
 	if data.card_pool.is_empty():
 		data.card_pool = {};
 		return data;

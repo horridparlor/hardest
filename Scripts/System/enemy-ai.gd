@@ -130,6 +130,8 @@ static func get_card_value(card : CardData, player : Player, opponent : Player, 
 				value += 2 * player.count_hand();
 			CardEnums.Keyword.SOUL_HUNTER:
 				value += 1;
+			CardEnums.Keyword.SOUL_ROBBER:
+				value -= 1;
 			CardEnums.Keyword.SPRING_ARRIVES:
 				value *= pow(2, System.Rules.MAX_HAND_SIZE - player.count_hand());
 			CardEnums.Keyword.SPY:

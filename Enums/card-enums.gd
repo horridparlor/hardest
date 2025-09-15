@@ -217,6 +217,7 @@ enum Keyword {
 	UNDEAD,
 	VAMPIRE,
 	VERY_NUTTY,
+	VICTIM,
 	WEREWOLF,
 	WRAPPED
 }
@@ -294,6 +295,7 @@ func get_rare_hydra_keywords() -> Array:
 		Keyword.CONTAGIOUS,
 		Keyword.DEVOW,
 		Keyword.SPRING_ARRIVES,
+		Keyword.VICTIM
 	];
 
 const KeywordNames : Dictionary = {
@@ -366,6 +368,7 @@ const KeywordNames : Dictionary = {
 	Keyword.UNDEAD : "Undead",
 	Keyword.VAMPIRE : "Vampire",
 	Keyword.VERY_NUTTY : "Very Nutty",
+	Keyword.VICTIM : "Victim",
 	Keyword.WEREWOLF : "Werewolf",
 	Keyword.WRAPPED : "Wrapped"
 }
@@ -440,6 +443,7 @@ const TranslateKeyword : Dictionary = {
 	"undead" : Keyword.UNDEAD,
 	"vampire" : Keyword.VAMPIRE,
 	"very-nutty" : Keyword.VERY_NUTTY,
+	"victim" : Keyword.VICTIM,
 	"werewolf" : Keyword.WEREWOLF,
 	"wrapped" : Keyword.WRAPPED
 }
@@ -514,6 +518,7 @@ const TranslateKeywordBack: Dictionary = {
 	Keyword.UNDEAD : "undead",
 	Keyword.VAMPIRE : "vampire",
 	Keyword.VERY_NUTTY : "very-nutty",
+	Keyword.VICTIM : "victim",
 	Keyword.WEREWOLF : "werewolf",
 	Keyword.WRAPPED : "wrapped"
 }
@@ -588,6 +593,7 @@ var KeywordHints : Dictionary = {
 	Keyword.UNDEAD : "Takes %s SAME_TYPES from your grave and turns into a gun." % [System.Rules.UNDEAD_LIMIT],
 	Keyword.VAMPIRE : "If wins, drains the points from opponent.",
 	Keyword.VERY_NUTTY : "Doubles your next nut.",
+	Keyword.VICTIM : "Winning and losing are reversed.",
 	Keyword.WEREWOLF : "End of turn, changes color. [i](In hand.)[/i]",
 	Keyword.WRAPPED : "Next card you play, gains buried."
 }

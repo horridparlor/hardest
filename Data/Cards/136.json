@@ -1,7 +1,8 @@
 {
-	"id": 134,
-	"name": "Rock",
-	"type": "rock",
+	"id": 136,
+	"name": "Rattlesnake",
+	"type": "scissor",
 	"keywords": [
+		"victim"
 	]
 }

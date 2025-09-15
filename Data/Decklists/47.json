@@ -2,14 +2,11 @@
 	"id": 47,
 	"title": "AI test level, your deck",
 	"cards": [
-		132,
-		133,
+		53,
 		134,
-		133,
-		134,
-		133,
-		134,
-		4,
-		46
+		{
+			"id": 134,
+			"stamp": "double"
+		}
 	]
 }

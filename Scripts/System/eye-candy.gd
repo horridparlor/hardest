@@ -122,10 +122,10 @@ static func get_count_of_bullets_shot(card : CardData) -> int:
 	if card.stopped_time_advantage > 1:
 		return -1;
 	if CollectionEnums.TURRET_SHOOTING_CARDS.has(card.card_id):
-		count = System.random.randi_range(20, 40);
+		count = System.random.randi_range(5, 10);
 		if card.has_rare_stamp():
 			count *= 2;
-	if card.has_champion():
+	elif card.has_champion():
 		count = System.random.randi_range(3, 5);
 		if card.has_rare_stamp():
 			count *= 2;

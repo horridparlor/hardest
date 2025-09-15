@@ -43,7 +43,7 @@ static func create_directories() -> void:
 
 func wait(wait : float) -> void:
 	var timer : Timer = Timer.new();
-	timer.wait_time = wait * System.game_speed_multiplier;
+	timer.wait_time = wait * max(1, System.game_speed_multiplier);
 	timer.one_shot = true;
 	add_child(timer);
 	timer.start();

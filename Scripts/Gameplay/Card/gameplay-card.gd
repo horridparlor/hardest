@@ -12,6 +12,7 @@ extends GameplayCard
 @onready var background_pattern : Sprite2D = $Pattern;
 @onready var top_pattern : Sprite2D = $Pattern2;
 @onready var stamp : Sprite2D = $Stamp;
+@onready var blue_stars_layer : Node2D = $BlueStars;
 
 func update_visuals(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	if card_data.is_buried:

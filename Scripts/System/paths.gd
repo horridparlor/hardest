@@ -1,3 +1,4 @@
+const BLUE_STAR : String = "res://Prefabs/Gameplay/Card/blue-star.tscn";
 const BURNING_EFFECT : String = "res://Prefabs/Gameplay/Card/burning-effect.tscn";
 const CARD : String = "res://Prefabs/Gameplay/Card/gameplay-card.tscn";
 const COIN : String = "res://Prefabs/Gameplay/Points/coin.tscn";

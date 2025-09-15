@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnjio46gxhkgo"]
+
+[ext_resource type="Script" path="res://Interfaces/Common/glow-node.gd" id="1_yf32n"]
+
+[node name="BlueStar" type="Node2D"]
+script = ExtResource("1_yf32n")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]

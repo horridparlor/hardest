@@ -172,5 +172,7 @@ vertical_alignment = 1
 position = Vector2(270, 0)
 texture = ExtResource("6_4p10k")
 
+[node name="BlueStars" type="Node2D" parent="."]
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="released" from="Button" to="." method="_on_button_released"]

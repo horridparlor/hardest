@@ -496,7 +496,7 @@ func shoots_bullets() -> bool:
 	return get_shooting_type() == ShootingType.BULLETS;
 
 func shoots_tentacles() -> bool:
-	return has_tidal() and !CollectionEnums.RANDOM_CARDS[CardEnums.CardType.GUN].has(card_id)
+	return has_tidal() and !CollectionEnums.NON_GUN_SHOOTING_CARDS.has(card_id);
 
 func get_shooting_type() -> ShootingType:
 	if shoots_tentacles():

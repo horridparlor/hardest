@@ -520,7 +520,7 @@ const TranslateKeywordBack: Dictionary = {
 
 var KeywordHints : Dictionary = {
 	Keyword.ALPHA_WEREWOLF : "End of turn, werewolfs in hand become the color you played, and gain multiply.",
-	Keyword.AURA_FARMING : "[i](Cannot be drawn unless you have played 10 SAME_TYPES in a row.)[/i]",
+	Keyword.AURA_FARMING : "[i](Cannot be drawn unless you have played 3 SAME_TYPES in a row.)[/i]",
 	Keyword.AUTO_HYDRA : "When drawn, gains 3 random keywords.",
 	Keyword.BERSERK : "Fights top card of opponent's deck. If wins, repeat.",
 	Keyword.BROTHERHOOD : "Double multiplier for each brotherhood member played this game.",

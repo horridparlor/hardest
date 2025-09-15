@@ -458,6 +458,7 @@ const FOIL_CARDS : Dictionary = {
 	106: null,
 	110: null,
 	111: null,
+	112: null,
 	120: null,
 	125: null,
 	131: null,

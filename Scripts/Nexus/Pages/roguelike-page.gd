@@ -197,6 +197,8 @@ func update_hearts() -> void:
 		return;
 	for i in range(data.lives_left):
 		get_hearts()[i].on(Heart.HeartColor.RED if data.has_max_life(1 if data.lost_heart else 0) else Heart.HeartColor.PINK);
+	for i in range(System.Rules.STARTING_LIVES - data.lives_left):
+		get_hearts()[i + data.lives_left].off();
 	if data.lost_heart and !data.has_max_life():
 		heart_losing_effect();
 
@@ -288,6 +290,10 @@ func pack_card() -> void:
 	data.your_cards = data.your_cards + [focused_card.card_data.to_json()];
 	data.card_choices_left.remove_at(0);
 	data.cards_bought += 1;
+	if data.cards_bought >= data.card_goal and data.lives_left > 1:
+		data.lives_left = 1;
+		data.lost_heart = true;
+		update_hearts();
 	update_progress_label();
 	focused_card.despawn(despawn_position);
 	focused_card = null;

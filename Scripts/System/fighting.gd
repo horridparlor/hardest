@@ -4,10 +4,11 @@ static func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var you_have_negative_multiplier : bool = card and card.multiply_advantage < 0;
 	var opponent_has_negative_multiplier : bool = enemy and enemy.multiply_advantage < 0;
+	var is_reversed : bool = (card and card.has_victim()) or (enemy and enemy.has_victim());
 	if you_have_negative_multiplier and !opponent_has_negative_multiplier:
-		return opponent_wins;
+		return opponent_wins if !is_reversed else you_win;
 	if opponent_has_negative_multiplier and !you_have_negative_multiplier:
-		return you_win;
+		return you_win if !is_reversed else opponent_wins;
 	if you_have_negative_multiplier and opponent_has_negative_multiplier:
 		return tie;
 	if card == null and enemy == null:
@@ -18,6 +19,9 @@ static func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums
 		return you_win;
 	var winner_a : GameplayEnums.Controller = check_winner_from_side(card, enemy);
 	var winner_b : GameplayEnums.Controller = GameplayEnums.flip_player(check_winner_from_side(enemy, card));
+	if is_reversed:
+		winner_a = reverse_winner(winner_a);
+		winner_b = reverse_winner(winner_b);
 	if winner_a == winner_b:
 		return winner_a;
 	elif winner_a == tie:
@@ -25,6 +29,14 @@ static func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums
 	elif winner_b == tie:
 		return winner_a;
 	return tie;
+
+static func reverse_winner(winner : GameplayEnums.Controller) -> GameplayEnums.Controller:
+	match winner:
+		GameplayEnums.Controller.PLAYER_ONE:
+			return GameplayEnums.Controller.PLAYER_TWO;
+		GameplayEnums.Controller.PLAYER_TWO:
+			return GameplayEnums.Controller.PLAYER_ONE;
+	return winner;
 
 static func check_winner_from_side(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
 	var card_type : CardEnums.CardType = card.card_type;

@@ -441,6 +441,9 @@ func has_vampire() -> bool:
 func has_very_nutty() -> bool:
 	return has_keyword(CardEnums.Keyword.VERY_NUTTY);
 
+func has_victim() -> bool:
+	return has_keyword(CardEnums.Keyword.VICTIM);
+
 func is_vanilla() -> bool:
 	return keywords.is_empty();
 

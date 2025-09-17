@@ -2,15 +2,15 @@ extends Node
 
 const VERSION : String = "0.9";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 23;
-const MAX_CARD_ID : int = 135;
+const MAX_CARD_ID : int = 136;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID - 3, 20);
 
 const AUTO_PLAY : bool = false if DEV_MODE else false;
 const AUTO_START : bool = false if DEV_MODE else false;
 const AUTO_LEVEL : int = 46 if DEV_MODE else 0;
-const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
+const SHOWCASE_CARD_ID : int = 136 if DEV_MODE else 0;
 const SHOWCASE_STAMP : CardEnums.Stamp = CardEnums.Stamp.NULL if DEV_MODE else CardEnums.Stamp.NULL;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
 const DEBUG_CARD : int = 0 if DEV_MODE else 0;
@@ -37,4 +37,4 @@ const MUSIC_NIGHTCORE_PITCH : float = 1.2;
 #Marketing
 const TEXTLESS_CARDS : bool = false if DEV_MODE else false;
 const SHOW_TITLE : bool = false if DEV_MODE else false;
-const DO_ROTATE_SCREEN : bool = true if DEV_MODE else true;
+const DO_ROTATE_SCREEN : bool = false if DEV_MODE else true;

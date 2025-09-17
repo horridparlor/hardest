@@ -116,6 +116,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			116,
 			121,
 			125,
+			136,
 		]
 	},
 	House.HIGHTECH: {
@@ -218,6 +219,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			126,
 			127,
 			128,
+			136,
 		]
 	},
 	House.GOD: [
@@ -378,6 +380,7 @@ const RANDOM_CARDS : Dictionary = {
 		128,
 		132,
 		133,
+		136,
 	],
 	CardEnums.CardType.GUN: [
 		4,

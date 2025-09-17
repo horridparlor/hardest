@@ -4,7 +4,11 @@ static func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var you_have_negative_multiplier : bool = card and card.multiply_advantage < 0;
 	var opponent_has_negative_multiplier : bool = enemy and enemy.multiply_advantage < 0;
-	var is_reversed : bool = ((card and card.has_victim()) or (enemy and enemy.has_victim())) and !((card and card.stopped_time_advantage > 1) or (enemy and enemy.stopped_time_advantage > 1));
+	var is_reversed : bool = (card and card.has_victim()) or (enemy and enemy.has_victim());
+	if card:
+		card.check_undead();
+	if enemy:
+		enemy.check_undead();
 	if you_have_negative_multiplier and !opponent_has_negative_multiplier:
 		return opponent_wins if !is_reversed else you_win;
 	if opponent_has_negative_multiplier and !you_have_negative_multiplier:
@@ -264,10 +268,10 @@ static func no_reason_to_counterspell(player : Player, opponent : Player) -> boo
 	var winner : GameplayEnums.Controller = determine_winning_player(player, opponent);
 	return (player.get_field_card() and player.get_field_card().has_cursed()) or winner == GameplayEnums.Controller.PLAYER_ONE;
 
-static func determine_points_result(card : CardData, enemy : CardData) -> int:
+static func determine_points_result(card : CardData, enemy : CardData, player : Player, opponent : Player) -> int:
 	var winner : GameplayEnums.Controller = determine_winner(card, enemy);
-	var win_points : int = get_win_points(card, enemy);
-	var lose_points : int = get_lose_points(card, enemy);
+	var win_points : int = get_win_points(card, enemy, opponent);
+	var lose_points : int = get_lose_points(card, enemy, player);
 	match winner:
 		GameplayEnums.Controller.PLAYER_ONE:
 			return win_points;
@@ -275,20 +279,20 @@ static func determine_points_result(card : CardData, enemy : CardData) -> int:
 			return lose_points;
 	return 0;
 
-static func get_win_points(card : CardData, enemy : CardData) -> int:
+static func get_win_points(card : CardData, enemy : CardData, opponent : Player) -> int:
 	var points : int = calculate_base_points(card, enemy, true);
-	var points_to_steal : int = calculate_points_to_steal(card, enemy);
+	var points_to_steal : int = calculate_points_to_steal(card, enemy, opponent);
 	return points + points_to_steal;
 
-static func get_lose_points(card : CardData, enemy : CardData) -> int:
+static func get_lose_points(card : CardData, enemy : CardData, player : Player) -> int:
 	var points : int = calculate_base_points(card, enemy, false, false);
-	var points_to_lose : int = calculate_points_to_steal(enemy, card);
+	var points_to_lose : int = calculate_points_to_steal(enemy, card, player);
 	return -(points + points_to_lose);
 
-static func calculate_points_to_steal(card : CardData, enemy : CardData) -> int:
+static func calculate_points_to_steal(card : CardData, enemy : CardData, opponent : Player) -> int:
 	var points : int;
-	if card.has_vampire():
+	if card and card.has_vampire():
 		points += 1;
-	if enemy.has_salty():
+	if enemy and enemy.has_salty():
 		points += 1;
-	return min(points, enemy.controller.points);
+	return min(points, opponent.points);

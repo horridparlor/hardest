@@ -275,14 +275,14 @@ func gain_points(amount : int = 1, actually_gain : bool = true) -> int:
 	points += amount;
 	return amount;
 
-func lose_points(amount : int = 1) -> void:
+func lose_points(amount : int = 1, can_go_negative : bool = false) -> int:
 	var original_points : int = points;
 	points -= amount;
-	if amount < 0:
-		points = min(0, original_points);
-		return;
 	if points < 0 and points < original_points:
 		points = min(0, original_points);
+		if can_go_negative:
+			points = min(points, -amount);
+	return points - original_points;
 
 func end_of_turn_clear(did_win : bool) -> void:
 	clear_field(did_win);
@@ -496,11 +496,13 @@ func devour_card(eater : CardData, card : CardData) -> Array:
 		eater.stamp = original_stamp if card.stamp == CardEnums.Stamp.NULL else card.stamp;
 		eater.variant = CardEnums.CardVariant.NEGATIVE;
 		eater.is_holographic = original_is_holograpic if card.is_holographic == false else card.is_holographic;
+		eater.is_foil = card.is_foil;
 		return eater.keywords;
 	eater.set_card_type(card.card_type);
 	eater.stamp = original_stamp if card.stamp == CardEnums.Stamp.NULL else card.stamp;
 	eater.variant = original_variant if card.variant == CardEnums.CardVariant.REGULAR else card.variant;
 	eater.is_holographic = original_is_holograpic if card.is_holographic == false else card.is_holographic;
+	eater.is_foil = card.is_foil if !eater.is_foil else eater.is_foil;
 	for keyword in card.keywords:
 		match keyword:
 			CardEnums.Keyword.UNDEAD:

@@ -8,6 +8,10 @@ static func spawn_poppets(points : int, card : CardData, player : Player, gamepl
 	var color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE;
 	var count : int = points;
 	var extra_count : int;
+	var is_negative : bool = points < 0;
+	if is_negative:
+		points = abs(points);
+		count = abs(count);
 	if points > 12:
 		color = Poppet.PoppetColor.RAINBOW;
 		count /= 6;
@@ -21,23 +25,27 @@ static func spawn_poppets(points : int, card : CardData, player : Player, gamepl
 		count /= 2;
 		extra_count = points - 2 * count + System.random.randi_range(0, 1);
 	for i in range(min(MAX_CARD_POPPETS, count)):
-		spawn_poppet_for_card(card, player, gameplay, color);
+		spawn_poppet_for_card(card, player, gameplay, color, is_negative);
 	for i in range(min(MAX_CARD_POPPETS, extra_count)):
-		spawn_poppet_for_card(card, player, gameplay);
+		spawn_poppet_for_card(card, player, gameplay, Poppet.PoppetColor.BLUE, is_negative);
 
-static func spawn_poppet_for_card(card : CardData, player : Player, gameplay : Gameplay, color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE) -> void:
+static func spawn_poppet_for_card(card : CardData, player : Player, gameplay : Gameplay, color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE, is_negative : bool = false) -> void:
 	var goal_position : Vector2
 	if !gameplay.get_card(card):
 		return;
 	goal_position = (gameplay.your_point_panel.position if player == gameplay.player_one else gameplay.opponents_point_panel.position) + Vector2(235, 95) + Vector2(System.random.randf_range(-130, 130), System.random.randf_range(-50, 50));
-	spawn_poppet(gameplay.get_card(card).position + System.Random.vector(0, 50), goal_position, gameplay, color);
+	spawn_poppet(gameplay.get_card(card).position + System.Random.vector(0, 50), goal_position, gameplay, color, is_negative);
 
-static func spawn_poppet(spawn_position : Vector2, goal_position : Vector2, gameplay : Gameplay, color : Poppet.PoppetColor) -> Poppet:
+static func spawn_poppet(spawn_position : Vector2, goal_position : Vector2, gameplay : Gameplay, color : Poppet.PoppetColor, is_negative : bool = false) -> Poppet:
 	var poppet : Poppet;
 	poppet = System.Instance.load_child(System.Paths.POPPET, gameplay.above_cards_layer);
 	poppet.position = spawn_position;
 	poppet.rotation_degrees = System.random.randf_range(-40, 40);
 	poppet.move_to(goal_position, color);
+	if is_negative:
+		poppet.make_negative();
+		poppet.position = goal_position;
+		poppet.goal_position = goal_position + Vector2(0, -System.Window_.y / 4);
 	gameplay.poppets[poppet.instance_id] = poppet;
 	return poppet;
 

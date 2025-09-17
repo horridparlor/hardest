@@ -296,9 +296,9 @@ func get_opponents() -> Dictionary:
 				41,
 				44,
 				45,
-				41,
-				44,
-				45,
+				132,
+				113,
+				137,
 				
 				13
 			],
@@ -473,7 +473,9 @@ func get_opponents() -> Dictionary:
 				93,
 				94,
 				113,
-				119
+				119,
+				
+				136,
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.DIVINE,

@@ -71,8 +71,10 @@ static func trigger_werewolf(card : CardData, gameplay : Gameplay) -> void:
 
 static func trigger_ocean_dweller(card : CardData, player : Player, gameplay : Gameplay) -> void:
 	var points : int = System.Fighting.calculate_base_points(card, null, true, false);
+	if card.multiply_advantage < 0:
+		points *= -1;
 	player.gain_points(points);
-	gameplay.gain_points_effect(player);
+	gameplay.gain_points_effect(player, points < 0);
 	if gameplay.get_card(card):
 		gameplay.get_card(card).wet_effect();
-	System.EyeCandy.spawn_poppets(points, card, player, gameplay);
+	System.EyeCandy.spawn_poppets(max(0, points), card, player, gameplay);

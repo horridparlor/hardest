@@ -33,3 +33,8 @@ func get_sprites() -> Array:
 
 func get_shader_nodes() -> Array:
 	return get_sprites();
+
+func make_negative() -> void:
+	var negative_material : ShaderMaterial = System.Shaders.negative();
+	for sprite in get_sprites():
+		sprite.material = negative_material;

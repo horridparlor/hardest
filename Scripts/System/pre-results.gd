@@ -132,6 +132,11 @@ static func nut_players_nuts(player : Player, opponent : Player, gameplay : Game
 
 static func nut_with_card(card : CardData, enemy : CardData, player : Player, gameplay : Gameplay) -> bool:
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);
+	if card.multiply_advantage < 0:
+		multiplier *= -1;
+		if gameplay.get_card(card):
+			gameplay.get_card(card).recoil(gameplay.get_card(card).position);
+		gameplay.gain_points_effect(player, true);
 	var points : int = player.points;
 	card.nuts += 1;
 	if player.do_nut(multiplier):
@@ -196,7 +201,7 @@ static func play_digitals(player : Player, opponent : Player, gameplay : Gamepla
 		return false;
 	cards.sort_custom(
 		func(card_a : CardData, card_b : CardData):
-			return System.Fighting.determine_points_result(card_a, enemy) < System.Fighting.determine_points_result(card_b, enemy);
+			return System.Fighting.determine_points_result(card_a, enemy, player, opponent) < System.Fighting.determine_points_result(card_b, enemy, player, opponent);
 	);
 	digital_to_play = cards.back();
 	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(digital_to_play, enemy)):

@@ -2,35 +2,9 @@
 	"id": 46,
 	"title": "AI test level, opponent's deck",
 	"cards": [
-		{
-			"id": 2,
-			"is_holographic": true,
-			"stamp": "rare",
-			"variant": "negative"
-		},
-		{
-			"id": 2,
-			"is_holographic": true,
-			"stamp": "rare",
-			"variant": "negative"
-		},
-		{
-			"id": 2,
-			"is_holographic": true,
-			"stamp": "rare",
-			"variant": "negative"
-		},
-		{
-			"id": 2,
-			"is_holographic": true,
-			"stamp": "rare",
-			"variant": "negative"
-		},
-		{
-			"id": 2,
-			"is_holographic": true,
-			"stamp": "rare",
-			"variant": "negative"
-		}
+		58,
+		24,
+		113,
+		74
 	]
 }

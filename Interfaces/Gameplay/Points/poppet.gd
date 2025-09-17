@@ -89,3 +89,6 @@ func get_shader_nodes() -> Array:
 
 static func random_color() -> PoppetColor:
 	return System.Random.item(PoppetColor.values());
+
+func make_negative() -> void:
+	pass;

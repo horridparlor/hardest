@@ -332,6 +332,8 @@ func process_victory() -> void:
 		give_opponent_card_drop(save_data.roguelike_data.chosen_opponent, true);
 		for id in save_data.roguelike_data.all_opponents.keys():
 			give_opponent_card_drop(id);
+		if save_data.roguelike_data.cards_bought >= save_data.roguelike_data.card_goal:
+			save_data.roguelike_data.lives_left = 1;
 	if save_data.tutorial_levels_won < level_data.id - 1:
 		save_data.tutorial_levels_won += 1;
 		save_data.tutorial_levels_won = min(System.Levels.MAX_TUTORIAL_LEVELS, save_data.tutorial_levels_won);

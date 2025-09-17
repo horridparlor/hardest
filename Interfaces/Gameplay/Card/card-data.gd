@@ -428,6 +428,17 @@ func has_tidal() -> bool:
 func has_time_stop() -> bool:
 	return has_keyword(CardEnums.Keyword.TIME_STOP);
 
+func check_undead() -> void:
+	if !has_undead():
+		return;
+	if has_undead(true):
+		set_card_type(CardEnums.CardType.GUN);
+	else:
+		if default_type == CardEnums.CardType.MIMIC and card_type == CardEnums.CardType.GUN:
+			pass;
+		else:
+			set_card_type(default_type);
+
 func has_undead(needs_to_be_active : bool = false) -> bool:
 	if !has_keyword(CardEnums.Keyword.UNDEAD):
 		return false;

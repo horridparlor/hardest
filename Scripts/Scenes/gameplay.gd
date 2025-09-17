@@ -510,14 +510,7 @@ func update_card_alterations(rerender_shader : bool = false) -> void:
 
 func update_alterations_for_card(card_data : CardData, rerender_shader : bool = false) -> void:
 	var card : GameplayCard = get_card(card_data);
-	if card_data.has_undead():
-		if card_data.has_undead(true):
-			card_data.set_card_type(CardEnums.CardType.GUN);
-		else:
-			if card_data.default_type == CardEnums.CardType.MIMIC and card_data.card_type == CardEnums.CardType.GUN:
-				pass;
-			else:
-				card_data.set_card_type(card_data.default_type);
+	card_data.check_undead();
 	if card:
 		if rerender_shader and !is_time_stopped:
 			card.card_art.material = null;
@@ -847,8 +840,8 @@ func start_results() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT * System.game_speed_additive_multiplier;
 	round_results_timer.start();
 
-func gain_points_effect(player : Player) -> void:
-	click_your_points() if player == player_one else click_opponents_points();
+func gain_points_effect(player : Player, is_negative : bool = false) -> void:
+	click_your_points(is_negative) if player == player_one else click_opponents_points(is_negative);
 	update_point_visuals();
 
 func get_opponent(card : CardData) -> Player:
@@ -1015,14 +1008,14 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 					if enemy:
 						player.steal_card(enemy);
 				CardEnums.Keyword.VAMPIRE:
-					opponent.lose_points(points);
+					System.EyeCandy.spawn_poppets(opponent.lose_points(points), card, opponent, self);
 	if enemy:
 		for keyword in enemy.keywords:
 			match keyword:
 				CardEnums.Keyword.EXTRA_SALTY:
-					opponent.lose_points(System.Rules.EXTRA_SALTY_POINTS_LOST);
+					System.EyeCandy.spawn_poppets(opponent.lose_points(System.Rules.EXTRA_SALTY_POINTS_LOST), enemy, opponent, self);
 				CardEnums.Keyword.SALTY:
-					opponent.lose_points(System.Rules.SALTY_POINTS_LOST);
+					System.EyeCandy.spawn_poppets(opponent.lose_points(System.Rules.SALTY_POINTS_LOST), enemy, opponent, self);
 	gain_points_effect(player);
 	if have_you_won() or has_opponent_won():
 		start_game_over();
@@ -1066,9 +1059,9 @@ func check_lose_effects(card : CardData, player : Player) -> void:
 	if card and card.has_greed():
 		player.draw_cards(2);
 
-func click_your_points() -> void:
+func click_your_points(is_negative : bool = false) -> void:
 	your_points.add_theme_color_override("font_color", Color.YELLOW);
-	play_point_sfx(YOUR_POINT_SOUND_PATH);
+	play_point_sfx(YOUR_POINT_SOUND_PATH if !is_negative else YOUR_NEGATIVE_POINT_SOUND_PATH);
 	if have_you_won():
 		did_win = true;
 		return;
@@ -1087,9 +1080,9 @@ func play_point_sfx(file_path : String) -> void:
 	point_streamer.pitch_scale = max(Config.MIN_BULLET_PITCH, System.game_speed);
 	point_streamer.play();
 
-func click_opponents_points() -> void:
+func click_opponents_points(is_negative : bool = false) -> void:
 	opponents_points.add_theme_color_override("font_color", Color.YELLOW);
-	play_point_sfx(OPPONENTS_POINT_SOUND_PATH);
+	play_point_sfx(OPPONENTS_POINT_SOUND_PATH if !is_negative else OPPONENTS_NEGATIVE_POINT_SOUND_PATH);
 	if has_opponent_won():
 		return;
 	points_click_timer.wait_time = POINTS_CLICK_WAIT * System.game_speed_additive_multiplier;

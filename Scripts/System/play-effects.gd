@@ -31,7 +31,7 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 			CardEnums.Keyword.SABOTAGE:
 				trigger_sabotage(opponent, gameplay);
 			CardEnums.Keyword.SCAMMER:
-				player.points = -100;
+				System.EyeCandy.spawn_poppets(player.lose_points(100, true), card, player, gameplay);
 				gameplay.gain_points_effect(player);
 			CardEnums.Keyword.SPRING_ARRIVES:
 				trigger_spring_arrives(card, player, gameplay);

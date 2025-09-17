@@ -14,6 +14,7 @@ const NEXUS : String = "res://Prefabs/Scenes/nexus.tscn";
 const OCEAN_SHADER : String = "res://Shaders/CardEffects/ocean-shader.gdshader";
 const POINT_LED : String = "res://Prefabs/Gameplay/Points/point-led.tscn";
 const POPPET : String = "res://Prefabs/Gameplay/Points/poppet.tscn";
+const RATTLE : String = "res://Prefabs/Gameplay/Card/rattle.tscn";
 const SABOTAGE_EFFECT : String = "res://Prefabs/Gameplay/Card/sabotage-effect.tscn";
 const SHINE_STAR : String = "res://Prefabs/Gameplay/Card/shine-star.tscn";
 const SONG : String = "res://Assets/Songs/%s.mp3";

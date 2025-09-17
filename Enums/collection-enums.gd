@@ -62,6 +62,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			122,
 			124,
 			135,
+			137,
 		],
 		Rarity.RARE: [
 			14,
@@ -110,13 +111,13 @@ const CARDS_TO_COLLECT : Dictionary = {
 			130,
 			132,
 			133,
+			136,
 		],
 		Rarity.RARE: [
 			115,
 			116,
 			121,
 			125,
-			136,
 		]
 	},
 	House.HIGHTECH: {
@@ -161,6 +162,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			73,
 			98,
 			113,
+			138,
 		],
 		Rarity.RARE: [
 			18,
@@ -199,6 +201,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			122,
 			132,
 			133,
+			136,
 		],
 		Rarity.RARE: [
 			14,
@@ -219,7 +222,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 			126,
 			127,
 			128,
-			136,
 		]
 	},
 	House.GOD: [
@@ -312,6 +314,7 @@ const RANDOM_CARDS : Dictionary = {
 		118,
 		125,
 		130,
+		138,
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -345,6 +348,7 @@ const RANDOM_CARDS : Dictionary = {
 		124,
 		129,
 		135,
+		137,
 	],
 	CardEnums.CardType.SCISSORS: [
 		3,
@@ -464,6 +468,7 @@ const FOIL_CARDS : Dictionary = {
 	112: null,
 	120: null,
 	125: null,
+	128: null,
 	131: null,
 }
 

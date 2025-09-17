@@ -136,3 +136,8 @@ static func get_count_of_bullets_shot(card : CardData) -> int:
 	if count == 1 and CollectionEnums.TRIPLE_SHOOTING_CARDS.has(card.card_id):
 		count = 3;
 	return count;
+
+static func victim_effect(card : CardData, gameplay : Gameplay) -> void:
+	gameplay.play_rattlesnake_sound();
+	if gameplay.get_card(card):
+		gameplay.get_card(card).rattlesnake_effect();

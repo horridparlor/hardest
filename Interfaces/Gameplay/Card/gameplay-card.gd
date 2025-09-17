@@ -51,6 +51,7 @@ const OCEAN_IN_SPEED : float = 3.7 * Config.GAME_SPEED;
 const OCEAN_OUT_SPEED : float = 0.3 * Config.GAME_SPEED;
 const OCEAN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
 const ANIMATION_DYING_SPEED : float = 1.4 * Config.GAME_SPEED;
+const RATTLE_POSITION : Vector2 = Vector2(420, -700);
 
 const MIN_RECOIL_DISTANCE : int = 400;
 const MAX_RECOIL_DISTANCE : int = 600;
@@ -111,6 +112,7 @@ var has_foil_visuals : bool;
 var is_in_ocean : bool;
 var is_out_ocean : bool;
 var shine_star : ShineStar;
+var rattle : Rattle;
 
 var dissolve_value : float;
 var is_dissolving : bool;
@@ -442,3 +444,11 @@ func update_emp_visuals() -> void:
 
 func die() -> void:
 	pass;
+
+func rattlesnake_effect() -> void:
+	if System.Instance.exists(rattle):
+		return;
+	rattle = System.Instance.load_child(System.Paths.RATTLE, self);
+	rattle.position = RATTLE_POSITION;
+	if card_data and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO:
+		rattle.position.x *= -1;

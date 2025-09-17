@@ -796,6 +796,9 @@ func play_spy_sound() -> void:
 func play_digital_sound() -> void:
 	play_throwable_sfx(DIGITAL_SOUND_PATH);
 
+func play_rattlesnake_sound() -> void:
+	play_throwable_sfx(RATTLESNAKE_SOUND_PATH);
+
 func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var spied_card : GameplayCard;
 	System.CardManager.spawn_card(card, self);

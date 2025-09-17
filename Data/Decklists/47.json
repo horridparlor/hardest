@@ -2,9 +2,17 @@
 	"id": 47,
 	"title": "AI test level, your deck",
 	"cards": [
-		41,
-		131,
-		21,
-		136
+		{
+			"id": 120,
+			"stamp": "double",
+			"is_holographic": true,
+			"variant": "negative"
+		},
+		120,
+		120,
+		{
+			"id": 120,
+			"stamp": "bluetooth"
+		}
 	]
 }

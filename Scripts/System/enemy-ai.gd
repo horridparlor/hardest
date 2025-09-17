@@ -147,15 +147,19 @@ static func get_card_value(card : CardData, player : Player, opponent : Player, 
 				value += 5 if opponent.points > 0 else 0;
 			CardEnums.Keyword.VERY_NUTTY:
 				value += 10 * player.turns_waited_to_nut * player.nut_multiplier;
+			CardEnums.Keyword.VICTIM:
+				value += 1;
 			CardEnums.Keyword.WEREWOLF:
 				value += 0;
 			CardEnums.Keyword.WRAPPED:
 				value += 0 if player.going_first else 1;
+	if player.going_first and card.has_buried() and card.has_devour():
+		value += 5;
 	value *= System.Fighting.calculate_base_points(card, null, true);
 	if value < 0:
 		return value;
-	if card.is_gun and !card.is_buried and (gameplay.time_stopping_player == player or (gameplay.time_stopping_player == null and card.has_time_stop())):
-		value *= card.stopped_time_advantage;
+	if card.is_gun and !card.has_buried() and (gameplay.time_stopping_player == player or (gameplay.time_stopping_player == null and card.has_time_stop())):
+		value *= (System.Rules.STOPPED_TIME_MIN_SHOTS + System.Rules.STOPPED_TIME_MAX_SHOTS) / 2;
 	return value;
 
 static func get_card_base_value(card : CardData) -> int:

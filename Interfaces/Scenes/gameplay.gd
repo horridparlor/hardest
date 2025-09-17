@@ -78,6 +78,7 @@ const COIN_FLIP_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/co
 const COIN_LOSE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/coin-lose.wav";
 const SPY_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/spy-sound.wav";
 const DIGITAL_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/digital-sound.wav";
+const RATTLESNAKE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/rattlesnake.wav";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);
 const LEDS_PER_COLUMN : int = 19;

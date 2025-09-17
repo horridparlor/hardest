@@ -486,21 +486,21 @@ func build_hydra(card : CardData, include_hand_keywords : bool = false, allow_bu
 
 func devour_card(eater : CardData, card : CardData) -> Array:
 	var devoured_keywords : Array;
+	var original_stamp : CardEnums.Stamp = eater.stamp;
+	var original_variant : CardEnums.CardVariant = eater.variant;
+	var original_is_holograpic : bool = eater.is_holographic;
 	if eater.is_buried:
 		eater.is_buried = false;
 	if eater.has_devow():
 		eater.eat_json(card.to_json(), true, true);
+		eater.stamp = original_stamp if card.stamp == CardEnums.Stamp.NULL else card.stamp;
 		eater.variant = CardEnums.CardVariant.NEGATIVE;
+		eater.is_holographic = original_is_holograpic if card.is_holographic == false else card.is_holographic;
 		return eater.keywords;
 	eater.set_card_type(card.card_type);
-	if eater.stamp == CardEnums.Stamp.NULL:
-		eater.stamp = card.stamp;
-	if eater.variant == CardEnums.CardVariant.REGULAR:
-		eater.variant = card.variant;
-	if !eater.is_holographic:
-		eater.is_holographic = card.is_holographic;
-	if !eater.is_foil:
-		eater.is_foil = card.is_foil;
+	eater.stamp = original_stamp if card.stamp == CardEnums.Stamp.NULL else card.stamp;
+	eater.variant = original_variant if card.variant == CardEnums.CardVariant.REGULAR else card.variant;
+	eater.is_holographic = original_is_holograpic if card.is_holographic == false else card.is_holographic;
 	for keyword in card.keywords:
 		match keyword:
 			CardEnums.Keyword.UNDEAD:

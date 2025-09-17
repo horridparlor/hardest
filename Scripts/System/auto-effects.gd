@@ -77,7 +77,7 @@ static func check_for_devoured(card : GameplayCard, player : Player, opponent : 
 		else:
 			for keyword in devoured_keywords:
 				System.PlayEffects.trigger_play_effects(enemy, opponent, player, gameplay, keyword);
-		gameplay.update_alterations_for_card(enemy);
+		gameplay.update_alterations_for_card(enemy, true);
 		gameplay.spawn_tongue(card, gameplay.get_card(enemy));
 		gameplay.erase_card(card, opponent.field_position + Vector2(0, -GameplayCard.SIZE.y * 0.1 \
 			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));

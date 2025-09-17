@@ -4,7 +4,7 @@ static func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var you_have_negative_multiplier : bool = card and card.multiply_advantage < 0;
 	var opponent_has_negative_multiplier : bool = enemy and enemy.multiply_advantage < 0;
-	var is_reversed : bool = (card and card.has_victim()) or (enemy and enemy.has_victim());
+	var is_reversed : bool = ((card and card.has_victim()) or (enemy and enemy.has_victim())) and !((card and card.stopped_time_advantage > 1) or (enemy and enemy.stopped_time_advantage > 1));
 	if you_have_negative_multiplier and !opponent_has_negative_multiplier:
 		return opponent_wins if !is_reversed else you_win;
 	if opponent_has_negative_multiplier and !you_have_negative_multiplier:

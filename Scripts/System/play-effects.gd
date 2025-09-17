@@ -38,6 +38,8 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 			CardEnums.Keyword.VERY_NUTTY:
 				if !enemy or !enemy.has_november():
 					player.nut_multiplier *= 2;
+			CardEnums.Keyword.VICTIM:
+				System.EyeCandy.victim_effect(card, gameplay);
 			CardEnums.Keyword.WRAPPED:
 				player.gained_keyword = CardEnums.Keyword.BURIED;
 	if gameplay.is_time_stopped:

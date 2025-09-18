@@ -78,6 +78,8 @@ const OPPONENT_POINT_PATTERN_PATH : String = "res://Assets/Art/OpponentPointPatt
 const SABOTAGE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/sabotage.wav";
 const COIN_FLIP_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/coin-flip.wav";
 const COIN_LOSE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/coin-lose.wav";
+const BERSERK_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/berserk-sound.wav";
+const DIRT_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/dirt-sound.wav";
 const SPY_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/spy-sound.wav";
 const DIGITAL_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/digital-sound.wav";
 const RATTLESNAKE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/rattlesnake.wav";
@@ -108,10 +110,10 @@ const MAX_TENTACLES : int = 24;
 const TIME_STOP_ACCELERATION_SPEED : float = 0.5 * Config.GAME_SPEED;
 const TIME_STOP_LED_ACCELERATION : int = 12 * Config.GAME_SPEED;
 const TIME_STOP_GAME_SPEED : float = 0.6 * Config.GAME_SPEED;
-const MIN_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.2 * Config.GAME_SPEED_MULTIPLIER;
-const MAX_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.3 * Config.GAME_SPEED_MULTIPLIER;
+const MIN_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.12 * Config.GAME_SPEED_MULTIPLIER;
+const MAX_STOPPED_TIME_SHOOTING_ROUND_WAIT : float = 0.21 * Config.GAME_SPEED_MULTIPLIER;
 const MIN_STOPPED_TIME_WAIT : float = 0.09;
-const MAX_STOPPED_TIME_WAIT : float = 0.18;
+const MAX_STOPPED_TIME_WAIT : float = 0.12;
 const OCEAN_POINTS_MIN_WAIT : float = 0.42 * Config.GAME_SPEED_MULTIPLIER;
 const OCEAN_POINTS_MAX_WAIT : float = 0.76 * Config.GAME_SPEED_MULTIPLIER;
 const WET_MIN_WAIT : float = 0.4 * Config.GAME_SPEED_MULTIPLIER;
@@ -211,6 +213,7 @@ var is_spying_whole_hand : bool;
 var is_already_whole_spying : bool;
 var times_time_stopped_this_round : int;
 var is_active : bool;
+var spy_stack : Array;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

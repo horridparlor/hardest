@@ -332,11 +332,24 @@ static func collect_nuts(player : Player, gameplay : Gameplay) -> void:
 
 static func spy_opponent(card : CardData, player : Player, opponent : Player, gameplay : Gameplay, chain : int = 1, zone : CardEnums.Zone = CardEnums.Zone.HAND, spy_type : GameplayEnums.SpyType = GameplayEnums.SpyType.FIGHT) -> bool:
 	var spied_card_data : CardData;
+	if gameplay.is_spying:
+		gameplay.spy_stack.append(
+			SpyData.new(card, player, opponent, chain, zone, spy_type)	
+		);
+		return false;
 	gameplay.spy_zone = zone;
 	var do_spy_hand : bool = gameplay.spy_zone == CardEnums.Zone.HAND;
 	if do_spy_hand and opponent.hand_empty():
 		return false;
-	gameplay.play_spy_sound();
+	match spy_type:
+		GameplayEnums.SpyType.DIRT:
+			gameplay.play_dirt_sound();
+		GameplayEnums.SpyType.FIGHT:
+			match zone:
+				CardEnums.Zone.HAND:
+					gameplay.play_spy_sound();
+				CardEnums.Zone.DECK:
+					gameplay.play_berserk_sound();
 	gameplay.current_spy_type = spy_type;
 	gameplay.is_spying_whole_hand = do_spy_hand and opponent.has_hivemind_for();
 	if gameplay.is_spying_whole_hand:

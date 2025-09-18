@@ -225,6 +225,7 @@ func dissolve(multiplier : float = 1) -> void:
 
 func get_shader_layers(include_multiplier_bar : bool = true) -> Array:
 	return [
+		self,
 		background_pattern,
 		name_label,
 		type_label,
@@ -236,7 +237,8 @@ func get_shader_layers(include_multiplier_bar : bool = true) -> Array:
 		right_panel,
 		stamp
 	] + ([] if System.Instance.exists(card_data) and card_data.is_negative_variant() else [card_art]) + \
-	(multiplier_bar.get_shader_layers() if System.Instance.exists(multiplier_bar) and include_multiplier_bar else []);
+	(multiplier_bar.get_shader_layers() if System.Instance.exists(multiplier_bar) and include_multiplier_bar else []) \
+	+ (rattle.get_shader_layers() if System.Instance.exists(rattle) else []);
 
 func get_custom_shader_layers() -> Array:
 	return [card_art];

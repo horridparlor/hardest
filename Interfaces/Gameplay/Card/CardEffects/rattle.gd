@@ -71,3 +71,6 @@ func fading_out_frame(delta : float) -> void:
 	modulate.a -= fading_out_speed * delta;
 	if modulate.a <= 0:
 		queue_free();
+
+func get_shader_layers() -> Array:
+	return [];

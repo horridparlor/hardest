@@ -84,6 +84,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			26,
 			29,
 			37,
+			43,
 			56,
 			68,
 			72,
@@ -92,7 +93,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.RARE: [
 			41,
-			43,
 			57,
 			62,
 			65,

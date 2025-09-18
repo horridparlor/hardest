@@ -497,6 +497,11 @@ func continue_play() -> void:
 
 func stop_spying() -> void:
 	is_spying = false;
+	while !spy_stack.is_empty():
+		var spy_data : SpyData = spy_stack.pop_front();
+		if System.Instance.exists(spy_data.card) and spy_data.card.is_on_the_field():
+			System.PlayEffects.spy_opponent(spy_data.card, spy_data.player, spy_data.opponent, self, spy_data.chain, spy_data.zone, spy_data.spy_type);
+			return;
 
 func update_card_alterations(rerender_shader : bool = false) -> void:
 	for card in player_one.get_active_cards() + player_two.get_active_cards():
@@ -783,6 +788,12 @@ func play_coin_flip_sound() -> void:
 func play_coin_lose_sound() -> void:
 	play_throwable_sfx(COIN_LOSE_SOUND_PATH);
 
+func play_berserk_sound() -> void:
+	play_throwable_sfx(BERSERK_SOUND_PATH);
+
+func play_dirt_sound() -> void:
+	play_throwable_sfx(DIRT_SOUND_PATH);
+
 func play_spy_sound() -> void:
 	play_throwable_sfx(SPY_SOUND_PATH);
 
@@ -801,6 +812,9 @@ func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = 
 			if System.Instance.exists(active_card) and spied_card == active_card:
 				_on_card_released(spied_card, true);
 	spied_card.go_visit_point(player.visit_point + margin);
+	if card.has_victim():
+		play_rattlesnake_sound();
+		spied_card.rattlesnake_effect();
 
 func opponents_turn() -> void:
 	var card : CardData;

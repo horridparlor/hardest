@@ -450,5 +450,6 @@ func rattlesnake_effect() -> void:
 		return;
 	rattle = System.Instance.load_child(System.Paths.RATTLE, self);
 	rattle.position = RATTLE_POSITION;
+	rattle.sprite.material = material;
 	if card_data and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO:
 		rattle.position.x *= -1;

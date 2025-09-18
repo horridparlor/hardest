@@ -2,7 +2,7 @@ extends Node
 
 const VERSION : String = "0.9";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 23;
 const MAX_CARD_ID : int = 138;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID - 3, 20);
@@ -18,7 +18,7 @@ const SPAWNED_CARD : int = 131 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 const AUTO_HOUSE : CollectionEnums.House = CollectionEnums.House.NULL if DEV_MODE else CollectionEnums.House.NULL;
-const STARTING_PLAYER : GameplayEnums.Controller = GameplayEnums.Controller.NULL if DEV_MODE else GameplayEnums.Controller.NULL;
+const STARTING_PLAYER : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO if DEV_MODE else GameplayEnums.Controller.NULL;
 
 const MUTE : bool = false if DEV_MODE else false;
 const MUTE_MUSIC : bool = (false if DEV_MODE else false) or MUTE;

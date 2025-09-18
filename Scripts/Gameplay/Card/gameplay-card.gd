@@ -254,10 +254,11 @@ func dissolve_frame(delta : float) -> void:
 	if System.Instance.exists(particle_effect):
 		particle_effect.modulate.a = 1.0 - pow(dissolve_value, 2);
 
-func wet_effect() -> void:
+func wet_effect(color : Color = SHADER_COLOR_BLUE) -> void:
 	var shader : Resource = load(System.Paths.OCEAN_SHADER);
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
 	shader_material.shader = shader;
+	shader_material.set_shader_parameter("water_color", color);
 	top_pattern.material = shader_material;
 	top_pattern.visible = true;
 	top_pattern.modulate.a = 0;

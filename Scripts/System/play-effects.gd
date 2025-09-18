@@ -221,6 +221,8 @@ static func inflict_contagious_on_card(card : CardData, card_type : CardEnums.Ca
 		card_type = System.Random.item(CardData.expand_type(card_type));
 	player.rainbow_a_card(card, card_type);
 	gameplay.turn_card_into_another(card);
+	if gameplay.get_card(card):
+		gameplay.play_perfect_contagious_sound() if [CardEnums.CardType.GUN, CardEnums.CardType.GOD].has(card_type) else gameplay.play_contagious_sound();
 
 static func draw_horse_card(player : Player, gameplay : Gameplay) -> void:
 	if player.draw_horse():
@@ -310,6 +312,11 @@ static func clone_card(card_to_clone : CardData, player : Player, gameplay : Gam
 	if gameplay.get_card(card_to_clone):
 		var pos : Vector2 = gameplay.get_card(card_to_clone).position;
 		gameplay_card.position = pos + Vector2(-2, 0);
+		System.EyeCandy.card_shine_effect(gameplay_card, gameplay);
+		if is_perfect_clone:
+			gameplay.play_perfect_clone_sound();
+		else:
+			gameplay.play_clone_sound();
 
 static func trigger_positive(card : CardData, enemy : CardData, player : Player, gameplay : Gameplay) -> void:
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);

@@ -78,6 +78,16 @@ const MIMIC_BORDER_COLOR = "#fbcafb";
 const GOD_BG_COLOR = "847033";
 const GOD_BORDER_COLOR = "e9d392";
 
+const SHADER_COLOR_GREEN : Color = Color(0.0, 0.6, 0.0, 1.0);
+const SHADER_COLOR_BLUE : Color = Color(0, 0.4, 0.8, 1.0);
+const SHADER_COLOR_ORANGE : Color = Color(1.0, 0.5, 0.0, 1.0);
+const SHADER_COLOR_GOLD : Color = Color(1.0, 0.84, 0.0, 1.0);
+const SHADER_COLOR_PURPLE : Color = Color(0.5, 0.0, 0.5, 1.0);
+const SHADER_COLOR_WHITE : Color = Color(0.8, 0.8, 0.85, 1.0);
+const SHADER_COLOR_NEON : Color = Color(0.0, 1.0, 0.7, 1.0);
+const SHADER_COLOR_SILVER : Color = Color(0.8, 0.6, 0.55, 1.0);
+const SHADER_COLOR_RED : Color = Color(1.0, 0.25, 0.0, 1.0);
+
 const CARD_SCALE : Dictionary = {
 	CardEnums.Zone.DECK: MIN_SCALE_VECTOR,
 	CardEnums.Zone.HAND: MIN_SCALE_VECTOR,
@@ -378,7 +388,7 @@ func enrich_hint(message : String) -> String:
 		].has(card_data.card_type) else "") + "[b]%s[/b]" % CardEnums.BasicNames[card_data.card_type]);
 	return message;
 
-func wet_effect() -> void:
+func wet_effect(color : Color = SHADER_COLOR_BLUE) -> void:
 	pass;
 
 func menacing_effect() -> void:

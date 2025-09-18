@@ -84,6 +84,10 @@ const SPY_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/spy-soun
 const DIGITAL_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/digital-sound.wav";
 const SHADOW_REPLACE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/shadow-replace-sound.wav";
 const RATTLESNAKE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/rattlesnake.wav";
+const CLONE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/clone-sound.wav";
+const PERFECT_CLONE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/perfect-clone-sound.wav";
+const CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/contagious-sound.wav";
+const PERFECT_CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/perfect-contagious-sound.wav";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);
 const LEDS_PER_COLUMN : int = 19;

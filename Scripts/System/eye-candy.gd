@@ -149,3 +149,26 @@ static func victim_effect(card : CardData, gameplay : Gameplay) -> void:
 	gameplay.play_rattlesnake_sound();
 	if gameplay.get_card(card):
 		gameplay.get_card(card).rattlesnake_effect();
+
+static func card_shine_effect(card : GameplayCard, gameplay : Gameplay) -> void:
+	card.wet_effect(get_shine_effect_color(card.card_data.card_type));
+
+static func get_shine_effect_color(card_type : CardEnums.CardType) -> Color:
+	match card_type:
+		CardEnums.CardType.ROCK:
+			return GameplayCard.SHADER_COLOR_GREEN;
+		CardEnums.CardType.PAPER:
+			return GameplayCard.SHADER_COLOR_BLUE;
+		CardEnums.CardType.SCISSORS:
+			return GameplayCard.SHADER_COLOR_ORANGE;
+		CardEnums.CardType.BEDROCK:
+			return GameplayCard.SHADER_COLOR_NEON;
+		CardEnums.CardType.ZIPPER:
+			return GameplayCard.SHADER_COLOR_SILVER;
+		CardEnums.CardType.ROCKSTAR:
+			return GameplayCard.SHADER_COLOR_RED;
+		CardEnums.CardType.ROCK:
+			return GameplayCard.SHADER_COLOR_GREEN;
+		CardEnums.CardType.ROCK:
+			return GameplayCard.SHADER_COLOR_GREEN;
+	return GameplayCard.SHADER_COLOR_GOLD;

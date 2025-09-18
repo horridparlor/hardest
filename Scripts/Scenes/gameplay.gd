@@ -694,6 +694,8 @@ func turn_card_into_another(card : CardData) -> void:
 	if card.has_auto_hydra():
 		player.build_hydra(card, true);
 	update_alterations_for_card(card, true);
+	if get_card(card):
+		System.EyeCandy.card_shine_effect(get_card(card), self);
 
 func wait_for_animation(card : CardData, type : GameplayEnums.AnimationType, animation_data : Dictionary = {}) -> int:
 	var instance_id = System.Random.instance_id();
@@ -805,6 +807,18 @@ func play_shadow_replace_sound() -> void:
 
 func play_rattlesnake_sound() -> void:
 	play_throwable_sfx(RATTLESNAKE_SOUND_PATH);
+
+func play_clone_sound() -> void:
+	play_throwable_sfx(CLONE_SOUND_PATH);
+
+func play_perfect_clone_sound() -> void:
+	play_throwable_sfx(PERFECT_CLONE_SOUND_PATH);
+
+func play_contagious_sound() -> void:
+	play_throwable_sfx(CONTAGIOUS_SOUND_PATH);
+
+func play_perfect_contagious_sound() -> void:
+	play_throwable_sfx(PERFECT_CONTAGIOUS_SOUND_PATH);
 
 func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var spied_card : GameplayCard;

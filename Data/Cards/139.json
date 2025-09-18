@@ -1,7 +1,11 @@
 {
-	"id": 134,
-	"name": "Rock",
-	"type": "rock",
+	"id": 139,
+	"name": "Ticci Doll",
+	"type": "rockstar",
 	"keywords": [
-	]
+		"dirt",
+		"spy",
+		"berserk"
+	],
+	"bullet": 31
 }

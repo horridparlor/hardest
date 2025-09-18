@@ -427,10 +427,10 @@ func animate_spying_fight(card : CardData, player : Player, enemy : CardData, op
 	var points : int = 1;
 	if !System.Instance.exists(spy_target):
 		return false;
-	if card and card.is_gun() and winner != GameplayEnums.Controller.PLAYER_TWO:
+	if card and (card.is_gun() or CollectionEnums.NON_GUN_SHOOTING_CARDS.has(card.card_id)) and winner != GameplayEnums.Controller.PLAYER_TWO:
 		play_shooting_animation(card, enemy, false, false, true);
 		winner = determine_winner(card, enemy);
-	if enemy and enemy.is_gun() and winner != GameplayEnums.Controller.PLAYER_ONE:
+	if enemy and (enemy.is_gun() or CollectionEnums.NON_GUN_SHOOTING_CARDS.has(enemy.card_id)) and winner != GameplayEnums.Controller.PLAYER_ONE:
 		play_shooting_animation(enemy, card, false, false, true);
 		winner = determine_winner(card, enemy);
 	match winner:
@@ -953,7 +953,7 @@ func round_results() -> void:
 func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 	if !get_card(card):
 		return;
-	if ((card.has_sinful() or (enemy and enemy.has_incinerate())) and !card.has_cursed()) or enemy.has_soul_robber():
+	if ((card.has_sinful() or (enemy and enemy.has_incinerate())) and !card.has_cursed()) or (enemy and enemy.has_soul_robber()):
 		get_card(card).burn_effect();
 		burn_card(card);
 	get_card(card).dissolve();

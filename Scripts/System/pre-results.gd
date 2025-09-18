@@ -248,12 +248,13 @@ static func play_shadows(player : Player, opponent : Player, gameplay : Gameplay
 		return false;
 	for i in range(player.count_deck()):
 		var c : CardData = player.cards_in_deck[player.count_deck() - (1 + i)];
-		if !c.has_aura_farming() or (c.has_shadow_replace() and ![winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(c, enemy))):
+		if ![winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(c, enemy)):
 			if (card and card.has_shadow_replace()) or c.has_shadow_replace():
 				shadow_card = c;
+				break;
+		if !c.has_aura_farming() and !c.has_shadow_replace():
+			break;
 	if shadow_card == null:
-		return false;
-	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(shadow_card, enemy)):
 		return false;
 	gameplay.play_shadow_replace_sound();
 	gameplay.replace_played_card(shadow_card);

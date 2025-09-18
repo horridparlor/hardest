@@ -82,6 +82,7 @@ const BERSERK_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/bers
 const DIRT_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/dirt-sound.wav";
 const SPY_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/spy-sound.wav";
 const DIGITAL_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/digital-sound.wav";
+const SHADOW_REPLACE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/shadow-replace-sound.wav";
 const RATTLESNAKE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/rattlesnake.wav";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);

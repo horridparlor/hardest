@@ -255,5 +255,6 @@ static func play_shadows(player : Player, opponent : Player, gameplay : Gameplay
 		return false;
 	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(shadow_card, enemy)):
 		return false;
+	gameplay.play_shadow_replace_sound();
 	gameplay.replace_played_card(shadow_card);
 	return true;

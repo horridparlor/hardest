@@ -2,13 +2,9 @@
 	"id": 47,
 	"title": "AI test level, your deck",
 	"cards": [
-		113,
-		{
-			"id": 113,
-			"is_holographic": true,
-			"variant": "negative"
-		},
-		103,
-		106
+		87,
+		87,
+		87,
+		107
 	]
 }

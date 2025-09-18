@@ -800,6 +800,9 @@ func play_spy_sound() -> void:
 func play_digital_sound() -> void:
 	play_throwable_sfx(DIGITAL_SOUND_PATH);
 
+func play_shadow_replace_sound() -> void:
+	play_throwable_sfx(SHADOW_REPLACE_SOUND_PATH);
+
 func play_rattlesnake_sound() -> void:
 	play_throwable_sfx(RATTLESNAKE_SOUND_PATH);
 
@@ -936,7 +939,7 @@ func round_results() -> void:
 func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 	if !get_card(card):
 		return;
-	if ((card.has_sinful() or enemy.has_incinerate()) and !card.has_cursed()) or enemy.has_soul_robber():
+	if ((card.has_sinful() or (enemy and enemy.has_incinerate())) and !card.has_cursed()) or enemy.has_soul_robber():
 		get_card(card).burn_effect();
 		burn_card(card);
 	get_card(card).dissolve();

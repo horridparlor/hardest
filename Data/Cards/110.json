@@ -3,8 +3,7 @@
 	"name": "Gundemic",
 	"type": "gun",
 	"keywords": [
-		"contagious",
-		"reload"
+		"contagious"
 	],
 	"bullet": 23
 }

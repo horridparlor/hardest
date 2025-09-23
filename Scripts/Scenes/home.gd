@@ -155,6 +155,7 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	gameplay.stop_music.connect(_on_stop_music);
 	gameplay.stop_music_if_special.connect(_on_stop_music_if_special);
 	gameplay.play_prev_song.connect(_on_play_prev_song);
+	gameplay.reset_game.connect(_on_reset_game);
 	cards_generated_this_game = 0;
 	if in_roguelike_mode:
 		gameplay.player_one.card_added.connect(_on_player_has_generated_card);
@@ -173,6 +174,11 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	reset_base_rotation();
 	reset_camera();
 	roguelike_page.roll_out();
+
+func _on_reset_game() -> void:
+	save_data = SaveData.new();
+	save_data.write();
+	get_tree().reload_current_scene();
 
 func _on_player_has_generated_card() -> void:
 	cards_generated_this_game += 1;

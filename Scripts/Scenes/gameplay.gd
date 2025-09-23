@@ -1423,13 +1423,16 @@ func _on_animation_wait_timer_timeout() -> void:
 	animation_wait_timer.stop();
 	after_animation();
 	
-func _on_touch_screen_button_triggered() -> void:
-	if is_clicking_disabled():
+func open_settings_menu() -> void:
+	pass;
+
+func _on_settings_button_triggered() -> void:
+	settings_clicked_counter += 1;
+	if settings_clicked_counter == 25:
+		emit_signal("reset_game");
+	if is_clicking_disabled() or true: #TODO
 		return;
 	_on_card_released(active_card, true);
 	_on_die_released();
 	is_active = false;
 	open_settings_menu();
-
-func open_settings_menu() -> void:
-	pass;

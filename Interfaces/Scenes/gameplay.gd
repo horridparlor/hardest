@@ -8,6 +8,7 @@ signal play_song(song_id)
 signal stop_music
 signal stop_music_if_special
 signal play_prev_song
+signal reset_game
 
 const AnimationMinWaitTime : Dictionary = {
 	GameplayEnums.AnimationType.OCEAN: 3.8 * Config.GAME_SPEED_MULTIPLIER,
@@ -220,6 +221,7 @@ var times_time_stopped_this_round : int;
 var is_active : bool;
 var spy_stack : Array;
 var spying_instance_id : int;
+var settings_clicked_counter : int;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

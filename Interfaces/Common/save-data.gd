@@ -17,6 +17,14 @@ var next_song : int;
 var open_page : Nexus.NexusPage;
 var roguelike_data : RoguelikeData;
 
+func _init() -> void:
+	tutorial_levels_won = DEFAULT_DATA.tutorial_levels_won;
+	current_song = DEFAULT_DATA.current_song;
+	last_played_songs = DEFAULT_DATA.last_played_songs;
+	next_song = DEFAULT_DATA.next_song;
+	open_page = DEFAULT_DATA.open_page;
+	roguelike_data = RoguelikeData.new();
+
 static func from_json(data : Dictionary) -> SaveData:
 	var save : SaveData = SaveData.new();
 	save.eat_json(data);

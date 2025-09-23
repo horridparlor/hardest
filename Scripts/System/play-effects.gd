@@ -97,10 +97,13 @@ static func trigger_coin_flip(card : CardData, gameplay : Gameplay) -> void:
 		boosted_luck += 2;
 	if card.has_rare_stamp():
 		super_luck += 1;
+	elif card.stamp != CardEnums.Stamp.NULL:
+		boosted_luck += 1;
 	if card.has_max_keywords():
 		boosted_luck += 1;
 	if card.is_gun() or card.is_multi_type():
 		super_luck += 1;
+		boosted_luck += 1;
 	while true:
 		odds = base_odds + permanent_luck;
 		if super_luck > 0:

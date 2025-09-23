@@ -434,7 +434,7 @@ func check_undead() -> void:
 	if has_undead(true):
 		set_card_type(CardEnums.CardType.GUN);
 	else:
-		if default_type == CardEnums.CardType.MIMIC and card_type == CardEnums.CardType.GUN:
+		if default_type == CardEnums.CardType.MIMIC and card_type != CardEnums.CardType.MIMIC:
 			pass;
 		else:
 			set_card_type(default_type);

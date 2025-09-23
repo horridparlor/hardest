@@ -19,6 +19,8 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 				draw_horse_card(player, gameplay);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.card_type, gameplay);
+			CardEnums.Keyword.NOSTALGIA:
+				trigger_nostalgia(player, gameplay);
 			CardEnums.Keyword.NOVEMBER:
 				november_opponent(opponent, gameplay);
 			CardEnums.Keyword.PERFECT_CLONE:
@@ -227,6 +229,14 @@ static func inflict_contagious_on_card(card : CardData, card_type : CardEnums.Ca
 static func draw_horse_card(player : Player, gameplay : Gameplay) -> void:
 	if player.draw_horse():
 		gameplay.show_hand();
+
+static func trigger_nostalgia(player : Player, gameplay : Gameplay) -> void:
+	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();
+	player.get_nostalgic();
+	for card in cards_where_in_hand:
+		if gameplay.get_card(card):
+			gameplay.get_card(card).despawn();
+	gameplay.show_hand();
 
 static func trigger_ocean(card : CardData, gameplay : Gameplay) -> void:
 	var enemy : CardData = gameplay.get_opponent(card).get_field_card();

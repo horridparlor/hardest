@@ -159,6 +159,43 @@ func celebrate() -> void:
 	discard_hand();
 	draw();
 
+func get_nostalgic() -> void:
+	var used_types : Array
+	discard_hand();
+	for i in range(System.Rules.NOSTALGIA_DRAWS):
+		if !draw_a_basic(used_types):
+			break;
+	
+func draw_a_basic(used_types : Array) -> bool:
+	var basic_id : int;
+	var pool : Array = [
+		CardEnums.CardType.ROCK,
+		CardEnums.CardType.PAPER,
+		CardEnums.CardType.SCISSORS
+	];
+	var chosen_type : CardEnums.CardType;
+	if hand_full():
+		return false;
+	if System.Random.chance(6):
+		pool.append(CardEnums.CardType.BEDROCK);
+		pool.append(CardEnums.CardType.ZIPPER);
+		pool.append(CardEnums.CardType.ROCKSTAR);
+	if System.Random.chance(8):
+		pool.append(CardEnums.CardType.GUN);
+	if System.Random.chance(10):
+		pool.append(CardEnums.CardType.MIMIC);
+	if System.Random.chance(100):
+		pool.append(CardEnums.CardType.GOD);
+	for item in used_types:
+		pool.erase(item);
+	if pool.is_empty():
+		return false;
+	chosen_type = System.Random.item(pool);
+	used_types.append(chosen_type);
+	basic_id = CardEnums.BasicIds[chosen_type];
+	draw_spawn_a_card(basic_id);
+	return true;
+
 func discard_hand() -> void:
 	for card in cards_in_hand.duplicate():
 		discard_from_hand(card);
@@ -594,9 +631,12 @@ func draw_horse() -> bool:
 	if hand_full():
 		return false;
 	horse_id = System.Random.item(CardEnums.HORSE_CARD_IDS);
-	spawn_card(System.Data.load_card(horse_id));
-	draw();
+	draw_spawn_a_card(horse_id);
 	return true;
+
+func draw_spawn_a_card(card_id : int) -> void:
+	spawn_card(System.Data.load_card(card_id));
+	draw();
 
 func burn_card(card : CardData) -> void:
 	var spawn_id : int = card.spawn_id;

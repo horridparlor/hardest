@@ -513,11 +513,13 @@ const NON_GUN_SHOOTING_CARDS : Dictionary = {
 	121: null,
 	133: null,
 	139: null,
+	141: null,
 }
 
 const TRIPLE_SHOOTING_CARDS : Dictionary = {
 	37: null,
-	78: null
+	78: null,
+	141: null,
 }
 
 const TURRET_SHOOTING_CARDS : Dictionary = {

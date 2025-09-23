@@ -80,7 +80,13 @@ func set_data(data : BulletData) -> void:
 	bullet_data = data;
 
 func set_sprite() -> void:
-	var texture : Resource = load(BULLET_ART_PATH % bullet_data.art_name);
+	var art_name : String = bullet_data.art_name;
+	if !bullet_data.art_name_2.is_empty():
+		art_name = System.Random.item([
+			bullet_data.art_name,
+			bullet_data.art_name_2
+		]);
+	var texture : Resource = load(BULLET_ART_PATH % art_name);
 	sprite.rotation_degrees = 180;
 	sprite.texture = texture;
 

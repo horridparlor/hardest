@@ -87,6 +87,8 @@ static func get_card_value(card : CardData, player : Player, opponent : Player, 
 				value += 0;
 			CardEnums.Keyword.MUSHY:
 				value -= 1;
+			CardEnums.Keyword.NOSTALGIA:
+				value += 0;
 			CardEnums.Keyword.NOVEMBER:
 				value += 1;
 			CardEnums.Keyword.NUT:

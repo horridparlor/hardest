@@ -6,5 +6,6 @@
 		"buried",
 		"devour",
 		"time-stop"
-	]
+	],
+	"bullet": 32
 }

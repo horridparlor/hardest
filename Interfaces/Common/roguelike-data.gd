@@ -96,9 +96,16 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 	var includes_god : bool;
 	var card_data : CardData;
 	var chosen_ids : Dictionary;
+	var super_rares : Dictionary;
+	var super_rares_amount : int;
+	for card in card_pool[CollectionEnums.Rarity.SUPER_RARE]:
+		super_rares[card] = null;
 	for i in range(System.Rules.CARD_CHOICES):
 		if confirmed_rare or System.Random.chance(rare_chance):
 			pool = card_pool[CollectionEnums.Rarity.RARE];
+			super_rares_amount = super_rares.keys().size();
+			if super_rares_amount > 0 and System.Random.chance((pool.size() * System.Rules.SUPER_RARE_MULTIPLIER_TO_RARE + super_rares_amount) / super_rares_amount):
+				pool = super_rares.keys();
 		elif !includes_scam and System.Random.chance(System.Rules.SCAM_DROP_CHANCE):
 			pool = CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[CollectionEnums.House.SCAM];
 			includes_scam = true;
@@ -112,6 +119,7 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 			if chosen_ids.has(card_id):
 				continue;
 			chosen_ids[card_id] = null;
+			super_rares.erase(card_id);
 			break;
 		card_data = System.Data.load_card(card_id);
 		choices.append({
@@ -153,7 +161,8 @@ func get_starting_card_choices() -> Array:
 func get_card_pool(houses : Array, is_player : bool = false) -> Dictionary:
 	var pool : Dictionary = {
 		CollectionEnums.Rarity.COMMON: [],
-		CollectionEnums.Rarity.RARE: []
+		CollectionEnums.Rarity.RARE: [],
+		CollectionEnums.Rarity.SUPER_RARE: []
 	};
 	for house in houses:
 		for common in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON] + \
@@ -162,6 +171,9 @@ func get_card_pool(houses : Array, is_player : bool = false) -> Dictionary:
 		for rare in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.RARE] + \
 		(CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[house][CollectionEnums.Rarity.RARE] if is_player else []):
 			pool[CollectionEnums.Rarity.RARE].append(rare);
+		for super_rare in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.SUPER_RARE] + \
+		(CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[house][CollectionEnums.Rarity.SUPER_RARE] if is_player else []):
+			pool[CollectionEnums.Rarity.SUPER_RARE].append(super_rare);
 	return pool;
 
 func get_opponents() -> Dictionary:
@@ -612,6 +624,7 @@ func convert_opponent(data : Dictionary) -> Dictionary:
 		return data;
 	card_pool[CollectionEnums.Rarity.COMMON] = data.card_pool[str(CollectionEnums.Rarity.COMMON)];
 	card_pool[CollectionEnums.Rarity.RARE] = data.card_pool[str(CollectionEnums.Rarity.RARE)];
+	card_pool[CollectionEnums.Rarity.SUPER_RARE] = data.card_pool[str(CollectionEnums.Rarity.SUPER_RARE)];
 	data.card_pool = card_pool;
 	return data;
 

@@ -27,7 +27,7 @@ const STARTING_MONEY : int = 5;
 const HOUSES_COUNT : int = 5;
 const STARTING_HOUSES_COUNT : int = 2;
 const MIN_RARE_CHANCE : int = 3;
-const MAX_RARE_CHANCE : int = 7;
+const MAX_RARE_CHANCE : int = 5;
 const SCAM_DROP_CHANCE : int = 128;
 const DEFAULT_CARDS : Array = [];
 const CARD_CHOICES : int = 3;
@@ -42,6 +42,7 @@ const RARE_STAMP_CHANCE_MULTIPLIER : int = 2;
 const RARE_STAMP_BECOMES_COMMON_AFTER_ROUND : int = 8;
 const STAMP_CHANCE_LESSENS_BY_ROUND : int = 1;
 const CHANCE_FOR_EXTRA_HOUSE : int = 20;
+const SUPER_RARE_MULTIPLIER_TO_RARE : int = 3;
 #Negative Chance
 const BASE_NEGATIVE_CARD_CHANCE : int = 60;
 const NEGATIVE_CARD_CHANCE_MULTIPLIER : int = 30;

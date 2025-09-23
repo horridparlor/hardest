@@ -2,7 +2,8 @@ extends Node
 
 enum Rarity {
 	COMMON,
-	RARE
+	RARE,
+	SUPER_RARE
 }
 
 enum House {
@@ -41,8 +42,10 @@ const CARDS_TO_COLLECT : Dictionary = {
 			77,
 			87,
 			105,
-			106,
 			111,
+		],
+		Rarity.SUPER_RARE: [
+			106,
 		]
 	},
 	House.DELUSIONAL: {
@@ -75,6 +78,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			100,
 			120,
 			140,
+		],
+		Rarity.SUPER_RARE: [
 		]
 	},
 	House.DEMONIC: {
@@ -94,14 +99,17 @@ const CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.RARE: [
 			41,
-			57,
 			62,
-			65,
 			78,
 			86,
 			89,
 			128,
 			139,
+		],
+		Rarity.SUPER_RARE: [
+			57,
+			65,
+			110,
 		]
 	},
 	House.DIVINE: {
@@ -117,9 +125,11 @@ const CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.RARE: [
 			115,
-			116,
 			121,
 			125,
+		],
+		Rarity.SUPER_RARE: [
+			116,
 		]
 	},
 	House.HIGHTECH: {
@@ -142,10 +152,12 @@ const CARDS_TO_COLLECT : Dictionary = {
 			46,
 			81,
 			88,
-			90,
 			99,
 			126,
 			134,
+		],
+		Rarity.SUPER_RARE: [
+			90,
 		]
 	},
 	House.KAWAII: {
@@ -180,6 +192,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			127,
 			131,
 			141,
+		],
+		Rarity.SUPER_RARE: [
 		]
 	},
 	House.SCISSOR: {
@@ -226,12 +240,13 @@ const CARDS_TO_COLLECT : Dictionary = {
 			127,
 			128,
 			139,
+		],
+		Rarity.SUPER_RARE: [
 		]
 	},
 	House.GOD: [
 		42,
 		95,
-		110,
 	],
 }
 const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
@@ -239,6 +254,8 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		Rarity.COMMON: [
 		],
 		Rarity.RARE: [
+		],
+		Rarity.SUPER_RARE: [
 		]
 	},
 	House.DELUSIONAL: {
@@ -246,24 +263,35 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.RARE: [
 			112,
+		],
+		Rarity.SUPER_RARE: [
+			108,
 		]
 	},
 	House.DEMONIC: {
 		Rarity.COMMON: [
 		],
 		Rarity.RARE: [
+		],
+		Rarity.SUPER_RARE: [
+			109,
 		]
 	},
 	House.DIVINE: {
 		Rarity.COMMON: [
 		],
 		Rarity.RARE: [
+		],
+		Rarity.SUPER_RARE: [
 		]
 	},
 	House.HIGHTECH: {
 		Rarity.COMMON: [
 		],
 		Rarity.RARE: [
+		],
+		Rarity.SUPER_RARE: [
+			107,
 		]
 	},
 	House.KAWAII: {
@@ -271,6 +299,8 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.RARE: [
 			71,
+		],
+		Rarity.SUPER_RARE: [
 		]
 	},
 	House.SCAM: [
@@ -280,9 +310,6 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		4,
 		5,
 		76,
-		107,
-		108,
-		109,
 	]
 }
 

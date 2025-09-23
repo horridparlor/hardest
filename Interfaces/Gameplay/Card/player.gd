@@ -220,6 +220,11 @@ func draw_a_basic(used_types : Array, extra_chance : int = 0) -> bool:
 		pool.append(CardEnums.CardType.MIMIC);
 	if System.Random.chance(100 - pow(extra_chance, 2)):
 		pool.append(CardEnums.CardType.GOD);
+	pool = [
+		CardEnums.CardType.ROCK,
+		CardEnums.CardType.PAPER,
+		CardEnums.CardType.SCISSORS
+	];
 	for item in used_types:
 		pool.erase(item);
 	if pool.is_empty():

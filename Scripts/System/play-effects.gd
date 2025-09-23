@@ -20,7 +20,7 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.card_type, gameplay);
 			CardEnums.Keyword.NOSTALGIA:
-				trigger_nostalgia(player, gameplay);
+				trigger_nostalgia(card, player, gameplay);
 			CardEnums.Keyword.NOVEMBER:
 				november_opponent(opponent, gameplay);
 			CardEnums.Keyword.PERFECT_CLONE:
@@ -230,12 +230,12 @@ static func draw_horse_card(player : Player, gameplay : Gameplay) -> void:
 	if player.draw_horse():
 		gameplay.show_hand();
 
-static func trigger_nostalgia(player : Player, gameplay : Gameplay) -> void:
+static func trigger_nostalgia(card : CardData, player : Player, gameplay : Gameplay) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();
-	player.get_nostalgic();
-	for card in cards_where_in_hand:
-		if gameplay.get_card(card):
-			gameplay.get_card(card).despawn();
+	player.get_nostalgic(card);
+	for c in cards_where_in_hand:
+		if gameplay.get_card(c):
+			gameplay.get_card(c).despawn();
 	gameplay.show_hand();
 
 static func trigger_ocean(card : CardData, gameplay : Gameplay) -> void:
@@ -368,6 +368,7 @@ static func spy_opponent(card : CardData, player : Player, opponent : Player, ga
 				CardEnums.Zone.DECK:
 					gameplay.play_berserk_sound();
 	gameplay.current_spy_type = spy_type;
+	gameplay.spying_instance_id = System.Random.instance_id();
 	gameplay.is_spying_whole_hand = do_spy_hand and opponent.has_hivemind_for();
 	if gameplay.is_spying_whole_hand:
 		spy_whole_hand(opponent, gameplay);

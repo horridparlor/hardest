@@ -219,6 +219,7 @@ var is_already_whole_spying : bool;
 var times_time_stopped_this_round : int;
 var is_active : bool;
 var spy_stack : Array;
+var spying_instance_id : int;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

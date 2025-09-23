@@ -74,6 +74,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			79,
 			100,
 			120,
+			140,
 		]
 	},
 	House.DEMONIC: {
@@ -178,6 +179,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			123,
 			127,
 			131,
+			141,
 		]
 	},
 	House.SCISSOR: {
@@ -419,6 +421,7 @@ const RANDOM_CARDS : Dictionary = {
 		91,
 		120,
 		123,
+		140,
 	],
 	CardEnums.CardType.GOD: [
 		42,
@@ -434,6 +437,7 @@ const RANDOM_CARDS : Dictionary = {
 		100,
 		126,
 		127,
+		141,
 	],
 	CardEnums.CardType.ROCKSTAR: [
 		98,

@@ -132,6 +132,7 @@ var particle_effect : Node2D;
 var multiplier_bar : MultiplierBar;
 var is_dying : bool;
 var still_wait_time : float = -0.01;
+var visit_instance_id : int;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);

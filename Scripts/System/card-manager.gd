@@ -62,9 +62,12 @@ static func spawn_card(card_data : CardData, gameplay : Gameplay) -> GameplayCar
 	gameplay.show_multiplier_bar(card);
 	gameplay.time_stop_nodes += card.get_shader_layers();
 	gameplay.custom_time_stop_nodes[card.card_data.instance_id] = card.get_custom_shader_layers();
+	for node in card.get_custom_shader_layers():
+		node.material.set_shader_parameter("time", gameplay.time_stop_shader_time);
 	if gameplay.is_time_stopped:
 		var shader_material : ShaderMaterial;
 		var custom_shader_material : ShaderMaterial = System.Shaders.time_stop_material();
+		custom_shader_material.set_shader_parameter("time", gameplay.time_stop_shader_time);
 		for node in gameplay.time_stop_nodes:
 			if !node.material:
 				continue;

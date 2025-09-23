@@ -10,6 +10,7 @@ static func init_time_stop(gameplay : Gameplay) -> void:
 			continue;
 		card = gameplay.cards[instance_id].card_data;
 		custom_material = System.Shaders.time_stop_material();
+		custom_material.set_shader_parameter("time", gameplay.time_stop_shader_time);
 		System.Shaders.set_card_art_shader_parameters(custom_material, card.is_negative_variant(), card.is_holographic, card.is_foil);
 		for node in gameplay.custom_time_stop_nodes[instance_id]:
 			node.material = custom_material;

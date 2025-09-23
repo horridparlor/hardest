@@ -356,6 +356,8 @@ func _on_card_visited(card : GameplayCard) -> void:
 		cards_to_dissolve.erase(card.instance_id);
 		loser_dissolve_effect(card.card_data, enemy);
 		card.despawn_to_same_direction();
+	if spying_instance_id != card.visit_instance_id:
+		return;
 	if is_spying_whole_hand:
 		if is_already_whole_spying:
 			return;
@@ -365,6 +367,7 @@ func _on_card_visited(card : GameplayCard) -> void:
 
 func resolve_spying_whole_hand(opponent : Player) -> void:
 	is_already_whole_spying = true;
+	spying_instance_id = System.Random.instance_id();
 	var enemies : Array = opponent.cards_in_hand.duplicate();
 	var player : Player = opponent.opponent;
 	var card : CardData = player.get_field_card();
@@ -408,6 +411,7 @@ func send_spied_card_back(card : GameplayCard, player : Player) -> void:
 			card.despawn(-CARD_STARTING_POSITION if player.controller == GameplayEnums.Controller.PLAYER_TWO else CARD_STARTING_POSITION, DIRT_AFTER_WAIT);
 
 func resolve_spying(spy_target : GameplayCard) -> void:
+	spying_instance_id = System.Random.instance_id();
 	var enemy : CardData = spy_target.card_data;
 	var opponent : Player = enemy.controller;
 	var player : Player = get_opponent(enemy);
@@ -829,6 +833,7 @@ func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = 
 			if System.Instance.exists(active_card) and spied_card == active_card:
 				_on_card_released(spied_card, true);
 	spied_card.go_visit_point(player.visit_point + margin);
+	spied_card.visit_instance_id = spying_instance_id;
 	if card.has_victim():
 		play_rattlesnake_sound();
 		spied_card.rattlesnake_effect();

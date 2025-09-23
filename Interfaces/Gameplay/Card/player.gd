@@ -159,14 +159,48 @@ func celebrate() -> void:
 	discard_hand();
 	draw();
 
-func get_nostalgic() -> void:
+func get_nostalgic(card : CardData) -> void:
 	var used_types : Array
+	var extra_chance : int;
+	if card.is_multi_type() or card.is_gun() or card.is_god():
+		extra_chance += 1;
+	if card.is_holographic:
+		extra_chance += 1;
+	if card.is_negative_variant():
+		extra_chance += 1;
+	if card.has_rare_stamp():
+		extra_chance += 1;
 	discard_hand();
 	for i in range(System.Rules.NOSTALGIA_DRAWS):
-		if !draw_a_basic(used_types):
+		if !draw_a_basic(used_types, extra_chance):
 			break;
+	cards_in_hand.sort_custom(func(card_a : CardData, card_b : CardData):
+		return get_index_by_card_type(card_a) < get_index_by_card_type(card_b);
+	);
 	
-func draw_a_basic(used_types : Array) -> bool:
+func get_index_by_card_type(card : CardData) -> int:
+	match card.card_type:
+		CardEnums.CardType.ROCK:
+			return 1;
+		CardEnums.CardType.PAPER:
+			return 2;
+		CardEnums.CardType.SCISSORS:
+			return 3;
+		CardEnums.CardType.BEDROCK:
+			return 4;
+		CardEnums.CardType.ZIPPER:
+			return 5;
+		CardEnums.CardType.ROCKSTAR:
+			return 6;
+		CardEnums.CardType.MIMIC:
+			return 7;
+		CardEnums.CardType.GUN:
+			return 8;
+		CardEnums.CardType.GOD:
+			return 9;
+	return 0;
+
+func draw_a_basic(used_types : Array, extra_chance : int = 0) -> bool:
 	var basic_id : int;
 	var pool : Array = [
 		CardEnums.CardType.ROCK,
@@ -176,15 +210,15 @@ func draw_a_basic(used_types : Array) -> bool:
 	var chosen_type : CardEnums.CardType;
 	if hand_full():
 		return false;
-	if System.Random.chance(6):
+	if System.Random.chance(6 - extra_chance):
 		pool.append(CardEnums.CardType.BEDROCK);
 		pool.append(CardEnums.CardType.ZIPPER);
 		pool.append(CardEnums.CardType.ROCKSTAR);
-	if System.Random.chance(8):
+	if System.Random.chance(8 - extra_chance):
 		pool.append(CardEnums.CardType.GUN);
-	if System.Random.chance(10):
+	if System.Random.chance(10 - extra_chance):
 		pool.append(CardEnums.CardType.MIMIC);
-	if System.Random.chance(100):
+	if System.Random.chance(100 - pow(extra_chance, 2)):
 		pool.append(CardEnums.CardType.GOD);
 	for item in used_types:
 		pool.erase(item);
@@ -635,7 +669,14 @@ func draw_horse() -> bool:
 	return true;
 
 func draw_spawn_a_card(card_id : int) -> void:
-	spawn_card(System.Data.load_card(card_id));
+	var card : CardData = System.Data.load_card(card_id);
+	if System.Random.chance(64):
+		card.variant = CardEnums.CardVariant.NEGATIVE;
+	if System.Random.chance(32):
+		card.is_holographic = true;
+	if System.Random.chance(16):
+		card.stamp = System.Random.item(CardEnums.Stamp.values());
+	spawn_card(card);
 	draw();
 
 func burn_card(card : CardData) -> void:

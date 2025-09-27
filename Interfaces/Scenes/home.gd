@@ -61,7 +61,6 @@ var zoomed_in_scale : Vector2;
 var cached_game_speed : float = Config.MUSIC_NIGHTCORE_PITCH;
 var prev_song_position : float;
 var prev_song : int;
-var is_song_locked : bool;
 var old_gameplay : Gameplay;
 var in_roguelike_mode : bool;
 var has_game_ended : bool;
@@ -141,7 +140,6 @@ func load_music(pitch : float = cached_game_speed) -> void:
 		background_music.stop();
 		return;
 	background_music.pitch_scale = pitch * System.game_speed;
-	background_music.play();
 	background_music.volume_db = Config.VOLUME + Config.MUSIC_VOLUME;
 
 func _on_quick_zoom_to(position : Vector2) -> void:

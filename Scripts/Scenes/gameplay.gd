@@ -704,9 +704,11 @@ func turn_card_into_another(card : CardData) -> void:
 func wait_for_animation(card : CardData, type : GameplayEnums.AnimationType, animation_data : Dictionary = {}) -> int:
 	var instance_id = System.Random.instance_id();
 	var animation_sound : Resource;
+	var is_counter_animation : bool;
 	if animation_instance_id != 0:
 		animation_wait_timer.stop();
-		after_animation(true);
+		after_animation(true, true);
+		is_counter_animation = true;
 	animation_instance_id = instance_id;
 	animation_data.type = type;
 	current_animation_type = type;
@@ -716,6 +718,8 @@ func wait_for_animation(card : CardData, type : GameplayEnums.AnimationType, ani
 	is_waiting_for_animation_to_finnish = true;
 	results_phase = 0;
 	match type:
+		GameplayEnums.AnimationType.INFINITE_VOID:
+			pass;
 		GameplayEnums.AnimationType.OCEAN:
 			pass;
 		GameplayEnums.AnimationType.POSITIVE:
@@ -731,10 +735,15 @@ func wait_for_animation(card : CardData, type : GameplayEnums.AnimationType, ani
 	ocean_pattern.modulate.a = 0;
 	high_tide_speed = System.random.randf_range(HIGH_TIDE_MIN_SPEED, HIGH_TIDE_MAX_SPEED);
 	match animation_data.type:
+		GameplayEnums.AnimationType.INFINITE_VOID:
+			pass;
 		GameplayEnums.AnimationType.POSITIVE:
 			high_tide_speed *= 2;
 			ocean_effect_speed_exponent /= 5;
-	emit_signal("stop_music");
+		GameplayEnums.AnimationType.OCEAN:
+			pass;
+	if !is_counter_animation:
+		emit_signal("stop_music");
 	if Config.MUTE_SFX:
 		return instance_id;
 	animation_sfx.stream = load(get_animation_sound_path(type));
@@ -746,12 +755,38 @@ func get_ocean_material_for_animation(type : GameplayEnums.AnimationType) -> Sha
 	var shader : Resource;
 	var shader_material : ShaderMaterial = ShaderMaterial.new();
 	match type:
+		GameplayEnums.AnimationType.INFINITE_VOID:
+			shader = load("res://Shaders/CardEffects/infinite-void-shader.gdshader");
 		GameplayEnums.AnimationType.OCEAN:
 			shader = load("res://Shaders/CardEffects/ocean-shader.gdshader");
 		GameplayEnums.AnimationType.POSITIVE:
 			shader = load("res://Shaders/Background/star-wave.gdshader");
 	shader_material.shader = shader;
 	match type:
+		GameplayEnums.AnimationType.INFINITE_VOID:
+			shader_material.set_shader_parameter("event_horizon_radius", 0.1);
+			shader_material.set_shader_parameter("pull_strength", 2);
+			shader_material.set_shader_parameter("swirl_strength", 3.0);
+			shader_material.set_shader_parameter("swirl_speed", 2);
+			shader_material.set_shader_parameter("chaos_amount", 0.8);
+			shader_material.set_shader_parameter("chaos_freq", 16.0);
+			
+			shader_material.set_shader_parameter("wave_speed", 1.9);
+			shader_material.set_shader_parameter("wave_frequency", 64.0);
+			shader_material.set_shader_parameter("wave_amplitude", 0.02);
+			shader_material.set_shader_parameter("angular_bias", 0.6);
+			
+			shader_material.set_shader_parameter("space_color", Color(0.04, 0.02, 0.07, 1.0));
+			shader_material.set_shader_parameter("hole_tint",  Color(0.12, 0.00, 0.22, 1.0));
+			shader_material.set_shader_parameter("ring_color", Color(0.85, 0.60, 1.00, 1.0));
+			
+			shader_material.set_shader_parameter("ring_radius", 0.2);
+			shader_material.set_shader_parameter("ring_thickness", 0.04);
+			shader_material.set_shader_parameter("ring_glow", 1.4);
+			shader_material.set_shader_parameter("ring_scroll", 1.2);
+			
+			shader_material.set_shader_parameter("mix_rate", 1.0);
+			shader_material.set_shader_parameter("opacity", 1.0);
 		GameplayEnums.AnimationType.OCEAN:
 			shader_material.set_shader_parameter("wave_speed", 1.0);
 			shader_material.set_shader_parameter("wave_frequency", 20.0);
@@ -779,6 +814,8 @@ func get_ocean_material_for_animation(type : GameplayEnums.AnimationType) -> Sha
 
 func get_animation_sound_path(type : GameplayEnums.AnimationType) -> String:
 	match type:
+		GameplayEnums.AnimationType.INFINITE_VOID:
+			return "res://Assets/SFX/CardSounds/Bursts/ocean.wav";
 		GameplayEnums.AnimationType.OCEAN:
 			return "res://Assets/SFX/CardSounds/Bursts/ocean.wav";
 		GameplayEnums.AnimationType.POSITIVE:
@@ -1198,8 +1235,12 @@ func low_tide_frame(delta : float) -> void:
 func update_ocean_pattern() -> void:
 	var max_opacity : float = OCEAN_PATTERN_MAX_OPACITY;
 	match current_animation_type:
+		GameplayEnums.AnimationType.INFINITE_VOID:
+			max_opacity = INFINITE_VOID_BACKGROUND_MAX_OPACITY;
 		GameplayEnums.AnimationType.POSITIVE:
 			max_opacity = POSITIVE_BACKGROUND_MAX_OPACITY;
+		GameplayEnums.AnimationType.OCEAN:
+			pass;
 	max_opacity = max(ocean_pattern.material.get_shader_parameter("opacity"), max_opacity);
 	ocean_pattern.material.set_shader_parameter("opacity", min(max_opacity, ocean_pattern.modulate.a));
 	if !System.Instance.exists(ocean_card):
@@ -1400,7 +1441,7 @@ func after_positive(is_forced : bool, points : int, card : CardData, player : Pl
 	gain_points_effect(player);
 	System.EyeCandy.spawn_poppets(points, card, player, self);
 	
-func after_animation(is_forced : bool = false) -> void:
+func after_animation(is_forced : bool = false, is_being_countered : bool = false) -> void:
 	var animation_data : Dictionary;
 	if animation_instance_id == 0:
 		return;
@@ -1418,7 +1459,7 @@ func after_animation(is_forced : bool = false) -> void:
 			after_positive(is_forced, animation_data.points, animation_data.card, animation_data.player);
 	low_tide_speed = System.random.randf_range(LOW_TIDE_MIN_SPEED, LOW_TIDE_MAX_SPEED) * System.game_speed_multiplier;
 	is_low_tiding = true;
-	if is_time_stopped:
+	if is_time_stopped or is_being_countered:
 		return;
 	emit_signal("play_prev_song");
 	

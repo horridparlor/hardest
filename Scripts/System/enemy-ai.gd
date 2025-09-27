@@ -79,6 +79,8 @@ static func get_card_value(card : CardData, player : Player, opponent : Player, 
 				value += 2;
 			CardEnums.Keyword.INCINERATE:
 				value += 1;
+			CardEnums.Keyword.INFINITE_VOID:
+				value += 10;
 			CardEnums.Keyword.INFLUENCER:
 				value -= 1;
 			CardEnums.Keyword.MULTI_SPY:

@@ -200,6 +200,7 @@ enum Keyword {
 	HORSE_GEAR,
 	HYDRA,
 	INCINERATE,
+	INFINITE_VOID,
 	INFLUENCER,
 	MULTI_SPY,
 	MULTIPLY,
@@ -319,6 +320,7 @@ func get_rare_hydra_keywords() -> Array:
 	return [
 		Keyword.CONTAGIOUS,
 		Keyword.DEVOW,
+		Keyword.INFINITE_VOID,
 		Keyword.SPRING_ARRIVES,
 		Keyword.VICTIM
 	];
@@ -356,6 +358,7 @@ const KeywordNames : Dictionary = {
 	Keyword.HORSE_GEAR : "Horse-gear",
 	Keyword.HYDRA : "Hydra",
 	Keyword.INCINERATE : "Incinerate",
+	Keyword.INFINITE_VOID : "Infinite Void",
 	Keyword.INFLUENCER : "Influencer",
 	Keyword.MULTI_SPY : "Multi-spy",
 	Keyword.MULTIPLY : "Multiply",
@@ -433,6 +436,7 @@ const TranslateKeyword : Dictionary = {
 	"horse-gear" : Keyword.HORSE_GEAR,
 	"hydra" : Keyword.HYDRA,
 	"incinerate" : Keyword.INCINERATE,
+	"infinite-void" : Keyword.INFINITE_VOID,
 	"influencer" : Keyword.INFLUENCER,
 	"multi-spy" : Keyword.MULTI_SPY,
 	"multiply" : Keyword.MULTIPLY,
@@ -510,6 +514,7 @@ const TranslateKeywordBack: Dictionary = {
 	Keyword.HORSE_GEAR : "horse-gear",
 	Keyword.HYDRA : "hydra",
 	Keyword.INCINERATE : "incinerate",
+	Keyword.INFINITE_VOID : "infinite-void",
 	Keyword.INFLUENCER : "influencer",
 	Keyword.MULTI_SPY : "multi-spy",
 	Keyword.MULTIPLY : "multiply",
@@ -587,6 +592,7 @@ var KeywordHints : Dictionary = {
 	Keyword.HORSE_GEAR : "Draw a horse.",
 	Keyword.HYDRA : "Gains 3 random keywords.",
 	Keyword.INCINERATE : "Permanently destroys defeated cards.",
+	Keyword.INFINITE_VOID : "Sucks all.",
 	Keyword.INFLUENCER : "Opponent's top card becomes SAME_BASIC.",
 	Keyword.MULTI_SPY : "Fights up to 3 random cards in opponent's hand.",
 	Keyword.MULTIPLY : "Double multiplier for each SAME_TYPE played in a row.",

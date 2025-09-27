@@ -11,11 +11,13 @@ signal play_prev_song
 signal reset_game
 
 const AnimationMinWaitTime : Dictionary = {
+	GameplayEnums.AnimationType.INFINITE_VOID: 3.7 * Config.GAME_SPEED_MULTIPLIER,
 	GameplayEnums.AnimationType.OCEAN: 3.8 * Config.GAME_SPEED_MULTIPLIER,
 	GameplayEnums.AnimationType.POSITIVE: 3.7 * Config.GAME_SPEED_MULTIPLIER
 }
 
 const AnimationMaxWaitTime : Dictionary = {
+	GameplayEnums.AnimationType.INFINITE_VOID: 4.0 * Config.GAME_SPEED_MULTIPLIER,
 	GameplayEnums.AnimationType.OCEAN: 4.0 * Config.GAME_SPEED_MULTIPLIER,
 	GameplayEnums.AnimationType.POSITIVE: 4.0 * Config.GAME_SPEED_MULTIPLIER
 }
@@ -110,6 +112,7 @@ const BACKGROUND_OPACITY : float = 0.6;
 const DIE_BUTTON_ROTATION : float = 5.6;
 const TITLE_ROTATION : float = 2.1;
 const POSITIVE_BACKGROUND_MAX_OPACITY : float = 0.9;
+const INFINITE_VOID_BACKGROUND_MAX_OPACITY : float = 1.0;
 const MIN_BULLET_MARGIN : int = 100;
 const MAX_BULLET_MARGIN : int = 200;
 const MAX_TENTACLES : int = 24;

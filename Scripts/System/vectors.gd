@@ -24,9 +24,9 @@ delta : float, min_speed : float = 0) -> Vector2:
 	return point_a.move_toward(point_b, max(distance, min_speed));
 
 static func is_inside_window(position : Vector2, size : Vector2) -> bool:
-	var square_condition : bool = (abs(position.x) - size.x) > (System.Window_.x if !is_desktop() else System.Window_.x * 3) / 2 \
+	var square_condition : bool = (abs(position.x) - size.x) > (System.Window_.x * 1.5 if !is_desktop() else System.Window_.x * 3) / 2 \
 		or (abs(position.y) - size.y) > System.Window_.y / 2;
-	var circumradius_condition : bool = position.distance_to(Vector2.ZERO) - get_cirmumradius(size) < (WINDOW_CIRCUMRADIUS if !is_desktop() else WINDOW_CIRCUMRADIUS * 3);
+	var circumradius_condition : bool = position.distance_to(Vector2.ZERO) - get_cirmumradius(size) < (WINDOW_CIRCUMRADIUS * 1.5 if !is_desktop() else WINDOW_CIRCUMRADIUS * 3);
 	return !square_condition and circumradius_condition;
 	
 static func is_desktop() -> bool:

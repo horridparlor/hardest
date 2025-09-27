@@ -2,9 +2,9 @@ extends Node
 
 const VERSION : String = "0.11";
 
-const DEV_MODE : bool = false;
+const DEV_MODE : bool = true;
 const MAX_SONG_ID : int = 23;
-const MAX_CARD_ID : int = 142;
+const MAX_CARD_ID : int = 143;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID - 3, 20);
 
 const AUTO_PLAY : bool = false if DEV_MODE else false;
@@ -14,7 +14,7 @@ const SHOWCASE_CARD_ID : int = 0 if DEV_MODE else 0;
 const SHOWCASE_STAMP : CardEnums.Stamp = CardEnums.Stamp.NULL if DEV_MODE else CardEnums.Stamp.NULL;
 const DEBUG_KEYWORD : CardEnums.Keyword = CardEnums.Keyword.NULL if DEV_MODE else CardEnums.Keyword.NULL;
 const DEBUG_CARD : int = 0 if DEV_MODE else 0;
-const SPAWNED_CARD : int = 131 if DEV_MODE else 1;
+const SPAWNED_CARD : int = 53 if DEV_MODE else 1;
 const GAME_SPEED : float = 1 if DEV_MODE else 1;
 const GAME_SPEED_MULTIPLIER : float = 1 / GAME_SPEED;
 const AUTO_HOUSE : CollectionEnums.House = CollectionEnums.House.NULL if DEV_MODE else CollectionEnums.House.NULL;

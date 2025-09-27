@@ -319,6 +319,9 @@ func has_hydra() -> bool:
 func has_incinerate() -> bool:
 	return has_keyword(CardEnums.Keyword.INCINERATE);
 
+func has_infinite_void() -> bool:
+	return has_keyword(CardEnums.Keyword.INFINITE_VOID);
+
 func has_influencer() -> bool:
 	return has_keyword(CardEnums.Keyword.INFLUENCER);
 

@@ -249,6 +249,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 	House.GOD: [
 		42,
 		95,
+		143
 	],
 }
 const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
@@ -348,6 +349,7 @@ const RANDOM_CARDS : Dictionary = {
 		125,
 		130,
 		138,
+		143,
 	],
 	CardEnums.CardType.PAPER: [
 		2,
@@ -508,6 +510,7 @@ const FOIL_CARDS : Dictionary = {
 	128: null,
 	131: null,
 	139: null,
+	143: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

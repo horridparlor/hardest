@@ -113,6 +113,7 @@ const CharacterToId : Dictionary = {
 
 enum AnimationType {
 	NULL,
+	INFINITE_VOID,
 	OCEAN,
 	POSITIVE
 }

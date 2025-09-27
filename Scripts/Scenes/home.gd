@@ -17,6 +17,7 @@ func init() -> void:
 		save_data.current_song = save_data.next_song;
 		save_data.next_song = 0;
 		load_music();
+		background_music.play();
 	else:
 		_on_background_music_finished();
 
@@ -90,7 +91,6 @@ func open_starting_scene() -> void:
 	if Config.SHOWCASE_CARD_ID != 0:
 		nexus = System.Instance.load_child(System.Paths.NEXUS, self);
 		nexus.operate_showcase_layer();
-		is_song_locked = true;
 		return;
 	if Config.AUTO_LEVEL != 0:
 		in_roguelike_mode = false;
@@ -199,22 +199,15 @@ func write_roguelike_decks() -> void:
 
 func _on_stop_music_if_special() -> void:
 	if save_data.current_song < 1000:
-		is_song_locked = true;
 		return;
 	_on_stop_music();
 
 func _on_play_prev_song() -> void:
-	if is_song_locked:
-		is_song_locked = false;
+	if Config.MUTE_MUSIC or prev_song == 0:
 		return;
 	save_data.current_song = prev_song;
-	is_song_locked = true;
 	load_music();
-	if Config.MUTE_MUSIC:
-		return;
 	background_music.play(prev_song_position);
-	await System.wait(0.2);
-	is_song_locked = false;
 
 func _on_stop_music() -> void:
 	if save_data.current_song < 1000:
@@ -224,8 +217,12 @@ func _on_stop_music() -> void:
 	background_music.stop();
 
 func _on_play_song(song_id : int, pitch : float) -> void:
+	if prev_song != 0 and song_id < 1000:
+		song_id = prev_song;
+		prev_song = 0;
 	save_data.current_song = song_id;
 	load_music(pitch);
+	background_music.play();
 
 func reset_base_rotation() -> void:
 	min_base_rotation_error = 1;
@@ -313,12 +310,10 @@ func save_permanently_altered_cards_to_decklists() -> void:
 
 func _on_background_music_finished() -> void:
 	var song_id : int;
-	if is_song_locked:
-		return;
 	save_data.last_played_songs.append(save_data.current_song);
 	if save_data.last_played_songs.size() > Config.WAIT_BEFORE_SONG_TO_REPEAT:
 		save_data.last_played_songs.remove_at(0);
-	if save_data.current_song == 1001 and !save_data.last_played_songs.has(1002):
+	if save_data.current_song == 1001:
 		save_data.current_song = 1002;
 	elif level_data and level_data.song_id != 1 and \
 	!save_data.last_played_songs.has(level_data.song_id) and level_data.song_id != save_data.current_song:
@@ -332,6 +327,7 @@ func _on_background_music_finished() -> void:
 			break;
 	save_data.write();
 	load_music();
+	background_music.play();
 
 func process_victory() -> void:
 	if in_roguelike_mode:

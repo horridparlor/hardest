@@ -164,7 +164,6 @@ func get_card_pool(houses : Array, is_player : bool = false) -> Dictionary:
 		CollectionEnums.Rarity.RARE: [],
 		CollectionEnums.Rarity.SUPER_RARE: []
 	};
-	print(houses);
 	for house in houses:
 		for common in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON] + \
 		(CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON] if is_player else []):

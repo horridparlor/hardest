@@ -57,6 +57,8 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 				eat_carrot(card, gameplay);
 			CardEnums.Keyword.DIRT:
 				spy_opponent(card, player, opponent, gameplay, 1, CardEnums.Zone.HAND, GameplayEnums.SpyType.DIRT);
+			CardEnums.Keyword.INFINITE_VOID:
+				trigger_infinite_void(card, enemy, player, opponent, gameplay);
 			CardEnums.Keyword.MULTI_SPY:
 				spy_opponent(card, player, opponent, gameplay, 3);
 			CardEnums.Keyword.NUT_COLLECTOR:
@@ -403,3 +405,6 @@ static func determine_spied_card(opponent : Player, gameplay : Gameplay) -> Card
 	);
 	var source : Array = cards_with_secret if gameplay.current_spy_type == GameplayEnums.SpyType.FIGHT and cards_with_secret.size() else opponent.cards_in_hand.duplicate();
 	return System.Random.item(source);
+
+static func trigger_infinite_void(card : CardData, enemy : CardData, player : Player, opponent : Player, gameplay : Gameplay) -> void:
+	gameplay.wait_for_animation(card, GameplayEnums.AnimationType.INFINITE_VOID);

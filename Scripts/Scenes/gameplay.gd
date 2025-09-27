@@ -809,6 +809,9 @@ func play_digital_sound() -> void:
 func play_shadow_replace_sound() -> void:
 	play_throwable_sfx(SHADOW_REPLACE_SOUND_PATH);
 
+func play_recycle_sound() -> void:
+	play_throwable_sfx(RECYCLE_SOUND_PATH);
+
 func play_rattlesnake_sound() -> void:
 	play_throwable_sfx(RATTLESNAKE_SOUND_PATH);
 

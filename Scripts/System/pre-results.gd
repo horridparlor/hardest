@@ -17,9 +17,12 @@ static func go_to_results(gameplay : Gameplay) -> void:
 		if nut_phase(gameplay):
 			return gameplay.results_wait(NUT_WAIT_MULTIPLIER - 0.2 * gameplay.nut_combo);
 	if gameplay.results_phase < 6:
-		if digitals_phase(gameplay):
+		if recycle_phase(gameplay):
 			return gameplay.results_wait();
 	if gameplay.results_phase < 8:
+		if digitals_phase(gameplay):
+			return gameplay.results_wait();
+	if gameplay.results_phase < 10:
 		if shadow_replace_phase(gameplay):
 			return gameplay.results_wait();
 	gameplay.show_multiplier_bar(gameplay.get_card(gameplay.player_one.get_field_card()));
@@ -152,28 +155,81 @@ static func nut_with_card(card : CardData, enemy : CardData, player : Player, ga
 		return true;
 	return false;
 
+static func recycle_phase(gameplay : Gameplay) -> bool:
+	var card : CardData = gameplay.player_one.get_field_card();
+	var enemy : CardData = gameplay.player_two.get_field_card();
+	if gameplay.going_first:
+		if gameplay.results_phase < 5:
+			gameplay.results_phase = 5;
+			if play_your_recycles(gameplay):
+				return true;
+		if gameplay.results_phase < 6:
+			gameplay.results_phase = 6;
+			if play_opponents_recycles(gameplay):
+				gameplay.results_phase = 2;
+				return true;
+	else:
+		if gameplay.results_phase < 5:
+			gameplay.results_phase = 5;
+			if play_opponents_recycles(gameplay):
+				return true;
+		if gameplay.results_phase < 6:
+			gameplay.results_phase = 6;
+			if play_your_recycles(gameplay):
+				gameplay.results_phase = 2;
+				return true;
+	return false;
+
+static func play_your_recycles(gameplay : Gameplay) -> bool:
+	return play_recycles(gameplay.player_one, gameplay.player_two, gameplay);
+
+static func play_opponents_recycles(gameplay : Gameplay) -> bool:
+	return play_recycles(gameplay.player_two, gameplay.player_one, gameplay);
+
+static func play_recycles(player : Player, opponent : Player, gameplay : Gameplay) -> bool:
+	var recycled_card : CardData;
+	var card : CardData = player.get_field_card();
+	var enemy : CardData = opponent.get_field_card();
+	var winner : GameplayEnums.Controller = System.Fighting.determine_winning_player(player, opponent);
+	var passive_source : Array = player.recycle_cards;
+	var active_source : Array = passive_source.filter(func(card : CardData): return card.has_recycle());
+	var source : Array = passive_source if card and card.has_recycle() else active_source;
+	if source.is_empty() or System.Fighting.no_reason_to_counterspell(player, opponent):
+		return false;
+	source = source.filter(func(card : CardData): return ![winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(card, enemy)));
+	source.sort_custom(
+		func(card_a : CardData, card_b : CardData):
+			return System.Fighting.determine_points_result(card_a, enemy, player, opponent) < System.Fighting.determine_points_result(card_b, enemy, player, opponent);
+	);
+	if source.is_empty():
+		return false;
+	recycled_card = source.back();
+	gameplay.play_recycle_sound();
+	gameplay.replace_played_card(recycled_card);
+	return true;
+
 static func digitals_phase(gameplay : Gameplay) -> bool:
 	var card : CardData = gameplay.player_one.get_field_card();
 	var enemy : CardData = gameplay.player_two.get_field_card();
 	if (card and card.has_emp()) or (enemy and enemy.has_emp()):
 		return false;
 	if gameplay.going_first:
-		if gameplay.results_phase < 5:
-			gameplay.results_phase = 5;
+		if gameplay.results_phase < 7:
+			gameplay.results_phase = 7;
 			if play_your_digitals(gameplay):
 				return true;
-		if gameplay.results_phase < 6:
-			gameplay.results_phase = 6;
+		if gameplay.results_phase < 8:
+			gameplay.results_phase = 8;
 			if play_opponents_digitals(gameplay):
 				gameplay.results_phase = 2;
 				return true;
 	else:
-		if gameplay.results_phase < 5:
-			gameplay.results_phase = 5;
+		if gameplay.results_phase < 7:
+			gameplay.results_phase = 7;
 			if play_opponents_digitals(gameplay):
 				return true;
-		if gameplay.results_phase < 6:
-			gameplay.results_phase = 6;
+		if gameplay.results_phase < 8:
+			gameplay.results_phase = 8;
 			if play_your_digitals(gameplay):
 				gameplay.results_phase = 2;
 				return true;
@@ -212,22 +268,22 @@ static func play_digitals(player : Player, opponent : Player, gameplay : Gamepla
 
 static func shadow_replace_phase(gameplay : Gameplay) -> bool:
 	if gameplay.going_first:
-		if gameplay.results_phase < 7:
-			gameplay.results_phase = 7;
+		if gameplay.results_phase < 9:
+			gameplay.results_phase = 9;
 			if play_your_shadows(gameplay):
 				return true;
-		if gameplay.results_phase < 8:
-			gameplay.results_phase = 8;
+		if gameplay.results_phase < 10:
+			gameplay.results_phase = 10;
 			if play_opponents_shadows(gameplay):
 				gameplay.results_phase = 2;
 				return true;
 	else:
-		if gameplay.results_phase < 7:
-			gameplay.results_phase = 7;
+		if gameplay.results_phase < 9:
+			gameplay.results_phase = 9;
 			if play_opponents_shadows(gameplay):
 				return true;
-		if gameplay.results_phase < 8:
-			gameplay.results_phase = 8;
+		if gameplay.results_phase < 10:
+			gameplay.results_phase = 10;
 			if play_your_shadows(gameplay):
 				gameplay.results_phase = 2;
 				return true;

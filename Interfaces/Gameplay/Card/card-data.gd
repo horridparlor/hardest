@@ -44,6 +44,7 @@ var nuts_stolen : int;
 var is_burned : bool;
 var if_hydra_keywords : Array;
 var just_spawned_dont_discard : bool;
+var turns_in_grave : int;
 
 func _init() -> void:
 	update_instance_id();
@@ -339,6 +340,9 @@ func has_negative() -> bool:
 func is_negative_variant() -> bool:
 	return variant == CardEnums.CardVariant.NEGATIVE;
 
+func has_nostalgia() -> bool:
+	return has_keyword(CardEnums.Keyword.NOSTALGIA);
+
 func has_november() -> bool:
 	return has_keyword(CardEnums.Keyword.NOVEMBER);
 	
@@ -377,6 +381,9 @@ func has_positive() -> bool:
 
 func has_rainbow() -> bool:
 	return has_keyword(CardEnums.Keyword.RAINBOW);
+
+func has_recycle() -> bool:
+	return has_keyword(CardEnums.Keyword.RECYCLE);
 
 func has_reload() -> bool:
 	return has_keyword(CardEnums.Keyword.RELOAD);

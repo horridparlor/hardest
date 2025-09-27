@@ -39,6 +39,8 @@ var true_last_type_played : CardEnums.CardType = CardEnums.CardType.NULL;
 var played_same_type_in_a_row : int;
 var played_alpha_werewolf : bool;
 var brotherhood_multiplier : int = 1;
+var recycle_cards : Array;
+var soon_to_be_recycle_cards : Array;
 
 func count_deck() -> int:
 	return cards_in_deck.size();
@@ -245,6 +247,8 @@ func play_card(card : CardData, is_digital_speed : bool = false) -> void:
 			cards_in_hand.erase(card);
 		CardEnums.Zone.DECK:
 			cards_in_deck.erase(card);
+		CardEnums.Zone.GRAVE:
+			remove_from_grave(card);
 	cards_on_field.append(card);
 	card.zone = CardEnums.Zone.FIELD;
 	if is_digital_speed:
@@ -369,12 +373,17 @@ func end_of_turn_clear(did_win : bool) -> void:
 	
 func end_of_turn_updates() -> void:
 	end_of_turn_nut_update();
+	cards_in_grave_turn_increment();
 
 func end_of_turn_nut_update() -> void:
 	if did_nut:
 		did_nut = false;
 		reset_nut();
 	turns_waited_to_nut += 1;
+
+func cards_in_grave_turn_increment() -> void:
+	recycle_cards = soon_to_be_recycle_cards;
+	soon_to_be_recycle_cards = [];
 
 func reset_nut() -> void:
 	turns_waited_to_nut = 0;
@@ -468,6 +477,9 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 		return;
 	card.zone = CardEnums.Zone.GRAVE;
 	card.set_card_type(card.default_type);
+	card.turns_in_grave = 0;
+	recycle_cards.erase(card);
+	soon_to_be_recycle_cards.append(card);
 	if did_win and card.has_undead(true):
 		purge_undead_materials(card.default_type);
 	if card.is_burned:
@@ -485,9 +497,14 @@ func purge_undead_materials(card_type : CardEnums.CardType) -> void:
 				return;
 
 func purge_from_grave(card : CardData) -> void:
-	cards_in_grave.erase(card);
-	grave_type_counts[card.default_type] -= 1;
+	remove_from_grave(card);
 	card.queue_free();
+
+func remove_from_grave(card : CardData) -> void:
+	cards_in_grave.erase(card);
+	recycle_cards.erase(card);
+	soon_to_be_recycle_cards.erase(card);
+	grave_type_counts[card.default_type] -= 1;
 
 func is_close_to_winning() -> bool:
 	return points >= System.Rules.CLOSE_TO_WINNING_POINTS * point_goal;

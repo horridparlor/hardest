@@ -112,6 +112,7 @@ static func play_bullets_shooting_animation(card : CardData, enemy : CardData, g
 		bullet = System.Data.load_bullet(card.bullet_id, gameplay.cards_layer);
 		if slow_down:
 			bullet.slow_down();
+			bullet.position += System.Random.vector(0, 64);
 		bullet.init(enemy_position - (gameplay.get_card(card).get_recoil_position() if gameplay.get_card(card) else Vector2.ZERO), i < 2);
 		bullets.append(bullet);
 		if do_zoom and i == 0:

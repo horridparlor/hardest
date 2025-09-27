@@ -84,6 +84,7 @@ const DIRT_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/dirt-so
 const SPY_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/spy-sound.wav";
 const DIGITAL_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/digital-sound.wav";
 const SHADOW_REPLACE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/shadow-replace-sound.wav";
+const RECYCLE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/recycle-sound.wav";
 const RATTLESNAKE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/rattlesnake.wav";
 const CLONE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/clone-sound.wav";
 const PERFECT_CLONE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/perfect-clone-sound.wav";

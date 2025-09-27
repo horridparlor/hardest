@@ -164,6 +164,7 @@ func get_card_pool(houses : Array, is_player : bool = false) -> Dictionary:
 		CollectionEnums.Rarity.RARE: [],
 		CollectionEnums.Rarity.SUPER_RARE: []
 	};
+	print(houses);
 	for house in houses:
 		for common in CollectionEnums.CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON] + \
 		(CollectionEnums.ONLY_PLAYER_CARDS_TO_COLLECT[house][CollectionEnums.Rarity.COMMON] if is_player else []):
@@ -598,7 +599,8 @@ func eat_json(data : Dictionary) -> void:
 	lives_left = data.lives_left;
 	point_goal = data.point_goal;
 	rounds_played = data.rounds_played;
-	your_houses = data.your_houses;
+	your_houses = data.your_houses.map(func(house): return int(house));
+	card_pool = get_card_pool(your_houses, true);
 	cards_bought = data.cards_bought;
 	money = data.money;
 	has_won = data.has_won;

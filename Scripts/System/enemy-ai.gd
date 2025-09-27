@@ -113,6 +113,8 @@ static func get_card_value(card : CardData, player : Player, opponent : Player, 
 				value += 2 * player.points;
 			CardEnums.Keyword.RAINBOW:
 				value += 1;
+			CardEnums.Keyword.RECYCLE:
+				value += player.recycle_cards.size();
 			CardEnums.Keyword.RELOAD:
 				value += 1;
 			CardEnums.Keyword.RUST:

@@ -43,6 +43,7 @@ var nuts : int;
 var nuts_stolen : int;
 var is_burned : bool;
 var if_hydra_keywords : Array;
+var just_spawned_dont_discard : bool;
 
 func _init() -> void:
 	update_instance_id();

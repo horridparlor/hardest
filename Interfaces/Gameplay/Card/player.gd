@@ -81,6 +81,7 @@ func count_negatives_in_hand() -> int:
 	return count;
 
 func draw_hand() -> void:
+	var card : CardData;
 	while true:
 		draw();
 		if hand_size_reached():
@@ -88,6 +89,9 @@ func draw_hand() -> void:
 	for i in range(extra_draws):
 		draw();
 	extra_draws = 0;
+	for c in cards_in_hand:
+		card = c;
+		card.just_spawned_dont_discard = false;
 
 func fill_hand() -> void:
 	while count_hand() < System.Rules.MAX_HAND_SIZE:
@@ -172,7 +176,7 @@ func get_nostalgic(card : CardData) -> void:
 		extra_chance += 1;
 	discard_hand();
 	for i in range(System.Rules.NOSTALGIA_DRAWS):
-		if !draw_a_basic(used_types, extra_chance):
+		if !draw_a_basic(used_types, extra_chance, [CardEnums.Keyword.PICK_UP]):
 			break;
 	cards_in_hand.sort_custom(func(card_a : CardData, card_b : CardData):
 		return get_index_by_card_type(card_a) < get_index_by_card_type(card_b);
@@ -183,56 +187,52 @@ func get_index_by_card_type(card : CardData) -> int:
 		CardEnums.CardType.ROCK:
 			return 1;
 		CardEnums.CardType.PAPER:
-			return 2;
-		CardEnums.CardType.SCISSORS:
 			return 3;
-		CardEnums.CardType.BEDROCK:
-			return 4;
-		CardEnums.CardType.ZIPPER:
+		CardEnums.CardType.SCISSORS:
 			return 5;
+		CardEnums.CardType.BEDROCK:
+			return 2;
+		CardEnums.CardType.ZIPPER:
+			return 4;
 		CardEnums.CardType.ROCKSTAR:
 			return 6;
-		CardEnums.CardType.MIMIC:
-			return 7;
 		CardEnums.CardType.GUN:
+			return 7;
+		CardEnums.CardType.MIMIC:
 			return 8;
 		CardEnums.CardType.GOD:
 			return 9;
 	return 0;
 
-func draw_a_basic(used_types : Array, extra_chance : int = 0) -> bool:
+func draw_a_basic(used_types : Array, extra_chance : int = 0, keywords_to_add : Array = []) -> bool:
 	var basic_id : int;
+	const multi_chance : int = 6;
 	var pool : Array = [
-		CardEnums.CardType.ROCK,
-		CardEnums.CardType.PAPER,
-		CardEnums.CardType.SCISSORS
+		CardEnums.CardType.BEDROCK if System.Random.chance(multi_chance - extra_chance) else CardEnums.CardType.ROCK,
+		CardEnums.CardType.ZIPPER if System.Random.chance(multi_chance - extra_chance) else CardEnums.CardType.PAPER,
+		CardEnums.CardType.ROCKSTAR if System.Random.chance(multi_chance - extra_chance) else CardEnums.CardType.SCISSORS
 	];
 	var chosen_type : CardEnums.CardType;
+	var card : CardData;
 	if hand_full():
 		return false;
-	if System.Random.chance(6 - extra_chance):
-		pool.append(CardEnums.CardType.BEDROCK);
-		pool.append(CardEnums.CardType.ZIPPER);
-		pool.append(CardEnums.CardType.ROCKSTAR);
 	if System.Random.chance(8 - extra_chance):
 		pool.append(CardEnums.CardType.GUN);
 	if System.Random.chance(10 - extra_chance):
 		pool.append(CardEnums.CardType.MIMIC);
 	if System.Random.chance(100 - pow(extra_chance, 2)):
 		pool.append(CardEnums.CardType.GOD);
-	pool = [
-		CardEnums.CardType.ROCK,
-		CardEnums.CardType.PAPER,
-		CardEnums.CardType.SCISSORS
-	];
 	for item in used_types:
 		pool.erase(item);
+		pool.erase(CardEnums.get_base_type(item));
 	if pool.is_empty():
 		return false;
 	chosen_type = System.Random.item(pool);
 	used_types.append(chosen_type);
+	if CardEnums.BASIC_COLORS.keys().has(chosen_type):
+		used_types.append(CardEnums.get_multi_variant(chosen_type))
 	basic_id = CardEnums.BasicIds[chosen_type];
-	draw_spawn_a_card(basic_id);
+	card = draw_spawn_a_card(basic_id, keywords_to_add);
 	return true;
 
 func discard_hand() -> void:
@@ -311,6 +311,7 @@ func slide_deck(index : int) -> void:
 func spawn_card(card_data : CardData, spawn_to : CardEnums.Zone = CardEnums.Zone.DECK) -> CardData:
 	var card : CardData = CardData.from_json(card_data.to_json());
 	card.controller = self;
+	card.just_spawned_dont_discard = true;
 	match spawn_to:
 		CardEnums.Zone.DECK:
 			cards_in_deck.append(card);
@@ -428,7 +429,8 @@ func clear_pick_ups() -> void:
 	var has_hivemind : bool = has_hivemind_for(CardEnums.Keyword.PICK_UP);
 	for c in cards_in_hand.duplicate():
 		card = c;
-		if !has_hivemind and !card.has_pick_up():
+		if (!has_hivemind and !card.has_pick_up()) or card.just_spawned_dont_discard:
+			card.just_spawned_dont_discard = false;
 			continue;
 		cards_in_hand.erase(card);
 		add_to_grave(card);
@@ -673,16 +675,19 @@ func draw_horse() -> bool:
 	draw_spawn_a_card(horse_id);
 	return true;
 
-func draw_spawn_a_card(card_id : int) -> void:
+func draw_spawn_a_card(card_id : int, keywords_to_add : Array = []) -> CardData:
 	var card : CardData = System.Data.load_card(card_id);
-	if System.Random.chance(64):
+	if System.Random.chance(128):
 		card.variant = CardEnums.CardVariant.NEGATIVE;
 	if System.Random.chance(32):
 		card.is_holographic = true;
 	if System.Random.chance(16):
 		card.stamp = System.Random.item(CardEnums.Stamp.values());
+	for keyword in keywords_to_add:
+		card.add_keyword(keyword);
 	spawn_card(card);
 	draw();
+	return card;
 
 func burn_card(card : CardData) -> void:
 	var spawn_id : int = card.spawn_id;

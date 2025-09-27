@@ -42,7 +42,7 @@ static func clear_players_field(player : Player, did_win : bool, did_lose : bool
 			if gameplay_card and !gameplay_card.is_visiting:
 				gameplay_card.recoil();
 			did_trigger_ocean = true;
-		if !pick_up_by_hivemind and !card.has_pick_up():
+		if (!pick_up_by_hivemind and !card.has_pick_up()) or card.just_spawned_dont_discard:
 			continue;
 		if gameplay_card:
 			gameplay_card.despawn();

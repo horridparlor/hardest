@@ -44,7 +44,7 @@ float hash21(vec2 p) {
 
 void fragment() {
     vec2 suv = SCREEN_UV;
-    vec4 src = use_screen_texture ? texture(screen_tex, suv) 
+    vec4 src = use_screen_texture ? texture(screen_tex, suv)
                                   : texture(TEXTURE, UV) * COLOR;
 
     vec2 to_c = suv - wave_center;
@@ -77,7 +77,7 @@ void fragment() {
     float ring_pos = r - ring_radius;
     float ring_shape = exp(-pow(ring_pos / ring_thickness, 2.0));
     float theta = atan(to_c.y, to_c.x);
-    float ring_flux = 0.6 + 0.4 * sin(theta * 6.0 + TIME * ring_scroll) 
+    float ring_flux = 0.6 + 0.4 * sin(theta * 6.0 + TIME * ring_scroll)
                             * (1.0 + 0.6 * sin(TIME * 2.3 + r * 30.0));
     vec3 ring = ring_color.rgb * ring_shape * ring_glow * ring_flux;
 

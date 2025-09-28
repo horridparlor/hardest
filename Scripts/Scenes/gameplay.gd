@@ -815,7 +815,7 @@ func get_ocean_material_for_animation(type : GameplayEnums.AnimationType) -> Sha
 func get_animation_sound_path(type : GameplayEnums.AnimationType) -> String:
 	match type:
 		GameplayEnums.AnimationType.INFINITE_VOID:
-			return "res://Assets/SFX/CardSounds/Bursts/ocean.wav";
+			return "res://Assets/SFX/CardSounds/Bursts/infinite-void.wav";
 		GameplayEnums.AnimationType.OCEAN:
 			return "res://Assets/SFX/CardSounds/Bursts/ocean.wav";
 		GameplayEnums.AnimationType.POSITIVE:

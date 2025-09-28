@@ -336,7 +336,7 @@ static func clone_card(card_to_clone : CardData, player : Player, gameplay : Gam
 static func trigger_positive(card : CardData, enemy : CardData, player : Player, gameplay : Gameplay) -> void:
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);
 	var points_gained : int = player.gain_points(player.points * multiplier, false);
-	if points_gained == 0:
+	if points_gained == 0 or card.get_multiplier() < 0:
 		return;
 	gameplay.wait_for_animation(card, GameplayEnums.AnimationType.POSITIVE, {
 		"points": points_gained,
@@ -407,4 +407,42 @@ static func determine_spied_card(opponent : Player, gameplay : Gameplay) -> Card
 	return System.Random.item(source);
 
 static func trigger_infinite_void(card : CardData, enemy : CardData, player : Player, opponent : Player, gameplay : Gameplay) -> void:
-	gameplay.wait_for_animation(card, GameplayEnums.AnimationType.INFINITE_VOID);
+	const wait_per_suck_min : float = 0.02 * Config.GAME_SPEED_MULTIPLIER;
+	const wait_per_suck_max : float = 0.79 * Config.GAME_SPEED_MULTIPLIER;
+	const initial_wait_min : float = 0.07;
+	const initial_wait_max : float = 0.085;
+	var other_card : CardData;
+	var gameplay_card : GameplayCard;
+	var instance_id : int = gameplay.wait_for_animation(card, GameplayEnums.AnimationType.INFINITE_VOID);
+	var cards_taken : Array;
+	var poppet : Poppet;
+	await System.wait_range(initial_wait_min, initial_wait_max);
+	for i in range(30):
+		if !System.Instance.exists(gameplay) or gameplay.animation_instance_id != instance_id:
+			return;
+		card.value_increment += System.EyeCandy.spawn_negative_drained_poppet(card, opponent, gameplay);
+		await System.wait_range(initial_wait_min, initial_wait_max);
+	while true:
+		if !System.Instance.exists(gameplay):
+			return;
+		await System.wait(clamp(gameplay.animation_wait_timer.time_left / gameplay.animation_wait_timer.wait_time, wait_per_suck_min, wait_per_suck_max));
+		if !System.Instance.exists(gameplay) or gameplay.animation_instance_id != instance_id:
+			return;
+		cards_taken = (player.cards_in_hand + opponent.cards_in_hand + opponent.cards_on_field).filter(func(card : CardData):
+			return !card.has_cursed() and !card.is_god());
+		if cards_taken.is_empty():
+			return;
+		cards_taken.shuffle();
+		other_card = cards_taken.back();
+		card.multiply_advantage *= other_card.get_multiplier();
+		card.value_increment += 1;
+		gameplay_card = System.CardManager.spawn_card(other_card, gameplay);
+		gameplay.loser_dissolve_effect(other_card, card);
+		if other_card.is_in_hand():
+			other_card.controller.discard_from_hand(other_card);
+		elif other_card.is_on_the_field():
+			other_card.controller.send_from_field_to_grave(other_card);
+		if System.Instance.exists(gameplay_card) and gameplay.get_card(card):
+			gameplay.erase_card(gameplay_card, player.field_position + Vector2(0, -GameplayCard.SIZE.y * 0.1 \
+			if player.controller == GameplayEnums.Controller.PLAYER_TWO else 0));
+			gameplay.show_multiplier_bar(gameplay.get_card(card));

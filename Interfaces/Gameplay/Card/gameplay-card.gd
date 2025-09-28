@@ -8,6 +8,8 @@ signal visited(_self)
 
 const MIN_SCALE : float = 0.2;
 const MAX_SCALE :float = 1.0;
+const DESPAWNING_SUCKING_DISTANCE : int = 500;
+const DESPAWNING_SUCKING_EVENT_HORIZON : int = 50;
 const MIN_SCALE_VECTOR : Vector2 = Vector2(MIN_SCALE, MIN_SCALE);
 const MAX_SCALE_VECTOR : Vector2 = Vector2(MAX_SCALE, MAX_SCALE);
 const SPEED : int = 6 * Config.GAME_SPEED;
@@ -133,6 +135,7 @@ var multiplier_bar : MultiplierBar;
 var is_dying : bool;
 var still_wait_time : float = -0.01;
 var visit_instance_id : int;
+var do_get_small : bool;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -311,6 +314,8 @@ func update_scale(delta : float) -> void:
 	if !is_scaling:
 		return;
 	new_scale = System.Scale.baseline(scale.x, (MAX_SCALE if is_focused else MIN_SCALE), delta);
+	if is_despawning and do_get_small:
+		new_scale = clamp(max(0, position.distance_to(goal_position) - DESPAWNING_SUCKING_EVENT_HORIZON) / DESPAWNING_SUCKING_DISTANCE, 0, MIN_SCALE);
 	scale = Vector2(new_scale, new_scale);
 
 func _on_focus_timer_timeout() -> void:

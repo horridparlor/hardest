@@ -229,6 +229,8 @@ script = ExtResource("5_sou8c")
 
 [node name="AnimationWaitTimer" type="Timer" parent="Timers"]
 
+[node name="GameMonitorTimer" type="Timer" parent="Timers"]
+
 [node name="FieldLines" type="Node2D" parent="."]
 
 [node name="Top" type="ColorRect" parent="FieldLines"]
@@ -629,6 +631,7 @@ script = ExtResource("3_ixfah")
 [connection signal="timeout" from="Timers/StartNextRoundTimer" to="." method="_on_start_next_round_timer_timeout"]
 [connection signal="timeout" from="Timers/WetWaitTimer" to="." method="_on_wet_wait_timer_timeout"]
 [connection signal="timeout" from="Timers/AnimationWaitTimer" to="." method="_on_animation_wait_timer_timeout"]
+[connection signal="timeout" from="Timers/GameMonitorTimer" to="." method="_on_game_monitor_timer_timeout"]
 [connection signal="triggered" from="Points/Relics/DashboardButton/SettingsButton" to="." method="_on_settings_button_triggered"]
 [connection signal="pressed" from="Points/Relics/DieButton/Die" to="." method="_on_die_pressed"]
 [connection signal="released" from="Points/Relics/DieButton/Die" to="." method="_on_die_released"]

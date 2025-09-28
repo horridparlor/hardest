@@ -23,6 +23,7 @@ var lost_heart : bool;
 var chosen_opponent : int;
 var point_goal : int;
 var rounds_played : int;
+var has_seeded : bool;
 
 func _init() -> void:
 	lives_left = System.Rules.STARTING_LIVES;
@@ -129,6 +130,9 @@ func get_card_choices(confirmed_rare : bool = false) -> Array:
 			"is_holographic": get_is_holo_for_spawned_card(rare_chance)
 		});
 		card_data.queue_free();
+	if Config.SEEDED_CARD != 0 and !has_seeded and cards_bought > System.random.randi_range(10, 20):
+		choices[1].id = Config.SEEDED_CARD;
+		has_seeded = true;
 	return choices;
 
 func get_is_holo_for_spawned_card(foil_chance : int = rare_chance) -> bool:
@@ -593,7 +597,8 @@ static func from_json(json : Dictionary) -> RoguelikeData:
 
 func eat_json(data : Dictionary) -> void:
 	data = System.Dictionaries.make_safe(data, {
-		"rounds_played": 0
+		"rounds_played": 0,
+		"has_seeded": false
 	});
 	lives_left = data.lives_left;
 	point_goal = data.point_goal;
@@ -604,6 +609,7 @@ func eat_json(data : Dictionary) -> void:
 	money = data.money;
 	has_won = data.has_won;
 	rare_chance = data.rare_chance;
+	has_seeded = data.has_seeded;
 	
 	your_cards = data.your_cards;
 	for key in data.opponents:
@@ -640,6 +646,7 @@ func to_json() -> Dictionary:
 		"money": money,
 		"has_won": has_won,
 		"rare_chance": rare_chance,
+		"has_seeded": has_seeded,
 		"your_cards": your_cards,
 		"opponents": opponents,
 		"rare_opponents": rare_opponents,

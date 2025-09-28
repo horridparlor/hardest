@@ -4,6 +4,39 @@ const MAX_VICTORY_POPPETS : int = 100;
 const MAX_CARD_POPPETS : int = 40;
 const POPPETS_RANDOM_ADDITION : int = 10;
 
+static func spawn_negative_drained_poppet(card : CardData, player : Player, gameplay : Gameplay) -> int:
+	var poppet : Poppet;
+	var drained : int;
+	var color_pool : Dictionary = {
+		Poppet.PoppetColor.BLUE: 1,
+		Poppet.PoppetColor.RED: 2,
+		Poppet.PoppetColor.GOLD: 5,
+		Poppet.PoppetColor.RAINBOW: 20
+	};
+	var chosen_color : Poppet.PoppetColor;
+	var points : int = 1;
+	if player.points < 1:
+		return drained;
+	if player.points < 3 and System.Random.chance(5):
+		color_pool.erase(Poppet.PoppetColor.RED);
+	if player.points < 10 and System.Random.chance(20):
+		color_pool.erase(Poppet.PoppetColor.GOLD);
+	if player.points < 40 and System.Random.chance(100):
+		color_pool.erase(Poppet.PoppetColor.RAINBOW);
+	chosen_color = System.Random.item(color_pool.keys());
+	for i in range(System.random.randi_range(1, 6 if chosen_color == Poppet.PoppetColor.BLUE else 1)):
+		if player.points < color_pool[chosen_color]:
+			break;
+		player.points -= color_pool[chosen_color];
+		drained += color_pool[chosen_color];
+		gameplay.update_point_visuals();
+		poppet = spawn_poppet_for_card(card, player, gameplay, chosen_color, true);
+		gameplay.above_cards_layer.remove_child(poppet);
+		gameplay.cards_layer2.add_child(poppet);
+		if gameplay.get_card(card):
+			poppet.set_goal_node(gameplay.get_card(card));
+	return drained;
+
 static func spawn_poppets(points : int, card : CardData, player : Player, gameplay : Gameplay) -> void:
 	var color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE;
 	var count : int = points;
@@ -12,9 +45,9 @@ static func spawn_poppets(points : int, card : CardData, player : Player, gamepl
 	if is_negative:
 		points = abs(points);
 		count = abs(count);
-	if points > 12:
+	if points > 19:
 		color = Poppet.PoppetColor.RAINBOW;
-		count /= 6;
+		count /= 9;
 		extra_count = points - 5 * count + System.random.randi_range(0, 5);
 	elif points > 4:
 		color = Poppet.PoppetColor.GOLD;
@@ -29,12 +62,12 @@ static func spawn_poppets(points : int, card : CardData, player : Player, gamepl
 	for i in range(min(MAX_CARD_POPPETS, extra_count)):
 		spawn_poppet_for_card(card, player, gameplay, Poppet.PoppetColor.BLUE, is_negative);
 
-static func spawn_poppet_for_card(card : CardData, player : Player, gameplay : Gameplay, color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE, is_negative : bool = false) -> void:
+static func spawn_poppet_for_card(card : CardData, player : Player, gameplay : Gameplay, color : Poppet.PoppetColor = Poppet.PoppetColor.BLUE, is_negative : bool = false) -> Poppet:
 	var goal_position : Vector2
 	if !gameplay.get_card(card):
 		return;
 	goal_position = (gameplay.your_point_panel.position if player == gameplay.player_one else gameplay.opponents_point_panel.position) + Vector2(235, 95) + Vector2(System.random.randf_range(-130, 130), System.random.randf_range(-50, 50));
-	spawn_poppet(gameplay.get_card(card).position + System.Random.vector(0, 50), goal_position, gameplay, color, is_negative);
+	return spawn_poppet(gameplay.get_card(card).position + System.Random.vector(0, 50), goal_position, gameplay, color, is_negative);
 
 static func spawn_poppet(spawn_position : Vector2, goal_position : Vector2, gameplay : Gameplay, color : Poppet.PoppetColor, is_negative : bool = false) -> Poppet:
 	var poppet : Poppet;

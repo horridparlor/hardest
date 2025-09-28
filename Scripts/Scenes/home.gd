@@ -210,7 +210,7 @@ func _on_play_prev_song() -> void:
 	background_music.play(prev_song_position);
 
 func _on_stop_music() -> void:
-	if save_data.current_song < 1000:
+	if save_data.current_song < 1000 and save_data.current_song > 0:
 		prev_song = save_data.current_song;
 		prev_song_position = background_music.get_playback_position();
 		save_data.current_song = 1001;

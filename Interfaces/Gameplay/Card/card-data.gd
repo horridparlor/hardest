@@ -45,6 +45,7 @@ var is_burned : bool;
 var if_hydra_keywords : Array;
 var just_spawned_dont_discard : bool;
 var turns_in_grave : int;
+var value_increment : int;
 
 func _init() -> void:
 	update_instance_id();
@@ -557,3 +558,6 @@ func is_in_grave() -> bool:
 
 func is_in_deck() -> bool:
 	return is_in_zone(CardEnums.Zone.DECK);
+
+func get_multiplier() -> int:
+	return multiply_advantage * System.Fighting.get_card_continuous_advantage(self);

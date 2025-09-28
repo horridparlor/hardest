@@ -7,7 +7,7 @@ var cards_in_deck : Array;
 var cards_in_hand : Array;
 var cards_on_field : Array;
 var cards_in_grave : Array;
-var points : int;
+var points : int = 0;
 var grave_type_counts : Dictionary = {
 	CardEnums.CardType.ROCK: 0,
 	CardEnums.CardType.PAPER: 0,
@@ -264,8 +264,6 @@ func trigger_play_multipliers(card : CardData) -> void:
 	if matching_type != CardEnums.CardType.NULL:
 		last_type_played = matching_type;
 		played_same_type_in_a_row += 1;
-		if card.has_multiply():
-			card.multiply_advantage *= pow(2, played_same_type_in_a_row);
 	else:
 		played_same_type_in_a_row = 0;
 		last_type_played = card.card_type;
@@ -476,6 +474,8 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	if !card:
 		return;
 	card.zone = CardEnums.Zone.GRAVE;
+	card.multiply_advantage = 1;
+	card.value_increment = 0;
 	card.set_card_type(card.default_type);
 	card.turns_in_grave = 0;
 	recycle_cards.erase(card);

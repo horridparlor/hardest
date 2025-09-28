@@ -44,6 +44,7 @@ extends Gameplay
 @onready var start_next_round_timer : Timer = $Timers/StartNextRoundTimer;
 @onready var wet_wait_timer : Timer = $Timers/WetWaitTimer;
 @onready var animation_wait_timer : Timer = $Timers/AnimationWaitTimer;
+@onready var game_monitor_timer : Timer = $Timers/GameMonitorTimer;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
@@ -165,7 +166,7 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 	var character_id : GameplayEnums.Character = \
 		level_data.player if controller == GameplayEnums.Controller.PLAYER_ONE else level_data.opponent;
 	var point_meter : PointMeter = your_point_meter if player == player_one else opponents_point_meter;
-	var point_goal : int = level_data.point_goal if player == player_one \
+	var point_goal : int = level_data.point_goal if (player == player_one or Config.AUTO_LEVEL != 0) \
 		else min(System.Rules.OPPONENT_MAX_POINT_GOAL + round(System.Rules.POINT_GOAL_MULTIPLIER * (log(level_data.point_goal) / log(System.Rules.POINT_GOAL_MULTIPLIER))), \
 		level_data.point_goal, \
 		System.Rules.OPPONENT_MAX_POINT_GOAL + round(level_data.point_goal / 3 / 1.5) - 3);
@@ -234,6 +235,7 @@ func start_first_round() -> void:
 	update_point_visuals();
 	relics_layer.activate_animations();
 	is_active = true;
+	game_monitor_timer.start();
 	
 func start_round() -> void:
 	if has_game_ended:
@@ -282,13 +284,17 @@ func your_turn() -> void:
 	show_hand();
 	highlight_face();
 	if player_one.hand_empty():
-		_on_your_turn_end() if going_first else _on_opponent_turns_end();
+		_on_player_one_cannot_play_more();
 		return;
 	can_play_card = true;
 	if !System.auto_play:
 		return;
 	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_additive_multiplier;
 	auto_play_timer.start()
+
+func _on_player_one_cannot_play_more() -> void:
+	can_play_card = false;
+	_on_your_turn_end() if going_first else _on_opponent_turns_end();
 
 func init_layers() -> void:
 	field_lines.modulate.a = 0;
@@ -585,7 +591,7 @@ func show_multiplier_bar(gameplay_card : GameplayCard) -> void:
 		System.Fighting.get_card_continuous_advantage(card);
 	if card.is_in_hand() and card.has_multiply() and \
 	card.controller.get_matching_type(card.card_type) != CardEnums.CardType.NULL:
-		multi *= pow(2, card.controller.played_same_type_in_a_row + 1);
+		multi *= 2;
 	if !card.is_buried and (multi > 1 or multi < 0):
 		gameplay_card.show_multiplier_bar(multi);
 	else:
@@ -691,6 +697,7 @@ func erase_card(card : GameplayCard, despawn_position : Vector2 = Vector2.ZERO) 
 	cards_layer.remove_child(card);
 	cards_layer2.add_child(card);
 	card.despawn(despawn_position);
+	card.do_get_small = true;
 
 func turn_card_into_another(card : CardData) -> void:
 	var player : Player = card.controller;
@@ -884,7 +891,7 @@ func opponents_turn() -> void:
 		return wait_opponent_to_play();
 	active_player = player_two;
 	if player_two.hand_empty():
-		_on_opponent_turns_end() if going_first else your_turn();
+		_on_player_two_cannot_play_more();
 		return;
 	led_direction = OPPONENTS_LED_DIRECTION;
 	led_color = IDLE_LED_COLOR;
@@ -900,6 +907,9 @@ func opponents_turn() -> void:
 		go_to_pre_results();
 	else:
 		your_turn();
+
+func _on_player_two_cannot_play_more() -> void:
+	_on_opponent_turns_end() if going_first else your_turn();
 
 func wait_opponent_to_play(do_extend : bool = false) -> void:
 	opponents_play_wait.wait_time = OPPONENT_TO_PLAY_WAIT * (2 if do_extend else 1) * System.game_speed_additive_multiplier;
@@ -1440,7 +1450,10 @@ func after_positive(is_forced : bool, points : int, card : CardData, player : Pl
 	player.gain_points(points);
 	gain_points_effect(player);
 	System.EyeCandy.spawn_poppets(points, card, player, self);
-	
+
+func after_infinite_void() -> void:
+	pass;
+
 func after_animation(is_forced : bool = false, is_being_countered : bool = false) -> void:
 	var animation_data : Dictionary;
 	if animation_instance_id == 0:
@@ -1453,6 +1466,8 @@ func after_animation(is_forced : bool = false, is_being_countered : bool = false
 	current_animation_type = GameplayEnums.AnimationType.NULL;
 	animation_sfx.stop();
 	match animation_data.type:
+		GameplayEnums.AnimationType.INFINITE_VOID:
+			after_infinite_void();
 		GameplayEnums.AnimationType.OCEAN:
 			after_ocean(is_forced);
 		GameplayEnums.AnimationType.POSITIVE:
@@ -1480,3 +1495,14 @@ func _on_settings_button_triggered() -> void:
 	_on_die_released();
 	is_active = false;
 	open_settings_menu();
+
+func _on_game_monitor_timer_timeout() -> void:
+	var card : CardData;
+	if !active_player == player_one or !can_play_card:
+		return;
+	if active_player.hand_empty():
+		_on_player_one_cannot_play_more();
+	else:
+		for c in player_one.cards_in_hand:
+			card = c;
+			card.zone = CardEnums.Zone.HAND;

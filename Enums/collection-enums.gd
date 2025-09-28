@@ -249,7 +249,6 @@ const CARDS_TO_COLLECT : Dictionary = {
 	House.GOD: [
 		42,
 		95,
-		143
 	],
 }
 const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
@@ -278,6 +277,7 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 		],
 		Rarity.SUPER_RARE: [
 			109,
+			143,
 		]
 	},
 	House.DIVINE: {

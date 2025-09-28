@@ -202,8 +202,8 @@ static func check_post_types_keywords(card : CardData, enemy : CardData) -> Game
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
 	var tie : GameplayEnums.Controller = GameplayEnums.Controller.NULL;
 	var not_determined : GameplayEnums.Controller = GameplayEnums.Controller.UNDEFINED;
-	var card_advantage : int = card.multiply_advantage * get_card_continuous_advantage(card);
-	var enemy_advantage : int = enemy.multiply_advantage * get_card_continuous_advantage(enemy);
+	var card_advantage : int = card.get_multiplier();
+	var enemy_advantage : int = enemy.get_multiplier();
 	if card.stopped_time_advantage > 1:
 		return you_win;
 	elif enemy.stopped_time_advantage > 1:
@@ -231,10 +231,16 @@ static func get_card_continuous_advantage(card : CardData) -> int:
 		return advantage;
 	if card.has_skibbidy():
 		advantage *= pow(2, card.controller.count_hand_without(card));
+	if card.has_multiply() and card.controller.get_matching_type(card.card_type, card.controller.last_type_played) != CardEnums.CardType.NULL:
+		advantage *= pow(2, card.controller.played_same_type_in_a_row);
 	return advantage;
 
 static func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false, add_advantages : bool = true) -> int:
 	var points : int = 1;
+	if card:
+		points += card.value_increment;
+	if enemy:
+		points += enemy.value_increment;
 	if card and card.has_spy() and enemy and enemy.has_secrets():
 		points = 3;
 	if card and card.has_champion():

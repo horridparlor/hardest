@@ -17,6 +17,7 @@ const SPEED_MULTIPLIER_BY_COLOR : Dictionary = {
 	PoppetColor.RAINBOW: 0.3 
 }
 const DESPAWN_DISTANCE : float = 21.8;
+const GOAL_DESPAWN_DISTANCE : float = 50;
 const DESPAWN_MIN_SPEED : float = 3.6 * Config.GAME_SPEED;
 const DESPAWN_MAX_SPEED : float = 5.3 * Config.GAME_SPEED;
 const MIN_ROTATION_SPEED : float = 0.01;
@@ -41,6 +42,9 @@ var reveal_speed : float;
 var color : PoppetColor;
 var wind_force : float;
 var unwind_speed : float;
+var goal_speed_multiplier : float = 1;
+var has_goal_node : bool;
+var goal_node : Node2D;
 
 func _ready() -> void:
 	instance_id = System.Random.instance_id();
@@ -62,11 +66,15 @@ func on(color_ : PoppetColor = color) -> void:
 
 func _process(delta : float) -> void:
 	var original_position : Vector2;
-	var real_goal_position : Vector2 = goal_position + Vector2(wind_force, 0);
+	if has_goal_node:
+		if System.Instance.exists(goal_node):
+			goal_position = goal_node.position;
+		goal_speed_multiplier = clamp(500 - position.distance_to(goal_position), 1, 4.9);
+	var real_goal_position : Vector2 = goal_position + Vector2(wind_force if goal_speed_multiplier < 4 else 0, 0);
 	real_goal_position.x = System.Vectors.put_inside_window(real_goal_position).x;
 	wind_force = System.Scale.baseline(wind_force, 0, delta * unwind_speed);
-	position = System.Vectors.slide_towards(position, real_goal_position, speed * delta);
-	if !is_despawning and position.distance_to(goal_position) < DESPAWN_DISTANCE:
+	position = System.Vectors.slide_towards(position, real_goal_position, speed  * goal_speed_multiplier * delta);
+	if !is_despawning and position.distance_to(goal_position) < (GOAL_DESPAWN_DISTANCE if has_goal_node else DESPAWN_DISTANCE):
 		is_despawning = true;
 		is_revealing = false;
 		despawn_speed = System.random.randf_range(DESPAWN_MIN_SPEED, DESPAWN_MAX_SPEED);
@@ -92,3 +100,8 @@ static func random_color() -> PoppetColor:
 
 func make_negative() -> void:
 	pass;
+
+func set_goal_node(node : Node2D) -> void:
+	goal_position = node.position;
+	has_goal_node = true;
+	goal_node = node;

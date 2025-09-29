@@ -15,6 +15,8 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 				trigger_coin_flip(card, gameplay);
 			CardEnums.Keyword.CONTAGIOUS:
 				trigger_contagious(card, player, gameplay);
+			CardEnums.Keyword.FRESH_WATER:
+				trigger_fresh_water(card, player, gameplay);
 			CardEnums.Keyword.HORSE_GEAR:
 				draw_horse_card(player, gameplay);
 			CardEnums.Keyword.INFLUENCER:
@@ -445,9 +447,17 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 		gameplay.loser_dissolve_effect(other_card, card);
 		if other_card.is_in_hand():
 			other_card.controller.discard_from_hand(other_card);
+			if gameplay.get_card(other_card):
+				gameplay._on_card_released(gameplay.get_card(other_card), true);
 		elif other_card.is_on_the_field():
 			other_card.controller.send_from_field_to_grave(other_card);
 		if System.Instance.exists(gameplay_card) and gameplay.get_card(card):
 			gameplay.erase_card(gameplay_card, player.field_position + Vector2(0, -GameplayCard.SIZE.y * 0.1 \
 			if player.controller == GameplayEnums.Controller.PLAYER_TWO else 0));
 			gameplay.show_multiplier_bar(gameplay.get_card(card));
+
+static func trigger_fresh_water(card : CardData, player : Player, gameplay : Gameplay) -> void:
+	player.draw_until(System.Rules.FRESH_WATER_CARDS);
+	gameplay.show_hand();
+	for card_in_hand in player.cards_in_hand:
+		System.AutoEffects.make_card_wet(card_in_hand, gameplay);

@@ -45,6 +45,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			87,
 			105,
 			111,
+			145,
 		],
 		Rarity.SUPER_RARE: [
 			106,
@@ -466,6 +467,7 @@ const RANDOM_CARDS : Dictionary = {
 		96,
 		99,
 		121,
+		145,
 	],
 	CardEnums.CardType.ZIPPER: [
 		97,
@@ -514,6 +516,7 @@ const FOIL_CARDS : Dictionary = {
 	131: null,
 	139: null,
 	143: null,
+	145: null
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

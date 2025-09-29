@@ -69,9 +69,13 @@ func hand_empty() -> bool:
 func count_grave() -> int:
 	return cards_in_grave.size();
 
-func hand_size_reached() -> bool:
+func draw_until(count : int) -> void:
+	while !hand_size_reached(count):
+		draw_cards();
+
+func hand_size_reached(size : int = System.Rules.HAND_SIZE) -> bool:
 	return cards_in_hand.size() == System.Rules.MAX_HAND_SIZE \
-	or cards_in_hand.size() - count_negatives_in_hand() >= System.Rules.HAND_SIZE;
+	or cards_in_hand.size() - count_negatives_in_hand() >= size;
 
 func count_negatives_in_hand() -> int:
 	var count : int;

@@ -1,7 +1,9 @@
 {
-	"id": 142,
-	"name": "Rock",
-	"type": "rock",
+	"id": 145,
+	"name": "Sports Drink",
+	"type": "bedrock",
 	"keywords": [
+		"fresh-water",
+		"recycle"
 	]
 }

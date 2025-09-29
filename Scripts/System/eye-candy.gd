@@ -173,8 +173,8 @@ static func get_count_of_bullets_shot(card : CardData) -> int:
 			count *= 2;
 	elif card.has_pair():
 		count = 2;
-	if card.has_multiply() and count == 1 and card.multiply_advantage > 1:
-		count = min(8, card.multiply_advantage);
+	if card.has_multiply() and count == 1 and card.get_multiplier() > 1:
+		count = min(8, card.get_multiplier());
 	if count == 1 and CollectionEnums.TRIPLE_SHOOTING_CARDS.has(card.card_id):
 		count = 3;
 	return count;

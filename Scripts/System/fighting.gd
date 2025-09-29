@@ -9,9 +9,9 @@ static func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums
 		card.check_undead();
 	if enemy:
 		enemy.check_undead();
-	if you_have_negative_multiplier and !opponent_has_negative_multiplier:
+	if you_have_negative_multiplier and enemy and !opponent_has_negative_multiplier:
 		return opponent_wins if !is_reversed else you_win;
-	if opponent_has_negative_multiplier and !you_have_negative_multiplier:
+	if opponent_has_negative_multiplier and card and !you_have_negative_multiplier:
 		return you_win if !is_reversed else opponent_wins;
 	if you_have_negative_multiplier and opponent_has_negative_multiplier:
 		return tie;

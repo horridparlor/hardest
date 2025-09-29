@@ -1,7 +1,8 @@
 {
-	"id": 142,
-	"name": "Rock",
-	"type": "rock",
+	"id": 144,
+	"name": "Chopsticks",
+	"type": "scissor",
 	"keywords": [
+		"recycle"
 	]
 }

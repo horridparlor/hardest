@@ -225,7 +225,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 6,
 			"song": 14,
 			"backgrounds": [
-				2
+				2,
+				34
 			]
 		},
 		GameplayEnums.Character.LOTTE: {
@@ -279,7 +280,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 4,
 			"song": 7,
 			"backgrounds": [
-				14
+				14,
+				33
 			]
 		},
 		GameplayEnums.Character.KORVEK: {

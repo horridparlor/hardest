@@ -65,6 +65,8 @@ static func get_card_value(card : CardData, player : Player, opponent : Player, 
 				value += 2;
 			CardEnums.Keyword.EXTRA_SALTY:
 				value += 6 if player.points == 0 else 2;
+			CardEnums.Keyword.FRESH_WATER:
+				value += max(0, System.Rules.FRESH_WATER_CARDS - player.count_hand());
 			CardEnums.Keyword.GREED:
 				value += 10;
 			CardEnums.Keyword.HIGH_GROUND:

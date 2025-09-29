@@ -20,6 +20,7 @@ const MAX_BERSERKER_SHOTS : int = 99;
 const MAX_TIME_STOP_CARDS_PLAYED : int = 20;
 const AURA_FARMIN_COUNT : int = 3;
 const NOSTALGIA_DRAWS : int = 3;
+const FRESH_WATER_CARDS : int = 3;
 
 #Roguelike
 const STARTING_LIVES : int = 3;

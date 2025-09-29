@@ -200,7 +200,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 2,
 			"song": 1,
 			"backgrounds": [
-				11
+				11,
+				31
 			]
 		},
 		GameplayEnums.Character.PETE: {
@@ -324,7 +325,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 5,
 			"song": 6,
 			"backgrounds": [
-				6
+				6,
+				32
 			]
 		},
 		GameplayEnums.Character.SIMOONI: {
@@ -381,7 +383,8 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 1,
 			"song": 1,
 			"backgrounds": [
-				9
+				9,
+				30
 			]
 		},
 		GameplayEnums.Character.MERITUULI: {

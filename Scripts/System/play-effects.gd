@@ -337,6 +337,7 @@ static func trigger_positive(card : CardData, enemy : CardData, player : Player,
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);
 	var points_gained : int = player.gain_points(player.points * multiplier, false);
 	if points_gained == 0 or card.get_multiplier() < 0:
+		await System.wait(0.2 * Config.GAME_SPEED_MULTIPLIER);
 		if gameplay.get_card(card):
 			gameplay.get_card(card).recoil();
 		gameplay.gain_points_effect(player, true);

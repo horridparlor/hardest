@@ -1,10 +1,9 @@
 {
 	"id": 46,
 	"title": "AI test level",
-	"opponent": "Lotte",
-	"variant": 15,
+	"opponent": "Mark",
 	"deck": 46,
 	"deck2": 47,
 	"song": 2,
-	"background": 29
+	"background": 33
 }

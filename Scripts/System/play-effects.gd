@@ -337,6 +337,9 @@ static func trigger_positive(card : CardData, enemy : CardData, player : Player,
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);
 	var points_gained : int = player.gain_points(player.points * multiplier, false);
 	if points_gained == 0 or card.get_multiplier() < 0:
+		if gameplay.get_card(card):
+			gameplay.get_card(card).recoil();
+		gameplay.gain_points_effect(player, true);
 		return;
 	gameplay.wait_for_animation(card, GameplayEnums.AnimationType.POSITIVE, {
 		"points": points_gained,
@@ -433,6 +436,7 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 		if cards_taken.is_empty():
 			return;
 		cards_taken.shuffle();
+		cards_taken.sort_custom(func(card_a : CardData, card_b : CardData): return card_a.zone < card_b.zone);
 		other_card = cards_taken.back();
 		card.multiply_advantage *= other_card.get_multiplier();
 		card.value_increment += 1;

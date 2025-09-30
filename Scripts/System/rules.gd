@@ -5,6 +5,7 @@ const VICTORY_POINTS : int = 3000 if Config.AUTO_LEVEL > 0 else 3;
 const CLOSE_TO_WINNING_POINTS : float = 0.8;
 const MAX_LEVELS : int = 6;
 const MAX_KEYWORDS : int = 3;
+const RARE_RANDOM_CARD_CHANCE : int = 16;
 
 #Keyword specific
 const UNDEAD_LIMIT : int = 3;

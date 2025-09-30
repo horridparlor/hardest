@@ -1013,6 +1013,9 @@ func loser_dissolve_effect(card : CardData, enemy : CardData) -> void:
 		get_card(card).burn_effect();
 		burn_card(card);
 	get_card(card).dissolve();
+	get_card(card).loser_small_effect();
+	if get_card(enemy):
+		get_card(enemy).winner_big_effect();
 
 func electrocute_card(card : CardData) -> void:
 	if !get_card(card):

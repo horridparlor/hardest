@@ -127,6 +127,7 @@ static func play_tentacles_shooting_animation(card : CardData, enemy : CardData,
 		if do_zoom and i == 0 and !do_fade:
 			gameplay.zoom_to_node(tentacle);
 	gameplay_card.recoil(-enemy_position);
+	gameplay_card.winner_big_effect();
 	gameplay.move_card_front(gameplay_card);
 	return tentacles;
 
@@ -152,6 +153,7 @@ static func play_bullets_shooting_animation(card : CardData, enemy : CardData, g
 			gameplay.zoom_to_node(bullet);
 	if gameplay.get_card(card):
 		gameplay.get_card(card).recoil(enemy_position);
+		gameplay.get_card(card).winner_big_effect();
 	if card.shoots_wet_bullets():
 		System.AutoEffects.make_card_wet(enemy, gameplay, true, false);
 	return bullets;

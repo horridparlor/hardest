@@ -704,6 +704,7 @@ func turn_card_into_another(card : CardData) -> void:
 	player.make_card_alterations_permanent(card);
 	if card.has_auto_hydra():
 		player.build_hydra(card, true);
+	card.just_spawned_dont_discard = true;
 	update_alterations_for_card(card, true);
 	if get_card(card):
 		System.EyeCandy.card_shine_effect(get_card(card), self);

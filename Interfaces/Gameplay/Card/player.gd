@@ -277,6 +277,7 @@ func trigger_play_multipliers(card : CardData) -> void:
 
 func trigger_brotherhood(card : CardData) -> void:
 	card.multiply_advantage *= brotherhood_multiplier;
+	card.fix_multiply_advantage();
 	brotherhood_multiplier *= 2;
 
 func get_matching_type(new_type : CardEnums.CardType, base_type : CardEnums.CardType = last_type_played) -> CardEnums.CardType:

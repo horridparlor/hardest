@@ -45,6 +45,8 @@ extends Gameplay
 @onready var wet_wait_timer : Timer = $Timers/WetWaitTimer;
 @onready var animation_wait_timer : Timer = $Timers/AnimationWaitTimer;
 @onready var game_monitor_timer : Timer = $Timers/GameMonitorTimer;
+@onready var your_point_update_timer : Timer = $Timers/YourPointUpdateTimer;
+@onready var opponents_point_update_timer : Timer = $Timers/OpponentsPointUpdateTimer;
 
 @onready var your_points : Label = $Points/YourPoints;
 @onready var opponents_points : Label = $Points/OpponentsPoints;
@@ -175,6 +177,7 @@ func init_player(player : Player, controller : GameplayEnums.Controller, deck_id
 	player.point_goal = point_goal;
 	player.is_roguelike = level_data.is_roguelike;
 	point_meter.set_max_points(point_goal);
+	point_meter.set_points(0);
 	if do_start:
 		player.eat_decklist(deck_id, character_id);
 	for c in player.cards_in_deck:
@@ -406,6 +409,7 @@ func resolve_spying_whole_hand(opponent : Player) -> void:
 func inflict_dirt_on_card(card : CardData, player : Player) -> void:
 	var gameplay_card : GameplayCard = get_card(card);
 	card.multiply_advantage = abs(card.multiply_advantage) * -(pow(2, player.played_same_type_in_a_row + 1) if player.get_matching_type(card.card_type) != CardEnums.CardType.NULL else 1);
+	card.fix_multiply_advantage();
 	show_multiplier_bar(gameplay_card);
 	send_spied_card_back(gameplay_card, player);
 
@@ -1067,8 +1071,10 @@ func play_tie_sound() -> void:
 	play_point_sfx(TIE_SOUND_PATH);
 
 func update_point_visuals() -> void:
-	your_points.text = str(player_one.points);
-	opponents_points.text = str(player_two.points);
+	your_point_update_wait = POINT_UPDATE_STARTING_WAIT;
+	_on_your_point_update_timer_timeout();
+	opponents_point_update_wait = POINT_UPDATE_STARTING_WAIT;
+	_on_opponents_point_update_timer_timeout();
 	update_point_meter(player_one);
 	update_point_meter(player_two);
 	opponents_point_meter.mirror();
@@ -1510,3 +1516,39 @@ func _on_game_monitor_timer_timeout() -> void:
 		for c in player_one.cards_in_hand:
 			card = c;
 			card.zone = CardEnums.Zone.HAND;
+
+func _on_your_point_update_timer_timeout() -> void:
+	update_shown_points(player_one);
+
+func _on_opponents_point_update_timer_timeout() -> void:
+	update_shown_points(player_two);
+
+func update_shown_points(player : Player) -> void:
+	var is_player_one : bool = player.controller == GameplayEnums.Controller.PLAYER_ONE;
+	var timer : Timer = your_point_update_timer if is_player_one else opponents_point_update_timer;
+	var shown_points : float = your_shown_points if is_player_one else opponents_shown_points;
+	var wait_time : float = your_point_update_wait if is_player_one else opponents_point_update_wait;
+	var point_label : Label = your_points if is_player_one else opponents_points;
+	timer.stop();
+	if shown_points == player.points:
+		return;
+	if shown_points < player.points:
+		shown_points += 1;
+	else:
+		shown_points -= 1;
+	point_label.text = str(shown_points);
+	if shown_points != player.points:
+		wait_time = calculate_point_update_wait_error(wait_time);
+		timer.wait_time = wait_time * Config.GAME_SPEED_MULTIPLIER;
+	if is_player_one:
+		your_point_update_wait = wait_time;
+		your_shown_points = shown_points;
+	else:
+		opponents_point_update_wait = wait_time;
+		opponents_shown_points = shown_points;
+	if shown_points != player.points:
+		timer.start();
+
+func calculate_point_update_wait_error(wait_time : float) -> float:
+	wait_time /= POINT_UPDATE_SPEED_UP;
+	return clamp(wait_time + System.Random.direction() * POINT_UPDATE_WAIT_ERROR, MIN_POINT_UPDATE_WAIT, MAX_POINT_UPDATE_WAIT);

@@ -219,7 +219,7 @@ func has_alpha_werewolf() -> bool:
 	return has_keyword(CardEnums.Keyword.ALPHA_WEREWOLF);
 
 func is_aquatic() -> bool:
-	return has_ocean() or has_ocean_dweller() or has_fresh_water();
+	return has_ocean() or has_ocean_dweller() or has_tidal() or has_fresh_water();
 
 func has_aura_farming() -> bool:
 	return has_keyword(CardEnums.Keyword.AURA_FARMING);

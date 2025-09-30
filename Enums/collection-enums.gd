@@ -321,7 +321,6 @@ const ONLY_PLAYER_CARDS_TO_COLLECT : Dictionary = {
 
 const RANDOM_CARDS : Dictionary = {
 	CardEnums.CardType.ROCK: [
-		1,
 		6,
 		9,
 		12,
@@ -355,7 +354,6 @@ const RANDOM_CARDS : Dictionary = {
 		143,
 	],
 	CardEnums.CardType.PAPER: [
-		2,
 		7,
 		10,
 		13,
@@ -390,7 +388,6 @@ const RANDOM_CARDS : Dictionary = {
 		142,
 	],
 	CardEnums.CardType.SCISSORS: [
-		3,
 		8,
 		11,
 		14,
@@ -427,7 +424,6 @@ const RANDOM_CARDS : Dictionary = {
 		144,
 	],
 	CardEnums.CardType.GUN: [
-		4,
 		18,
 		19,
 		27,
@@ -464,30 +460,57 @@ const RANDOM_CARDS : Dictionary = {
 		95,
 	],
 	CardEnums.CardType.BEDROCK: [
-		96,
 		99,
 		121,
 		145,
 	],
 	CardEnums.CardType.ZIPPER: [
-		97,
 		100,
 		126,
 		127,
 		141,
 	],
 	CardEnums.CardType.ROCKSTAR: [
-		98,
 		105,
 		115,
 		139,
 	]
 }
 
+const RARE_RANDOM_CARDS : Dictionary = {
+	CardEnums.CardType.ROCK: [
+		1
+	],
+	CardEnums.CardType.PAPER: [
+		2,
+		76
+	],
+	CardEnums.CardType.SCISSORS: [
+		3
+	],
+	CardEnums.CardType.GUN: [
+		4
+	],
+	CardEnums.CardType.MIMIC: [],
+	CardEnums.CardType.GOD: [],
+	CardEnums.CardType.BEDROCK: [
+		96
+	],
+	CardEnums.CardType.ZIPPER: [
+		97
+	],
+	CardEnums.CardType.ROCKSTAR: [
+		98
+	]
+}
+
 static func get_random_card(card_type : CardEnums.CardType = CardEnums.CardType.NULL, avoid_id : int = 0) -> Dictionary:
 	var card_id : int;
+	var source : Array = RANDOM_CARDS[card_type];
+	if System.Random.chance(System.Rules.RARE_RANDOM_CARD_CHANCE):
+		source += RARE_RANDOM_CARDS[card_type];
 	while true:
-		card_id = System.Random.item(RANDOM_CARDS[card_type]);
+		card_id = System.Random.item(source);
 		if card_id != avoid_id:
 			break;
 	return System.Data.read_card(card_id);

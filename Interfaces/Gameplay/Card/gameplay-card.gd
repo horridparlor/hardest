@@ -8,6 +8,8 @@ signal visited(_self)
 
 const MIN_SCALE : float = 0.2;
 const MAX_SCALE :float = 1.0;
+const LOSER_SMALL_SCALE : float = 0.17;
+const WINNER_BIG_SCALE : float = 0.25;
 const DESPAWNING_SUCKING_DISTANCE : int = 500;
 const DESPAWNING_SUCKING_EVENT_HORIZON : int = 50;
 const MIN_SCALE_VECTOR : Vector2 = Vector2(MIN_SCALE, MIN_SCALE);
@@ -136,6 +138,8 @@ var is_dying : bool;
 var still_wait_time : float = -0.01;
 var visit_instance_id : int;
 var do_get_small : bool;
+var is_loser_small : bool;
+var is_winner_big : bool;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -311,12 +315,19 @@ func go_visit_point(position : Vector2) -> void:
 
 func update_scale(delta : float) -> void:
 	var new_scale : float;
+	var min_scale : float = MIN_SCALE;
+	if is_winner_big:
+		min_scale = WINNER_BIG_SCALE;
+	elif is_loser_small:
+		min_scale = LOSER_SMALL_SCALE;
 	if !is_scaling:
 		return;
-	new_scale = System.Scale.baseline(scale.x, (MAX_SCALE if is_focused else MIN_SCALE), delta);
+	new_scale = System.Scale.baseline(scale.x, (MAX_SCALE if is_focused else min_scale), delta);
 	if is_despawning and do_get_small:
 		new_scale = clamp(max(0, position.distance_to(goal_position) - DESPAWNING_SUCKING_EVENT_HORIZON) / DESPAWNING_SUCKING_DISTANCE, 0, MIN_SCALE);
 	scale = Vector2(new_scale, new_scale);
+	if is_winner_big and System.Vectors.equal(scale, Vector2(WINNER_BIG_SCALE, WINNER_BIG_SCALE)):
+		is_winner_big = false;
 
 func _on_focus_timer_timeout() -> void:
 	focus_timer.stop();
@@ -469,3 +480,11 @@ func rattlesnake_effect() -> void:
 	rattle.sprite.material = material;
 	if card_data and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO:
 		rattle.position.x *= -1;
+
+func loser_small_effect() -> void:
+	is_winner_big = false;
+	is_loser_small = true;
+
+func winner_big_effect() -> void:
+	is_loser_small = false;
+	is_winner_big = true;

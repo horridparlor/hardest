@@ -4,6 +4,8 @@ class_name LevelButton
 signal pressed(level_data);
 
 const CHARACTER_FACE_PATH : String = "res://Assets/Art/CharacterFace/%s.png";
+const CHARACTER_WINNING_FACE_PATH : String = "res://Assets/Art/CharacterFaceWinning/%s.png";
+const CHARACTER_LOSING_FACE_PATH : String = "res://Assets/Art/CharacterFaceLosing/%s.png";
 const BORDER_WIDTH : int = 4;
 const BORDER_RADIUS : int = 9;
 const LATEST_LEVEL_BG_COLOR : String = "#ff006b";

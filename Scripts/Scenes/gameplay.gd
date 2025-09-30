@@ -206,6 +206,12 @@ func update_character_faces() -> void:
 func load_face_texture(character_id : int) -> Resource:
 	return load(LevelButton.CHARACTER_FACE_PATH % character_id);
 
+func load_winning_face_texture(character_id : int) -> Resource:
+	return load(LevelButton.CHARACTER_WINNING_FACE_PATH % character_id);
+	
+func load_losing_face_texture(character_id : int) -> Resource:
+	return load(LevelButton.CHARACTER_LOSING_FACE_PATH % character_id);
+
 func translate_character_name(character_id : GameplayEnums.Character) -> String:
 	return GameplayEnums.CharacterShowcaseName[character_id] \
 		if GameplayEnums.CharacterShowcaseName.has(character_id) \
@@ -264,9 +270,27 @@ func start_game_over() -> void:
 	victory_banner.fade_in(2);
 	init_victory_banner_sprite();
 	if did_win:
+		_on_win();
 		System.EyeCandy.spawn_victory_poppets(self);
+	else:
+		_on_lose();
 	game_over_timer.wait_time = GAME_OVER_WAIT * System.game_speed_additive_multiplier;
 	game_over_timer.start();
+
+func _on_win() -> void:
+	your_face.texture = load_winning_face_texture(level_data.player_variant);
+	opponents_face.texture = load_losing_face_texture(level_data.opponent_variant);
+
+func _on_lose() -> void:
+	your_face.texture = load_losing_face_texture(level_data.player_variant);
+	give_opponent_winning_sprite();
+		
+
+func give_opponent_winning_sprite() -> void:
+	if opponent_has_winning_sprite:
+		return;
+	opponent_has_winning_sprite = true;
+	opponents_face.texture = load_winning_face_texture(level_data.opponent_variant);
 
 func init_victory_banner_sprite() -> void:
 	var texture : Resource = load("res://Assets/Art/VictoryBanners/%s.png" % ["champion" if did_win else "loser"]);
@@ -1092,6 +1116,10 @@ func update_point_visuals() -> void:
 	update_point_meter(player_one);
 	update_point_meter(player_two);
 	opponents_point_meter.mirror();
+	if player_two.is_close_to_winning():
+		give_opponent_winning_sprite();
+	elif opponent_has_winning_sprite:
+		opponents_face.texture = load_face_texture(level_data.opponent_variant);
  
 func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	player : Player, opponent : Player, points : int = 1

@@ -236,7 +236,8 @@ var your_shown_points : int;
 var opponents_shown_points : int;
 var your_point_update_wait : float = POINT_UPDATE_STARTING_WAIT;
 var opponents_point_update_wait : float = POINT_UPDATE_STARTING_WAIT;
-var animation_card : CardData
+var animation_card : CardData;
+var opponent_has_winning_sprite : bool;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

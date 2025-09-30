@@ -10,6 +10,8 @@ static func go_to_results(gameplay : Gameplay) -> void:
 		return gameplay.start_results();
 	if gameplay.cannot_go_to_results():
 		return gameplay.results_wait();
+	elif gameplay.is_waiting_for_animation_to_finnish:
+		gameplay.after_animation(true);
 	if gameplay.results_phase < 2:
 		if mimics_phase(gameplay):
 			return gameplay.results_wait();

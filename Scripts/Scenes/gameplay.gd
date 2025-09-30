@@ -722,6 +722,7 @@ func wait_for_animation(card : CardData, type : GameplayEnums.AnimationType, ani
 		after_animation(true, true);
 		is_counter_animation = true;
 	animation_instance_id = instance_id;
+	animation_card = card;
 	animation_data.type = type;
 	current_animation_type = type;
 	animations[instance_id] = animation_data;
@@ -925,7 +926,18 @@ func wait_opponent_playing() -> void:
 	opponents_play_wait.start();
 
 func cannot_go_to_results() -> bool:
-	return is_spying or is_waiting_for_animation_to_finnish or is_wet_wait_on;
+	return is_spying or is_wet_wait_on or is_waiting_for_animation();
+
+func is_waiting_for_animation() -> bool:
+	var card : CardData = animation_card;
+	var enemy : CardData;
+	if !is_waiting_for_animation_to_finnish:
+		return false;
+	if System.Instance.exists(card):
+		enemy = animation_card.controller.opponent.get_field_card();
+		if System.Instance.exists(enemy) and enemy.has_soul_robber() and System.Fighting.determine_winner(card, enemy) == GameplayEnums.Controller.PLAYER_TWO:
+			return false;
+	return true;
 
 func start_results() -> void:
 	round_results_timer.wait_time = ROUND_RESULTS_WAIT * System.game_speed_additive_multiplier;
@@ -1475,6 +1487,7 @@ func after_animation(is_forced : bool = false, is_being_countered : bool = false
 	is_waiting_for_animation_to_finnish = false;
 	animations.erase(animation_instance_id);
 	animation_instance_id = 0;
+	animation_card = null;
 	current_animation_type = GameplayEnums.AnimationType.NULL;
 	animation_sfx.stop();
 	match animation_data.type:

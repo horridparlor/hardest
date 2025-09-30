@@ -207,6 +207,8 @@ static func get_result_for_playing(card : CardData, player : Player, opponent : 
 		GameplayEnums.Controller.PLAYER_ONE:
 			if enemy.has_greed() and !player.is_close_to_winning():
 				return -2;
+			elif card.has_soul_hunter() and enemy.has_infinite_void():
+				value += 10;
 			return value * multiplier;
 		GameplayEnums.Controller.PLAYER_TWO:
 			if card.has_greed() and !opponent.is_close_to_winning():

@@ -29,6 +29,8 @@ const MAX_WIND_FORCE : float = 800;
 const MIN_UNWIND_SPEED : float = 0.1 * Config.GAME_SPEED;
 const MAX_UNWIND_SPEED : float = 0.4 * Config.GAME_SPEED;
 const MAX_SIZE : Vector2 = Vector2(180, 180);
+const DESPAWNING_SCALE : float = 0.6;
+const SCALE_DOWN_SPEED : float = 0.6;
 
 var instance_id : int;
 var goal_position : Vector2;
@@ -45,6 +47,7 @@ var unwind_speed : float;
 var goal_speed_multiplier : float = 1;
 var has_goal_node : bool;
 var goal_node : Node2D;
+var is_scaling_down : bool;
 
 func _ready() -> void:
 	instance_id = System.Random.instance_id();
@@ -76,18 +79,27 @@ func _process(delta : float) -> void:
 	position = System.Vectors.slide_towards(position, real_goal_position, speed  * goal_speed_multiplier * delta);
 	if !is_despawning and position.distance_to(goal_position) < (GOAL_DESPAWN_DISTANCE if has_goal_node else DESPAWN_DISTANCE):
 		is_despawning = true;
+		is_scaling_down = true;
 		is_revealing = false;
 		despawn_speed = System.random.randf_range(DESPAWN_MIN_SPEED, DESPAWN_MAX_SPEED);
 	if is_despawning:
-		modulate.a -= despawn_speed * delta * System.game_speed;
-		if modulate.a <= 0:
-			queue_free();
+		despawning_frame(delta);
 	if is_revealing:
 		modulate.a += reveal_speed * delta * System.game_speed;
 		if modulate.a >= 1:
 			modulate.a = 1;
 			is_revealing = false;
 	rotate_frame(original_position);
+
+func despawning_frame(delta : float) -> void:
+	if is_scaling_down:
+		scale -= delta * despawn_speed * Vector2(SCALE_DOWN_SPEED, SCALE_DOWN_SPEED);
+		if scale.x <= DESPAWNING_SCALE:
+			is_scaling_down = false;
+			scale = Vector2(DESPAWNING_SCALE, DESPAWNING_SCALE);
+	modulate.a -= despawn_speed * delta * System.game_speed;
+	if modulate.a <= 0:
+		queue_free();
 
 func rotate_frame(original_position : Vector2) -> void:
 	rotation_degrees += (position.x - original_position.x) * rotation_speed * SPEED_MULTIPLIER_BY_COLOR[color];

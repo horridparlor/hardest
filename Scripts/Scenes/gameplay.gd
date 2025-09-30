@@ -935,7 +935,7 @@ func is_waiting_for_animation() -> bool:
 		return false;
 	if System.Instance.exists(card):
 		enemy = animation_card.controller.opponent.get_field_card();
-		if System.Instance.exists(enemy) and enemy.has_soul_robber() and System.Fighting.determine_winner(card, enemy) == GameplayEnums.Controller.PLAYER_TWO:
+		if System.Instance.exists(enemy) and enemy.has_soul_hunter() and System.Fighting.determine_winner(card, enemy) == GameplayEnums.Controller.PLAYER_TWO:
 			return false;
 	return true;
 

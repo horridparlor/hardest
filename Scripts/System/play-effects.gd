@@ -340,8 +340,8 @@ static func trigger_positive(card : CardData, enemy : CardData, player : Player,
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);
 	var points_gained : int = player.gain_points(player.points * multiplier, false);
 	if points_gained == 0 or card.get_multiplier() < 0:
-		await System.wait(0.2 * Config.GAME_SPEED_MULTIPLIER);
-		if gameplay.get_card(card):
+		await play_movement_wait();
+		if gameplay.get_card(card) and card.is_on_the_field():
 			gameplay.get_card(card).recoil();
 		gameplay.gain_points_effect(player, true);
 		return;
@@ -460,7 +460,17 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 			gameplay.show_multiplier_bar(gameplay.get_card(card));
 
 static func trigger_fresh_water(card : CardData, player : Player, gameplay : Gameplay) -> void:
+	await play_movement_wait();
+	if !card.is_on_the_field() or gameplay.is_time_stopped:
+		return;
+	if gameplay.get_card(card):
+		gameplay.get_card(card).recoil();
 	player.draw_until(System.Rules.FRESH_WATER_CARDS);
 	gameplay.show_hand();
 	for card_in_hand in player.cards_in_hand:
 		System.AutoEffects.make_card_wet(card_in_hand, gameplay);
+
+static func play_movement_wait() -> void:
+	const min_trigger_wait : float = 0.37 * Config.GAME_SPEED_MULTIPLIER;
+	const max_trigger_wait : float = 0.45 * Config.GAME_SPEED_MULTIPLIER;
+	await System.wait_range(min_trigger_wait, max_trigger_wait);

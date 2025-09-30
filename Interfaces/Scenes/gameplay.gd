@@ -154,6 +154,12 @@ const WHOLE_HAND_SPY_MIN_WAIT : float = 0.21 * Config.GAME_SPEED_MULTIPLIER;
 const WHOLE_HAND_SPY_MAX_WAIT : float = 0.26 * Config.GAME_SPEED_MULTIPLIER;
 const DIRT_AFTER_WAIT : float = 0.5 * Config.GAME_SPEED_MULTIPLIER;
 
+const POINT_UPDATE_STARTING_WAIT : float = 0.036;
+const POINT_UPDATE_WAIT_ERROR : float = 0.00001;
+const MAX_POINT_UPDATE_WAIT : float = 0.04;
+const MIN_POINT_UPDATE_WAIT = 0.001;
+const POINT_UPDATE_SPEED_UP : float = 1.02;
+
 var player_one : Player = Player.new();
 var player_two : Player = Player.new();
 var cards : Dictionary;
@@ -226,6 +232,10 @@ var is_active : bool;
 var spy_stack : Array;
 var spying_instance_id : int;
 var settings_clicked_counter : int;
+var your_shown_points : int;
+var opponents_shown_points : int;
+var your_point_update_wait : float = POINT_UPDATE_STARTING_WAIT;
+var opponents_point_update_wait : float = POINT_UPDATE_STARTING_WAIT;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

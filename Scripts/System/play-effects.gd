@@ -120,6 +120,7 @@ static func trigger_coin_flip(card : CardData, gameplay : Gameplay) -> void:
 			break;
 		wins += 1;
 	card.multiply_advantage *= pow(2, wins);
+	card.fix_multiply_advantage();
 	if wins > 0:
 		show_coin_flip_effect(wins, card.controller.controller, gameplay);
 	else:
@@ -442,6 +443,7 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 		cards_taken.sort_custom(func(card_a : CardData, card_b : CardData): return card_a.zone < card_b.zone);
 		other_card = cards_taken.back();
 		card.multiply_advantage *= other_card.get_multiplier();
+		card.fix_multiply_advantage();
 		card.value_increment += 1;
 		gameplay_card = System.CardManager.spawn_card(other_card, gameplay);
 		gameplay.loser_dissolve_effect(other_card, card);
@@ -449,6 +451,7 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 			other_card.controller.discard_from_hand(other_card);
 			if gameplay.get_card(other_card):
 				gameplay._on_card_released(gameplay.get_card(other_card), true);
+			gameplay.show_hand();
 		elif other_card.is_on_the_field():
 			other_card.controller.send_from_field_to_grave(other_card);
 		if System.Instance.exists(gameplay_card) and gameplay.get_card(card):

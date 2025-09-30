@@ -18,6 +18,8 @@ const DEFAULT_DATA : Dictionary = {
 	"variant": "regular",
 	"is_holographic": false
 }
+const MAX_MULTIPLY_ADVANTAGE : int = 99999999;
+const MIN_MULTIPLY_ADVANTAGE : int = -9999999;
 
 var default_type : CardEnums.CardType
 
@@ -564,3 +566,9 @@ func is_in_deck() -> bool:
 
 func get_multiplier() -> int:
 	return multiply_advantage * System.Fighting.get_card_continuous_advantage(self);
+
+func fix_multiply_advantage() -> void:
+	if multiply_advantage > MAX_MULTIPLY_ADVANTAGE:
+		multiply_advantage = MAX_MULTIPLY_ADVANTAGE;
+	elif multiply_advantage < MIN_MULTIPLY_ADVANTAGE:
+		multiply_advantage = MIN_MULTIPLY_ADVANTAGE;

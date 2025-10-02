@@ -913,7 +913,7 @@ func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = 
 	spied_card.visit_instance_id = spying_instance_id;
 	if card.has_victim():
 		play_rattlesnake_sound();
-		spied_card.rattlesnake_effect();
+		spied_card.rattle_effect();
 
 func opponents_turn() -> void:
 	var card : CardData;

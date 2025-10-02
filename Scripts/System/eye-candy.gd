@@ -184,7 +184,7 @@ static func get_count_of_bullets_shot(card : CardData) -> int:
 static func victim_effect(card : CardData, gameplay : Gameplay) -> void:
 	gameplay.play_rattlesnake_sound();
 	if gameplay.get_card(card):
-		gameplay.get_card(card).rattlesnake_effect();
+		gameplay.get_card(card).rattle_effect();
 
 static func card_shine_effect(card : GameplayCard, gameplay : Gameplay) -> void:
 	card.wet_effect(get_shine_effect_color(card.card_data.card_type));

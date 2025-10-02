@@ -472,7 +472,7 @@ func update_emp_visuals() -> void:
 func die() -> void:
 	pass;
 
-func rattlesnake_effect() -> void:
+func rattle_effect() -> void:
 	if System.Instance.exists(rattle):
 		return;
 	rattle = System.Instance.load_child(System.Paths.RATTLE, self);

@@ -604,7 +604,7 @@ var KeywordHints : Dictionary = {
 	Keyword.MULTIPLY : "Double multiplier for each SAME_TYPE played in a row.",
 	Keyword.MUSHY : "Loses to any rock.",
 	Keyword.NEGATIVE : "While in hand, increases hand size by 1.",
-	Keyword.NOSTALGIA : "Discard your hand. Add 3 basic cards with pick-up to your hand.",
+	Keyword.NOSTALGIA : "Add 3 basic cards with pick-up to your hand.",
 	Keyword.NOVEMBER : "Defeats any nut. [i](Resets opponent's nut.)[/i]",
 	Keyword.NUT : "Point for every turn since your last nut.",
 	Keyword.NUT_COLLECTOR : "Shuffle 3 nuts into your deck.",

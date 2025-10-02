@@ -180,7 +180,6 @@ func get_nostalgic(card : CardData) -> void:
 		extra_chance += 1;
 	if card.has_rare_stamp():
 		extra_chance += 1;
-	discard_hand();
 	for i in range(System.Rules.NOSTALGIA_DRAWS):
 		if !draw_a_basic(used_types, extra_chance, [CardEnums.Keyword.PICK_UP]):
 			break;
@@ -481,7 +480,6 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	card.zone = CardEnums.Zone.GRAVE;
 	card.multiply_advantage = 1;
 	card.value_increment = 0;
-	card.set_card_type(card.default_type);
 	card.turns_in_grave = 0;
 	recycle_cards.erase(card);
 	soon_to_be_recycle_cards.append(card);
@@ -495,7 +493,7 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 func purge_undead_materials(card_type : CardEnums.CardType) -> void:
 	var cards_to_purge : int = System.Rules.UNDEAD_LIMIT;
 	for card in cards_in_grave.duplicate():
-		if get_matching_type(card.card_type, card_type) != CardEnums.CardType.NULL:
+		if get_matching_type(card.default_type, card_type) != CardEnums.CardType.NULL:
 			purge_from_grave(card);
 			cards_to_purge -= 1;
 			if cards_to_purge == 0:

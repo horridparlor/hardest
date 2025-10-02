@@ -239,11 +239,7 @@ static func draw_horse_card(player : Player, gameplay : Gameplay) -> void:
 		gameplay.show_hand();
 
 static func trigger_nostalgia(card : CardData, player : Player, gameplay : Gameplay) -> void:
-	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();
 	player.get_nostalgic(card);
-	for c in cards_where_in_hand:
-		if gameplay.get_card(c):
-			gameplay.get_card(c).despawn();
 	gameplay.show_hand();
 
 static func trigger_ocean(card : CardData, gameplay : Gameplay) -> void:

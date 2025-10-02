@@ -138,7 +138,7 @@ static func nut_players_nuts(player : Player, opponent : Player, gameplay : Game
 static func nut_with_card(card : CardData, enemy : CardData, player : Player, gameplay : Gameplay) -> bool:
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);
 	if card.multiply_advantage < 0:
-		multiplier *= -1;
+		multiplier *= 0;
 		if gameplay.get_card(card):
 			gameplay.get_card(card).recoil(gameplay.get_card(card).position);
 		gameplay.gain_points_effect(player, true);

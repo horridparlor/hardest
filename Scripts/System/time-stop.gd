@@ -75,6 +75,27 @@ static func after_time_stop(gameplay : Gameplay) -> void:
 		bullet.speed_up();
 	gameplay.time_stopped_bullets = [];
 	gameplay.pre_results_timer.start();
+	check_if_rattle_again(gameplay);
+
+static func check_if_rattle_again(gameplay : Gameplay) -> void:
+	var card : CardData = gameplay.player_one.get_field_card();
+	var enemy : CardData = gameplay.player_two.get_field_card();
+	var winner : GameplayEnums.Controller;
+	var winning_card : CardData;
+	if !System.Instance.exists(card) or !System.Instance.exists(enemy):
+		return
+	winner = System.Fighting.determine_winner(card, enemy);
+	if winner == GameplayEnums.Controller.PLAYER_ONE:
+		winning_card = card;
+	elif winner == GameplayEnums.Controller.PLAYER_TWO:
+		winning_card = enemy;
+	else:
+		return;
+	if winning_card.has_victim() and gameplay.get_card(winning_card):
+		gameplay.play_rattlesnake_sound();
+		gameplay.get_card(winning_card).rattle_effect();
+	
+		
 
 static func time_stop_frame(delta : float, gameplay : Gameplay) -> void:
 	if !gameplay.is_stopping_time and !gameplay.is_accelerating_time:

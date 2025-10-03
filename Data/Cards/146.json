@@ -1,7 +1,9 @@
 {
-	"id": 142,
-	"name": "Rock",
-	"type": "rock",
+	"id": 146,
+	"name": "Glow Sticks",
+	"type": "rockstar",
 	"keywords": [
+		"celebrate",
+		"pair"
 	]
 }

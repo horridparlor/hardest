@@ -195,6 +195,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			127,
 			131,
 			141,
+			146,
 		],
 		Rarity.SUPER_RARE: [
 		]
@@ -245,6 +246,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			128,
 			139,
 			141,
+			146,
 		],
 		Rarity.SUPER_RARE: [
 		]
@@ -474,6 +476,7 @@ const RANDOM_CARDS : Dictionary = {
 		105,
 		115,
 		139,
+		146,
 	]
 }
 
@@ -539,7 +542,8 @@ const FOIL_CARDS : Dictionary = {
 	131: null,
 	139: null,
 	143: null,
-	145: null
+	145: null,
+	146: null
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {

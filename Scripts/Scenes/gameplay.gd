@@ -1125,6 +1125,8 @@ func update_point_visuals() -> void:
 	update_point_meter(player_one);
 	update_point_meter(player_two);
 	opponents_point_meter.mirror();
+	if has_game_ended:
+		return;
 	if player_two.is_close_to_winning():
 		give_opponent_winning_sprite();
 	elif opponent_has_winning_sprite:

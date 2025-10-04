@@ -70,7 +70,7 @@ static func trigger_werewolf(card : CardData, gameplay : Gameplay) -> void:
 	gameplay.update_alterations_for_card(card);
 
 static func trigger_ocean_dweller(card : CardData, player : Player, gameplay : Gameplay) -> void:
-	var points : int = System.Fighting.calculate_base_points(card, null, true, false);
+	var points : int = System.Fighting.calculate_base_points(card, null, true, false) * abs(card.get_multiplier());
 	if card.multiply_advantage < 0:
 		points *= -1;
 	player.gain_points(points);

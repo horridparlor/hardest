@@ -565,7 +565,7 @@ func is_in_deck() -> bool:
 	return is_in_zone(CardEnums.Zone.DECK);
 
 func get_multiplier() -> int:
-	return multiply_advantage * System.Fighting.get_card_continuous_advantage(self);
+	return stopped_time_advantage * multiply_advantage * System.Fighting.get_card_continuous_advantage(self);
 
 func fix_multiply_advantage() -> void:
 	if multiply_advantage > MAX_MULTIPLY_ADVANTAGE:

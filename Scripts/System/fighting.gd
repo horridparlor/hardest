@@ -1,3 +1,8 @@
+static func determine_winner_after_playing(card : CardData, enemy : CardData, player : Player, opponent : Player, gameplay : Gameplay) -> GameplayEnums.Controller:
+	card = System.EnemyAI.get_card_truth(card, enemy, player, gameplay, false);
+	enemy = System.EnemyAI.get_card_truth(enemy, card, opponent, gameplay, true);
+	return determine_winner(card, enemy);
+
 static func determine_winner(card : CardData, enemy : CardData) -> GameplayEnums.Controller:
 	var you_win : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_ONE;
 	var opponent_wins : GameplayEnums.Controller = GameplayEnums.Controller.PLAYER_TWO;
@@ -248,15 +253,10 @@ static func calculate_base_points(card : CardData, enemy : CardData, did_win : b
 	if enemy and enemy.has_champion():
 		points *= 2;
 	if add_advantages:
-		points *= get_card_continuous_advantage(card);
-		if card and card.stopped_time_advantage > 1:
-			points *= card.stopped_time_advantage;
-		if card and abs(card.multiply_advantage) > 1:
-			points *= abs(card.multiply_advantage);
-		if enemy and enemy.multiply_advantage != 0:
-			points *= abs(enemy.multiply_advantage)
+		if card:
+			points *= abs(card.get_multiplier());
 		if enemy:
-			points *= abs(get_card_continuous_advantage(enemy));
+			points *= abs(enemy.get_multiplier());
 	if !did_win:
 		return points;
 	if card and card.has_rare_stamp():

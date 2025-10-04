@@ -114,8 +114,17 @@ func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	
 	if !do_start:
 		_on_points_click_timer_timeout();
+		clear_points();
 		return;
 	start_first_round();
+
+func clear_points() -> void:
+	your_points.text = str(0);
+	your_point_meter.reset();
+	your_point_update_timer.stop();
+	opponents_points.text = str(0);
+	opponents_point_meter.reset();
+	opponents_point_update_timer.stop();
 
 func init_title() -> void:
 	var tutorial_texture : Resource;

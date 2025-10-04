@@ -281,7 +281,8 @@ func get_opponents() -> Dictionary:
 			"song": 7,
 			"backgrounds": [
 				14,
-				33
+				33,
+				35
 			]
 		},
 		GameplayEnums.Character.KORVEK: {
@@ -305,6 +306,7 @@ func get_opponents() -> Dictionary:
 			"backgrounds": [
 				5,
 				26,
+				36
 			]
 		},
 		GameplayEnums.Character.RAISEN: {
@@ -418,7 +420,7 @@ func get_opponents() -> Dictionary:
 			"song": 3,
 			"backgrounds": [
 				4,
-				25,
+				25
 			]
 		},
 		GameplayEnums.Character.AGENT: {

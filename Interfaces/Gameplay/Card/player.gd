@@ -479,6 +479,7 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 		return;
 	card.zone = CardEnums.Zone.GRAVE;
 	card.multiply_advantage = 1;
+	card.stopped_time_advantage = 1;
 	card.value_increment = 0;
 	card.turns_in_grave = 0;
 	recycle_cards.erase(card);

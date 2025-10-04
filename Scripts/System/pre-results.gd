@@ -136,7 +136,7 @@ static func nut_players_nuts(player : Player, opponent : Player, gameplay : Game
 	return false;
 
 static func nut_with_card(card : CardData, enemy : CardData, player : Player, gameplay : Gameplay) -> bool:
-	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false);
+	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true, false) * abs(card.get_multiplier());
 	if card.multiply_advantage < 0:
 		multiplier *= 0;
 		if gameplay.get_card(card):
@@ -198,7 +198,7 @@ static func play_recycles(player : Player, opponent : Player, gameplay : Gamepla
 	var source : Array = passive_source if card and card.has_recycle() else active_source;
 	if source.is_empty() or System.Fighting.no_reason_to_counterspell(player, opponent):
 		return false;
-	source = source.filter(func(card : CardData): return ![winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(card, enemy)));
+	source = source.filter(func(card : CardData): return ![winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner_after_playing(card, enemy, player, opponent, gameplay)));
 	source.sort_custom(
 		func(card_a : CardData, card_b : CardData):
 			return System.Fighting.determine_points_result(card_a, enemy, player, opponent) < System.Fighting.determine_points_result(card_b, enemy, player, opponent);
@@ -262,7 +262,7 @@ static func play_digitals(player : Player, opponent : Player, gameplay : Gamepla
 			return System.Fighting.determine_points_result(card_a, enemy, player, opponent) < System.Fighting.determine_points_result(card_b, enemy, player, opponent);
 	);
 	digital_to_play = cards.back();
-	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(digital_to_play, enemy)):
+	if [winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner_after_playing(digital_to_play, enemy, player, opponent, gameplay)):
 		return false;
 	gameplay.play_digital_sound();
 	gameplay.replace_played_card(digital_to_play);
@@ -306,7 +306,7 @@ static func play_shadows(player : Player, opponent : Player, gameplay : Gameplay
 		return false;
 	for i in range(player.count_deck()):
 		var c : CardData = player.cards_in_deck[player.count_deck() - (1 + i)];
-		if ![winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner(c, enemy)):
+		if ![winner, GameplayEnums.Controller.PLAYER_TWO].has(System.Fighting.determine_winner_after_playing(c, enemy, player, opponent, gameplay)):
 			if (card and card.has_shadow_replace()) or c.has_shadow_replace():
 				shadow_card = c;
 				break;

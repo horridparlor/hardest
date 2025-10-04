@@ -120,3 +120,14 @@ func _on_negative_led_timer_timeout() -> void:
 
 func mirror() -> void:
 	goal_points.position.x = -goal_points.size.x + 20;
+
+func reset_leds() -> void:
+	extra_leds_to_light = 0;
+	extras_lit = 0;
+	negative_leds_to_light = 0;
+	negatives_lit = 0;
+	for led in negative_leds:
+		led.queue_free();
+	for led in leds:
+		if !get_point_leds().has(led):
+			led.queue_free();

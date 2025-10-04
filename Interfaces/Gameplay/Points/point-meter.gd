@@ -58,3 +58,9 @@ func get_nodes() -> Array:
 
 func mirror() -> void:
 	pass;
+
+func reset() -> void:
+	reset_leds();
+
+func reset_leds() -> void:
+	pass;

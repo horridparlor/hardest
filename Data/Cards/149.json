@@ -1,7 +1,9 @@
 {
-	"id": 142,
-	"name": "Rock",
+	"id": 149,
+	"name": "Ant Lion",
 	"type": "rock",
 	"keywords": [
+		"buried",
+		"lich-king"
 	]
 }

@@ -445,7 +445,7 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 		other_card = cards_taken.back();
 		card.multiply_advantage *= other_card.get_multiplier();
 		card.fix_multiply_advantage();
-		card.value_increment += 1;
+		card.value_increment += other_card.get_base_value();
 		gameplay_card = System.CardManager.spawn_card(other_card, gameplay);
 		gameplay.loser_dissolve_effect(other_card, card);
 		if other_card.is_in_hand():

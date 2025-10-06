@@ -39,7 +39,7 @@ static func spawn_card(card_data : CardData, gameplay : Gameplay) -> GameplayCar
 	gameplay.update_alterations_for_card(card_data);
 	if gameplay.cards.has(card_data.instance_id):
 		return gameplay.cards[card_data.instance_id];
-	elif card_data.controller == gameplay.player_two and System.Instance.exists(gameplay.opponents_field_card) and System.Instance.exists(card_data) and System.Instance.exists(gameplay.opponents_field_card) and card_data.instance_id == gameplay.opponents_field_card.card_data.instance_id:
+	elif card_data.controller == gameplay.player_two and System.Instance.exists(gameplay.opponents_field_card) and System.Instance.exists(card_data) and System.Instance.exists(gameplay.opponents_field_card) and System.Instance.exists(gameplay.opponents_field_card.card_data) and card_data.instance_id == gameplay.opponents_field_card.card_data.instance_id:
 		gameplay.opponents_field_card.is_despawning = false;
 		return gameplay.opponents_field_card;
 	var card : GameplayCard = System.Instance.load_child(System.Paths.CARD, gameplay.cards_layer if gameplay.active_card == null else gameplay.cards_layer2);

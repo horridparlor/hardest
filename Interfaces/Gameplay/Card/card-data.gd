@@ -575,3 +575,11 @@ func fix_multiply_advantage() -> void:
 		multiply_advantage = MAX_MULTIPLY_ADVANTAGE;
 	elif multiply_advantage < MIN_MULTIPLY_ADVANTAGE:
 		multiply_advantage = MIN_MULTIPLY_ADVANTAGE;
+
+func get_base_value() -> int:
+	var base_value : int = 1;
+	if is_holographic:
+		base_value *= 2;
+	if has_rare_stamp():
+		base_value *= 2;
+	return base_value;

@@ -129,5 +129,7 @@ func reset_leds() -> void:
 	for led in negative_leds:
 		led.queue_free();
 	for led in leds:
+		if !System.Instance.exists(led):
+			return;
 		if !get_point_leds().has(led):
 			led.queue_free();

@@ -1,5 +1,6 @@
 extends Gameplay
 
+@onready var behind_cards_layer : Node2D = $BehindCardsLayer;
 @onready var cards_layer : Node2D = $CardsLayer;
 @onready var cards_layer2 : Node2D = $CardsLayer2;
 @onready var above_cards_layer : Node2D = $AboveCardsLayer;
@@ -1611,3 +1612,17 @@ func update_shown_points(player : Player) -> void:
 func calculate_point_update_wait_error(wait_time : float) -> float:
 	wait_time /= POINT_UPDATE_SPEED_UP;
 	return clamp(wait_time + (System.Random.direction() * POINT_UPDATE_WAIT_ERROR if wait_time > POINT_UPDATE_WAIT_ERROR else 0), MIN_POINT_UPDATE_WAIT, MAX_POINT_UPDATE_WAIT);
+
+func _on_spawn_lich_king_shadow(card : GameplayCard) -> void:
+	if System.Instance.exists(lich_king_shadow):
+		return;
+	play_lich_king_sound();
+	lich_king_shadow = System.Instance.load_child(System.Paths.LICH_KING_SHADOW, behind_cards_layer);
+	card.lich_king_shadow = lich_king_shadow;
+	lich_king_shadow.position = VISIT_POSITION;
+	lich_king_shadow.position.x = card.goal_position.x;
+	if card.card_data.controller == player_two:
+		lich_king_shadow.scale.x *= -1;
+
+func play_lich_king_sound() -> void:
+	play_throwable_sfx(LICH_KING_SOUND_PATH);

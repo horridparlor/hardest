@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://hbl4ypspnopp"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Card/lich-king-shadow.gd" id="1_66sje"]
+[ext_resource type="Texture2D" uid="uid://f5mft2vsdcmp" path="res://Assets/Art/CardEffects/Throwables/lich-king-shadow.png" id="2_b28my"]
+
+[node name="LichKingShadow" type="Node2D"]
+script = ExtResource("1_66sje")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_b28my")

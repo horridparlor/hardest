@@ -19,6 +19,17 @@ var grave_type_counts : Dictionary = {
 	CardEnums.CardType.ZIPPER: 0,
 	CardEnums.CardType.ROCKSTAR: 0
 }
+var purge_type_counts : Dictionary = {
+	CardEnums.CardType.ROCK: 0,
+	CardEnums.CardType.PAPER: 0,
+	CardEnums.CardType.SCISSORS: 0,
+	CardEnums.CardType.GUN: 0,
+	CardEnums.CardType.MIMIC: 0,
+	CardEnums.CardType.GOD: 0,
+	CardEnums.CardType.BEDROCK: 0,
+	CardEnums.CardType.ZIPPER: 0,
+	CardEnums.CardType.ROCKSTAR: 0
+}
 var character : GameplayEnums.Character;
 var controller : GameplayEnums.Controller;
 var opponent : Player;
@@ -487,9 +498,13 @@ func add_to_grave(card : CardData, did_win : bool = false) -> void:
 	if did_win and card.has_undead(true):
 		purge_undead_materials(card.default_type);
 	if card.is_burned:
+		purge_card(card);
 		return;
 	cards_in_grave.append(card);
 	grave_type_counts[card.default_type] += 1;
+
+func purge_card(card : CardData) -> void:
+	purge_type_counts[card.default_type] += 1;
 
 func purge_undead_materials(card_type : CardEnums.CardType) -> void:
 	var cards_to_purge : int = System.Rules.UNDEAD_LIMIT;
@@ -502,6 +517,7 @@ func purge_undead_materials(card_type : CardEnums.CardType) -> void:
 
 func purge_from_grave(card : CardData) -> void:
 	remove_from_grave(card);
+	purge_card(card);
 	card.queue_free();
 
 func remove_from_grave(card : CardData) -> void:
@@ -513,15 +529,21 @@ func remove_from_grave(card : CardData) -> void:
 func is_close_to_winning() -> bool:
 	return points >= System.Rules.CLOSE_TO_WINNING_POINTS * point_goal;
 
-func count_grave_type(card_type : CardEnums.CardType, instance_id_of_replacement : int = 0) -> int:
+func count_grave_type(card_type : CardEnums.CardType, instance_id_of_replacement : int = 0, count_purge_too : bool = false) -> int:
 	var added_count : int = get_added_count_from_replacing_field(instance_id_of_replacement, card_type);
 	var grave_count : int = grave_type_counts[card_type];
+	if count_purge_too:
+		grave_count += purge_type_counts[card_type];
 	if CardEnums.BASIC_COLORS.has(card_type):
 		for type in CardData.expand_type(card_type):
 			grave_count += grave_type_counts[type];
+			if count_purge_too:
+				grave_count += purge_type_counts[type];
 	elif CardEnums.is_multi_type(card_type):
 		for type in CardData.break_card_type(card_type):
 			grave_count += grave_type_counts[type];
+			if count_purge_too:
+				grave_count += purge_type_counts[type];
 	return added_count + grave_count;
 
 func get_added_count_from_replacing_field(instance_id : int, card_type : CardEnums.CardType) -> int:

@@ -99,6 +99,8 @@ const CARDS_TO_COLLECT : Dictionary = {
 			72,
 			82,
 			83,
+			147,
+			148,
 		],
 		Rarity.RARE: [
 			41,
@@ -224,6 +226,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			133,
 			136,
 			144,
+			147,
 		],
 		Rarity.RARE: [
 			14,
@@ -388,6 +391,7 @@ const RANDOM_CARDS : Dictionary = {
 		135,
 		137,
 		142,
+		148,
 	],
 	CardEnums.CardType.SCISSORS: [
 		8,
@@ -424,6 +428,7 @@ const RANDOM_CARDS : Dictionary = {
 		133,
 		136,
 		144,
+		147,
 	],
 	CardEnums.CardType.GUN: [
 		18,
@@ -563,4 +568,5 @@ const TRIPLE_SHOOTING_CARDS : Dictionary = {
 
 const TURRET_SHOOTING_CARDS : Dictionary = {
 	134: null,
+	148: null
 }

@@ -238,7 +238,15 @@ static func get_card_continuous_advantage(card : CardData) -> int:
 		advantage *= pow(2, card.controller.count_hand_without(card));
 	if card.has_multiply() and card.controller.get_matching_type(card.card_type, card.controller.last_type_played) != CardEnums.CardType.NULL:
 		advantage *= pow(2, card.controller.played_same_type_in_a_row);
+	advantage *= get_lich_king_advantage(card);
 	return advantage;
+
+static func get_lich_king_advantage(card : CardData) -> int:
+	var cards_in_grave_and_purge : int;
+	if !card.has_lich_king():
+		return 1;
+	cards_in_grave_and_purge = card.controller.count_grave_type(card.default_type, card.instance_id, true);
+	return pow(2, int(cards_in_grave_and_purge / 3));
 
 static func calculate_base_points(card : CardData, enemy : CardData, did_win : bool = false, add_advantages : bool = true) -> int:
 	var points : int = 1;

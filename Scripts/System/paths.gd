@@ -9,6 +9,7 @@ const DIVINE_JUDGMENT : String = "res://Prefabs/Gameplay/Card/divine-judgment.ts
 const EVENT_ART : String = "res://Assets/Art/EventArt/%s.png";
 const GLOW_STICKS : String = "res://Prefabs/Gameplay/Card/glow-sticks.tscn";
 const LEVEL_BUTTON : String = "res://Prefabs/Nexus/Buttons/level-button.tscn";
+const LICH_KING_SHADOW : String = "res://Prefabs/Gameplay/Card/lich-king-shadow.tscn";
 const MENACING_EFFECT : String = "res://Prefabs/Gameplay/Card/menacing-effect.tscn";
 const MULTIPLIER_BAR : String = "res://Prefabs/Gameplay/Card/multiplier-bar.tscn";
 const NEXUS : String = "res://Prefabs/Scenes/nexus.tscn";

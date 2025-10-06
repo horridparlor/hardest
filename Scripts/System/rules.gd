@@ -1,7 +1,7 @@
 const DECK_SIZE : int = 15;
 const HAND_SIZE : int = 3;
 const MAX_HAND_SIZE : int = 10;
-const VICTORY_POINTS : int = 3 if Config.AUTO_LEVEL > 0 else 3;
+const VICTORY_POINTS : int = 3000 if Config.AUTO_LEVEL > 0 else 3;
 const CLOSE_TO_WINNING_POINTS : float = 0.8;
 const MAX_LEVELS : int = 6;
 const MAX_KEYWORDS : int = 3;

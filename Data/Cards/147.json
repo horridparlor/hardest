@@ -1,7 +1,9 @@
 {
-	"id": 142,
-	"name": "Rock",
-	"type": "rock",
+	"id": 147,
+	"name": "Centipede",
+	"type": "scissor",
 	"keywords": [
+		"lich-king",
+		"rust"
 	]
 }

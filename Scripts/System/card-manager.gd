@@ -53,6 +53,7 @@ static func spawn_card(card_data : CardData, gameplay : Gameplay) -> GameplayCar
 	card.released.connect(gameplay._on_card_released);
 	card.despawned.connect(gameplay._on_card_despawned);
 	card.visited.connect(gameplay._on_card_visited);
+	card.spawn_lich_king_shadow.connect(gameplay._on_spawn_lich_king_shadow);
 	if gameplay.is_time_stopped:
 		gameplay.add_time_stop_shader(card);
 	card.show_multiplier_bar(0);

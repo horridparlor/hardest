@@ -5,6 +5,7 @@ signal pressed(_self)
 signal released(_self)
 signal despawned(_self)
 signal visited(_self)
+signal spawn_lich_king_shadow(_self)
 
 const MIN_SCALE : float = 0.2;
 const MAX_SCALE :float = 1.0;
@@ -128,6 +129,7 @@ var is_out_ocean : bool;
 var shine_star : ShineStar;
 var rattle : Rattle;
 var glow_sticks : GlowSticks;
+var lich_king_shadow : LichKingShadow;
 
 var dissolve_value : float;
 var is_dissolving : bool;
@@ -492,6 +494,11 @@ func celebrate_effect() -> void:
 	glow_sticks.set_material_for_sprites(material);
 	if card_data and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO:
 		glow_sticks.scale.x *= -1;
+
+func lich_king_effect() -> void:
+	if System.Instance.exists(lich_king_shadow):
+		return;
+	emit_signal("spawn_lich_king_shadow", self);
 
 func loser_small_effect() -> void:
 	is_winner_big = false;

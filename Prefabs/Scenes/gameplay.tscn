@@ -582,6 +582,8 @@ theme_override_font_sizes/bold_font_size = 64
 bbcode_enabled = true
 text = "[b][i]Buried[/i][/b] [i]–[/i] This card is played face-down [b]The Gun[/b]."
 
+[node name="BehindCardsLayer" type="Node2D" parent="."]
+
 [node name="CardsLayer" type="Node2D" parent="."]
 
 [node name="AboveCardsLayer" type="Node2D" parent="."]

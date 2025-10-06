@@ -1,7 +1,10 @@
 {
-	"id": 142,
-	"name": "Rock",
-	"type": "rock",
+	"id": 148,
+	"name": "Handicraft",
+	"type": "paper",
 	"keywords": [
-	]
+		"undead",
+		"lich-king"
+	],
+	"bullet": 34
 }

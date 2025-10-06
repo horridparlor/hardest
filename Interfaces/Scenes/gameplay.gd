@@ -93,6 +93,7 @@ const PERFECT_CLONE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwable
 const CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/contagious-sound.wav";
 const PERFECT_CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/perfect-contagious-sound.wav";
 const CELEBRATE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/celebrate-sound.wav";
+const LICH_KING_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/lich-king-sound.wav";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);
 const LEDS_PER_COLUMN : int = 19;
@@ -239,6 +240,7 @@ var your_point_update_wait : float = POINT_UPDATE_STARTING_WAIT;
 var opponents_point_update_wait : float = POINT_UPDATE_STARTING_WAIT;
 var animation_card : CardData;
 var opponent_has_winning_sprite : bool;
+var lich_king_shadow : LichKingShadow;
 
 func init(level_data_ : LevelData, do_start : bool = true) -> void:
 	pass;

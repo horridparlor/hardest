@@ -21,6 +21,8 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 				draw_horse_card(player, gameplay);
 			CardEnums.Keyword.INFLUENCER:
 				influence_opponent(opponent, card.card_type, gameplay);
+			CardEnums.Keyword.LICH_KING:
+				trigger_lich_king(card, gameplay);
 			CardEnums.Keyword.NOSTALGIA:
 				trigger_nostalgia(card, player, gameplay);
 			CardEnums.Keyword.NOVEMBER:
@@ -473,3 +475,13 @@ static func play_movement_wait() -> void:
 	const min_trigger_wait : float = 0.37 * Config.GAME_SPEED_MULTIPLIER;
 	const max_trigger_wait : float = 0.45 * Config.GAME_SPEED_MULTIPLIER;
 	await System.wait_range(min_trigger_wait, max_trigger_wait);
+
+static func trigger_lich_king(card, gameplay) -> void:
+	var lich_king_advantage : int;
+	await play_movement_wait();
+	if !card.is_on_the_field() or gameplay.is_time_stopped:
+		return;
+	lich_king_advantage = System.Fighting.get_lich_king_advantage(card);
+	if lich_king_advantage == 1 or !gameplay.get_card(card):
+		return;
+	gameplay.get_card(card).lich_king_effect();

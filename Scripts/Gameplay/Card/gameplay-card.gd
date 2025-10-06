@@ -1,5 +1,6 @@
 extends GameplayCard
 
+@onready var behind_layer : Node2D = $BehindLayer;
 @onready var name_label : RichTextLabel = $NameLabel;
 @onready var type_label : Label = $TypeLabel;
 @onready var left_panel : Panel = $LeftPanel;

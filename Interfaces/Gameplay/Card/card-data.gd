@@ -331,6 +331,9 @@ func has_infinite_void() -> bool:
 func has_influencer() -> bool:
 	return has_keyword(CardEnums.Keyword.INFLUENCER);
 
+func has_lich_king() -> bool:
+	return has_keyword(CardEnums.Keyword.LICH_KING);
+	
 func has_max_keywords() -> bool:
 	return keywords.size() == System.Rules.MAX_KEYWORDS;
 

@@ -910,6 +910,9 @@ func play_contagious_sound() -> void:
 func play_perfect_contagious_sound() -> void:
 	play_throwable_sfx(PERFECT_CONTAGIOUS_SOUND_PATH);
 
+func play_celebrate_sound() -> void:
+	play_throwable_sfx(CELEBRATE_SOUND_PATH);
+
 func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = Vector2.ZERO) -> void:
 	var spied_card : GameplayCard;
 	System.CardManager.spawn_card(card, self);

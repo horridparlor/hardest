@@ -8,7 +8,7 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 			CardEnums.Keyword.ALPHA_WEREWOLF:
 				player.played_alpha_werewolf = true;
 			CardEnums.Keyword.CELEBRATE:
-				celebrate(player, gameplay);
+				celebrate(card, player, gameplay);
 			CardEnums.Keyword.CLONING:
 				trigger_cloning(card, player, gameplay);
 			CardEnums.Keyword.COIN_FLIP:
@@ -287,12 +287,15 @@ static func activate_time_stop(card : CardData, gameplay : Gameplay) -> void:
 	gameplay.times_time_stopped_this_round += 1;
 	System.TimeStop.time_stop_effect_in(gameplay);
 
-static func celebrate(player : Player, gameplay : Gameplay) -> void:
+static func celebrate(card : CardData, player : Player, gameplay : Gameplay) -> void:
 	var cards_where_in_hand : Array = player.cards_in_hand.duplicate();
 	player.celebrate();
-	for card in cards_where_in_hand:
-		if gameplay.get_card(card):
-			gameplay.get_card(card).despawn();
+	for c in cards_where_in_hand:
+		if gameplay.get_card(c):
+			gameplay.get_card(c).despawn();
+	gameplay.play_celebrate_sound();
+	if gameplay.get_card(card):
+		gameplay.get_card(card).celebrate_effect();
 	gameplay.show_hand();
 
 static func trigger_cloning(card : CardData, player : Player, gameplay : Gameplay, is_perfect_clone : bool = false) -> void:

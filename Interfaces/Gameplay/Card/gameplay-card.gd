@@ -127,6 +127,7 @@ var is_in_ocean : bool;
 var is_out_ocean : bool;
 var shine_star : ShineStar;
 var rattle : Rattle;
+var glow_sticks : GlowSticks;
 
 var dissolve_value : float;
 var is_dissolving : bool;
@@ -476,10 +477,21 @@ func rattle_effect() -> void:
 	if System.Instance.exists(rattle):
 		return;
 	rattle = System.Instance.load_child(System.Paths.RATTLE, self);
-	rattle.position = RATTLE_POSITION;
-	rattle.sprite.material = material;
+	set_rattle_position(rattle);
+
+func set_rattle_position(rattle_node : Rattle) -> void:
+	rattle_node.position = RATTLE_POSITION;
+	rattle_node.sprite.material = material;
 	if card_data and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO:
-		rattle.position.x *= -1;
+		rattle_node.position.x *= -1;
+
+func celebrate_effect() -> void:
+	if System.Instance.exists(glow_sticks):
+		return;
+	glow_sticks = System.Instance.load_child(System.Paths.GLOW_STICKS, self);
+	glow_sticks.set_material_for_sprites(material);
+	if card_data and card_data.controller.controller == GameplayEnums.Controller.PLAYER_TWO:
+		glow_sticks.scale.x *= -1;
 
 func loser_small_effect() -> void:
 	is_winner_big = false;

@@ -7,6 +7,7 @@ const LED : String = "res://Prefabs/Nexus/EyeCandy/led.tscn";
 const BULLET : String = "res://Prefabs/Gameplay/Card/bullet.tscn";
 const DIVINE_JUDGMENT : String = "res://Prefabs/Gameplay/Card/divine-judgment.tscn";
 const EVENT_ART : String = "res://Assets/Art/EventArt/%s.png";
+const GLOW_STICKS : String = "res://Prefabs/Gameplay/Card/glow-sticks.tscn";
 const LEVEL_BUTTON : String = "res://Prefabs/Nexus/Buttons/level-button.tscn";
 const MENACING_EFFECT : String = "res://Prefabs/Gameplay/Card/menacing-effect.tscn";
 const MULTIPLIER_BAR : String = "res://Prefabs/Gameplay/Card/multiplier-bar.tscn";

@@ -92,6 +92,7 @@ const CLONE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/clone-
 const PERFECT_CLONE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/perfect-clone-sound.wav";
 const CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/contagious-sound.wav";
 const PERFECT_CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/perfect-contagious-sound.wav";
+const CELEBRATE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/celebrate-sound.wav";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);
 const LEDS_PER_COLUMN : int = 19;

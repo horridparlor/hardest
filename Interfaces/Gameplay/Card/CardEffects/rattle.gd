@@ -39,6 +39,9 @@ func _ready() -> void:
 	
 	state = RattleState.FADE_IN;
 
+func slow_down(divider : float = 2) -> void:
+	vibration_speed /= divider;
+
 func _process(delta : float) -> void:
 	vibrate_frame(delta);
 	match state:

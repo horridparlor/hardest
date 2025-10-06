@@ -238,7 +238,8 @@ func get_shader_layers(include_multiplier_bar : bool = true) -> Array:
 		stamp
 	] + ([] if System.Instance.exists(card_data) and card_data.is_negative_variant() else [card_art]) + \
 	(multiplier_bar.get_shader_layers() if System.Instance.exists(multiplier_bar) and include_multiplier_bar else []) \
-	+ (rattle.get_shader_layers() if System.Instance.exists(rattle) else []);
+	+ (rattle.get_shader_layers() if System.Instance.exists(rattle) else []) \
+	+ (glow_sticks.get_shader_layers() if System.Instance.exists(glow_sticks) else []);
 
 func get_custom_shader_layers() -> Array:
 	return [card_art];

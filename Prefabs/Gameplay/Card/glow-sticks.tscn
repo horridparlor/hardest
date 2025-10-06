@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://ca6eyb5ykm3vt"]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/Card/glow-sticks.gd" id="1_fqyyh"]
+[ext_resource type="Texture2D" uid="uid://bc07p3bup2m1c" path="res://Assets/Art/CardEffects/Throwables/pink-glow-stick.png" id="2_34vb5"]
+[ext_resource type="Script" path="res://Interfaces/Gameplay/Card/CardEffects/rattle.gd" id="2_xih3v"]
+[ext_resource type="Texture2D" uid="uid://bychpptorx8nc" path="res://Assets/Art/CardEffects/Throwables/blue-glow-stick.png" id="3_cos2h"]
+
+[node name="GlowSticks" type="Node2D"]
+script = ExtResource("1_fqyyh")
+
+[node name="LeftStick" type="Node2D" parent="."]
+script = ExtResource("2_xih3v")
+
+[node name="Pink-glow-stick" type="Sprite2D" parent="LeftStick"]
+position = Vector2(-200, -170)
+rotation = -0.261799
+scale = Vector2(1, 1)
+texture = ExtResource("2_34vb5")
+
+[node name="RightStick" type="Node2D" parent="."]
+script = ExtResource("2_xih3v")
+
+[node name="Blue-glow-stick" type="Sprite2D" parent="RightStick"]
+position = Vector2(200, -170)
+rotation = 0.261799
+scale = Vector2(1, 1)
+texture = ExtResource("3_cos2h")

@@ -532,10 +532,10 @@ func get_rare_opponents() -> Dictionary:
 				74,
 				91,
 				113,
-				120,
-				123,
 				127,
-				131
+				131,
+				141,
+				146
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.CHAMPION,

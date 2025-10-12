@@ -102,6 +102,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			147,
 			148,
 			149,
+			151,
 		],
 		Rarity.RARE: [
 			41,
@@ -229,6 +230,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			136,
 			144,
 			147,
+			151,
 		],
 		Rarity.RARE: [
 			14,
@@ -360,7 +362,7 @@ const RANDOM_CARDS : Dictionary = {
 		138,
 		143,
 		149,
-		150
+		150,
 	],
 	CardEnums.CardType.PAPER: [
 		7,
@@ -433,6 +435,7 @@ const RANDOM_CARDS : Dictionary = {
 		136,
 		144,
 		147,
+		151,
 	],
 	CardEnums.CardType.GUN: [
 		18,

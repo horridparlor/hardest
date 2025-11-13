@@ -198,7 +198,10 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.CHAMPION
 			]),
 			"rare_chance": 2,
-			"song": 1,
+			"songs": [
+				1,
+				16
+			],
 			"backgrounds": [
 				11,
 				31
@@ -223,7 +226,10 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.DELUSIONAL
 			]),
 			"rare_chance": 6,
-			"song": 14,
+			"songs": [
+				14,
+				26
+			],
 			"backgrounds": [
 				2,
 				34
@@ -252,7 +258,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.DELUSIONAL
 			]),
 			"rare_chance": 3,
-			"song": 2,
+			"songs": [
+				2,
+			],
 			"backgrounds": [
 				15,
 				24,
@@ -278,7 +286,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.CHAMPION
 			]),
 			"rare_chance": 4,
-			"song": 7,
+			"songs": [
+				7,
+			],
 			"backgrounds": [
 				14,
 				33,
@@ -302,7 +312,10 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.CHAMPION
 			]),
 			"rare_chance": 4,
-			"song": 5,
+			"songs": [
+				5,
+				24
+			],
 			"backgrounds": [
 				5,
 				26,
@@ -327,7 +340,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.KAWAII
 			]),
 			"rare_chance": 5,
-			"song": 6,
+			"songs": [
+				6,
+			],
 			"backgrounds": [
 				6,
 				32
@@ -351,7 +366,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.HIGHTECH
 			]),
 			"rare_chance": 5,
-			"song": 10,
+			"songs": [
+				10,
+			],
 			"backgrounds": [
 				18
 			]
@@ -385,7 +402,10 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.DEMONIC
 			]),
 			"rare_chance": 1,
-			"song": 1,
+			"songs": [
+				20,
+				25
+			],
 			"backgrounds": [
 				9,
 				30
@@ -417,7 +437,10 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.KAWAII
 			]),
 			"rare_chance": 4,
-			"song": 3,
+			"songs": [
+				3,
+				4
+			],
 			"backgrounds": [
 				4,
 				25
@@ -448,7 +471,10 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.HIGHTECH
 			]),
 			"rare_chance": 2,
-			"song": 15,
+			"songs": [
+				15,
+				16
+			],
 			"backgrounds": [
 				10,
 				22
@@ -477,7 +503,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.SCISSOR
 			]),
 			"rare_chance": 3,
-			"song": 21,
+			"songs": [
+				21
+			],
 			"backgrounds": [
 				20
 			]
@@ -505,7 +533,9 @@ func get_opponents() -> Dictionary:
 				CollectionEnums.House.KAWAII
 			]),
 			"rare_chance": 4,
-			"song": 22,
+			"songs": [
+				22
+			],
 			"backgrounds": [
 				23
 			]
@@ -518,7 +548,11 @@ func get_rare_opponents() -> Dictionary:
 			"cards": [],
 			"card_pool": [],
 			"rare_chance": 0,
-			"song": 20,
+			"songs": [
+				9,
+				18,
+				19
+			],
 			"backgrounds": [
 				1
 			]
@@ -542,7 +576,10 @@ func get_rare_opponents() -> Dictionary:
 				CollectionEnums.House.DIVINE
 			]),
 			"rare_chance": 1,
-			"song": 11,
+			"songs": [
+				11,
+				17
+			],
 			"backgrounds": [
 				27,
 				29
@@ -568,7 +605,9 @@ func get_rare_opponents() -> Dictionary:
 				CollectionEnums.House.DEMONIC
 			]),
 			"rare_chance": 2,
-			"song": 12,
+			"songs": [
+				12
+			],
 			"backgrounds": [
 				28
 			]

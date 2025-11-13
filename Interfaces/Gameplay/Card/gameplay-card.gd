@@ -500,6 +500,9 @@ func lich_king_effect() -> void:
 		return;
 	emit_signal("spawn_lich_king_shadow", self);
 
+func pickled_effect() -> void:
+	shine_star_effect();
+
 func loser_small_effect() -> void:
 	is_winner_big = false;
 	is_loser_small = true;

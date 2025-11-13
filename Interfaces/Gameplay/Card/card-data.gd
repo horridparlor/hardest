@@ -388,6 +388,9 @@ func has_perfect_clone() -> bool:
 func has_pick_up() -> bool:
 	return has_keyword(CardEnums.Keyword.PICK_UP);
 
+func has_pickled() -> bool:
+	return has_keyword(CardEnums.Keyword.PICKLED);
+
 func has_positive() -> bool:
 	return has_keyword(CardEnums.Keyword.POSITIVE);
 
@@ -427,8 +430,8 @@ func has_silver() -> bool:
 func has_sinful() -> bool:
 	return has_keyword(CardEnums.Keyword.SINFUL);
 
-func has_skibbidy() -> bool:
-	return has_keyword(CardEnums.Keyword.SKIBBIDY);
+func has_skibidi() -> bool:
+	return has_keyword(CardEnums.Keyword.SKIBIDI);
 
 func has_soul_hunter() -> bool:
 	return has_keyword(CardEnums.Keyword.SOUL_HUNTER);

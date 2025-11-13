@@ -135,7 +135,7 @@ static func get_card_value(card : CardData, player : Player, opponent : Player, 
 				value += 2 * (player.turns_waited_to_nut * player.nut_multiplier - opponent.turns_waited_to_nut * opponent.nut_multiplier);
 			CardEnums.Keyword.SILVER:
 				value += 1;
-			CardEnums.Keyword.SKIBBIDY:
+			CardEnums.Keyword.SKIBIDI:
 				value += 2 * player.count_hand();
 			CardEnums.Keyword.SOUL_HUNTER:
 				value += 1;

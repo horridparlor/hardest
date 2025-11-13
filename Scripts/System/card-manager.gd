@@ -7,6 +7,7 @@ static func play_card(card : GameplayCard, player : Player, opponent : Player, g
 	if card.card_data.has_buried():
 		if !is_digital_speed:
 			System.AutoEffects.bury_card(card, gameplay);
+		player.face_down_cards_played_this_game += 1;
 	opponent.trigger_opponent_placed_effects();
 	gameplay.update_card_alterations();
 	if System.AutoEffects.check_for_devoured(card, player, opponent, gameplay, is_digital_speed):

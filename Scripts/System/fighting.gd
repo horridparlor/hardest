@@ -234,10 +234,12 @@ static func get_card_continuous_advantage(card : CardData) -> int:
 	var advantage : int = 1;
 	if !card:
 		return advantage;
-	if card.has_skibbidy():
-		advantage *= pow(2, card.controller.count_hand_without(card));
 	if card.has_multiply() and card.controller.get_matching_type(card.card_type, card.controller.last_type_played) != CardEnums.CardType.NULL:
 		advantage *= pow(2, card.controller.played_same_type_in_a_row);
+	if card.has_pickled():
+		advantage *= pow(2, card.controller.face_down_cards_played_this_game);
+	if card.has_skibidi():
+		advantage *= pow(2, card.controller.count_hand_without(card));
 	advantage *= get_lich_king_advantage(card);
 	return advantage;
 

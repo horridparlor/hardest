@@ -64,7 +64,7 @@ func get_level_data() -> LevelData:
 	var opponent : Dictionary = data.all_opponents[character_id];
 	return LevelData.from_json({
 		"opponent": GameplayEnums.TranslateCharacterBack[character_id],
-		"song": opponent.song,
+		"song": System.Random.item(opponent.songs),
 		"background": System.Random.item(opponent.backgrounds),
 		"deck": 1000 + (0 if character_id == GameplayEnums.Character.PEITSE else character_id),
 		"deck2": 1000,

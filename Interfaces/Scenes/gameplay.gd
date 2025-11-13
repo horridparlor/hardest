@@ -94,6 +94,7 @@ const CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/c
 const PERFECT_CONTAGIOUS_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/perfect-contagious-sound.wav";
 const CELEBRATE_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/celebrate-sound.wav";
 const LICH_KING_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Throwables/lich-king-sound.wav";
+const PICKLES_SOUND_PATH : String = "res://Assets/SFX/CardSounds/Bursts/pickles-sound.wav";
 
 const LED_STARTING_POSITION : Vector2 = Vector2(-480, -560);
 const LEDS_PER_COLUMN : int = 19;

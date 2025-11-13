@@ -176,7 +176,10 @@ func open_gameplay(level_data_ : LevelData = level_data) -> void:
 	roguelike_page.roll_out();
 
 func _on_reset_game() -> void:
+	var do_skip_tutorial = !in_roguelike_mode;
 	save_data = SaveData.new();
+	if do_skip_tutorial:
+		save_data.tutorial_levels_won = System.Levels.MAX_TUTORIAL_LEVELS;
 	save_data.write();
 	get_tree().reload_current_scene();
 

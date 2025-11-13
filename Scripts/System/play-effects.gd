@@ -29,6 +29,8 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 				november_opponent(opponent, gameplay);
 			CardEnums.Keyword.PERFECT_CLONE:
 				trigger_cloning(card, player, gameplay, true);
+			CardEnums.Keyword.PICKLED:
+				trigger_pickled(card, player, gameplay);
 			CardEnums.Keyword.RAINBOW:
 				opponent.get_rainbowed();
 				gameplay.update_card_alterations(true);
@@ -485,3 +487,14 @@ static func trigger_lich_king(card, gameplay) -> void:
 	if lich_king_advantage == 1 or !gameplay.get_card(card):
 		return;
 	gameplay.get_card(card).lich_king_effect();
+
+static func trigger_pickled(card : CardData, player : Player, gameplay : Gameplay) -> void:
+	var pickled_advantage : int;
+	await play_movement_wait();
+	if !card.is_on_the_field() or gameplay.is_time_stopped:
+		return;
+	pickled_advantage = pow(2, player.face_down_cards_played_this_game);
+	if pickled_advantage < 8 or !gameplay.get_card(card):
+		return;
+	gameplay.play_pickles_sound();
+	gameplay.get_card(card).pickled_effect();

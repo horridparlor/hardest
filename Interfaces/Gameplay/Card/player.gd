@@ -52,6 +52,7 @@ var played_alpha_werewolf : bool;
 var brotherhood_multiplier : int = 1;
 var recycle_cards : Array;
 var soon_to_be_recycle_cards : Array;
+var face_down_cards_played_this_game : int;
 
 func count_deck() -> int:
 	return cards_in_deck.size();

@@ -1626,3 +1626,6 @@ func _on_spawn_lich_king_shadow(card : GameplayCard) -> void:
 
 func play_lich_king_sound() -> void:
 	play_throwable_sfx(LICH_KING_SOUND_PATH);
+
+func play_pickles_sound() -> void:
+	play_throwable_sfx(PICKLES_SOUND_PATH);

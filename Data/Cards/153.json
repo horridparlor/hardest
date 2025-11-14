@@ -1,7 +1,9 @@
 {
-	"id": 142,
-	"name": "Rock",
-	"type": "rock",
+	"id": 153,
+	"name": "Jar of Peaches",
+	"type": "paper",
 	"keywords": [
+		"aura-farming",
+		"pickled"
 	]
 }

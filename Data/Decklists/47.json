@@ -2,11 +2,14 @@
 	"id": 47,
 	"title": "AI test level, your deck",
 	"cards": [
-		40,
+		149,
 		149,
 		149,
 		152,
 		152,
-		152
+		{
+			"id": 152,
+			"variant": "negative"
+		}
 	]
 }

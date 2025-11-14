@@ -20,6 +20,7 @@ const RATTLE : String = "res://Prefabs/Gameplay/Card/rattle.tscn";
 const SABOTAGE_EFFECT : String = "res://Prefabs/Gameplay/Card/sabotage-effect.tscn";
 const SHINE_STAR : String = "res://Prefabs/Gameplay/Card/shine-star.tscn";
 const SONG : String = "res://Assets/Songs/%s.mp3";
+const SPLASH_PARTICLE : String = "res://Prefabs/Gameplay/Card/splash-particle.tscn";
 const TENTACLE : String = "res://Prefabs/Gameplay/Card/tentacle.tscn";
 const TITLE : String = "res://Prefabs/Scenes/title.tscn";
 const TONGUE : String = "res://Prefabs/Gameplay/Card/tongue.tscn";

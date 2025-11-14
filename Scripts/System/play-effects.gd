@@ -495,6 +495,28 @@ static func trigger_pickled(card : CardData, player : Player, gameplay : Gamepla
 		return;
 	pickled_advantage = pow(2, player.face_down_cards_played_this_game);
 	if pickled_advantage < 8 or !gameplay.get_card(card):
+		if pickled_advantage > 1 and gameplay.get_card(card):
+			gameplay.get_card(card).shine_star_effect();
 		return;
 	gameplay.play_pickles_sound();
-	gameplay.get_card(card).pickled_effect();
+	spawn_pickled_splash(player.face_down_cards_played_this_game, card, gameplay);
+
+static func spawn_pickled_splash(advantage : int, card : CardData, gameplay : Gameplay) -> void:
+	const MIN_SPAWN_WAIT : float = 0.02;
+	const MAX_SPAWN_WAIT : float = 0.12;
+	var particles_spawned = min(50, int(1.6 * (advantage)) + System.random.randi_range(3, 8));
+	var gameplay_card : GameplayCard;
+	for i in range(particles_spawned):
+		if System.Random.chance(16 if i < 8 else 32):
+			await System.wait_range(MIN_SPAWN_WAIT, MAX_SPAWN_WAIT);
+		gameplay_card = gameplay.get_card(card);
+		if !gameplay_card:
+			return;
+		spawn_pickle_particle(gameplay_card, gameplay);
+	
+
+static func spawn_pickle_particle(card : GameplayCard, gameplay : Gameplay) -> void:
+	var particle : SplashParticle = System.Instance.load_child(System.Paths.SPLASH_PARTICLE, gameplay.behind_cards_layer);
+	particle.position = card.position;
+	if card.card_data.is_negative_variant():
+		particle.make_negative();

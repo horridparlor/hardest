@@ -534,7 +534,8 @@ func get_opponents() -> Dictionary:
 			]),
 			"rare_chance": 4,
 			"songs": [
-				22
+				22,
+				27
 			],
 			"backgrounds": [
 				23
@@ -554,7 +555,8 @@ func get_rare_opponents() -> Dictionary:
 				19
 			],
 			"backgrounds": [
-				1
+				1,
+				27
 			]
 		},
 		GameplayEnums.Character.LOTTE_ANT_QUEEN: {

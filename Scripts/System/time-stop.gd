@@ -71,6 +71,8 @@ static func after_time_stop(gameplay : Gameplay) -> void:
 	gameplay.is_stopping_time = false;
 	gameplay.has_been_stopping_turn = false;
 	gameplay.time_stopping_player = null;
+	if !gameplay.time_stopped_bullets.is_empty():
+		gameplay.results_phase = 99;
 	for bullet in gameplay.time_stopped_bullets:
 		bullet.speed_up();
 	gameplay.time_stopped_bullets = [];

@@ -2,10 +2,10 @@
 	"id": 47,
 	"title": "AI test level, your deck",
 	"cards": [
-		150,
-		150,
-		150,
-		150,
-		150
+		34,
+		{
+			"id": 147,
+			"stamp": "bluetooth"
+		}
 	]
 }

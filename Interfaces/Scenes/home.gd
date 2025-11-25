@@ -32,6 +32,7 @@ const MIN_ZOOM_TO_NODE_MULTIPLIER : float = 3.9;
 const MAX_ZOOM_TO_NODE_MULTIPLIER : float = 6.7;
 const QUICK_ZOOM_MULTIPLIER : float = 0.4;
 const AUDIO_SPEED_BACK_GLITCH_CHANCE : int = 3;
+const CHANCE_TO_ALWAYS_RANDOM_SONG : int = 4;
 
 var gameplay : Gameplay;
 var save_data : SaveData;

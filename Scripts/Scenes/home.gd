@@ -319,7 +319,7 @@ func _on_background_music_finished() -> void:
 	if save_data.current_song == 1001:
 		save_data.current_song = 1002;
 	elif level_data and level_data.song_id != 1 and \
-	!save_data.last_played_songs.has(level_data.song_id) and level_data.song_id != save_data.current_song:
+	!save_data.last_played_songs.has(level_data.song_id) and (level_data.song_id != save_data.current_song or System.Random.chance(CHANCE_TO_ALWAYS_RANDOM_SONG)):
 		save_data.current_song = level_data.song_id;
 	else:
 		while true:

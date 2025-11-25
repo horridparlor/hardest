@@ -83,3 +83,12 @@ static func check_for_devoured(card : GameplayCard, player : Player, opponent : 
 			if player.controller == GameplayEnums.Controller.PLAYER_ONE else 0));
 		return true;
 	return false;
+
+static func trigger_cooties_loss(player : Player, gameplay : Gameplay) -> void:
+	var card : CardData
+	player.cards_with_cooties_lost += 1;
+	if player.cards_with_cooties_lost >= System.Rules.NINE_LIVES_CARDS and !player.did_take_cat_cemetery and !player.hand_full():
+		card = player.draw_spawn_a_card(CollectionEnums.CAT_CEMETERY_ID);
+		player.make_new_card_permanent(card);
+		player.did_take_cat_cemetery = true;
+		gameplay.show_hand();

@@ -53,6 +53,8 @@ var brotherhood_multiplier : int = 1;
 var recycle_cards : Array;
 var soon_to_be_recycle_cards : Array;
 var face_down_cards_played_this_game : int;
+var cards_with_cooties_lost : int;
+var did_take_cat_cemetery : bool;
 
 func count_deck() -> int:
 	return cards_in_deck.size();

@@ -1165,6 +1165,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	if enemy:
 		for keyword in enemy.keywords:
 			match keyword:
+				CardEnums.Keyword.COOTIES:
+					System.AutoEffects.trigger_cooties_loss(opponent, self);
 				CardEnums.Keyword.EXTRA_SALTY:
 					System.EyeCandy.spawn_poppets(opponent.lose_points(System.Rules.EXTRA_SALTY_POINTS_LOST), enemy, opponent, self);
 				CardEnums.Keyword.SALTY:

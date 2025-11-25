@@ -476,6 +476,7 @@ const RANDOM_CARDS : Dictionary = {
 	CardEnums.CardType.GOD: [
 		42,
 		95,
+		154
 	],
 	CardEnums.CardType.BEDROCK: [
 		99,
@@ -559,7 +560,8 @@ const FOIL_CARDS : Dictionary = {
 	139: null,
 	143: null,
 	145: null,
-	146: null
+	146: null,
+	154: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {
@@ -581,3 +583,5 @@ const TURRET_SHOOTING_CARDS : Dictionary = {
 	134: null,
 	148: null
 }
+
+const CAT_CEMETERY_ID : int = 154;

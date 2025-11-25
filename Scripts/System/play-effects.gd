@@ -437,6 +437,9 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 		await System.wait(clamp(gameplay.animation_wait_timer.time_left / gameplay.animation_wait_timer.wait_time, wait_per_suck_min, wait_per_suck_max));
 		if !System.Instance.exists(gameplay) or gameplay.animation_instance_id != instance_id:
 			return;
+		if !card.is_on_the_field():
+			gameplay.after_animation(true);
+			return;
 		cards_taken = (player.cards_in_hand + opponent.cards_in_hand + opponent.cards_on_field).filter(func(card : CardData):
 			return !card.has_cursed() and (card.is_buried or !card.is_god()));
 		if cards_taken.is_empty():

@@ -354,6 +354,9 @@ func has_negative() -> bool:
 func is_negative_variant() -> bool:
 	return variant == CardEnums.CardVariant.NEGATIVE;
 
+func has_nine_lives() -> bool:
+	return has_keyword(CardEnums.Keyword.NINE_LIVES);
+
 func has_nostalgia() -> bool:
 	return has_keyword(CardEnums.Keyword.NOSTALGIA);
 
@@ -454,6 +457,9 @@ func has_time_stop() -> bool:
 	return has_keyword(CardEnums.Keyword.TIME_STOP);
 
 func check_undead() -> void:
+	if has_nine_lives():
+		set_card_type(CardEnums.CardType.GOD);
+		return;
 	if !has_undead():
 		return;
 	if has_undead(true):

@@ -438,7 +438,7 @@ static func trigger_infinite_void(card : CardData, enemy : CardData, player : Pl
 		if !System.Instance.exists(gameplay) or gameplay.animation_instance_id != instance_id:
 			return;
 		cards_taken = (player.cards_in_hand + opponent.cards_in_hand + opponent.cards_on_field).filter(func(card : CardData):
-			return !card.has_cursed() and !card.is_god());
+			return !card.has_cursed() and (card.is_buried or !card.is_god()));
 		if cards_taken.is_empty():
 			return;
 		cards_taken.shuffle();

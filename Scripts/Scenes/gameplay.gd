@@ -1036,7 +1036,7 @@ func round_results() -> void:
 	if round_winner == GameplayEnums.Controller.PLAYER_TWO:
 		led_direction = OPPONENTS_LED_DIRECTION;
 		led_color = OPPONENTS_LED_COLOR;
-		if !is_motion_shooting and (System.Random.chance(TROLL_CHANCE) or player_two.points >= player_two.point_goal - 1):
+		if !is_motion_shooting and !did_win and (System.Random.chance(TROLL_CHANCE) or player_two.points >= player_two.point_goal - 1):
 			opponent_trolling_effect();
 			led_direction = WARNING_LED_DIRECTION;
 			led_color = WARNING_LED_COLOR;

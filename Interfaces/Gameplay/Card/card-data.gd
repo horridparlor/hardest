@@ -211,10 +211,12 @@ func get_keywords_json() -> Array:
 		source.append(CardEnums.KeywordNames[keyword].to_lower().replace(" ", "-"));
 	return source;
 
-func clone() -> CardData:
+func clone(reset_spawn_id : bool = true) -> CardData:
 	var card_data : CardData = CardData.new();
 	card_data.eat_json(to_json());
 	card_data.controller = controller;
+	if reset_spawn_id:
+		card_data.spawn_id = System.random.randi();
 	return card_data;
 
 func has_alpha_werewolf() -> bool:

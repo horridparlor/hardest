@@ -290,10 +290,10 @@ func remove_burned_cards_from_decklists() -> void:
 
 func add_created_cards_to_decklists() -> void:
 	var card : Dictionary;
-	for c in gameplay.player_one.decklist.created_cards:
+	for c in gameplay.player_one.decklist.created_cards.values():
 		card = c;
 		save_data.roguelike_data.your_cards.append(card);
-	for c in gameplay.player_two.decklist.created_cards:
+	for c in gameplay.player_two.decklist.created_cards.values():
 		card = c;
 		save_data.roguelike_data.all_opponents[save_data.roguelike_data.chosen_opponent].cards.append(card);				
 

@@ -321,8 +321,7 @@ static func trigger_cloning(card : CardData, player : Player, gameplay : Gamepla
 static func clone_card(card_to_clone : CardData, player : Player, gameplay : Gameplay, is_perfect_clone : bool = false) -> void:
 	var cloned_card : CardData;
 	var gameplay_card : GameplayCard;
-	cloned_card = player.spawn_card(card_to_clone, CardEnums.Zone.HAND);
-	cloned_card.spawn_id = System.random.randi();
+	cloned_card = player.spawn_card(card_to_clone.clone(), CardEnums.Zone.HAND);
 	if is_perfect_clone:
 		cloned_card.is_holographic = true;
 		cloned_card.stamp = CardEnums.Stamp.RARE;

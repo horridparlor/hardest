@@ -245,7 +245,7 @@ func instance_background_card(parent : Node) -> GameplayCard:
 	var card_id : int;
 	while true:
 		card_id = System.random.randi_range(1, Config.MAX_CARD_ID);
-		if !CollectionEnums.CARDS_TO_COLLECT[CollectionEnums.House.GOD].has(card_id) or System.Random.chance(100):
+		if !CollectionEnums.RANDOM_CARDS[CardEnums.CardType.GOD].has(card_id) or System.Random.chance(100):
 			break;
 	card.card_data = System.Data.load_card(card_id);
 	if (card.card_data.has_tidal() or card.card_data.has_undead()) \

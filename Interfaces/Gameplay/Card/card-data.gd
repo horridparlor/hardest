@@ -339,6 +339,9 @@ func has_lich_king() -> bool:
 func has_max_keywords() -> bool:
 	return keywords.size() == System.Rules.MAX_KEYWORDS;
 
+func has_magnetism() -> bool:
+	return has_keyword(CardEnums.Keyword.MAGNETISM);
+
 func has_multi_spy() -> bool:
 	return has_keyword(CardEnums.Keyword.MULTI_SPY);
 

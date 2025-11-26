@@ -475,15 +475,19 @@ func mill_from_deck(card : CardData) -> void:
 	cards_in_deck.erase(card);
 	add_to_grave(card);
 
-func random_discard(do_destroy : bool = false) -> CardData:
+func random_discard(do_destroy : bool = false, is_magnetized : bool = false) -> CardData:
 	var card : CardData;
 	var source : Array;
+	var filtered_source : Array;
 	for c in cards_in_hand:
 		card = c;
 		if !do_destroy or !card.has_cursed():
 			source.append(card);
 	if source.size() == 0:
 		return null;
+	filtered_source = source.filter(func(card : CardData): return card.is_scissor()) if is_magnetized else [];
+	if !filtered_source.is_empty():
+		source = filtered_source;
 	card = System.Random.item(source);
 	discard_from_hand(card);
 	return card;

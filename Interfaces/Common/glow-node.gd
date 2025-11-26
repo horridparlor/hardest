@@ -119,6 +119,9 @@ func shutter() -> void:
 		set_glow_speed();
 	animations_active = IsActive.SHUTTERING;
 
+func is_shuttering() -> bool:
+	return animations_active == IsActive.SHUTTERING;
+
 func full_shutter() -> void:
 	shutter();
 	glow_intensity = SHUTTERED_INTENSITY;

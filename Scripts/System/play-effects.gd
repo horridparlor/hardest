@@ -10,11 +10,11 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 			CardEnums.Keyword.CELEBRATE:
 				celebrate(card, player, gameplay);
 			CardEnums.Keyword.CLONING:
-				trigger_cloning(card, player, gameplay);
+				trigger_cloning(card, enemy, player, gameplay);
 			CardEnums.Keyword.COIN_FLIP:
 				trigger_coin_flip(card, gameplay);
 			CardEnums.Keyword.CONTAGIOUS:
-				trigger_contagious(card, player, gameplay);
+				trigger_contagious(card, enemy, player, gameplay);
 			CardEnums.Keyword.FRESH_WATER:
 				trigger_fresh_water(card, player, gameplay);
 			CardEnums.Keyword.HORSE_GEAR:
@@ -28,7 +28,7 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 			CardEnums.Keyword.NOVEMBER:
 				november_opponent(opponent, gameplay);
 			CardEnums.Keyword.PERFECT_CLONE:
-				trigger_cloning(card, player, gameplay, true);
+				trigger_cloning(card, enemy, player, gameplay, true);
 			CardEnums.Keyword.PICKLED:
 				trigger_pickled(card, player, gameplay);
 			CardEnums.Keyword.RAINBOW:
@@ -37,7 +37,7 @@ static func trigger_play_effects(card : CardData, player : Player, opponent : Pl
 			CardEnums.Keyword.RELOAD:
 				player.shuffle_random_card_to_deck(CardEnums.CardType.GUN).controller = player;
 			CardEnums.Keyword.SABOTAGE:
-				trigger_sabotage(opponent, gameplay);
+				trigger_sabotage(card, opponent, gameplay);
 			CardEnums.Keyword.SCAMMER:
 				System.EyeCandy.spawn_poppets(player.lose_points(100, true), card, player, gameplay);
 				gameplay.gain_points_effect(player);
@@ -168,9 +168,13 @@ static func spawn_a_coin(gameplay : Gameplay, did_win : bool = true, controller 
 	else:
 		coin.lose_init();
 
-static func trigger_sabotage(opponent : Player, gameplay : Gameplay) -> void:
+static func trigger_sabotage(card : CardData, opponent : Player, gameplay : Gameplay) -> void:
 	var enemy : CardData;
 	var source : Array = opponent.cards_in_hand.filter(func(card : CardData): return !card.has_cursed());
+	var is_magnetized : bool = card and card.has_magnetism();
+	var filtered_source : Array = source.filter(func(card : CardData): return card.is_scissor()) if is_magnetized else [];
+	if !filtered_source.is_empty():
+		source = filtered_source;
 	var count : int = source.size();
 	var max_margin_value : int = min(Gameplay.WHOLE_HAND_MAX_SPY_MARGIN.x, (count - 1) * Gameplay.WHOLE_HAND_SPY_MARGIN.x) * System.Floats.direction(opponent.visit_point.y);
 	var max_margin : Vector2 = Vector2(max_margin_value, max_margin_value * (Gameplay.WHOLE_HAND_SPY_MARGIN.y / Gameplay.WHOLE_HAND_SPY_MARGIN.x));
@@ -183,14 +187,16 @@ static func trigger_sabotage(opponent : Player, gameplay : Gameplay) -> void:
 		for c in source:
 			enemy = c;
 			opponent.discard_from_hand(enemy);
-			inflict_sabotage_on_card(enemy, opponent, gameplay, margin);
+			inflict_sabotage_on_card(card, enemy, opponent, gameplay, margin);
 			margin += margin_increment;
 		return;
-	enemy = opponent.random_discard(true);
-	inflict_sabotage_on_card(enemy, opponent, gameplay);
+	enemy = opponent.random_discard(true, is_magnetized);
+	inflict_sabotage_on_card(card, enemy, opponent, gameplay);
 
-static func inflict_sabotage_on_card(card : CardData, player : Player, gameplay : Gameplay, margin : Vector2 = Vector2.ZERO) -> void:
+static func inflict_sabotage_on_card(sabotager : CardData, card : CardData, player : Player, gameplay : Gameplay, margin : Vector2 = Vector2.ZERO) -> void:
 	var gameplay_card : GameplayCard;
+	if sabotager and sabotager.has_magnetism() and card and card.is_scissor() and !sabotager.has_rust():
+		gameplay.give_card_a_keyword(sabotager, CardEnums.Keyword.RUST);
 	if !System.Instance.exists(card):	
 		return;
 	gameplay_card = System.CardManager.spawn_card(card, gameplay);
@@ -212,9 +218,10 @@ static func trigger_spring_arrives(card : CardData, player : Player, gameplay : 
 	if player == gameplay.player_one:
 		gameplay.show_hand();
 
-static func trigger_contagious(source_card : CardData, player : Player, gameplay : Gameplay) -> void:
+static func trigger_contagious(source_card : CardData, enemy : CardData, player : Player, gameplay : Gameplay) -> void:
 	var card_type : CardEnums.CardType = source_card.card_type;
 	var source : Array;
+	var filtered_source : Array;
 	var card : CardData;
 	for c in player.cards_in_hand:
 		card = c;
@@ -227,6 +234,9 @@ static func trigger_contagious(source_card : CardData, player : Player, gameplay
 			card = c;
 			inflict_contagious_on_card(card, card_type, player, gameplay);
 		return;
+	filtered_source = source.filter(func(card : CardData): return card.is_scissor()) if enemy and enemy.has_magnetism() else [];
+	if !filtered_source.is_empty():
+		source = filtered_source;
 	card = System.Random.item(source);
 	inflict_contagious_on_card(card, card_type, player, gameplay);
 
@@ -302,8 +312,12 @@ static func celebrate(card : CardData, player : Player, gameplay : Gameplay) -> 
 		gameplay.get_card(card).celebrate_effect();
 	gameplay.show_hand();
 
-static func trigger_cloning(card : CardData, player : Player, gameplay : Gameplay, is_perfect_clone : bool = false) -> void:
+static func trigger_cloning(card : CardData, enemy : CardData, player : Player, gameplay : Gameplay, is_perfect_clone : bool = false) -> void:
 	var card_to_clone : CardData;
+	var source : Array = player.cards_in_hand;
+	var filtered_source : Array = source.filter(func(card : CardData): return card.is_scissor()) if enemy and enemy.has_magnetism() else [];
+	if !filtered_source.is_empty():
+		source = filtered_source;
 	if player.hand_empty() or player.hand_full():
 		return;
 	if player.has_hivemind_for():
@@ -314,7 +328,7 @@ static func trigger_cloning(card : CardData, player : Player, gameplay : Gamepla
 				break;
 		gameplay.show_hand();
 		return;
-	card_to_clone = System.Random.item(player.cards_in_hand);
+	card_to_clone = System.Random.item(source);
 	clone_card(card_to_clone, player, gameplay, is_perfect_clone);
 	gameplay.show_hand();
 
@@ -387,7 +401,7 @@ static func spy_opponent(card : CardData, player : Player, opponent : Player, ga
 	if gameplay.is_spying_whole_hand:
 		spy_whole_hand(opponent, gameplay);
 		return true;
-	spied_card_data = determine_spied_card(opponent, gameplay) if do_spy_hand else opponent.get_top_deck();
+	spied_card_data = determine_spied_card(player, opponent, gameplay) if do_spy_hand else opponent.get_top_deck();
 	gameplay.send_card_to_be_spied(spied_card_data, opponent);
 	gameplay.cards_to_spy = chain - 1;
 	gameplay.is_spying = true;
@@ -408,11 +422,16 @@ static func spy_whole_hand(opponent : Player, gameplay : Gameplay) -> void:
 	gameplay.cards_to_spy = 0;
 	gameplay.is_spying = true;
 
-static func determine_spied_card(opponent : Player, gameplay : Gameplay) -> CardData:
+static func determine_spied_card(player : Player, opponent : Player, gameplay : Gameplay) -> CardData:
+	var is_magnetized : bool = player.get_field_card() and player.get_field_card().has_magnetism();
 	var cards_with_secret : Array = opponent.cards_in_hand.filter(func(card : CardData):
 		return card.has_secrets();	
 	);
+	var hand_source : Array = opponent.cards_in_hand.duplicate();
 	var source : Array = cards_with_secret if gameplay.current_spy_type == GameplayEnums.SpyType.FIGHT and cards_with_secret.size() else opponent.cards_in_hand.duplicate();
+	var filtered_source : Array = source.filter(func(card : CardData): return card.is_scissor()) if is_magnetized else [];
+	if !filtered_source.is_empty():
+		source = filtered_source;
 	return System.Random.item(source);
 
 static func trigger_infinite_void(card : CardData, enemy : CardData, player : Player, opponent : Player, gameplay : Gameplay) -> void:

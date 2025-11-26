@@ -143,6 +143,7 @@ var visit_instance_id : int;
 var do_get_small : bool;
 var is_loser_small : bool;
 var is_winner_big : bool;
+var was_shuttered : bool;
 
 func init(gained_keyword : CardEnums.Keyword = CardEnums.Keyword.NULL) -> void:
 	rescale(true);
@@ -335,6 +336,8 @@ func update_scale(delta : float) -> void:
 func _on_focus_timer_timeout() -> void:
 	focus_timer.stop();
 	is_focused = true;
+	was_shuttered = is_shuttering();
+	glow();
 	hide_multiplier_bar();
 	update_card_art(true);
 

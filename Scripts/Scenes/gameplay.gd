@@ -312,6 +312,7 @@ func end_game() -> void:
 	emit_signal("game_over");
 
 func your_turn() -> void:
+	var do_extend : bool = player_two.get_field_card() and player_two.get_field_card().has_sabotage();
 	if is_spying:
 		you_play_wait.wait_time = YOU_TO_PLAY_WAIT * System.game_speed_additive_multiplier;
 		return you_play_wait.start();
@@ -324,10 +325,22 @@ func your_turn() -> void:
 		_on_player_one_cannot_play_more();
 		return;
 	can_play_card = true;
+	update_cards_in_hand_shutter();
 	if !System.auto_play:
 		return;
-	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * System.game_speed_additive_multiplier;
+	auto_play_timer.wait_time = System.random.randf_range(AUTO_PLAY_MIN_WAIT, AUTO_PLAY_MAX_WAIT) * (2 if do_extend else 1) * System.game_speed_additive_multiplier;
 	auto_play_timer.start()
+
+func update_cards_in_hand_shutter() -> void:
+	var is_magnetized : bool = player_two.get_field_card() and player_two.get_field_card().has_magnetism() and !player_one.cards_in_hand.filter(func(card : CardData): return card.is_scissor()).is_empty();
+	if is_magnetized:
+		for card in player_one.cards_in_hand:
+			if !card.is_scissor() and get_card(card):
+				get_card(card).shutter();
+	else:
+		for card in player_one.cards_in_hand:
+			if get_card(card):
+				get_card(card).glow();
 
 func _on_player_one_cannot_play_more() -> void:
 	can_play_card = false;
@@ -611,6 +624,8 @@ func unfocus_card(card : GameplayCard, auto_action : bool = false) -> void:
 	card.toggle_follow_mouse(false);
 	return_other_cards_front(card);
 	active_card = null;
+	if card.was_shuttered:
+		card.shutter();
 	card_focus_timer.stop();
 	toggle_points_visibility();
 	field_lines_visible = false;
@@ -661,6 +676,10 @@ func _on_card_despawned(card : GameplayCard) -> void:
 func check_if_played(card : GameplayCard) -> bool:
 	var mouse_position : Vector2 = get_local_mouse_position();
 	var card_margin : int = GameplayCard.SIZE.y;
+	var opponent : Player = get_opponent(card.card_data);
+	var is_magnetized = opponent.get_field_card() and opponent.get_field_card().has_magnetism() and !card.card_data.controller.cards_in_hand.filter(func(card : CardData): return card.is_scissor()).is_empty();
+	if is_magnetized and !card.card_data.is_scissor():
+		return false;
 	if !(can_play_card and mouse_position.y + card_margin >= FIELD_START_LINE and mouse_position.y - card_margin <= FIELD_END_LINE) or card.scale > GameplayCard.MIN_SCALE_VECTOR:
 		return false;
 	System.CardManager.play_card(card, player_one, player_two, self);
@@ -930,6 +949,8 @@ func send_card_to_be_spied(card : CardData, player : Player, margin : Vector2 = 
 
 func opponents_turn() -> void:
 	var card : CardData;
+	var play_source : Array;
+	var filtered_play_source : Array;
 	if is_spying:
 		return wait_opponent_to_play();
 	active_player = player_two;
@@ -942,7 +963,11 @@ func opponents_turn() -> void:
 	#for car in player_two.cards_in_hand:
 		#print(car.card_name, " ", get_result_for_playing(car));
 	#print("-----");
-	card = player_two.cards_in_hand.back();
+	play_source = player_two.cards_in_hand;
+	filtered_play_source = play_source.filter(func(card : CardData): return card.is_scissor()) if player_one.get_field_card() and player_one.get_field_card().has_magnetism() else [];
+	if !filtered_play_source.is_empty():
+		play_source = filtered_play_source;
+	card = play_source.back();
 	if !System.CardManager.play_card(System.CardManager.spawn_card(card, self), player_two, player_one, self):
 		wait_opponent_playing();
 		return;
@@ -955,6 +980,8 @@ func _on_player_two_cannot_play_more() -> void:
 	_on_opponent_turns_end() if going_first else your_turn();
 
 func wait_opponent_to_play(do_extend : bool = false) -> void:
+	if player_one.get_field_card() and player_one.get_field_card().has_sabotage():
+		do_extend = true;
 	opponents_play_wait.wait_time = OPPONENT_TO_PLAY_WAIT * (2 if do_extend else 1) * System.game_speed_additive_multiplier;
 	opponents_play_wait.start();
 
@@ -1148,12 +1175,15 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	if card:
 		if card.is_god():
 			summon_divine_judgment(card, enemy);
-		for keyword in card.keywords:
+		for keyword in card.keywords.duplicate():
 			match keyword:
 				CardEnums.Keyword.DIVINE:
 					summon_divine_judgment(card, enemy);
 				CardEnums.Keyword.ELECTROCUTE:
 					electrocute_card(enemy);
+				CardEnums.Keyword.MAGNETISM:
+					if enemy and enemy.is_scissor() and !card.has_rust():
+						give_card_a_keyword(card, CardEnums.Keyword.RUST);
 				CardEnums.Keyword.SOUL_HUNTER:
 					if enemy:
 						player.steal_card_soul(enemy);
@@ -1163,7 +1193,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.VAMPIRE:
 					System.EyeCandy.spawn_poppets(opponent.lose_points(points), card, opponent, self);
 	if enemy:
-		for keyword in enemy.keywords:
+		for keyword in enemy.keywords.duplicate():
 			match keyword:
 				CardEnums.Keyword.COOTIES:
 					System.AutoEffects.trigger_cooties_loss(opponent, self);
@@ -1174,6 +1204,11 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 	gain_points_effect(player);
 	if have_you_won() or has_opponent_won():
 		start_game_over();
+
+func give_card_a_keyword(card : CardData, keyword : CardEnums.Keyword) -> void:
+	card.add_keyword(keyword);
+	card.controller.make_card_alterations_permanent(card);
+	update_alterations_for_card(card);
 
 func summon_divine_judgment(card : CardData, enemy : CardData) -> void:
 	var judgment_position : Vector2;
@@ -1438,6 +1473,9 @@ func get_led_columns() -> Array:
 
 func _on_auto_play_timer_timeout() -> void:
 	var card : CardData;
+	var source : Array;
+	var filtered_source : Array;
+	var is_magnetized : bool = player_two.get_field_card() and player_two.get_field_card().has_magnetism() and !player_one.cards_in_hand.filter(func(card : CardData): return card.is_scissor()).is_empty();
 	auto_play_timer.stop();
 	if System.Random.chance(CHANCE_TO_FLICKER_HAND):
 		reorder_hand(true);
@@ -1447,7 +1485,11 @@ func _on_auto_play_timer_timeout() -> void:
 	active_player = player_one;
 	player_one.shuffle_hand();
 	player_one.cards_in_hand.sort_custom(func(a : CardData, b : CardData): return System.EnemyAI.best_to_play_for_you(a, b, self));
-	card = player_one.cards_in_hand.back();
+	source = player_one.cards_in_hand;
+	filtered_source = source.filter(func(card : CardData): return card.is_scissor()) if is_magnetized else [];
+	if !filtered_source.is_empty():
+		source = filtered_source;
+	card = source.back();
 	System.CardManager.spawn_card(card, self);
 	System.CardManager.play_card(get_card(card), player_one, player_two, self);
 

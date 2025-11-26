@@ -612,7 +612,8 @@ func get_rare_opponents() -> Dictionary:
 				12
 			],
 			"backgrounds": [
-				28
+				28,
+				37
 			]
 		}
 	};

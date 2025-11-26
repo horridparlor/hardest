@@ -195,7 +195,7 @@ static func trigger_sabotage(card : CardData, opponent : Player, gameplay : Game
 
 static func inflict_sabotage_on_card(sabotager : CardData, card : CardData, player : Player, gameplay : Gameplay, margin : Vector2 = Vector2.ZERO) -> void:
 	var gameplay_card : GameplayCard;
-	if sabotager and sabotager.has_magnetism() and card and card.is_scissor() and !sabotager.has_rust():
+	if sabotager and sabotager.has_magnetism() and card and card.is_scissor():
 		gameplay.give_card_a_keyword(sabotager, CardEnums.Keyword.RUST);
 	if !System.Instance.exists(card):	
 		return;

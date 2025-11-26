@@ -1182,7 +1182,7 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 				CardEnums.Keyword.ELECTROCUTE:
 					electrocute_card(enemy);
 				CardEnums.Keyword.MAGNETISM:
-					if enemy and enemy.is_scissor() and !card.has_rust():
+					if enemy and enemy.is_scissor():
 						give_card_a_keyword(card, CardEnums.Keyword.RUST);
 				CardEnums.Keyword.SOUL_HUNTER:
 					if enemy:
@@ -1206,7 +1206,8 @@ func trigger_winner_loser_effects(card : CardData, enemy : CardData,
 		start_game_over();
 
 func give_card_a_keyword(card : CardData, keyword : CardEnums.Keyword) -> void:
-	card.add_keyword(keyword);
+	if !card.add_keyword(keyword):
+		return;
 	card.controller.make_card_alterations_permanent(card);
 	update_alterations_for_card(card);
 

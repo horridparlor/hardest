@@ -251,6 +251,8 @@ func instance_background_card(parent : Node) -> GameplayCard:
 	if (card.card_data.has_tidal() or card.card_data.has_undead()) \
 	and System.Random.chance(10):
 		card.card_data.card_type = CardEnums.CardType.GUN;
+	if card.card_data.has_magnetism() and System.Random.chance(8):
+		card.card_data.add_keyword(CardEnums.Keyword.RUST);
 	card.card_data.stamp = save_data.roguelike_data.get_stamp_for_spawned_card(card.card_data);
 	card.card_data.variant = save_data.roguelike_data.get_variant_for_spawned_card(card.card_data);
 	card.card_data.is_holographic = save_data.roguelike_data.get_is_holo_for_spawned_card(save_data.roguelike_data.rare_chance);

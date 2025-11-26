@@ -589,7 +589,7 @@ func get_rare_opponents() -> Dictionary:
 		},
 		GameplayEnums.Character.PETE_BADASS: {
 			"cards": [
-				101,
+				155,
 				102,
 				103,
 				110,
@@ -601,6 +601,7 @@ func get_rare_opponents() -> Dictionary:
 				125,
 				125,
 				128,
+				152
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.DELUSIONAL,

@@ -3,7 +3,7 @@ extends Node
 const VERSION : String = "0.12";
 
 const DEV_MODE : bool = false;
-const MAX_SONG_ID : int = 28;
+const MAX_SONG_ID : int = 29;
 const MAX_CARD_ID : int = 156;
 const WAIT_BEFORE_SONG_TO_REPEAT : int = min(MAX_SONG_ID - 3, 21);
 

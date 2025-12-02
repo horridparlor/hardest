@@ -288,6 +288,7 @@ func get_opponents() -> Dictionary:
 			"rare_chance": 4,
 			"songs": [
 				7,
+				28
 			],
 			"backgrounds": [
 				14,
@@ -571,7 +572,8 @@ func get_rare_opponents() -> Dictionary:
 				127,
 				131,
 				141,
-				146
+				146,
+				156
 			],
 			"card_pool": get_card_pool([
 				CollectionEnums.House.CHAMPION,

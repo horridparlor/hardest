@@ -196,7 +196,7 @@ static func get_result_for_playing(card : CardData, player : Player, opponent : 
 	card = get_card_truth(card, enemy, opponent, gameplay);
 	var value : int = 1;
 	var multiplier : int = System.Fighting.calculate_base_points(card, enemy, true);
-	if !player.going_first and enemy.has_infinite_void() and !gameplay.is_time_stopped and ((card.has_buried() or player.gained_keyword == CardEnums.Keyword.BURIED) or !(card.has_carrot_eater() or card.has_soul_hunter() or card.is_god())):
+	if !player.going_first and enemy and enemy.has_infinite_void() and !gameplay.is_time_stopped and ((card.has_buried() or player.gained_keyword == CardEnums.Keyword.BURIED) or !(card.has_carrot_eater() or card.has_soul_hunter() or card.is_god())):
 		return 0;
 	if player.going_first and opponent.gained_keyword == CardEnums.Keyword.BURIED and card.prevents_opponents_reveal():
 		return value * multiplier;

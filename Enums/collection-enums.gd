@@ -206,6 +206,7 @@ const CARDS_TO_COLLECT : Dictionary = {
 			146,
 		],
 		Rarity.SUPER_RARE: [
+			156
 		]
 	},
 	House.SCISSOR: {
@@ -404,6 +405,7 @@ const RANDOM_CARDS : Dictionary = {
 		142,
 		148,
 		153,
+		156,
 	],
 	CardEnums.CardType.SCISSORS: [
 		8,
@@ -564,6 +566,7 @@ const FOIL_CARDS : Dictionary = {
 	145: null,
 	146: null,
 	154: null,
+	156: null,
 }
 
 const NON_GUN_SHOOTING_CARDS : Dictionary = {
